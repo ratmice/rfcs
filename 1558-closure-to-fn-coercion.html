@@ -136,8 +136,8 @@
                         <ul>
 <li>Feature Name: closure_to_fn_coercion</li>
 <li>Start Date: 2016-03-25</li>
-<li>RFC PR: (leave this empty)</li>
-<li>Rust Issue: (leave this empty)</li>
+<li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1558">rust-lang/rfcs#1558</a></li>
+<li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/39817">rust-lang/rust#39817</a></li>
 </ul>
 <a class="header" href="1558-closure-to-fn-coercion.html#summary" id="summary"><h1>Summary</h1></a>
 <p>A closure that does not move, borrow, or otherwise access (capture) local
@@ -274,7 +274,7 @@ determining whether to take <code>&amp;self</code> or <code>&amp;mut self</code>
 fn func_specific&lt;'a&gt;(&amp;'a self) -&gt; impl Fn() -&gt; u32 {
   move || return self.field
 }
-    
+
 fn func_general&lt;'a&gt;(&amp;'a mut self) -&gt; impl FnMut() -&gt; u32 {
   move || { self.field += 1; return self.field; }
 }
