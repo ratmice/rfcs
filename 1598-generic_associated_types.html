@@ -167,7 +167,7 @@ because each slice would be required to exist for as long as the iterator,
 rather than for as long as the borrow initiated by <code>next</code>.</p>
 <p>This trait cannot be expressed in Rust as it exists today, because it depends
 on a sort of higher-kinded polymorphism. This RFC would extend Rust to include
-that specific form of higher-kinded polymorphism, which is refered to here as
+that specific form of higher-kinded polymorphism, which is referred to here as
 associated type constructors. This feature has a number of applications, but
 the primary application is along the same lines as the <code>StreamingIterator</code>
 trait: defining traits which yield types which have a lifetime tied to the
@@ -306,7 +306,7 @@ impl&lt;T&gt; Baz for T where T: Foo {
 #}</code></pre></pre>
 <p>Lastly, lifetimes can be elided in associated type constructors in the same
 manner that they can be elided in other type constructors. Considering lifetime
-ellision, the full definition of <code>StreamingIterator</code> is:</p>
+elision, the full definition of <code>StreamingIterator</code> is:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -405,7 +405,7 @@ trait Foo {
     type Assoc where Self: Sized;
 }
 #}</code></pre></pre>
-<p>Each invokation of <code>&lt;T as Foo&gt;::Assoc</code> will need to prove <code>T: Sized</code>, as
+<p>Each invocation of <code>&lt;T as Foo&gt;::Assoc</code> will need to prove <code>T: Sized</code>, as
 opposed to the impl needing to prove the bound as in other cases.</p>
 <p>(@nikomatsakis believes that where clauses will be needed on associated type
 constructors specifically to handle lifetime well formedness in some cases.
@@ -432,7 +432,7 @@ these features that other kinds of higher-kinded polymorphism require:</p>
 exists. Type constructors can already be aliased in Rust using the same syntax
 that this used, and while type aliases play no polymorphic role in type
 resolution, to users they seem very similar to associated types. A goal of this
-syntax is that many users will be able to use types which have assocaited type
+syntax is that many users will be able to use types which have associated type
 constructors without even being aware that this has something to do with a type
 system feature called higher-kindedness.</p>
 <a class="header" href="1598-generic_associated_types.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
@@ -441,7 +441,7 @@ the standard way to talk about this feature in the Rust community. This is not
 a very accessible framing of this concept; in particular the term &quot;type
 constructor&quot; is an obscure piece of jargon from type theory which most users
 cannot be expected to be familiar with.</p>
-<p>Upon accepting this RFC, we should begin (with haste) refering to this concept
+<p>Upon accepting this RFC, we should begin (with haste) referring to this concept
 as simply &quot;generic associated types.&quot; Today, associated types cannot be
 generic; after this RFC, this will be possible. Rather than teaching this as
 a separate feature, it will be taught as an advanced use case for associated
