@@ -456,6 +456,8 @@ match IntoIterator::into_iter(EXPR_ITER) {
 <p>then the only thing that changes is that <code>PAT</code> may include <code>|</code> at the top level
 in the <code>for</code> loop and the desugaring as per the section on grammar.</p>
 <a class="header" href="2175-if-while-or-patterns.html#desugaring-let-statements-with--in-the-top-level-pattern" id="desugaring-let-statements-with--in-the-top-level-pattern"><h2>Desugaring <code>let</code> statements with <code>|</code> in the top-level pattern</h2></a>
+<p>There continues to be an exhaustivity check in <code>let</code> statements,
+however this check will now be able to support multiple patterns.</p>
 <p>This is a possible desugaring that a Rust compiler may do.
 While such a compiler may elect to implement this differently,
 these semantics should be kept.</p>
@@ -487,6 +489,48 @@ these semantics should be kept.</p>
     }
 }
 #}</code></pre></pre>
+<p>For example, the following code:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+{
+    foo();
+    bar();
+    let Ok(index) | Err(index) = slice.binary_search(&amp;thing);
+    println!(&quot;{}&quot;, index);
+    do_something_to(index)
+}
+#}</code></pre></pre>
+<p>can be desugared to</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+{
+    foo();
+    bar();
+    match slice.binary_search(&amp;thing) {
+        Ok(index) | Err(index) =&gt; {
+            println!(&quot;{}&quot;, index);
+            do_something_to(index)
+        }
+    }
+}
+#}</code></pre></pre>
+<p>It can also be desugared to:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+{
+    foo();
+    bar();
+    let index = match slice.binary_search(&amp;thing) {
+        Ok(index) | Err(index) =&gt; index,
+    }
+    println!(&quot;{}&quot;, index);
+    do_something_to(index)
+}
+#}</code></pre></pre>
+<p>(Both are equivalent)</p>
 <a class="header" href="2175-if-while-or-patterns.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This adds more additions to the grammar and makes the compiler more complex.</p>
 <a class="header" href="2175-if-while-or-patterns.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
