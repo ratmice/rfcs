@@ -240,7 +240,7 @@ fn extend&lt;I: IntoIter&lt;Item=T&gt;&gt;(&amp;mut self, iter: I)
 <p>We expose a flag, rather than changing the default, because we maintain that <em>by default</em> Rust programmers should not be trying to recover from allocation failures.</p>
 <p>For instance, a project which desires to work this way would add this to their Cargo.toml:</p>
 <pre><code class="language-toml">[profile]
-oom = panic
+oom = &quot;panic&quot;
 </code></pre>
 <p>And then in their application, do something like this:</p>
 <pre><pre class="playpen"><code class="language-rust">fn main() {
