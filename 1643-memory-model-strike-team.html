@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1643-memory-model-strike-team - </title>
+        <title>1643-memory-model-strike-team - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1643">rust-lang/rfcs#1643</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1643-memory-model-strike-team.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Incorporate a strike team dedicated to preparing rules and guidelines
 for writing unsafe code in Rust (commonly referred to as Rust's
 &quot;memory model&quot;), in cooperation with the lang team. The discussion
@@ -148,7 +155,7 @@ high-level principles and gradually getting down to the nitty gritty
 details (though some back and forth is expected). The strike team will
 produce various intermediate documents that will be submitted as
 normal RFCs.</p>
-<a class="header" href="1643-memory-model-strike-team.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Rust's safe type system offers very strong aliasing information that
 promises to be a rich source of compiler optimization.  For example,
 in safe code, the compiler can infer that if a function takes two
@@ -189,7 +196,7 @@ are crafted must be adopted with the <strong>general consensus of both the
 strike team and the lang team</strong>. It is expected that lang team members
 will be more involved in the early discussions that govern the overall
 direction and less involved in the fine details.</p>
-<a class="header" href="1643-memory-model-strike-team.html#history-and-recent-discussions" id="history-and-recent-discussions"><h4>History and recent discussions</h4></a>
+<a class="header" href="#history-and-recent-discussions" id="history-and-recent-discussions"><h4>History and recent discussions</h4></a>
 <p>The history of optimizing C can be instructive. All code in C is
 effectively unsafe, and so in order to perform optimizations,
 compilers have come to lean heavily on the notion of &quot;undefined
@@ -217,15 +224,15 @@ described in an earlir post. There is also a lot of valuable
 discussion in
 <a href="http://smallcultfollowing.com/babysteps/blog/2016/05/23/unsafe-abstractions/">the corresponding internals thread</a>.</li>
 </ul>
-<a class="header" href="1643-memory-model-strike-team.html#other-factors" id="other-factors"><h4>Other factors</h4></a>
+<a class="header" href="#other-factors" id="other-factors"><h4>Other factors</h4></a>
 <p>Another factor that must be considered is the interaction with weak
 memory models. Most of the links above focus purely on sequential
 code: Rust has more-or-less adopted the C++ memory model for governing
 interactions across threads. But there may well be subtle cases that
 arise we delve deeper. For more on the C++ memory model, see
 <a href="http://www.hboehm.info/c++mm/">Hans Boehm's excellent webpage</a>.</p>
-<a class="header" href="1643-memory-model-strike-team.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1643-memory-model-strike-team.html#scope" id="scope"><h2>Scope</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#scope" id="scope"><h2>Scope</h2></a>
 <p>Here are some of the issues that should be resolved as part of these
 unsafe code guidelines. The following list is not intended as
 comprehensive (suggestions for additions welcome):</p>
@@ -252,12 +259,12 @@ regarding the interaction of different threads. Rust exposes atomics
 that roughly correspond to C++11 atomics, and the intention is that we
 can layer our rules for sequential execution atop those rules for
 parallel execution.</p>
-<a class="header" href="1643-memory-model-strike-team.html#termination-conditions" id="termination-conditions"><h2>Termination conditions</h2></a>
+<a class="header" href="#termination-conditions" id="termination-conditions"><h2>Termination conditions</h2></a>
 <p>The unsafe code guidelines team is intended as a temporary strike team
 with the goal of producing the documents described below. Once the RFC
 for those documents have been approved, responsibility for maintaining
 the documents falls to the lang team.</p>
-<a class="header" href="1643-memory-model-strike-team.html#time-frame" id="time-frame"><h2>Time frame</h2></a>
+<a class="header" href="#time-frame" id="time-frame"><h2>Time frame</h2></a>
 <p>Working out a a set of rules for unsafe code is a detailed process and
 is expected to take months (or longer, depending on the level of
 detail we ultimately aim for). However, the intention is to publish
@@ -275,7 +282,7 @@ even once a memory model is adopted, it can be unclear whether
 <a href="http://www.di.ens.fr/%7Ezappa/readings/c11comp.pdf">common compiler optimizations are actually permitted</a>
 under the model. The hope is that by focusing on sequential and
 Rust-specific issues we can sidestep some of these quandries.</p>
-<a class="header" href="1643-memory-model-strike-team.html#intermediate-documents" id="intermediate-documents"><h2>Intermediate documents</h2></a>
+<a class="header" href="#intermediate-documents" id="intermediate-documents"><h2>Intermediate documents</h2></a>
 <p>Because hammering out the finer points of the memory model is expected
 to possibly take some time, it is important to produce intermediate
 agreements. This section describes some of the documents that may be
@@ -296,7 +303,7 @@ this as the &quot;user's guide&quot;.</li>
 <p>Note that both the &quot;high-level design&quot; and &quot;detailed rules&quot;, once
 considered complete, will be submitted as RFCs and undergo the usual
 final comment period.</p>
-<a class="header" href="1643-memory-model-strike-team.html#key-examples-and-optimizations" id="key-examples-and-optimizations"><h3>Key examples and optimizations</h3></a>
+<a class="header" href="#key-examples-and-optimizations" id="key-examples-and-optimizations"><h3>Key examples and optimizations</h3></a>
 <p>Probably a good first step is to agree on some key examples and
 overall principles. Examples would fall into several categories:</p>
 <ul>
@@ -347,7 +354,7 @@ weight backwards compatibility.</li>
 </ul>
 </li>
 </ul>
-<a class="header" href="1643-memory-model-strike-team.html#high-level-design" id="high-level-design"><h3>High-level design</h3></a>
+<a class="header" href="#high-level-design" id="high-level-design"><h3>High-level design</h3></a>
 <p>The next document to produce is to settle on a high-level
 design. There have already been several approaches floated. This phase
 should build on the examples from before, in that proposals can be
@@ -363,18 +370,18 @@ compiler team to inform which optimizations are legal or illegal.
 However, if changes are later made, the compiler will naturally have
 to be adjusted to match.</p>
 <p>It is expected that the lang team will be <strong>highly involved</strong> in this discussion.</p>
-<a class="header" href="1643-memory-model-strike-team.html#detailed-rules" id="detailed-rules"><h3>Detailed rules</h3></a>
+<a class="header" href="#detailed-rules" id="detailed-rules"><h3>Detailed rules</h3></a>
 <p>Once we've settled on a high-level path -- and, no doubt, while in the
 process of doing so as well -- we can begin to enumerate more detailed
 rules. It is also expected that working out the rules may uncover
 contradictions or other problems that require revisiting the
 high-level design.</p>
-<a class="header" href="1643-memory-model-strike-team.html#lints-and-other-checkers" id="lints-and-other-checkers"><h3>Lints and other checkers</h3></a>
+<a class="header" href="#lints-and-other-checkers" id="lints-and-other-checkers"><h3>Lints and other checkers</h3></a>
 <p>Ideally, the team will also consider whether automated checking for
 conformance is possible. It is not a responsibility of this strike
 team to produce such automated checking, but automated checking is
 naturally a big plus!</p>
-<a class="header" href="1643-memory-model-strike-team.html#repository" id="repository"><h2>Repository</h2></a>
+<a class="header" href="#repository" id="repository"><h2>Repository</h2></a>
 <p>In general, the memory model discussion will be centered on a specific
 repository (perhaps
 <a href="https://github.com/nikomatsakis/rust-memory-model">https://github.com/nikomatsakis/rust-memory-model</a>, but perhaps moved
@@ -383,7 +390,7 @@ discussion: for example, we can open issues on particular questions,
 as well as storing the various proposals and litmus tests in their own
 directories. We'll work out and document the procedures and
 conventions here as we go.</p>
-<a class="header" href="1643-memory-model-strike-team.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The main drawback is that this discussion will require time and energy
 which could be spent elsewhere. The justification for spending time on
 developing the memory model instead is that it is crucial to enable
@@ -396,7 +403,7 @@ the need for rules and guidelines is becoming more acute. We can
 continue to adopt a conservative course, but this risks growing an
 ever larger body of code dependent on the compiler not performing
 aggressive optimization, which may close those doors forever.</p>
-<a class="header" href="1643-memory-model-strike-team.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>Adopt a memory model in one fell swoop:
 <ul>
@@ -409,7 +416,7 @@ aggressive optimization, which may close those doors forever.</p>
 </ul>
 </li>
 </ul>
-<a class="header" href="1643-memory-model-strike-team.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -455,9 +462,6 @@ aggressive optimization, which may close those doors forever.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

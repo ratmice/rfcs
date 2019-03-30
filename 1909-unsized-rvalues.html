@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1909-unsized-rvalues - </title>
+        <title>1909-unsized-rvalues - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1909">rust-lang/rfcs#1909</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/48055">rust-lang/rust#48055</a></li>
 </ul>
-<a class="header" href="1909-unsized-rvalues.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Allow for local variables, function arguments, and some expressions to have an unsized type, and implement it by storing the temporaries in variably-sized allocas.</p>
 <p>Have repeat expressions with a length that captures local variables be such an expression, returning an <code>[T]</code> slice.</p>
 <p>Provide some optimization guarantees that unnecessary temporaries will not create unnecessary allocas.</p>
-<a class="header" href="1909-unsized-rvalues.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>There are 2 motivations for this RFC:</p>
 <ol>
 <li>Passing unsized values, such as trait objects, to functions by value is often desired. Currently, this must be done through a <code>Box&lt;T&gt;</code> with an unnecessary allocation.</li>
@@ -155,8 +162,8 @@
 <ol start="2">
 <li>Allocating a runtime-sized variable on the stack is important for good performance in some use-cases - see RFC #1808, which this is intended to supersede.</li>
 </ol>
-<a class="header" href="1909-unsized-rvalues.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1909-unsized-rvalues.html#unsized-rvalues---language" id="unsized-rvalues---language"><h2>Unsized Rvalues - language</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#unsized-rvalues---language" id="unsized-rvalues---language"><h2>Unsized Rvalues - language</h2></a>
 <p>Remove the rule that requires all locals and rvalues to have a sized type. Instead, require the following:</p>
 <ol>
 <li>The following expressions must always return a Sized type:
@@ -209,7 +216,7 @@ fn example(f: for&lt;'a&gt; FnOnce(&amp;'a X&lt;'a&gt;)) {
     f(x); // aka FnOnce::call_once(f, (x,));
 }
 </code></pre>
-<a class="header" href="1909-unsized-rvalues.html#vla-expressions" id="vla-expressions"><h2>VLA expressions</h2></a>
+<a class="header" href="#vla-expressions" id="vla-expressions"><h2>VLA expressions</h2></a>
 <p>Allow repeat expressions to capture variables from their surrounding environment. If a repeat expression captures such a variable, it has type <code>[T]</code> with the length being evaluated at run-time. If the repeat expression does not capture any variable, the length is evaluated at compile-time. For example:</p>
 <pre><code class="language-Rust">extern &quot;C&quot; {
    fn random() -&gt; usize;
@@ -224,17 +231,17 @@ fn foo(n: usize) {
 </code></pre>
 <p>&quot;captures a variable&quot; - as in RFC #1558 - is used as the condition for making the return be <code>[T]</code> because it is simple, easy to understand, and  introduces no type-checking complications.</p>
 <p>The last error message could have a user-helpful note, for example &quot;extract the length to a local variable if you want a variable-length array&quot;.</p>
-<a class="header" href="1909-unsized-rvalues.html#unsized-rvalues---mir" id="unsized-rvalues---mir"><h2>Unsized Rvalues - MIR</h2></a>
+<a class="header" href="#unsized-rvalues---mir" id="unsized-rvalues---mir"><h2>Unsized Rvalues - MIR</h2></a>
 <p>The way this is implemented in MIR is that operands, rvalues, and temporaries are allowed to be unsized. An unsized operand is always &quot;by-ref&quot;. Unsized rvalues are either a <code>Use</code> or a <code>Repeat</code> and both can be translated easily.</p>
 <p>Unsized locals can never be reassigned within a scope. When first assigning to an unsized local, a stack allocation is made with the correct size.</p>
 <p>MIR construction remains unchanged.</p>
-<a class="header" href="1909-unsized-rvalues.html#guaranteed-temporary-elision" id="guaranteed-temporary-elision"><h2>Guaranteed Temporary Elision</h2></a>
+<a class="header" href="#guaranteed-temporary-elision" id="guaranteed-temporary-elision"><h2>Guaranteed Temporary Elision</h2></a>
 <p>MIR likes to create lots of temporaries for OOE reason. We should optimize them out in a guaranteed way in these cases (FIXME: extend these guarantees to locals aka NRVO?).</p>
 <p>TODO: add description of problem &amp; solution.</p>
-<a class="header" href="1909-unsized-rvalues.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>Passing arguments to functions by value should not be too complicated to teach. I would like VLAs to be mentioned in the book.</p>
 <p>The &quot;guaranteed temporary elimination&quot; rules require more work to teach. It might be better to come up with new rules entirely.</p>
-<a class="header" href="1909-unsized-rvalues.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>In Unsafe code, it is very easy to create unintended temporaries, such as in:</p>
 <pre><code class="language-Rust">unsafe fn poke(ptr: *mut [u8]) { /* .. */ }
 unsafe fn foo(mut a: [u8]) {
@@ -247,8 +254,8 @@ unsafe fn foo(mut a: [u8]) {
 <p>If we make <code>[u8]</code> be <code>Copy</code>, that would be even easier, because even uses of <code>poke(ptr);</code> after the function call could potentially access the supposedly-valid data behind <code>a</code>.</p>
 <p>And even if it is not as easy, it is possible to accidentally create temporaries in safe code.</p>
 <p>Unsized temporaries are dangerous - they can easily cause aborts through stack overflow.</p>
-<a class="header" href="1909-unsized-rvalues.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1909-unsized-rvalues.html#the-bikeshed" id="the-bikeshed"><h2>The bikeshed</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#the-bikeshed" id="the-bikeshed"><h2>The bikeshed</h2></a>
 <p>There are several alternative options for the VLA syntax.</p>
 <ol>
 <li>The RFC choice, <code>[t; φ]</code> has type <code>[T; φ]</code> if <code>φ</code> captures no variables and type <code>[T]</code> if φ captures a variable.
@@ -288,7 +295,7 @@ unsafe fn foo(mut a: [u8]) {
 </ul>
 </li>
 </ol>
-<a class="header" href="1909-unsized-rvalues.html#unsized-adt-expressions" id="unsized-adt-expressions"><h2>Unsized ADT Expressions</h2></a>
+<a class="header" href="#unsized-adt-expressions" id="unsized-adt-expressions"><h2>Unsized ADT Expressions</h2></a>
 <p>Allowing unsized ADT expressions would make unsized structs constructible without using unsafe code, as in:</p>
 <pre><code class="language-Rust">let len_ = s.len();
 let p = Box::new(PascalString {
@@ -297,7 +304,7 @@ let p = Box::new(PascalString {
 });
 </code></pre>
 <p>However, without some way to guarantee that this can be done without allocas, that might be a large footgun.</p>
-<a class="header" href="1909-unsized-rvalues.html#copy-slices" id="copy-slices"><h2>Copy Slices</h2></a>
+<a class="header" href="#copy-slices" id="copy-slices"><h2>Copy Slices</h2></a>
 <p>One somewhat-orthogonal proposal that came up was to make <code>Clone</code> (and therefore <code>Copy</code>) not depend on <code>Sized</code>, and to make <code>[u8]</code> be <code>Copy</code>, by moving the <code>Self: Sized</code> bound from the trait to the methods, i.e. using the following declaration:</p>
 <pre><code class="language-Rust">pub trait Clone {
     fn clone(&amp;self) -&gt; Self where Self: Sized;
@@ -307,7 +314,7 @@ let p = Box::new(PascalString {
 }
 </code></pre>
 <p>That would be a backwards-compatability-breaking change, because today <code>T: Clone + ?Sized</code> (or of course <code>Self: Clone</code> in a trait context, with no implied <code>Self: Sized</code>) implies that <code>T: Sized</code>, but it might be that its impact is small enough to allow (and even if not, it might be worth it for Rust 2.0).</p>
-<a class="header" href="1909-unsized-rvalues.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>How can we mitigate the risk of unintended unsized or large allocas? Note that the problem already exists today with large structs/arrays. A MIR lint against large/variable stack sizes would probably help users avoid these stack overflows. Do we want it in Clippy? rustc?</p>
 <p>How do we handle truely-unsized DSTs when we get them? They can theoretically be passed to functions, but they can never be put in temporaries.</p>
 <p>Accumulative allocas (aka <code>'fn</code> borrows) are beyond the scope of this RFC.</p>
@@ -356,9 +363,6 @@ let p = Box::new(PascalString {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

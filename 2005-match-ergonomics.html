@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2005-match-ergonomics - </title>
+        <title>2005-match-ergonomics - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2005">rust-lang/rfcs#2005</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/42640">rust-lang/rust#42640</a></li>
 </ul>
-<a class="header" href="2005-match-ergonomics.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Better ergonomics for pattern-matching on references.</p>
 <p>Currently, matching on references requires a bit of a dance using
 <code>ref</code> and <code>&amp;</code> patterns:</p>
@@ -167,7 +174,7 @@ match x {
 </code></pre>
 <p>This is accomplished through automatic dereferencing and the introduction of
 default binding modes.</p>
-<a class="header" href="2005-match-ergonomics.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Rust is usually strict when distinguishing between value and reference types. In
 particular, distinguishing borrowed and owned data. However, there is often a
 trade-off between <a href="https://blog.rust-lang.org/2017/03/02/lang-ergonomics.html">explicit-ness and ergonomics</a>,
@@ -228,7 +235,7 @@ match expressions much more ergonomic without sacrificing safety or readability.
 <p>Match ergonomics has been highlighted as an area for improvement in 2017:
 <a href="https://internals.rust-lang.org/t/roadmap-2017-productivity-learning-curve-and-expressiveness/4097">internals thread</a>
 and <a href="https://www.youtube.com/watch?v=pTQxHIzGqFI&amp;list=PLE7tQUdRKcybLShxegjn0xyTTDJeYwEkI&amp;index=1">Rustconf keynote</a>.</p>
-<a class="header" href="2005-match-ergonomics.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>This RFC is a refinement of
 <a href="https://github.com/rust-lang/rfcs/pull/1944">the match ergonomics RFC</a>. Rather
 than using auto-deref and auto-referencing, this RFC introduces <em>default binding
@@ -261,7 +268,7 @@ let foo_ref = &amp;foo;
 // `foo_ref` is dereferenced, and `x` is bound like `ref x`.
 let Foo(x) = foo_ref;
 #}</code></pre></pre>
-<a class="header" href="2005-match-ergonomics.html#definitions" id="definitions"><h2>Definitions</h2></a>
+<a class="header" href="#definitions" id="definitions"><h2>Definitions</h2></a>
 <p>A reference pattern is any pattern which can match a reference without
 coercion. Reference patterns include bindings, wildcards (<code>_</code>),
 <code>const</code>s of reference types, and patterns beginning with <code>&amp;</code> or <code>&amp;mut</code>. All
@@ -274,7 +281,7 @@ to determine how the variable should be bound.
 Currently, the <em>default binding mode</em> is always <code>move</code>.
 Under this RFC, matching a reference with a <em>non-reference pattern</em>, would shift
 the default binding mode to <code>ref</code> or <code>ref mut</code>.</p>
-<a class="header" href="2005-match-ergonomics.html#binding-mode-rules" id="binding-mode-rules"><h2>Binding mode rules</h2></a>
+<a class="header" href="#binding-mode-rules" id="binding-mode-rules"><h2>Binding mode rules</h2></a>
 <p>The <em>default binding mode</em> starts out as <code>move</code>. When matching a pattern, the
 compiler starts from the outside of the pattern and works inwards.
 Each time a reference is matched using a <em>non-reference pattern</em>,
@@ -314,7 +321,7 @@ mutate the underlying value.</p>
 reference with a non-reference pattern.</p>
 <p>The above rules and the examples that follow are drawn from @nikomatsakis's
 <a href="https://github.com/rust-lang/rfcs/pull/1944#issuecomment-296133645">comment proposing this design</a>.</p>
-<a class="header" href="2005-match-ergonomics.html#examples" id="examples"><h2>Examples</h2></a>
+<a class="header" href="#examples" id="examples"><h2>Examples</h2></a>
 <p>No new behavior:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -468,7 +475,7 @@ let Foo(x) = &amp;Foo(3);
 // Desugared:
 let &amp;Foo(ref x) = &amp;Foo(3);
 #}</code></pre></pre>
-<a class="header" href="2005-match-ergonomics.html#backwards-compatibility" id="backwards-compatibility"><h2>Backwards compatibility</h2></a>
+<a class="header" href="#backwards-compatibility" id="backwards-compatibility"><h2>Backwards compatibility</h2></a>
 <p>In order to guarantee backwards-compatibility, this proposal only modifies
 pattern-matching when a reference is matched with a non-reference pattern,
 which is an error today.</p>
@@ -502,16 +509,16 @@ match x[0] { // This will panic, but that doesn't matter for this example
     None =&gt; {}
 }
 #}</code></pre></pre>
-<a class="header" href="2005-match-ergonomics.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>This RFC makes matching on references easier and less error-prone. The
 documentation for matching references should be updated to use the style
 outlined in this RFC. Eventually, documentation and error messages should be
 updated to phase-out <code>ref</code> and <code>ref mut</code> in favor of the new, simpler syntax.</p>
-<a class="header" href="2005-match-ergonomics.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The major downside of this proposal is that it complicates the pattern-matching
 logic. However, doing so allows common cases to &quot;just work&quot;, making the beginner
 experience more straightforward and requiring fewer manual reference gymnastics.</p>
-<a class="header" href="2005-match-ergonomics.html#future-extensions" id="future-extensions"><h1>Future Extensions</h1></a>
+<a class="header" href="#future-extensions" id="future-extensions"><h1>Future Extensions</h1></a>
 <p>In the future, this RFC could be extended to add support for autodereferencing
 custom smart-pointer types using the <code>Deref</code> and <code>DerefMut</code> traits.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -528,7 +535,7 @@ feature are unclear, especially when considering interactions with a
 future <code>DerefMove</code> trait or similar.</p>
 <p>Nevertheless, a followup RFC should be able to backwards-compatibly add support
 for custom autodereferencable types.</p>
-<a class="header" href="2005-match-ergonomics.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ol>
 <li>We could only infer <code>ref</code>, leaving users to manually specify the <code>mut</code> in
 <code>ref mut</code> bindings. This has the advantage of keeping mutability explicit.
@@ -637,9 +644,6 @@ useful in practice, and would add unnecessary complexity to the language.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

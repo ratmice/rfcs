@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0234-variants-namespace - </title>
+        <title>0234-variants-namespace - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,17 +145,17 @@
 <li>RFC PR #: https://github.com/rust-lang/rfcs/pull/234</li>
 <li>Rust Issue #: https://github.com/rust-lang/rust/issues/17323</li>
 </ul>
-<a class="header" href="0234-variants-namespace.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Make enum variants part of both the type and value namespaces.</p>
-<a class="header" href="0234-variants-namespace.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>We might, post-1.0, want to allow using enum variants as types. This would be
 backwards incompatible, because if a module already has a value with the same name
 as the variant in scope, then there will be a name clash.</p>
-<a class="header" href="0234-variants-namespace.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Enum variants would always be part of both the type and value namespaces.
 Variants would not, however, be usable as types - we might want to allow this
 later, but it is out of scope for this RFC.</p>
-<a class="header" href="0234-variants-namespace.html#data" id="data"><h2>Data</h2></a>
+<a class="header" href="#data" id="data"><h2>Data</h2></a>
 <p>Occurrences of name clashes in the Rust repo:</p>
 <ul>
 <li>
@@ -213,15 +220,15 @@ later, but it is out of scope for this RFC.</p>
 </li>
 </ul>
 <p>That's a total of 20 in the compiler and libraries.</p>
-<a class="header" href="0234-variants-namespace.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Prevents the common-ish idiom of having a struct with the same name as a variant
 and then having a value of that struct be the variant's data.</p>
-<a class="header" href="0234-variants-namespace.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Don't do it. That would prevent us making changes to the typed-ness of enums in
 the future. If we accept this RFC, but at some point we decide we never want to
 do anything with enum variants and types, we could always roll back this change
 backwards compatibly.</p>
-<a class="header" href="0234-variants-namespace.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>N/A</p>
 
                     </main>
@@ -267,9 +274,6 @@ backwards compatibly.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

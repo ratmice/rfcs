@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1607-style-rfcs - </title>
+        <title>1607-style-rfcs - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1607">rust-lang/rfcs#1607</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1607-style-rfcs.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes a process for deciding detailed guidelines for code
 formatting, and default settings for Rustfmt. The outcome of the process should
 be an approved formatting style defined by a style guide and enforced by
@@ -151,7 +158,7 @@ formatting issues. A new <a href="https://github.com/rust-lang/rfcs/blob/master/
 will be created to deal with those RFCs. Both the team and repository are
 expected to be temporary. Once the style guide is complete, the team can be
 disbanded and the repository frozen.</p>
-<a class="header" href="1607-style-rfcs.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>There is a need to decide on detailed guidelines for the format of Rust code. A
 uniform, language-wide formatting style makes comprehending new code-bases
 easier and forestalls bikeshedding arguments in teams of Rust users. The utility
@@ -177,8 +184,8 @@ formatting style, but also not detailed enough to specify Rustfmt. This was
 originally developed in its <a href="https://github.com/rust-lang/rust-guidelines">own repository</a>,
 but is now part of the main Rust repository. That seems like a poor venue for
 discussion of these guidelines due to visibility.</p>
-<a class="header" href="1607-style-rfcs.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1607-style-rfcs.html#process" id="process"><h2>Process</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#process" id="process"><h2>Process</h2></a>
 <p>The process for style RFCs will mostly follow the <a href="https://github.com/rust-lang/rfcs">process for other RFCs</a>.
 Anyone may submit an RFC. An overview of the process is:</p>
 <ul>
@@ -201,7 +208,7 @@ comment period (FCP).</li>
 <li>Implementation in Rustfmt can then be finished (including any changes due to
 discussion of the RFC), and defaults are set.</li>
 </ul>
-<a class="header" href="1607-style-rfcs.html#scope-of-the-process" id="scope-of-the-process"><h3>Scope of the process</h3></a>
+<a class="header" href="#scope-of-the-process" id="scope-of-the-process"><h3>Scope of the process</h3></a>
 <p>This process is specifically limited to formatting style guidelines which can be
 enforced by Rustfmt with its current architecture. Guidelines that cannot be
 enforced by Rustfmt without a large amount of work are out of scope, even if
@@ -209,12 +216,12 @@ they only pertain to formatting.</p>
 <p>Note whether Rustfmt should be configurable at all, and if so how configurable
 is a decision that should be dealt with using the formatting RFC process. That
 will be a rather exceptional RFC.</p>
-<a class="header" href="1607-style-rfcs.html#size-of-rfcs" id="size-of-rfcs"><h3>Size of RFCs</h3></a>
+<a class="header" href="#size-of-rfcs" id="size-of-rfcs"><h3>Size of RFCs</h3></a>
 <p>RFCs should be self-contained and coherent, whilst being as small as possible to
 keep discussion focused. For example, an RFC on 'arithmetic and logic
 expressions' is about the right size; 'expressions' would be too big, and
 'addition' would be too small.</p>
-<a class="header" href="1607-style-rfcs.html#when-is-a-guideline-ready-for-rfc" id="when-is-a-guideline-ready-for-rfc"><h3>When is a guideline ready for RFC?</h3></a>
+<a class="header" href="#when-is-a-guideline-ready-for-rfc" id="when-is-a-guideline-ready-for-rfc"><h3>When is a guideline ready for RFC?</h3></a>
 <p>The purpose of the style RFC process is to foster an open discussion about style
 guidelines. Therefore, RFC PRs should be made early rather than late. It is
 expected that there may be more discussion and changes to style RFCs than is
@@ -231,16 +238,16 @@ in the RFC, rather than being submitted as multiple RFCs. In some cases, a style
 may be proposed without wide use (we don't want to discourage innovation),
 however, it should have been used in <em>some</em> real code, rather than just being
 sketched out.</p>
-<a class="header" href="1607-style-rfcs.html#triage" id="triage"><h3>Triage</h3></a>
+<a class="header" href="#triage" id="triage"><h3>Triage</h3></a>
 <p>RFC PRs are triaged by the style team. An RFC may be closed during triage (with
 feedback for the author) if the style team think it is not specified in enough
 detail, has too narrow or broad scope, or is not appropriate in some way (e.g.,
 applies to more than just formatting). Otherwise, the PR will be assigned a
 shepherd as for other RFCs.</p>
-<a class="header" href="1607-style-rfcs.html#fcp" id="fcp"><h3>FCP</h3></a>
+<a class="header" href="#fcp" id="fcp"><h3>FCP</h3></a>
 <p>FCP will last for two weeks (assuming the team decide to meet every two weeks)
 and will be announced in the style team sub-team report.</p>
-<a class="header" href="1607-style-rfcs.html#decision-and-post-decision-process" id="decision-and-post-decision-process"><h3>Decision and post-decision process</h3></a>
+<a class="header" href="#decision-and-post-decision-process" id="decision-and-post-decision-process"><h3>Decision and post-decision process</h3></a>
 <p>The style team will make the ultimate decision on accepting or closing a style
 RFC PR. Decisions should be by consensus. Most discussion should take place on
 the PR comment thread, a decision should ideally be made when consensus is
@@ -254,7 +261,7 @@ filed on the Rust repository.</p>
 interested in working on the implementation for an 'active' RFC, but cannot
 determine if someone else is already working on it, feel free to ask (e.g. by
 leaving a comment on the associated issue).</p>
-<a class="header" href="1607-style-rfcs.html#the-fmt-rfcs-repository" id="the-fmt-rfcs-repository"><h2>The fmt-rfcs repository</h2></a>
+<a class="header" href="#the-fmt-rfcs-repository" id="the-fmt-rfcs-repository"><h2>The fmt-rfcs repository</h2></a>
 <p>The form of the fmt-rfcs repository will follow the rfcs repository. Accepted
 RFCs will live in a <code>text</code> directory, the <code>README.md</code> will include information
 taken from this RFC, there will be an RFC template in the root of the
@@ -310,7 +317,7 @@ including the RFC template. Note that typically there should be more discussion
 on an issue before submitting an RFC PR.</p>
 <p>The repository should be updated as this RFC develops, and moved to the rust-lang
 GitHub organisation if this RFC is accepted.</p>
-<a class="header" href="1607-style-rfcs.html#the-style-team" id="the-style-team"><h2>The style team</h2></a>
+<a class="header" href="#the-style-team" id="the-style-team"><h2>The style team</h2></a>
 <p>The style <a href="https://github.com/rust-lang/rfcs/blob/master/text/1068-rust-governance.md#subteams">sub-team</a>
 will be responsible for handling style RFCs and making decisions related to
 code style and formatting.</p>
@@ -331,7 +338,7 @@ community members who are active in the fmt-rfcs repository (i.e., submitting
 and constructively commenting on RFCs).</p>
 <p>There will be a dedicated irc channel for discussion on formatting issues:
 <code>#rust-style</code>.</p>
-<a class="header" href="1607-style-rfcs.html#style-guide" id="style-guide"><h2>Style guide</h2></a>
+<a class="header" href="#style-guide" id="style-guide"><h2>Style guide</h2></a>
 <p>The <a href="https://github.com/rust-lang/rust/tree/master/src/doc/style">existing style guide</a>
 will be split into two guides: one dealing with API design and similar issues
 which will be managed by the libs team, and one dealing with formatting issues
@@ -342,7 +349,7 @@ the style guide.</p>
 <p>When RFCs are accepted the style guide may need to be updated. Towards the end
 of the process, the style team should audit and edit the guide to ensure it is a
 coherent document.</p>
-<a class="header" href="1607-style-rfcs.html#material-goals" id="material-goals"><h2>Material goals</h2></a>
+<a class="header" href="#material-goals" id="material-goals"><h2>Material goals</h2></a>
 <p>Hopefully, the style guideline process will have limited duration, one year
 seems reasonable. After that time, style guidelines for new syntax could be
 included with regular RFCs, or the fmt-rfcs repository could be maintained in a
@@ -354,11 +361,11 @@ decision made on how configurable Rustfmt should be, and an agreed set of
 default options. The formatting style guide in the Rust repository should be a
 more human-friendly source of formatting guidelines, and should be in sync with
 the fmt-rfcs repo.</p>
-<a class="header" href="1607-style-rfcs.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This RFC introduces more process and bureaucracy, and requires more meetings for
 some core Rust contributors. Precious time and energy will need to be devoted to
 discussions.</p>
-<a class="header" href="1607-style-rfcs.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Benevolent dictator - a single person dictates style rules which will be
 followed without question by the community. This seems to work for Go, I suspect
 it will not work for Rust.</p>
@@ -381,7 +388,7 @@ while discussing an RFC, that are not important to include in a final guide.</p>
 Saves on a little bureaucracy. Candidate teams would be language and tools.
 However, the language team has very little free bandwidth, and the tools team is
 probably not broad enough to effectively handle the style decisions.</p>
-<a class="header" href="1607-style-rfcs.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 
                     </main>
 
@@ -426,9 +433,6 @@ probably not broad enough to effectively handle the style decisions.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

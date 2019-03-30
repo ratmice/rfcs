@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1560-name-resolution - </title>
+        <title>1560-name-resolution - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1560">rust-lang/rfcs#1560</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/35120">rust-lang/rust#35120</a></li>
 </ul>
-<a class="header" href="1560-name-resolution.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Some internal and language-level changes to name resolution.</p>
 <p>Internally, name resolution will be split into two parts - import resolution and
 name lookup. Import resolution is moved forward in time to happen in the same
@@ -153,7 +160,7 @@ algorithm.</p>
 flexibility in the name resolution rules, especially around globs and shadowing.</p>
 <p>There is an implementation of the language changes in
 <a href="https://github.com/rust-lang/rust/pull/32213">PR #32213</a>.</p>
-<a class="header" href="1560-name-resolution.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Naming and importing macros currently works very differently to naming and
 importing any other item. It would be impossible to use the same rules,
 since macro expansion happens before name resolution in the compilation process.
@@ -162,7 +169,7 @@ in the same phase, thus allowing macros to use the Rust module system properly.<
 <p>At the same time, we should be able to accept more Rust programs by tweaking the
 current rules around imports and name shadowing. This should make programming
 using imports easier.</p>
-<a class="header" href="1560-name-resolution.html#some-issues-in-rusts-name-resolution" id="some-issues-in-rusts-name-resolution"><h2>Some issues in Rust's name resolution</h2></a>
+<a class="header" href="#some-issues-in-rusts-name-resolution" id="some-issues-in-rusts-name-resolution"><h2>Some issues in Rust's name resolution</h2></a>
 <p>Whilst name resolution is sometimes considered a simple part of the compiler,
 there are some details in Rust which make it tricky to properly specify and
 implement. Some of these may seem obvious, but the distinctions will be
@@ -212,12 +219,12 @@ always (unless explicitly opted-out) nameable. The prelude includes macros.
 Names in the prelude can be shadowed by any other names.</p>
 </li>
 </ul>
-<a class="header" href="1560-name-resolution.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1560-name-resolution.html#guiding-principles" id="guiding-principles"><h2>Guiding principles</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#guiding-principles" id="guiding-principles"><h2>Guiding principles</h2></a>
 <p>We would like the following principles to hold. There may be edge cases where
 they do not, but we would like these to be as small as possible (and prefer they
 don't exist at all).</p>
-<a class="header" href="1560-name-resolution.html#avoid-time-travel-ambiguities-or-different-results-of-resolution-if-names" id="avoid-time-travel-ambiguities-or-different-results-of-resolution-if-names"><h4>Avoid 'time-travel' ambiguities, or different results of resolution if names</h4></a>
+<a class="header" href="#avoid-time-travel-ambiguities-or-different-results-of-resolution-if-names" id="avoid-time-travel-ambiguities-or-different-results-of-resolution-if-names"><h4>Avoid 'time-travel' ambiguities, or different results of resolution if names</h4></a>
 <p>are resolved in different orders.</p>
 <p>Due to macro expansion, it is possible for a name to be resolved and then to
 become ambiguous, or (with rules formulated in a certain way) for a name to be
@@ -231,7 +238,7 @@ binding then it should always (i.e., at any other stage of any other expansion
 series) resolve to that binding, and if resolving a name produces an error
 (n.b., distinct from not being able to resolve), it should always produce an
 error.</p>
-<a class="header" href="1560-name-resolution.html#avoid-errors-due-to-the-resolver-being-stuck" id="avoid-errors-due-to-the-resolver-being-stuck"><h4>Avoid errors due to the resolver being stuck.</h4></a>
+<a class="header" href="#avoid-errors-due-to-the-resolver-being-stuck" id="avoid-errors-due-to-the-resolver-being-stuck"><h4>Avoid errors due to the resolver being stuck.</h4></a>
 <p>Errors with concrete causes and explanations are easier for the user to
 understand and to correct. If an error is caused by name resolution getting
 stuck, rather than by a concrete problem, this is hard to explain or correct.</p>
@@ -239,24 +246,24 @@ stuck, rather than by a concrete problem, this is hard to explain or correct.</p
 expanded before a macro is, but the macro can only be named via that glob
 import, then there is an obvious resolution that can't be reached due to our
 ordering constraints.</p>
-<a class="header" href="1560-name-resolution.html#the-order-of-declarations-of-items-should-be-irrelevant" id="the-order-of-declarations-of-items-should-be-irrelevant"><h4>The order of declarations of items should be irrelevant.</h4></a>
+<a class="header" href="#the-order-of-declarations-of-items-should-be-irrelevant" id="the-order-of-declarations-of-items-should-be-irrelevant"><h4>The order of declarations of items should be irrelevant.</h4></a>
 <p>I.e., names should be able to be used before they are declared. Note that this
 clearly does not hold for declarations of variables in statements inside
 function bodies.</p>
-<a class="header" href="1560-name-resolution.html#macros-should-be-manually-expandable" id="macros-should-be-manually-expandable"><h4>Macros should be manually expandable.</h4></a>
+<a class="header" href="#macros-should-be-manually-expandable" id="macros-should-be-manually-expandable"><h4>Macros should be manually expandable.</h4></a>
 <p>Compiling a program should have the same result before and after expanding a
 macro 'by hand', so long as hygiene is accounted for.</p>
-<a class="header" href="1560-name-resolution.html#glob-imports-should-be-manually-expandable" id="glob-imports-should-be-manually-expandable"><h4>Glob imports should be manually expandable.</h4></a>
+<a class="header" href="#glob-imports-should-be-manually-expandable" id="glob-imports-should-be-manually-expandable"><h4>Glob imports should be manually expandable.</h4></a>
 <p>A programmer should be able to replace a glob import with a list import that
 imports any names imported by the glob and used in the current scope, without
 changing name resolution behaviour.</p>
-<a class="header" href="1560-name-resolution.html#visibility-should-not-affect-name-resolution" id="visibility-should-not-affect-name-resolution"><h4>Visibility should not affect name resolution.</h4></a>
+<a class="header" href="#visibility-should-not-affect-name-resolution" id="visibility-should-not-affect-name-resolution"><h4>Visibility should not affect name resolution.</h4></a>
 <p>Clearly, visibility affects whether a name can be used or not. However, it
 should not affect the mechanics of name resolution. I.e., changing a name from
 public to private (or vice versa), should not cause more or fewer name
 resolution errors (it may of course cause more or fewer accessibility errors).</p>
-<a class="header" href="1560-name-resolution.html#changes-to-name-resolution-rules" id="changes-to-name-resolution-rules"><h2>Changes to name resolution rules</h2></a>
-<a class="header" href="1560-name-resolution.html#multiple-unused-imports" id="multiple-unused-imports"><h3>Multiple unused imports</h3></a>
+<a class="header" href="#changes-to-name-resolution-rules" id="changes-to-name-resolution-rules"><h2>Changes to name resolution rules</h2></a>
+<a class="header" href="#multiple-unused-imports" id="multiple-unused-imports"><h3>Multiple unused imports</h3></a>
 <p>A name may be imported multiple times, it is only a name resolution error if
 that name is used. E.g.,</p>
 <pre><code>mod foo {
@@ -274,7 +281,7 @@ mod baz {
 </code></pre>
 <p>In this example, adding a use of <code>Qux</code> in <code>baz</code> would cause a name resolution
 error.</p>
-<a class="header" href="1560-name-resolution.html#multiple-imports-of-the-same-binding" id="multiple-imports-of-the-same-binding"><h3>Multiple imports of the same binding</h3></a>
+<a class="header" href="#multiple-imports-of-the-same-binding" id="multiple-imports-of-the-same-binding"><h3>Multiple imports of the same binding</h3></a>
 <p>A name may be imported multiple times and used if both names bind to the same
 item. E.g.,</p>
 <pre><code>mod foo {
@@ -292,7 +299,7 @@ mod baz {
     fn f(q: Qux) {}
 }
 </code></pre>
-<a class="header" href="1560-name-resolution.html#non-public-imports" id="non-public-imports"><h3>non-public imports</h3></a>
+<a class="header" href="#non-public-imports" id="non-public-imports"><h3>non-public imports</h3></a>
 <p>Currently <code>use</code> and <code>pub use</code> items are treated differently. Non-public imports
 will be treated in the same way as public imports, so they may be referenced
 from modules which have access to them. E.g.,</p>
@@ -308,7 +315,7 @@ mod bar {
     }
 }
 </code></pre>
-<a class="header" href="1560-name-resolution.html#glob-imports-of-accessible-but-not-public-names" id="glob-imports-of-accessible-but-not-public-names"><h3>Glob imports of accessible but not public names</h3></a>
+<a class="header" href="#glob-imports-of-accessible-but-not-public-names" id="glob-imports-of-accessible-but-not-public-names"><h3>Glob imports of accessible but not public names</h3></a>
 <p>Glob imports will import all accessible names, not just public ones. E.g.,</p>
 <pre><code>struct Qux;
 
@@ -333,7 +340,7 @@ mod foo {
 backwards compatible.</p>
 <p>Note that in combination with the above rule, this means non-public imports are
 imported by globs where they are private but accessible.</p>
-<a class="header" href="1560-name-resolution.html#explicit-names-may-shadow-implicit-names" id="explicit-names-may-shadow-implicit-names"><h3>Explicit names may shadow implicit names</h3></a>
+<a class="header" href="#explicit-names-may-shadow-implicit-names" id="explicit-names-may-shadow-implicit-names"><h3>Explicit names may shadow implicit names</h3></a>
 <p>Here, an implicit name means a name imported via a glob or inherited from an
 outer scope (as opposed to being declared or imported directly in an inner scope).</p>
 <p>An explicit name may shadow an implicit name without causing a name
@@ -439,7 +446,7 @@ as a compromise between these two, we could emit an error if the name is in the
 type or macro namespace (a name in the value namespace can never cause problems).</p>
 <p>This change is discussed in <a href="https://github.com/rust-lang/rust/issues/31337">issue 31337</a>
 and on this RFC PR's comment thread.</p>
-<a class="header" href="1560-name-resolution.html#re-exports-namespaces-and-visibility" id="re-exports-namespaces-and-visibility"><h3>Re-exports, namespaces, and visibility.</h3></a>
+<a class="header" href="#re-exports-namespaces-and-visibility" id="re-exports-namespaces-and-visibility"><h3>Re-exports, namespaces, and visibility.</h3></a>
 <p>(This is something of a clarification point, rather than explicitly new behaviour.
 See also discussion on <a href="https://github.com/rust-lang/rust/issues/31783">issue 31783</a>).</p>
 <p>An import (<code>use</code>) or re-export (<code>pub use</code>) imports a name in all available
@@ -459,7 +466,7 @@ it is declared privately.</li>
 <p>For a glob re-export, there is an error if there are no public items in any
 namespace. Otherwise private names are imported and public names are re-exported
 on a per-namespace basis (i.e., following the above rules).</p>
-<a class="header" href="1560-name-resolution.html#changes-to-the-implementation" id="changes-to-the-implementation"><h2>Changes to the implementation</h2></a>
+<a class="header" href="#changes-to-the-implementation" id="changes-to-the-implementation"><h2>Changes to the implementation</h2></a>
 <p>Note: below I talk about &quot;the binding table&quot;, this is sort of hand-waving. I'm
 envisaging a sets-of-scopes system where there is effectively a single, global
 binding table. However, the details of that are beyond the scope of this RFC.
@@ -596,7 +603,7 @@ macros at this point.</p>
 <p>Note that the rules in the previous section have been carefully formulated to
 ensure that this check is sufficient to prevent temporal ambiguities. There are
 many slight variations for which this check would not be enough.</p>
-<a class="header" href="1560-name-resolution.html#privacy" id="privacy"><h3>Privacy</h3></a>
+<a class="header" href="#privacy" id="privacy"><h3>Privacy</h3></a>
 <p>In order to resolve imports (and in the future for macro privacy), we must be
 able to decide if names are accessible. This requires doing privacy checking as
 required during parsing/expansion/import resolution. We can keep the current
@@ -604,20 +611,20 @@ algorithm, but check accessibility on demand, rather than as a separate pass.</p
 <p>During macro expansion, once a name is resolvable, then we can safely perform
 privacy checking, because parsing and macro expansion will never remove items,
 nor change the module structure of an item once it has been expanded.</p>
-<a class="header" href="1560-name-resolution.html#metadata" id="metadata"><h3>Metadata</h3></a>
+<a class="header" href="#metadata" id="metadata"><h3>Metadata</h3></a>
 <p>When a crate is packed into metadata, we must also include the binding table. We
 must include private entries due to macros that the crate might export. We don't
 need data for function bodies. For functions which are serialised for
 inlining/monomorphisation, we should include local data (although it's probably
 better to serialise the HIR or MIR, then the local bindings are unnecessary).</p>
-<a class="header" href="1560-name-resolution.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It's a lot of work and name resolution is complex, therefore there is scope for
 introducing bugs.</p>
 <p>The macro changes are not backwards compatible, which means having a macro
 system 2.0. If users are reluctant to use that, we will have two macro systems
 forever.</p>
-<a class="header" href="1560-name-resolution.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1560-name-resolution.html#naming-rules" id="naming-rules"><h2>Naming rules</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#naming-rules" id="naming-rules"><h2>Naming rules</h2></a>
 <p>We could take a subset of the shadowing changes (or none at all), whilst still
 changing the implementation of name resolution. In particular, we might want to
 discard the explicit/glob shadowing rule change, or only allow items, not
@@ -643,13 +650,13 @@ mod boz {
     }
 }
 </code></pre>
-<a class="header" href="1560-name-resolution.html#import-resolution-algorithm" id="import-resolution-algorithm"><h2>Import resolution algorithm</h2></a>
+<a class="header" href="#import-resolution-algorithm" id="import-resolution-algorithm"><h2>Import resolution algorithm</h2></a>
 <p>Rather than lookup names for imports during the fixpoint iteration, one could
 save links between imports and definitions. When lookup is required (for macros,
 or later in the compiler), these links are followed to find a name, rather than
 having the name being immediately available.</p>
-<a class="header" href="1560-name-resolution.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="1560-name-resolution.html#name-lookup" id="name-lookup"><h2>Name lookup</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#name-lookup" id="name-lookup"><h2>Name lookup</h2></a>
 <p>The name resolution phase would be replaced by a cut-down name lookup phase,
 where the binding tables generated during expansion are used to lookup names in
 the AST.</p>
@@ -658,12 +665,12 @@ the lowering from AST to HIR, so the HIR is a name-resolved data structure. Or,
 name lookup could be done lazily (probably with some caching) so no tables
 binding names to definitions are kept. I prefer the first option, but this is
 not really in scope for this RFC.</p>
-<a class="header" href="1560-name-resolution.html#pubrestricted" id="pubrestricted"><h2><code>pub(restricted)</code></h2></a>
+<a class="header" href="#pubrestricted" id="pubrestricted"><h2><code>pub(restricted)</code></h2></a>
 <p>Where this RFC touches on the privacy system there are some edge cases involving
 the <code>pub(path)</code> form of restricted visibility. I expect the precise solutions
 will be settled during implementation and this RFC should be amended to reflect
 those choices.</p>
-<a class="header" href="1560-name-resolution.html#references" id="references"><h1>References</h1></a>
+<a class="header" href="#references" id="references"><h1>References</h1></a>
 <ul>
 <li><a href="https://github.com/nikomatsakis/rust-name-resolution-algorithm">Niko's prototype</a></li>
 <li><a href="http://ncameron.org/blog/name-resolution/">Blog post</a>, includes details about
@@ -713,9 +720,6 @@ how the name resolution algorithm interacts with sets of scopes hygiene.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

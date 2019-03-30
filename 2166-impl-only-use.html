@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2166-impl-only-use - </title>
+        <title>2166-impl-only-use - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2166">rust-lang/rfcs#2166</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/48216">rust-lang/rust#48216</a></li>
 </ul>
-<a class="header" href="2166-impl-only-use.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>The <code>use …::{… as …}</code> syntax can now accept <code>_</code> as alias to a trait to only import the
 implementations of such a trait.</p>
-<a class="header" href="2166-impl-only-use.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Sometimes, we might need to <code>use</code> a trait to be able to use its methods on a type in our code.
 However, we might also not want to import the trait symbol (because we redefine it, for instance):</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -201,12 +208,12 @@ refer to that trait, but we want the impls:</p>
 #fn main() {
 use zoo::Zoo as _;
 #}</code></pre></pre>
-<a class="header" href="2166-impl-only-use.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>Qualifying a <code>use</code> with <code>_</code> on a trait imports the trait’s <code>impl</code>s but not the symbol directly. It’s
 handy if you don’t use the trait’s symbol in your type and if you redefine the symbol to something
 else.</p>
 <p>The <code>_</code> means that you “don’t care about the name rustc will use for that qualified <code>use</code>“.</p>
-<a class="header" href="2166-impl-only-use.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p><code>use Trait as _</code> needs to desugar into <code>use Trait as SomeGenSym</code>. With this scheme, global imports
 and exports can work properly with such items, i.e. import / re-export them.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -231,14 +238,14 @@ crates:</p>
 #fn main() {
 extern crate my_crate as _;
 #}</code></pre></pre>
-<a class="header" href="2166-impl-only-use.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This RFC tries to solve a very specific problem (when you <em>must</em> alias a trait use). It’s just a
 nit to make the syntax more <em>“rust-ish”</em> (it’s very easy to think such a thing would work given the
 way <code>_</code> works pretty much everywhere else).</p>
-<a class="header" href="2166-impl-only-use.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>The simple alternative is to let the programmer give a name to the qualified import, which is not a
 big deal, but is a bit ugly.</p>
-<a class="header" href="2166-impl-only-use.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 
                     </main>
 
@@ -283,9 +290,6 @@ big deal, but is a bit ugly.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

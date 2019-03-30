@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1156-adjust-default-object-bounds - </title>
+        <title>1156-adjust-default-object-bounds - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1156">rust-lang/rfcs#1156</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/26438">rust-lang/rust#26438</a></li>
 </ul>
-<a class="header" href="1156-adjust-default-object-bounds.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Adjust the object default bound algorithm for cases like <code>&amp;'x Box&lt;Trait&gt;</code> and <code>&amp;'x Arc&lt;Trait&gt;</code>. The existing algorithm would default
 to <code>&amp;'x Box&lt;Trait+'x&gt;</code>. The proposed change is to default to <code>&amp;'x Box&lt;Trait+'static&gt;</code>.</p>
 <p>Note: This is a <strong>BREAKING CHANGE</strong>. The change has
@@ -155,8 +162,8 @@ in the future anyway.</li>
 <li>In Rust 1.3, the change will be made permanent. Any code that has
 not been updated by that time will break.</li>
 </ul>
-<a class="header" href="1156-adjust-default-object-bounds.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<p>When we instituted default object bounds, <a href="0599-default-object-bound.md">RFC 599</a> specified that
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<p>When we instituted default object bounds, <a href="0599-default-object-bound.html">RFC 599</a> specified that
 <code>&amp;'x Box&lt;Trait&gt;</code> (and <code>&amp;'x mut Box&lt;Trait&gt;</code>) should expand to <code>&amp;'x Box&lt;Trait+'x&gt;</code> (and <code>&amp;'x mut Box&lt;Trait+'x&gt;</code>). This is in contrast to a
 <code>Box</code> type that appears outside of a reference (e.g., <code>Box&lt;Trait&gt;</code>),
 which defaults to using <code>'static</code> (<code>Box&lt;Trait+'static&gt;</code>). This
@@ -180,7 +187,7 @@ is a reference (e.g., <code>&amp;'r Trait</code>), then the default is the lifet
 user-declared type, and the default is derived from the declaration:
 if the type declares a lifetime bound, then this lifetime bound is
 used, otherwise <code>'static</code> is used. This means that (e.g.) <code>&amp;'r Box&lt;Trait&gt;</code> would default to <code>&amp;'r Box&lt;Trait+'static&gt;</code>, and <code>&amp;'r Ref&lt;'q, Trait&gt;</code> (from <code>RefCell</code>) would default to <code>&amp;'r Ref&lt;'q, Trait+'q&gt;</code>.</p>
-<a class="header" href="1156-adjust-default-object-bounds.html#problems-with-the-current-default" id="problems-with-the-current-default"><h3>Problems with the current default.</h3></a>
+<a class="header" href="#problems-with-the-current-default" id="problems-with-the-current-default"><h3>Problems with the current default.</h3></a>
 <p><strong>Same types, different expansions.</strong> One problem is fairly
 predictable: the current default means that identical types differ in
 their interpretation based on where they appear. This is something we
@@ -219,14 +226,14 @@ to. In contrast, the current rules are more subtle, since objects in
 the heap may still accept borrowed data, if you have a reference to
 the box.</p>
 <p><strong>Poor interaction with the dropck rules.</strong> When implementing the
-newer dropck rules specified by <a href="0769-sound-generic-drop.md">RFC 769</a>, we found a
+newer dropck rules specified by <a href="0769-sound-generic-drop.html">RFC 769</a>, we found a
 <a href="https://github.com/rust-lang/rust/pull/25212#issuecomment-100244929">rather subtle problem</a> that would arise with the current defaults.
 The precise problem is spelled out in appendix below, but the TL;DR is
 that if you wish to pass an array of boxed objects, the current
 defaults can be actively harmful, and hence force you to specify
 explicit lifetimes, whereas the newer defaults do something
 reasonable.</p>
-<a class="header" href="1156-adjust-default-object-bounds.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The rules for user-defined types from RFC 599 are altered as follows
 (text that is not changed is italicized):</p>
 <ul>
@@ -253,7 +260,7 @@ then the default is cleared and explicit lifetiem bounds are
 required. There are no known examples of this in the standard
 library as this situation arises rarely in practice.</em></li>
 </ul>
-<a class="header" href="1156-adjust-default-object-bounds.html#timing-and-breaking-change-implications" id="timing-and-breaking-change-implications"><h1>Timing and breaking change implications</h1></a>
+<a class="header" href="#timing-and-breaking-change-implications" id="timing-and-breaking-change-implications"><h1>Timing and breaking change implications</h1></a>
 <p>This is a breaking change, and hence it behooves us to evaluate the
 impact and describe a procedure for making the change as painless as
 possible. One nice propery of this change is that it only affects
@@ -286,14 +293,14 @@ in the future anyway.
 <li>In Rust 1.3, the change will be made permanent. Any code that has
 not been updated by that time will break.</li>
 </ul>
-<a class="header" href="1156-adjust-default-object-bounds.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The primary drawback is that this is a breaking change, as discussed
 in the previous section.</p>
-<a class="header" href="1156-adjust-default-object-bounds.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Keep the current design, with its known drawbacks.</p>
-<a class="header" href="1156-adjust-default-object-bounds.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
-<a class="header" href="1156-adjust-default-object-bounds.html#appendix-details-of-the-dropck-problem" id="appendix-details-of-the-dropck-problem"><h1>Appendix: Details of the dropck problem</h1></a>
+<a class="header" href="#appendix-details-of-the-dropck-problem" id="appendix-details-of-the-dropck-problem"><h1>Appendix: Details of the dropck problem</h1></a>
 <p>This appendix goes into detail about the sticky interaction with
 dropck that was uncovered. The problem arises if you have a function
 that wishes to take a mutable slice of objects, like so:</p>
@@ -392,9 +399,6 @@ to contain borrowed data&quot;.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

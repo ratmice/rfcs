@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0601-replace-be-with-become - </title>
+        <title>0601-replace-be-with-become - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,9 +145,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/601/">rust-lang/rfcs#601</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/22141">rust-lang/rust#22141</a></li>
 </ul>
-<a class="header" href="0601-replace-be-with-become.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Rename the <code>be</code> reserved keyword to <code>become</code>.</p>
-<a class="header" href="0601-replace-be-with-become.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>A keyword needs to be reserved to support guaranteed tail calls in a backward-compatible way. Currently the keyword reserved for this purpose is <code>be</code>, but the <code>become</code> alternative was proposed in
 the old <a href="https://github.com/rust-lang/rfcs/pull/81">RFC</a> for guaranteed tail calls, which is now postponed and tracked in <a href="https://github.com/rust-lang/rfcs/issues/271">PR#271</a>.</p>
 <p>Some advantages of the <code>become</code> keyword are:</p>
@@ -150,14 +157,14 @@ the old <a href="https://github.com/rust-lang/rfcs/pull/81">RFC</a> for guarante
 </ul>
 <p>The expected result is that users will be unable to use <code>become</code> as identifier, ensuring that it will be available for future language extensions.</p>
 <p>This RFC is not about implementing tail call elimination, only on whether the <code>be</code> keyword should be replaced with <code>become</code>.</p>
-<a class="header" href="0601-replace-be-with-become.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Rename the <code>be</code> reserved word to <code>become</code>. This is a very simple find-and-replace.</p>
-<a class="header" href="0601-replace-be-with-become.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Some code might be using <code>become</code> as an identifier.</p>
-<a class="header" href="0601-replace-be-with-become.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The main alternative is to do nothing, i.e. to keep the <code>be</code> keyword reserved for supporting guaranteed tail calls in a backward-compatible way. Using <code>become</code> as the keyword for tail calls would not be backward-compatible because it would introduce a new keyword, which might have been used in valid code.</p>
 <p>Another option is to add the <code>become</code> keyword, without removing <code>be</code>. This would have the same drawbacks as the current proposal (might break existing code), but it would also guarantee that the <code>become</code> keyword is available in the future.</p>
-<a class="header" href="0601-replace-be-with-become.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 
                     </main>
 
@@ -202,9 +209,6 @@ the old <a href="https://github.com/rust-lang/rfcs/pull/81">RFC</a> for guarante
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

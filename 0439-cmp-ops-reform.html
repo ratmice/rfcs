@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0439-cmp-ops-reform - </title>
+        <title>0439-cmp-ops-reform - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/439">rust-lang/rfcs#439</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/19148">rust-lang/rfcs#19148</a></li>
 </ul>
-<a class="header" href="0439-cmp-ops-reform.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes a number of design improvements to the <code>cmp</code> and
 <code>ops</code> modules in preparation for 1.0. The impetus for these
 improvements, besides the need for stabilization, is that we've added
@@ -152,7 +159,7 @@ traits are no longer needed.</li>
 <li>Add <code>IndexSet</code> to better support maps.</li>
 <li>Clarify ownership semantics throughout.</li>
 </ul>
-<a class="header" href="0439-cmp-ops-reform.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The operator and comparison traits play a double role: they are lang
 items known to the compiler, but are also library APIs that need to be
 stabilized.</p>
@@ -164,7 +171,7 @@ pointers). These are all things that impact the ideal design of the traits.</p>
 at 1.0, there is enough information to make final decisions about the
 construction of the comparison and operator traits. That's what this
 RFC aims to do.</p>
-<a class="header" href="0439-cmp-ops-reform.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The traits in <code>cmp</code> and <code>ops</code> can be broken down into several
 categories, and to keep things manageable this RFC discusses each
 category separately:</p>
@@ -179,10 +186,10 @@ category separately:</p>
 <li>Indexing and slicing: <code>Index</code>, <code>IndexMut</code>, <code>Slice</code>, <code>SliceMut</code></li>
 <li>Special traits: <code>Deref</code>, <code>DerefMut</code>, <code>Drop</code>, <code>Fn</code>, <code>FnMut</code>, <code>FnOnce</code></li>
 </ul>
-<a class="header" href="0439-cmp-ops-reform.html#basic-operators" id="basic-operators"><h2>Basic operators</h2></a>
+<a class="header" href="#basic-operators" id="basic-operators"><h2>Basic operators</h2></a>
 <p>The basic operators include arithmetic and bitwise notation with both
 unary and binary operators.</p>
-<a class="header" href="0439-cmp-ops-reform.html#current-design" id="current-design"><h3>Current design</h3></a>
+<a class="header" href="#current-design" id="current-design"><h3>Current design</h3></a>
 <p>Here are two example traits, one unary and one binary, for basic operators:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -200,7 +207,7 @@ and <code>rhs</code> are taken by reference, and the compiler introduce <em>sile
 uses of <code>&amp;</code> for the operands.</p>
 <p>The traits also take <code>Result</code> as an
 <a href="https://github.com/rust-lang/rfcs/pull/195"><em>input</em></a> type.</p>
-<a class="header" href="0439-cmp-ops-reform.html#proposed-design" id="proposed-design"><h3>Proposed design</h3></a>
+<a class="header" href="#proposed-design" id="proposed-design"><h3>Proposed design</h3></a>
 <p>This RFC proposes to make <code>Result</code> an associated (output) type, and to
 make the traits work by value:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -266,9 +273,9 @@ impl&lt;'a, 'b&gt; Add&lt;&amp;'a str&gt; for &amp;'b str {
     fn add(self, rhs: &amp;'a str) -&gt; String { ... }
 }
 #}</code></pre></pre>
-<a class="header" href="0439-cmp-ops-reform.html#comparison-traits" id="comparison-traits"><h2>Comparison traits</h2></a>
+<a class="header" href="#comparison-traits" id="comparison-traits"><h2>Comparison traits</h2></a>
 <p>The comparison traits provide overloads for operators like <code>==</code> and <code>&gt;</code>.</p>
-<a class="header" href="0439-cmp-ops-reform.html#current-design-1" id="current-design-1"><h3>Current design</h3></a>
+<a class="header" href="#current-design-1" id="current-design-1"><h3>Current design</h3></a>
 <p>Comparisons are subtle, because some types (notably <code>f32</code> and <code>f64</code>)
 do not actually provide full equivalence relations or total
 orderings. The current design therefore splits the comparison traits
@@ -310,7 +317,7 @@ any operator sugar. (It was introduced in part to help solve some
 problems in map APIs, which are now resolved in a different way.)</p>
 <p>The comparison traits all work by reference, and the compiler inserts
 implicit uses of <code>&amp;</code> to make this ergonomic.</p>
-<a class="header" href="0439-cmp-ops-reform.html#proposed-design-1" id="proposed-design-1"><h3>Proposed design</h3></a>
+<a class="header" href="#proposed-design-1" id="proposed-design-1"><h3>Proposed design</h3></a>
 <p>This RFC proposes to follow largely the same design strategy, but to
 remove <code>Equiv</code> and instead generalize the traits via multidispatch:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -348,9 +355,9 @@ implement or derive <code>Eq</code>/<code>Ord</code>, which is the common case. 
 likely improve e.g. <code>#[deriving(Ord)]</code> to automatically derive
 <code>PartialOrd</code>. See Alternatives for a more radical design (and the
 reasons that it's not feasible right now.)</p>
-<a class="header" href="0439-cmp-ops-reform.html#indexing-and-slicing" id="indexing-and-slicing"><h2>Indexing and slicing</h2></a>
+<a class="header" href="#indexing-and-slicing" id="indexing-and-slicing"><h2>Indexing and slicing</h2></a>
 <p>There are a few traits that support <code>[]</code> notation for indexing and slicing.</p>
-<a class="header" href="0439-cmp-ops-reform.html#current-design-2" id="current-design-2"><h3>Current design:</h3></a>
+<a class="header" href="#current-design-2" id="current-design-2"><h3>Current design:</h3></a>
 <p>The current design is as follows:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -384,14 +391,14 @@ and so requires a special <code>mut</code> marker: <code>v[mut 1..]</code>.</p>
 <p>For both of these traits, the indexes themselves are taken by
 reference, and the compiler automatically introduces a <code>&amp;</code> (so you
 write <code>v[3]</code> not <code>v[&amp;3]</code>).</p>
-<a class="header" href="0439-cmp-ops-reform.html#proposed-design-2" id="proposed-design-2"><h3>Proposed design</h3></a>
+<a class="header" href="#proposed-design-2" id="proposed-design-2"><h3>Proposed design</h3></a>
 <p>This RFC proposes to refactor the slice design into more modular
 components, which as a side-product will make slicing automatically
 dereference the result (consistently with indexing). The latter is
 desirable because <code>&amp;mut v[1..]</code> is more consistent with the rest of
 the language than <code>v[mut 1..]</code> (and also makes the borrowing semantics
 more explicit).</p>
-<a class="header" href="0439-cmp-ops-reform.html#index-revisions" id="index-revisions"><h4>Index revisions</h4></a>
+<a class="header" href="#index-revisions" id="index-revisions"><h4>Index revisions</h4></a>
 <p>In the new design, the index traits take the index by value and the
 compiler no longer introduces a silent <code>&amp;</code>. This follows the same
 design as for e.g. <code>Add</code> above, and for much the same reasons. That
@@ -435,7 +442,7 @@ an interior reference). But for types providing both, the compiler
 will use <code>IndexSet</code> to interpret the <code>expr[i] = expr</code> syntax. (You can
 always get <code>IndexMut</code> by instead writing <code>* &amp;mut expr[i] = expr</code>, but
 this will likely be extremely rare.)</p>
-<a class="header" href="0439-cmp-ops-reform.html#slice-revisions" id="slice-revisions"><h4>Slice revisions</h4></a>
+<a class="header" href="#slice-revisions" id="slice-revisions"><h4>Slice revisions</h4></a>
 <p>The changes to slice notation are more radical: this RFC proposes to
 remove the slice traits altogether! The replacement is to introduce
 <em>range notation</em> and overload indexing on it.</p>
@@ -470,10 +477,10 @@ also opens the door to other uses of the range notation:</p>
 fixed length arrays and functional record update. The former is at the
 type level, however, and the latter is not ambiguous: <code>Foo { a: x, .. bar}</code> since the <code>.. bar</code> component will never be parsed as an
 expression.</p>
-<a class="header" href="0439-cmp-ops-reform.html#special-traits" id="special-traits"><h2>Special traits</h2></a>
+<a class="header" href="#special-traits" id="special-traits"><h2>Special traits</h2></a>
 <p>Finally, there are a few &quot;special&quot; traits that hook into the compiler
 in various ways that go beyond basic operator overlaoding.</p>
-<a class="header" href="0439-cmp-ops-reform.html#deref-and-derefmut" id="deref-and-derefmut"><h3><code>Deref</code> and <code>DerefMut</code></h3></a>
+<a class="header" href="#deref-and-derefmut" id="deref-and-derefmut"><h3><code>Deref</code> and <code>DerefMut</code></h3></a>
 <p>The <code>Deref</code> and <code>DerefMut</code> traits are used for overloading
 dereferencing, typically for smart pointers.</p>
 <p>The current traits look like so:</p>
@@ -495,9 +502,9 @@ pub trait Deref {
     fn deref&lt;'a&gt;(&amp;'a self) -&gt; &amp;'a Result;
 }
 #}</code></pre></pre>
-<a class="header" href="0439-cmp-ops-reform.html#drop" id="drop"><h3><code>Drop</code></h3></a>
+<a class="header" href="#drop" id="drop"><h3><code>Drop</code></h3></a>
 <p>This RFC proposes no changes to the <code>Drop</code> trait.</p>
-<a class="header" href="0439-cmp-ops-reform.html#closure-traits" id="closure-traits"><h3>Closure traits</h3></a>
+<a class="header" href="#closure-traits" id="closure-traits"><h3>Closure traits</h3></a>
 <p>This RFC proposes no changes to the closure traits. The current design looks like:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -520,13 +527,13 @@ be stable. Keeping the traits themselves unstable leaves us room to
 change their definition to support
 <a href="https://github.com/rust-lang/rfcs/issues/376">variadic generics</a> in
 the future.</p>
-<a class="header" href="0439-cmp-ops-reform.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The main drawback is that implementing the above will take a bit of
 time, which is something we're currently very short on. However,
 stabilizing <code>cmp</code> and <code>ops</code> has always been part of the plan, and has
 to be done for 1.0.</p>
-<a class="header" href="0439-cmp-ops-reform.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0439-cmp-ops-reform.html#comparison-traits-1" id="comparison-traits-1"><h2>Comparison traits</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#comparison-traits-1" id="comparison-traits-1"><h2>Comparison traits</h2></a>
 <p>We could pursue a more aggressive change to the comparison traits by
 not having <code>PartialOrd</code> be a super trait of <code>Ord</code>, but instead
 providing a blanket <code>impl</code> for <code>PartialOrd</code> for any <code>T: Ord</code>. Unfortunately, this design poses some problems when it comes to
@@ -538,7 +545,7 @@ ability to make an <code>impl</code> apply only when certain things are <em>not<
 true).</p>
 <p>Since it's unlikely that these other changes can happen in time for
 1.0, this RFC takes a more conservative approach.</p>
-<a class="header" href="0439-cmp-ops-reform.html#slicing" id="slicing"><h2>Slicing</h2></a>
+<a class="header" href="#slicing" id="slicing"><h2>Slicing</h2></a>
 <p>We may want to drop the <code>[]</code> notation. This notation was introduced to
 improve ergonomics (from <code>foo(v.as_slice())</code> to <code>foo(v[]</code>), but now
 that <a href="https://github.com/rust-lang/rfcs/pull/235">collections reform</a>
@@ -550,7 +557,7 @@ somewhat intimidating notation for a situation that newcomers to the
 language are likely to face quickly.</p>
 <p>In the opinion of this RFC author, we should either keep <code>[]</code>
 notation, or provide deref coercions so that you can just say <code>&amp;v</code>.</p>
-<a class="header" href="0439-cmp-ops-reform.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>In the long run, we should support overloading of operators like <code>+=</code>
 which often have a more efficient implementation than desugaring into
 a <code>+</code> and an <code>=</code>. However, this can be added backwards-compatibly and
@@ -600,9 +607,6 @@ postpones consideration until a later date.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

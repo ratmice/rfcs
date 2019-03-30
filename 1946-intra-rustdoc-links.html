@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1946-intra-rustdoc-links - </title>
+        <title>1946-intra-rustdoc-links - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1946">rust-lang/rfcs#1946</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/43466">rust-lang/rust#43466</a></li>
 </ul>
-<a class="header" href="1946-intra-rustdoc-links.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add a notation how to create relative links in documentation comments
 (based on Rust item paths)
 and extend Rustdoc to automatically turn this into working links.</p>
-<a class="header" href="1946-intra-rustdoc-links.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>It is good practice in the Rust community to
 add documentation to all public items of a crate,
 as the API documentation as rendered by Rustdoc is the main documentation of most libraries.
@@ -182,7 +189,7 @@ all manually created links need to be updated.</li>
 <p>To solve this dilemma,
 we propose extending Rustdoc
 to be able to generate relative links that work in all contexts.</p>
-<a class="header" href="1946-intra-rustdoc-links.html#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
 <p><a href="https://daringfireball.net/projects/markdown/syntax">Markdown</a>/<a href="http://commonmark.org">CommonMark</a> allow writing links in several forms
 (the names are from the <a href="http://spec.commonmark.org/0.27/">CommonMark spec</a> in version 0.27):</p>
 <ol>
@@ -203,7 +210,7 @@ it should also be possible to write a Rust path
 (as defined <a href="https://github.com/rust-lang-nursery/reference/blob/2d23ea601f017c106a2303094ee1c57ba856d246/src/paths.md">in the reference</a>).
 Additionally, automatic <a href="http://spec.commonmark.org/0.27/#link-reference-definitions">link reference definitions</a> should be generated
 to allow easy linking to obvious targets.</p>
-<a class="header" href="1946-intra-rustdoc-links.html#additions-to-the-documentation-syntax" id="additions-to-the-documentation-syntax"><h2>Additions To The Documentation Syntax</h2></a>
+<a class="header" href="#additions-to-the-documentation-syntax" id="additions-to-the-documentation-syntax"><h2>Additions To The Documentation Syntax</h2></a>
 <p>Rust paths as URLs in inline and reference links:</p>
 <ol>
 <li><code>[Iterator](std::iter::Iterator)</code></li>
@@ -212,7 +219,7 @@ and somewhere else in the document: <code>[iter]: std::iter::Iterator</code></li
 <li><code>[Iterator]</code>,
 and somewhere else in the document: <code>[Iterator]: std::iter::Iterator</code></li>
 </ol>
-<a class="header" href="1946-intra-rustdoc-links.html#implied-shortcut-reference-links" id="implied-shortcut-reference-links"><h2>Implied Shortcut Reference Links</h2></a>
+<a class="header" href="#implied-shortcut-reference-links" id="implied-shortcut-reference-links"><h2>Implied Shortcut Reference Links</h2></a>
 <p>The third syntax example above shows a
 <a href="http://spec.commonmark.org/0.27/#shortcut-reference-link">shortcut reference link</a>,
 which is a reference link
@@ -242,13 +249,13 @@ for this link label pointing to the Rust path.</p>
 <p>(This was one of the first ideas suggested
 by <a href="https://talk.commonmark.org/t/what-should-the-rust-community-do-for-linkage/2141">CommonMark forum</a> members
 as well as by <a href="https://github.com/GuillaumeGomez">Guillaume Gomez</a>.)</p>
-<a class="header" href="1946-intra-rustdoc-links.html#standard-conforming-markdown" id="standard-conforming-markdown"><h2>Standard-conforming Markdown</h2></a>
+<a class="header" href="#standard-conforming-markdown" id="standard-conforming-markdown"><h2>Standard-conforming Markdown</h2></a>
 <p>These additions are valid Markdown,
 as defined by the original <a href="https://daringfireball.net/projects/markdown/syntax">Markdown syntax definition</a>
 as well as the <a href="http://commonmark.org">CommonMark</a> project.
 Especially, Rust paths are valid CommonMark <a href="http://spec.commonmark.org/0.27/#link-destination">link destinations</a>,
-even with the suffixes described <a href="1946-intra-rustdoc-links.html#path-ambiguities">below</a>.</p>
-<a class="header" href="1946-intra-rustdoc-links.html#how-links-will-be-rendered" id="how-links-will-be-rendered"><h2>How Links Will Be Rendered</h2></a>
+even with the suffixes described <a href="#path-ambiguities">below</a>.</p>
+<a class="header" href="#how-links-will-be-rendered" id="how-links-will-be-rendered"><h2>How Links Will Be Rendered</h2></a>
 <p>The following:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -263,7 +270,7 @@ and as this
 when on the page for the <code>foos</code> module (<code>foos/index.html</code>):</p>
 <pre><code class="language-html">The offers several ways to fooify &lt;a href=&quot;../bars/struct.Bar.html&quot;&gt;Bars&lt;/a&gt;.
 </code></pre>
-<a class="header" href="1946-intra-rustdoc-links.html#no-autolinks-style" id="no-autolinks-style"><h2>No Autolinks Style</h2></a>
+<a class="header" href="#no-autolinks-style" id="no-autolinks-style"><h2>No Autolinks Style</h2></a>
 <p>When using the autolink syntax (<code>&lt;URL&gt;</code>),
 the URL has to be an <a href="http://spec.commonmark.org/0.27/#absolute-uri">absolute URI</a>,
 i.e., it has to start with an URI scheme.
@@ -280,13 +287,13 @@ to avoid confusion, the RFC does not propose adding any support for autolinks.</
 <p>It will just output what any CommonMark compliant renderer would generate:</p>
 <pre><code class="language-html">Does not work: &lt;a href=&quot;bars::Bar&quot;&gt;bars::Bar&lt;/a&gt; :(
 </code></pre>
-<p>We suggest to use <a href="1946-intra-rustdoc-links.html#implied-shortcut-reference-links">Implied Shortcut Reference Links</a> instead:</p>
+<p>We suggest to use <a href="#implied-shortcut-reference-links">Implied Shortcut Reference Links</a> instead:</p>
 <pre><code class="language-markdown">Does work: [`bars::Bar`] :)
 </code></pre>
 <p>which will be rendered as</p>
 <pre><code class="language-html">Does work: &lt;a href=&quot;../bars/struct.Bar.html&quot;&gt;&lt;code&gt;bars::Bar&lt;/code&gt;&lt;/a&gt; :)
 </code></pre>
-<a class="header" href="1946-intra-rustdoc-links.html#resolving-paths" id="resolving-paths"><h2>Resolving Paths</h2></a>
+<a class="header" href="#resolving-paths" id="resolving-paths"><h2>Resolving Paths</h2></a>
 <p>The Rust paths used in links are resolved
 relative to the item in whose documentation they appear.
 Specifically, when using inner doc comments (<code>//!</code>, <code>/*!</code>),
@@ -329,7 +336,7 @@ fn foo2() {
     use bar::Iterator;
 }
 #}</code></pre></pre>
-<a class="header" href="1946-intra-rustdoc-links.html#path-ambiguities" id="path-ambiguities"><h2>Path Ambiguities</h2></a>
+<a class="header" href="#path-ambiguities" id="path-ambiguities"><h2>Path Ambiguities</h2></a>
 <p>Rust has three different namespaces that items can be in,
 types, values, and macros.
 That means that in a given source file,
@@ -409,14 +416,14 @@ allows (and successfully resolves) a link
 with the wrong prefix that is in the same namespace.
 E.g., given an <code>struct Foo</code>, it may be possible to link to it using <code>[enum Foo]</code>,
 or, given a <code>mod bar</code>, it may be possible to link to that using <code>[struct bar]</code>.</p>
-<a class="header" href="1946-intra-rustdoc-links.html#errors" id="errors"><h2>Errors</h2></a>
+<a class="header" href="#errors" id="errors"><h2>Errors</h2></a>
 <p>Ideally, Rustdoc would be able to recognize Rust path syntax,
 and if the path cannot be resolved,
 print a warning (or an error).
 These diagnostic messages should highlight the specific link
 that Rustdoc was not able to resolve,
 using the original Markdown source from the comment and correct line numbers.</p>
-<a class="header" href="1946-intra-rustdoc-links.html#complex-example" id="complex-example"><h2>Complex Example</h2></a>
+<a class="header" href="#complex-example" id="complex-example"><h2>Complex Example</h2></a>
 <p>(Excerpt from Diesel's <a href="https://github.com/diesel-rs/diesel/blob/1daf2581919d82b80c18f00957e5c3d35375c4c0/diesel/src/expression/mod.rs"><code>expression</code></a> module.)</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -457,28 +464,28 @@ which are not in scope and need to be linked to by their absolute Rust path.
 To make reading easier and less noisy, reference links are used to rename the links.
 (An assumption is that most readers will recognize these names and know they are part of <code>diesel::types</code>.)</li>
 </ul>
-<a class="header" href="1946-intra-rustdoc-links.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <ul>
 <li>Extend the documentation chapter of the book with a subchapter on How to Link to Items.</li>
 <li>Reference the chapter on the module system, to let reads familiarize themselves with Rust paths.</li>
 <li>Maybe present an example use case of a module whose documentation links to several related items.</li>
 </ul>
-<a class="header" href="1946-intra-rustdoc-links.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>Rustdoc gets more complex.</li>
 <li>These links won't work when the doc comments are rendered with a default Markdown renderer.</li>
 <li>The Rust paths might conflict with other valid links,
 though we could not think of any.</li>
 </ul>
-<a class="header" href="1946-intra-rustdoc-links.html#possible-extensions" id="possible-extensions"><h1>Possible Extensions</h1></a>
-<a class="header" href="1946-intra-rustdoc-links.html#linking-to-fields" id="linking-to-fields"><h2>Linking to Fields</h2></a>
+<a class="header" href="#possible-extensions" id="possible-extensions"><h1>Possible Extensions</h1></a>
+<a class="header" href="#linking-to-fields" id="linking-to-fields"><h2>Linking to Fields</h2></a>
 <p>To link to the fields of a <code>struct</code>
 we propose to write the path to the struct,
 followed by a dot, followed by the field name.</p>
 <p>For example:</p>
 <pre><code class="language-markdown">This is stored in the [`size`](storage::Filesystem.size) field.
 </code></pre>
-<a class="header" href="1946-intra-rustdoc-links.html#linking-to-enum-variants" id="linking-to-enum-variants"><h2>Linking to Enum Variants</h2></a>
+<a class="header" href="#linking-to-enum-variants" id="linking-to-enum-variants"><h2>Linking to Enum Variants</h2></a>
 <p>To link to the variants of an <code>enum</code>,
 we propose to write the path to the enum,
 followed by two colons, followed by the field name,
@@ -486,7 +493,7 @@ just like <code>use Foo::Bar</code> can be used to import the <code>Bar</code> v
 <p>For example:</p>
 <pre><code class="language-markdown">For custom settings, supply the [`Custom`](storage::Engine::Other) field.
 </code></pre>
-<a class="header" href="1946-intra-rustdoc-links.html#linking-to-associated-items" id="linking-to-associated-items"><h2>Linking to associated Items</h2></a>
+<a class="header" href="#linking-to-associated-items" id="linking-to-associated-items"><h2>Linking to associated Items</h2></a>
 <p>To link to associated items,
 i.e., the associated functions, types, and constants of a trait,
 we propose to write the path to the trait,
@@ -496,7 +503,7 @@ It may be necessary to use fully-qualified paths
 like <code>See the [&lt;Foo as Bar&gt;::bar()] method</code>.
 We have yet to analyze in which cases this is necessary,
 and what syntax should be used.</p>
-<a class="header" href="1946-intra-rustdoc-links.html#linking-to-external-documentation" id="linking-to-external-documentation"><h2>Linking to External Documentation</h2></a>
+<a class="header" href="#linking-to-external-documentation" id="linking-to-external-documentation"><h2>Linking to External Documentation</h2></a>
 <p>Currently, Rustdoc is able to link to external crates,
 and renders documentation for all dependencies by default.
 Referencing the standard library (or <code>core</code>)
@@ -525,7 +532,7 @@ to allow shortcuts to some common usages.
 E.g., a <code>--external-docs</code> flag may add base URLs using <a href="https://docs.rs/">docs.rs</a>
 for all crates that are from the crates.io repository
 (docs.rs automatically renders documentation for crates published to crates.io).</p>
-<a class="header" href="1946-intra-rustdoc-links.html#known-issues" id="known-issues"><h3>Known Issues</h3></a>
+<a class="header" href="#known-issues" id="known-issues"><h3>Known Issues</h3></a>
 <p>Automatically linking to external docs has the following known tradeoffs:</p>
 <ul>
 <li>The generated URLs may not/no longer exist
@@ -548,11 +555,11 @@ differ
 </ul>
 </li>
 </ul>
-<a class="header" href="1946-intra-rustdoc-links.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>Prefix Rust paths with a URI scheme, e.g. <code>rust:</code>
-(cf. <a href="1946-intra-rustdoc-links.html#path-ambiguities">path ambiguities</a>).</p>
+(cf. <a href="#path-ambiguities">path ambiguities</a>).</p>
 </li>
 <li>
 <p>Prefix Rust paths with a URI scheme for the item type, e.g. <code>struct:</code>, <code>enum:</code>, <code>trait:</code>, or <code>fn:</code>.</p>
@@ -568,7 +575,7 @@ or <code>[link text]{@link namepathOrURL}</code></p>
 listed other syntax alternatives
 <a href="https://github.com/rust-lang/rfcs/pull/1946#issuecomment-284718018">here</a>.</li>
 </ul>
-<a class="header" href="1946-intra-rustdoc-links.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
 <ul>
 <li>Is it possible for Rustdoc to resolve paths?
 Is it easy to implement this?</li>
@@ -620,9 +627,6 @@ Does the current renderer?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

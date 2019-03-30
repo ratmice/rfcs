@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1422-pub-restricted - </title>
+        <title>1422-pub-restricted - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,14 +146,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1422">rust-lang/rfcs#1422</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/32409">rust-lang/rust#32409</a></li>
 </ul>
-<a class="header" href="1422-pub-restricted.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Expand the current <code>pub</code>/non-<code>pub</code> categorization of items with the
 ability to say &quot;make this item visible <em>solely</em> to a (named) module
 tree.&quot;</p>
 <p>The current <code>crate</code> is one such tree, and would be expressed via:
 <code>pub(crate) item</code>. Other trees can be denoted via a path employed in a
 <code>use</code> statement, e.g. <code>pub(a::b) item</code>, or <code>pub(super) item</code>.</p>
-<a class="header" href="1422-pub-restricted.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Right now, if you have a definition for an item <code>X</code> that you want to
 use in many places in a module tree, you can either
 (1.) define <code>X</code> at the root of the tree as a non-<code>pub</code> item, or
@@ -231,7 +238,7 @@ of where a <code>pub</code>-licized item can be used.</p>
 used nor re-exported outside of their respective restricted areas.</p>
 </li>
 </ol>
-<a class="header" href="1422-pub-restricted.html#impact" id="impact"><h2>Impact</h2></a>
+<a class="header" href="#impact" id="impact"><h2>Impact</h2></a>
 <p>This difficulty in reasoning about the &quot;publicness&quot; of a name is not
 just a problem for users; it also complicates efforts within the
 compiler to verify that a surface API for a type does not itself use
@@ -270,8 +277,8 @@ certain patterns of interest to developers.</p>
 [RFC 136]: https://github.com/rust-lang/rfcs/blob/master/text/0136-no-privates-in-public.md
 <!-- The original definition of public items was based on reachability rather than simply checking whether the item is declared pub or not. The RFC also did not describe how privacy and impl definitions are related. -->
 [RFC amendment 200]: https://github.com/rust-lang/rfcs/pull/200
-<a class="header" href="1422-pub-restricted.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<p>The main problem identified in the <a href="1422-pub-restricted.html#motivation">motivation</a> section is this:</p>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<p>The main problem identified in the <a href="#motivation">motivation</a> section is this:</p>
 <p>From an module-internal definition like</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -291,7 +298,7 @@ of where a <code>pub</code>-licized item can be used.</p>
 used nor re-exported outside of their respective restricted areas.</p>
 </li>
 </ol>
-<a class="header" href="1422-pub-restricted.html#syntax" id="syntax"><h2>Syntax</h2></a>
+<a class="header" href="#syntax" id="syntax"><h2>Syntax</h2></a>
 <p>The new feature is to restrict the scope by adding the module subtree
 (which acts as the restricted area) in parentheses after the <code>pub</code>
 keyword, like so:</p>
@@ -328,7 +335,7 @@ pub(crate) item;
 currently use <code>pub</code>. In particular, one can use them on item
 definitions, methods in an impl, the fields of a struct
 definition, and on <code>pub use</code> re-exports.</p>
-<a class="header" href="1422-pub-restricted.html#semantics" id="semantics"><h2>Semantics</h2></a>
+<a class="header" href="#semantics" id="semantics"><h2>Semantics</h2></a>
 <p>The meaning of <code>pub(restriction)</code> is as follows: The definition of
 every item, method, field, or name (e.g. a re-export) is associated
 with a restriction.</p>
@@ -369,7 +376,7 @@ it. In particular, we will still keep our existing rules regarding
 <code>pub</code> items defined in non-<code>pub</code> modules; such items would have no
 restriction, but still may be inaccessible if they are not re-exported in
 some manner.</p>
-<a class="header" href="1422-pub-restricted.html#revised-example" id="revised-example"><h2>Revised Example</h2></a>
+<a class="header" href="#revised-example" id="revised-example"><h2>Revised Example</h2></a>
 <p>In the running example, one could instead write:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -434,7 +441,7 @@ pub mod a {
 <p>(This RFC takes no position on which of the above two structures is
 &quot;better&quot;; a toy example like this does not provide enough context to
 judge.)</p>
-<a class="header" href="1422-pub-restricted.html#restrictions" id="restrictions"><h2>Restrictions</h2></a>
+<a class="header" href="#restrictions" id="restrictions"><h2>Restrictions</h2></a>
 <p>Lets discuss what the restrictions actually mean.</p>
 <p>Some basic definitions: An item is just as it is declared in the Rust
 reference manual: a component of a crate, located at a fixed path
@@ -470,7 +477,7 @@ beyond R. (Privacy is now a special case of this more general
 notion.)</p>
 <p>For convenience, it is legal to declare a field (or inherent
 method) with a strictly larger area of restriction than its
-<code>self</code>. See discussion in the <a href="1422-pub-restricted.html#fields-and-inherent-methods-more-public-than-self">examples</a>.</p>
+<code>self</code>. See discussion in the <a href="#fields-and-inherent-methods-more-public-than-self">examples</a>.</p>
 </li>
 </ol>
 <p>In principle, validating (1.) can be done via the pre-existing privacy
@@ -481,7 +488,7 @@ the current state of the privacy checking code.)</p>
 <p>Validating (2.) requires traversing the surface API for each item and
 comparing the restriction for every reference to the restriction of
 the item itself.</p>
-<a class="header" href="1422-pub-restricted.html#trait-methods" id="trait-methods"><h2>Trait methods</h2></a>
+<a class="header" href="#trait-methods" id="trait-methods"><h2>Trait methods</h2></a>
 <p>Currently, trait associated item syntax carries no <code>pub</code> modifier.</p>
 <p>A question arises when trying to apply the terminology of this RFC:
 are trait associated items implicitly <code>pub</code>, in the sense that they
@@ -490,7 +497,7 @@ are unrestricted?</p>
 at least, not in general. (They are not in general implicitly <code>pub</code>
 today either, as discussed in <a href="https://github.com/rust-lang/rfcs/blob/master/text/0136-no-privates-in-public.md#when-is-an-item-public">RFC 136</a>.)
 (If they were implictly <code>pub</code>, things would be difficult; further
-discussion in attached <a href="1422-pub-restricted.html#associated-items-digression">appendix</a>.)</p>
+discussion in attached <a href="#associated-items-digression">appendix</a>.)</p>
 <p>However, since this RFC is introducing multiple kinds of <code>pub</code>, we
 should address the topic of what <em>is</em> the <code>pub</code>-ness of associated
 items.</p>
@@ -549,11 +556,11 @@ discussion of whether this rule actually makes sense as phrased
 here.</p>
 </li>
 </ul>
-<a class="header" href="1422-pub-restricted.html#more-examples" id="more-examples"><h2>More examples!</h2></a>
+<a class="header" href="#more-examples" id="more-examples"><h2>More examples!</h2></a>
 <p>These examples meant to explore the syntax a bit. They are <em>not</em> meant
 to provide motivation for the feature (i.e. I am not claiming that the
 feature is making this code cleaner or easier to reason about).</p>
-<a class="header" href="1422-pub-restricted.html#impl-item-example" id="impl-item-example"><h3>Impl item example</h3></a>
+<a class="header" href="#impl-item-example" id="impl-item-example"><h3>Impl item example</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -582,8 +589,8 @@ fn rejected(s: &amp;S) {
 #}</code></pre></pre>
 <p>(You may be wondering: &quot;Could we move that <code>impl S</code> out to the
 top-level, out of <code>mod a</code>?&quot; Well ... see discussion in the
-<a href="1422-pub-restricted.html#can-definition-site-fall-outside-restriction">unresolved questions</a>.)</p>
-<a class="header" href="1422-pub-restricted.html#restricting-fields-example" id="restricting-fields-example"><h3>Restricting fields example</h3></a>
+<a href="#can-definition-site-fall-outside-restriction">unresolved questions</a>.)</p>
+<a class="header" href="#restricting-fields-example" id="restricting-fields-example"><h3>Restricting fields example</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -617,7 +624,7 @@ mod k {
     // ... accesses to G and G.0 ...
 }
 #}</code></pre></pre>
-<a class="header" href="1422-pub-restricted.html#fields-and-inherent-methods-more-public-than-self" id="fields-and-inherent-methods-more-public-than-self"><h3>Fields and inherent methods more public than self</h3></a>
+<a class="header" href="#fields-and-inherent-methods-more-public-than-self" id="fields-and-inherent-methods-more-public-than-self"><h3>Fields and inherent methods more public than self</h3></a>
 <p>In Rust today, one can write</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -677,7 +684,7 @@ about issues like <a href="https://github.com/rust-lang/rust/issues/30079">issue
 a subtree of the module tree where <code>X</code> is itself visible.</p>
 </li>
 </ul>
-<a class="header" href="1422-pub-restricted.html#re-exports" id="re-exports"><h3>Re-exports</h3></a>
+<a class="header" href="#re-exports" id="re-exports"><h3>Re-exports</h3></a>
 <p>Here is an example of a <code>pub use</code> re-export using the new
 feature, including both correct and invalid uses of the extended form.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -710,7 +717,7 @@ mod a {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="1422-pub-restricted.html#crate-restricted-visibility" id="crate-restricted-visibility"><h3>Crate restricted visibility</h3></a>
+<a class="header" href="#crate-restricted-visibility" id="crate-restricted-visibility"><h3>Crate restricted visibility</h3></a>
 <p>This is a concrete illusration of how one might use the <code>pub(crate) item</code> form,
 (which is perhaps quite similar to Java's default &quot;package visibility&quot;).</p>
 <p>Crate <code>c1</code>:</p>
@@ -742,12 +749,12 @@ use c1::a::S; // ok: `S` is unrestricted
 
 use c1::a::R; //~ ERROR: `c1::a::R` not visible outside of its crate
 #}</code></pre></pre>
-<a class="header" href="1422-pub-restricted.html#precedent" id="precedent"><h2>Precedent</h2></a>
+<a class="header" href="#precedent" id="precedent"><h2>Precedent</h2></a>
 <p>When I started on this I was not sure if this form of delimited access
 to a particular module subtree had a precedent; the closest thing I
 could think of was C++ <code>friend</code> modifiers (but <code>friend</code> is far more
 ad-hoc and free-form than what is being proposed here).</p>
-<a class="header" href="1422-pub-restricted.html#scala" id="scala"><h3>Scala</h3></a>
+<a class="header" href="#scala" id="scala"><h3>Scala</h3></a>
 <p>It has since been pointed out to me that Scala has scoped access
 modifiers <code>protected[Y]</code> and <code>private[Y]</code>, which specify that access
 is provided upto <code>Y</code> (where <code>Y</code> can be a package, class or singleton
@@ -765,7 +772,7 @@ actual distinction is.)</p>
 <p>Even if there is some distinction drawn between the two forms in
 Scala, I suspect Rust does not need an analogous distinction in it's
 <code>pub(restricted)</code></p>
-<a class="header" href="1422-pub-restricted.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Obviously,
 <code>pub(restriction) item</code> complicates the surface syntax of the language.</p>
 <ul>
@@ -797,8 +804,8 @@ can choose to either use it or not, based on their own internal
 policies.</p>
 </li>
 </ul>
-<a class="header" href="1422-pub-restricted.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1422-pub-restricted.html#do-not-extend-the-language" id="do-not-extend-the-language"><h2>Do not extend the language!</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#do-not-extend-the-language" id="do-not-extend-the-language"><h2>Do not extend the language!</h2></a>
 <ul>
 <li>
 <p>Change privacy rules and make privacy analysis &quot;smarter&quot;
@@ -818,17 +825,17 @@ of the problems with it are due to bugs in the implementation&quot;</p>
 <p>I am sympathetic to this response. However, I think it doesn't
 quite hold up. Some users want to be able to define items that are
 exposed outside of their module but still restrict the scope of
-where they can be referenced, as discussed in the <a href="1422-pub-restricted.html#motivation">motivation</a>
+where they can be referenced, as discussed in the <a href="#motivation">motivation</a>
 section, and I do not think the current model can be &quot;fixed&quot; to
 support that use case, at least not without adding some sort of
 global reachability analysis as discussed in the previous bullet.</p>
 </li>
 </ul>
 <p>In addition, these two alternatives do not address the main point
-being made in the <a href="1422-pub-restricted.html#motivation">motivation</a> section: one cannot tell exactly how
+being made in the <a href="#motivation">motivation</a> section: one cannot tell exactly how
 &quot;public&quot; a <code>pub</code> item is, without working backwards through the module
 tree for all of its re-exports.</p>
-<a class="header" href="1422-pub-restricted.html#curb-your-ambitions" id="curb-your-ambitions"><h2>Curb your ambitions!</h2></a>
+<a class="header" href="#curb-your-ambitions" id="curb-your-ambitions"><h2>Curb your ambitions!</h2></a>
 <ul>
 <li>
 <p>Instead of adding support for restricting to arbitrary module
@@ -852,7 +859,7 @@ do the inline refactoring, rewriting each <code>pub(crate)</code> as <code>pub(A
 as necessary.</p>
 </li>
 </ul>
-<a class="header" href="1422-pub-restricted.html#be-more-ambitious" id="be-more-ambitious"><h2>Be more ambitious!</h2></a>
+<a class="header" href="#be-more-ambitious" id="be-more-ambitious"><h2>Be more ambitious!</h2></a>
 <p>This feature could be extended in various ways.</p>
 <p>For example:</p>
 <ul>
@@ -877,8 +884,8 @@ actual choice to add such an extension (and what syntax to use
 for it) up to a later amendment in the future.</p>
 </li>
 </ul>
-<a class="header" href="1422-pub-restricted.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="1422-pub-restricted.html#can-definition-site-fall-outside-restriction" id="can-definition-site-fall-outside-restriction"><h2>Can definition site fall outside restriction?</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#can-definition-site-fall-outside-restriction" id="can-definition-site-fall-outside-restriction"><h2>Can definition site fall outside restriction?</h2></a>
 <p>For example, is it illegal to do the following:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -893,11 +900,11 @@ itself not accessible in <code>mod b</code>?</p>
 <p>pnkfelix is personally inclined to make this sort of thing illegal,
 mainly because he finds it totally unintuitive, but is interested in
 hearing counter-arguments.</p>
-<a class="header" href="1422-pub-restricted.html#implicit-restriction-satisfaction-irspunpm" id="implicit-restriction-satisfaction-irspunpm"><h2>Implicit Restriction Satisfaction (IRS:PUNPM)</h2></a>
+<a class="header" href="#implicit-restriction-satisfaction-irspunpm" id="implicit-restriction-satisfaction-irspunpm"><h2>Implicit Restriction Satisfaction (IRS:PUNPM)</h2></a>
 <p>If a re-export occurs within a non-<code>pub</code> module, can we treat it as
 implicitly satisfying a restriction to <code>super</code> imposed by the item it
 is re-exporting?</p>
-<p>In particular, the <a href="1422-pub-restricted.html#revised-example">revised example</a> included:</p>
+<p>In particular, the <a href="#revised-example">revised example</a> included:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -949,7 +956,7 @@ pub mod a {
 even in the context of a non-pub module like <code>mod b</code>. In particular,
 <code>pub(super) use item</code> may be imposing a new restriction on the
 re-exported name that was not part of its original definition.)</p>
-<a class="header" href="1422-pub-restricted.html#interaction-with-globs" id="interaction-with-globs"><h2>Interaction with Globs</h2></a>
+<a class="header" href="#interaction-with-globs" id="interaction-with-globs"><h2>Interaction with Globs</h2></a>
 <p>Glob re-exports
 currently only re-export <code>pub</code> (as in <code>pub(universe)</code> items).</p>
 <p>What should glob-reepxorts do with respect to <code>pub(restricted)</code>?</p>
@@ -986,8 +993,8 @@ purely <code>pub</code> items; no non-<code>pub</code>, and no <code>pub(restric
 <p>After we get more experience with <code>pub(restricted)</code> (and perhaps make
 other changes that may come in future RFCs), we will be in a better
 position to evaluate what to do here.</p>
-<a class="header" href="1422-pub-restricted.html#appendices" id="appendices"><h1>Appendices</h1></a>
-<a class="header" href="1422-pub-restricted.html#associated-items-digression" id="associated-items-digression"><h2>Associated Items Digression</h2></a>
+<a class="header" href="#appendices" id="appendices"><h1>Appendices</h1></a>
+<a class="header" href="#associated-items-digression" id="associated-items-digression"><h2>Associated Items Digression</h2></a>
 <p>If associated items were implicitly <code>pub</code>, in the sense that they are
 unrestricted, then that would conflict with the rules imposed by this
 RFC, in the sense that the surface API of a non-<code>pub</code> trait is
@@ -1057,9 +1064,6 @@ implicitly <code>pub</code> and unrestricted.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

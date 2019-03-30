@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0921-entry_v3 - </title>
+        <title>0921-entry_v3 - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/921">rust-lang/rfcs#921</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/23508">rust-lang/rust#23508</a></li>
 </ul>
-<a class="header" href="0921-entry_v3.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Replace <code>Entry::get</code> with <code>Entry::or_insert</code> and
 <code>Entry::or_insert_with</code> for better ergonomics and clearer code.</p>
-<a class="header" href="0921-entry_v3.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Entry::get was introduced to reduce a lot of the boiler-plate involved in simple Entry usage. Two
 incredibly common patterns in particular stand out:</p>
 <pre><code>match map.entry(key) =&gt; {
@@ -174,7 +181,7 @@ Occupied case into an <code>&amp;mut V</code>. Usage looks like:</p>
 to a &quot;only one way&quot;. However this is still fairly tedious and arcane. <code>get</code> provides little
 meaning for what is done; <code>unwrap_or_else</code> is long and scary-sounding; and VacantEntry literally
 <em>only</em> supports <code>insert</code>, so having to call it seems redundant.</p>
-<a class="header" href="0921-entry_v3.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Replace <code>Entry::get</code> with the following two methods:</p>
 <pre><code>    /// Ensures a value is in the entry by inserting the default if empty, and returns
     /// a mutable reference to the value in the entry.
@@ -209,14 +216,14 @@ Novices don't really need to learn the entry API at all with this. They can just
 usage later.</p>
 <p>Oh hey look this entire RFC is already implemented with all of <code>rust-lang/rust</code>'s <code>entry</code>
 usage audited and updated: https://github.com/rust-lang/rust/pull/22930</p>
-<a class="header" href="0921-entry_v3.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Replaces the composability of just mapping to a Result with more ad hoc specialty methods. This
 is hardly a drawback for the reasons stated in the RFC. Maybe someone was really leveraging
 the Result-ness in an exotic way, but it was likely an abuse of the API. Regardless, the <code>get</code>
 method is trivial to write as a consumer of the API.</p>
-<a class="header" href="0921-entry_v3.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Settle for <code>Result</code> chumpsville or abandon this sugar altogether. Truly, fates worse than death.</p>
-<a class="header" href="0921-entry_v3.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -262,9 +269,6 @@ method is trivial to write as a consumer of the API.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1774-roadmap-2017 - </title>
+        <title>1774-roadmap-2017 - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1774">rust-lang/rfcs#1774</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1774-roadmap-2017.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes the <em>2017 Rust Roadmap</em>, in accordance with <a href="https://github.com/rust-lang/rfcs/pull/1728">RFC 1728</a>. The goal of the roadmap is to lay out a vision for where the Rust project should be in a year's time. <strong>This year's focus is improving Rust's <em>productivity</em>, while retaining its emphasis on fast, reliable code</strong>. At a high level, by the end of 2017:</p>
 <ul>
 <li>Rust should have a lower learning curve</li>
@@ -158,15 +165,15 @@ we're not quite ready to set out specific goals:</p>
 <li>Usage in resource-constrained environments</li>
 </ul>
 <p>The proposal is based on the <a href="https://blog.rust-lang.org/2016/06/30/State-of-Rust-Survey-2016.html">2016 survey</a>, systematic outreach, direct conversations with individual Rust users, and an extensive <a href="https://internals.rust-lang.org/t/setting-our-vision-for-the-2017-cycle/">internals thread</a>. Thanks to everyone who helped with this effort!</p>
-<a class="header" href="1774-roadmap-2017.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>There's no end of possible improvements to Rust—so what do we use to guide our
 thinking?</p>
 <p>The core team has tended to view our strategy not in terms of particular features or
 aesthetic goals, but instead in terms of <strong>making Rust successful while staying
 true to its core values</strong>. This basic sentiment underlies much of the proposed
 roadmap, so let's unpack it a bit.</p>
-<a class="header" href="1774-roadmap-2017.html#making-rust-successful" id="making-rust-successful"><h2>Making Rust successful</h2></a>
-<a class="header" href="1774-roadmap-2017.html#the-measure-of-success" id="the-measure-of-success"><h3>The measure of success</h3></a>
+<a class="header" href="#making-rust-successful" id="making-rust-successful"><h2>Making Rust successful</h2></a>
+<a class="header" href="#the-measure-of-success" id="the-measure-of-success"><h3>The measure of success</h3></a>
 <p>What does it mean for Rust to be successful? There are a lot of good answers to
 this question, a lot of different things that draw people to use or contribute
 to Rust. But regardless of our <em>personal</em> values, there's at least one clear
@@ -203,7 +210,7 @@ long pipeline for technology adoption, so the effects of our work can take a
 while to appear. The framing here is about our long-term aims. We should be
 making investments in Rust today that will position it well for this kind of
 success in the future.</p>
-<a class="header" href="1774-roadmap-2017.html#the-obstacles-to-success" id="the-obstacles-to-success"><h3>The obstacles to success</h3></a>
+<a class="header" href="#the-obstacles-to-success" id="the-obstacles-to-success"><h3>The obstacles to success</h3></a>
 <p>At this point, we have a fair amount of data about how Rust is reaching its
 audience, through the <a href="https://blog.rust-lang.org/2016/06/30/State-of-Rust-Survey-2016.html">2016 survey</a>, informal conversations, and explicit
 outreach to (pre-)production shops (writeup coming soon). The data from the
@@ -228,7 +235,7 @@ interested people if we can't get them over the hump. Evidence from the survey
 and elsewhere suggests that once people do get over the initial learning curve,
 they tend to stick around.</p>
 <p>So how do we pull it off?</p>
-<a class="header" href="1774-roadmap-2017.html#core-values" id="core-values"><h3>Core values</h3></a>
+<a class="header" href="#core-values" id="core-values"><h3>Core values</h3></a>
 <p>Part of what makes Rust so exciting is that it attempts to eliminate some
 seemingly fundamental tradeoffs. The central such tradeoff is between safety
 and speed. Rust strives for</p>
@@ -261,8 +268,8 @@ let's try to earn the slogan:</p>
 <ul>
 <li>Rust: fast, reliable, productive—pick three.</li>
 </ul>
-<a class="header" href="1774-roadmap-2017.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1774-roadmap-2017.html#overall-strategy" id="overall-strategy"><h2>Overall strategy</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#overall-strategy" id="overall-strategy"><h2>Overall strategy</h2></a>
 <p>In the abstract, reaching the kind of adoption we need means bringing
 people along a series of distinct steps:</p>
 <ul>
@@ -285,7 +292,7 @@ also needs to have a &quot;complete story&quot; for one or more domains of use. 
 call out a specific domain where we are already seeing promising production use,
 and where we have a relatively clear path toward a more complete story.</p>
 <p>Almost all of the goals focus squarely on &quot;productivity&quot; of one kind or another.</p>
-<a class="header" href="1774-roadmap-2017.html#goals" id="goals"><h2>Goals</h2></a>
+<a class="header" href="#goals" id="goals"><h2>Goals</h2></a>
 <p>Now to the meat of the roadmap: the goals. Each is phrased in terms of a
 <em>qualitative vision</em>, trying to carve out what the <em>experience</em> of Rust should
 be in one year's time. The details mention some possible avenues toward a
@@ -296,7 +303,7 @@ course, part of the work of the roadmap is to allocate our limited resources,
 which fundamentally means not including some possible goals. Some of the most
 promising suggestions that didn't make it into the roadmap proposal itself are
 included in the Alternatives section.</p>
-<a class="header" href="1774-roadmap-2017.html#rust-should-have-a-lower-learning-curve" id="rust-should-have-a-lower-learning-curve"><h3>Rust should have a lower learning curve</h3></a>
+<a class="header" href="#rust-should-have-a-lower-learning-curve" id="rust-should-have-a-lower-learning-curve"><h3>Rust should have a lower learning curve</h3></a>
 <p>Rust offers a unique value proposition in part because it offers a unique
 feature: its ownership model. Because the concept is not (yet!) a widespread one
 in other languages, it is something most people have to learn from scratch
@@ -346,7 +353,7 @@ of a borrow. They can also provide deeper inspection of what's going on with
 things like method dispatch, type inference, and so on.</p>
 </li>
 </ul>
-<a class="header" href="1774-roadmap-2017.html#rust-should-have-a-pleasant-edit-compile-debug-cycle" id="rust-should-have-a-pleasant-edit-compile-debug-cycle"><h3>Rust should have a pleasant edit-compile-debug cycle</h3></a>
+<a class="header" href="#rust-should-have-a-pleasant-edit-compile-debug-cycle" id="rust-should-have-a-pleasant-edit-compile-debug-cycle"><h3>Rust should have a pleasant edit-compile-debug cycle</h3></a>
 <p>The edit-compile-debug cycle in Rust takes too long, and it's one of the
 complaints we hear most often from production users. We've laid down a good
 foundation with <a href="https://blog.rust-lang.org/2016/04/19/MIR.html">MIR</a> (now turned on by default) and <a href="https://blog.rust-lang.org/2016/09/08/incremental.html">incremental compilation</a>
@@ -365,7 +372,7 @@ too slow to build&quot;. There may be a lot of room in the middle.</p>
 <p>Depending on how far we want to take IDE support (see below), pushing
 incremental compilation up through the earliest stages of the compiler may also
 be important.</p>
-<a class="header" href="1774-roadmap-2017.html#rust-should-provide-a-solid-but-basic-ide-experience" id="rust-should-provide-a-solid-but-basic-ide-experience"><h3>Rust should provide a solid, but basic IDE experience</h3></a>
+<a class="header" href="#rust-should-provide-a-solid-but-basic-ide-experience" id="rust-should-provide-a-solid-but-basic-ide-experience"><h3>Rust should provide a solid, but basic IDE experience</h3></a>
 <p>For many people—even whole organizations—IDEs are an essential part of the
 programming workflow. In the survey, 1 in 4 respondents mentioned requiring IDE
 support before using Rust seriously. Tools like <a href="https://github.com/phildawes/racer">Racer</a> and the <a href="https://intellij-rust.github.io/">IntelliJ</a> Rust
@@ -391,7 +398,7 @@ formatting.</li>
 efforts, a key part of this initiative is to (1) lay the foundation for plugins
 based on compiler integration (2) pull together existing tools into a single
 service that can integrate with multiple IDEs.</p>
-<a class="header" href="1774-roadmap-2017.html#rust-should-provide-easy-access-to-high-quality-crates" id="rust-should-provide-easy-access-to-high-quality-crates"><h3>Rust should provide easy access to high quality crates</h3></a>
+<a class="header" href="#rust-should-provide-easy-access-to-high-quality-crates" id="rust-should-provide-easy-access-to-high-quality-crates"><h3>Rust should provide easy access to high quality crates</h3></a>
 <p>Another major message from the survey and elsewhere is that Rust's ecosystem,
 while growing, is still immature (1 in 9 survey respondents mentioned
 this). Maturity is not something we can rush. But there are steps we can take
@@ -412,7 +419,7 @@ both of which will help increase the overall sense of maturity.</p>
 <li>More sophisticated ranking and/or curation.</li>
 </ul>
 <p>A number of ideas along these lines were discussed in the <a href="https://internals.rust-lang.org/t/proposal-the-rust-platform/3745">Rust Platform thread</a>.</p>
-<a class="header" href="1774-roadmap-2017.html#rust-should-be-well-equipped-for-writing-robust-high-scale-servers" id="rust-should-be-well-equipped-for-writing-robust-high-scale-servers"><h3>Rust should be well-equipped for writing robust, high-scale servers</h3></a>
+<a class="header" href="#rust-should-be-well-equipped-for-writing-robust-high-scale-servers" id="rust-should-be-well-equipped-for-writing-robust-high-scale-servers"><h3>Rust should be well-equipped for writing robust, high-scale servers</h3></a>
 <p>The biggest area we've seen with interest in production Rust so far is the
 server, particularly in cases where high-scale performance, control, and/or
 reliability are paramount. At the moment, our ecosystem in this space is
@@ -431,7 +438,7 @@ languages, and hence the place where we're likeliest to achieve significant,
 quality production usage (as discussed earlier in the RFC). More generally, the
 overall server space is <em>huge</em>, so choosing a particular niche provides
 essential focus for our efforts.</p>
-<a class="header" href="1774-roadmap-2017.html#rust-should-have-10-level-crates-for-essential-tasks" id="rust-should-have-10-level-crates-for-essential-tasks"><h3>Rust should have 1.0-level crates for essential tasks</h3></a>
+<a class="header" href="#rust-should-have-10-level-crates-for-essential-tasks" id="rust-should-have-10-level-crates-for-essential-tasks"><h3>Rust should have 1.0-level crates for essential tasks</h3></a>
 <p>Rust has taken a decidedly lean approach to its standard library, preferring for
 much of the typical &quot;batteries included&quot; functionality to live externally in the
 crates.io ecosystem. While there are a lot of benefits to that approach, it's
@@ -456,7 +463,7 @@ pent-up demand and excitement, and that this kind of work can open a lot of
 doors for Rust. So concurrency/asynchrony/parallelism is one segment of the
 ecosystem that likely deserves particular focus (and feeds into the high-scale
 server goal as well); there are likely others.</p>
-<a class="header" href="1774-roadmap-2017.html#rust-should-integrate-easily-into-large-build-systems" id="rust-should-integrate-easily-into-large-build-systems"><h3>Rust should integrate easily into large build systems</h3></a>
+<a class="header" href="#rust-should-integrate-easily-into-large-build-systems" id="rust-should-integrate-easily-into-large-build-systems"><h3>Rust should integrate easily into large build systems</h3></a>
 <p>When working with larger organizations interested in using Rust, one of the
 first hurdles we tend to run into is fitting into an existing build
 system. We've been exploring a number of different approaches, each of which
@@ -471,7 +478,7 @@ we should have a strong understanding of best practices, and potentially build
 tooling in support of those practices. And of course, we want to approach this
 goal with Rust's values in mind, ensuring that first-class access to the
 crates.io ecosystem is a cornerstone of our eventual story.</p>
-<a class="header" href="1774-roadmap-2017.html#rusts-community-should-provide-mentoring-at-all-levels" id="rusts-community-should-provide-mentoring-at-all-levels"><h3>Rust's community should provide mentoring at all levels</h3></a>
+<a class="header" href="#rusts-community-should-provide-mentoring-at-all-levels" id="rusts-community-should-provide-mentoring-at-all-levels"><h3>Rust's community should provide mentoring at all levels</h3></a>
 <p>The Rust community is awesome, in large part because of how welcoming it is. But
 we could do a lot more to help grow people into roles in the project, including
 pulling together important work items at all level of expertise to direct people
@@ -482,7 +489,7 @@ lot of room for improvement.</p>
 <p>While there's work here for <em>all</em> the teams, the community team in particular
 will continue to focus on early-stage outreach, while other teams will focus on
 leadership onboarding.</p>
-<a class="header" href="1774-roadmap-2017.html#areas-of-exploration" id="areas-of-exploration"><h2>Areas of exploration</h2></a>
+<a class="header" href="#areas-of-exploration" id="areas-of-exploration"><h2>Areas of exploration</h2></a>
 <p>The goals above represent the steps we think are most essential to Rust's
 success in 2017, and where we are in a position to lay out a fairly concrete vision.</p>
 <p>Beyond those goals, however, there are a number of areas with strong potential
@@ -494,7 +501,7 @@ and/or carry out explorations in these areas, and by the end of the year we
 expect to have greater clarity around Rust's story for these areas, putting us
 in a position to give more concrete goals in subsequent roadmaps.</p>
 <p>Here are the two proposed Areas of Exploration.</p>
-<a class="header" href="1774-roadmap-2017.html#integration-with-other-languages" id="integration-with-other-languages"><h3>Integration with other languages</h3></a>
+<a class="header" href="#integration-with-other-languages" id="integration-with-other-languages"><h3>Integration with other languages</h3></a>
 <p>Other languages here includes &quot;low-level&quot; cases like C/C++, and &quot;high-level&quot;
 cases like JavaScript, Ruby, Python, Java and C#. Rust adoption often depends on
 being able to start using it <em>incrementally</em>, and language integration is often
@@ -525,7 +532,7 @@ enhancements.</li>
 <li>Investigation of object system integrations, including DOM and
 <a href="https://internals.rust-lang.org/t/rust-and-gnome-meeting-notes/4339">GObject</a>.</li>
 </ul>
-<a class="header" href="1774-roadmap-2017.html#usage-in-resource-constrained-environments" id="usage-in-resource-constrained-environments"><h3>Usage in resource-constrained environments</h3></a>
+<a class="header" href="#usage-in-resource-constrained-environments" id="usage-in-resource-constrained-environments"><h3>Usage in resource-constrained environments</h3></a>
 <p>Rust is a natural fit for programming resource-constrained devices, and
 there are some <a href="https://github.com/rust-embedded/">ongoing efforts</a> to better
 organize work in this area, as well as a
@@ -549,7 +556,7 @@ platform capabilities.</li>
 <li>Develop a story for failable allocation in <code>std</code> (i.e., without aborting when
 out of memory).</li>
 </ul>
-<a class="header" href="1774-roadmap-2017.html#non-goals" id="non-goals"><h2>Non-goals</h2></a>
+<a class="header" href="#non-goals" id="non-goals"><h2>Non-goals</h2></a>
 <p>Finally, it's important that the roadmap &quot;have teeth&quot;: we should be focusing on
 the goals, and avoid getting distracted by other improvements that, whatever
 their appeal, could sap bandwidth and our ability to ship what we believe is
@@ -574,12 +581,12 @@ to foster maturity in Rust, both in reality and in perception, and ongoing
 stability is an important part of that story.</p>
 </li>
 </ul>
-<a class="header" href="1774-roadmap-2017.html#drawbacks-and-alternatives" id="drawbacks-and-alternatives"><h1>Drawbacks and alternatives</h1></a>
+<a class="header" href="#drawbacks-and-alternatives" id="drawbacks-and-alternatives"><h1>Drawbacks and alternatives</h1></a>
 <p>It's a bit difficult to enumerate the full design space here, given how much
 there is we could potentially be doing. Instead, we'll take a look at some
 alternative high-level strategies, and some additional goals from the internals
 thread.</p>
-<a class="header" href="1774-roadmap-2017.html#overall-strategy-1" id="overall-strategy-1"><h2>Overall strategy</h2></a>
+<a class="header" href="#overall-strategy-1" id="overall-strategy-1"><h2>Overall strategy</h2></a>
 <p>At a high level, though, the biggest alternatives (and potential for drawbacks)
 are probably at the strategic level. This roadmap proposal takes the approach of
 (1) focusing on reducing clear blockers to Rust adoption, particularly connected
@@ -600,7 +607,7 @@ the board.</p>
 <p>The roadmap is informed by the survey, systematic outreach, numerous direct
 conversations, and general strategic thinking. But there could certainly be
 blind spots and biases. It's worth double-checking our inputs.</p>
-<a class="header" href="1774-roadmap-2017.html#other-ideas-from-the-internals-thread" id="other-ideas-from-the-internals-thread"><h2>Other ideas from the internals thread</h2></a>
+<a class="header" href="#other-ideas-from-the-internals-thread" id="other-ideas-from-the-internals-thread"><h2>Other ideas from the internals thread</h2></a>
 <p>Finally, there were several strong contenders for additional goals from the internals
 thread that we might consider. To be clear, these are not currently part of the
 proposed goals, but we may want to consider elevating them:</p>
@@ -629,7 +636,7 @@ and growing our bandwidth in this area.</p>
 </ul>
 <p>After an exhaustive look at the thread, the remaining proposals are in one way
 or another covered somewhere in the discussion above.</p>
-<a class="header" href="1774-roadmap-2017.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>The main unresolved question is how to break the given goals into more
 deliverable pieces of work, but that's a process that will happen after the
 overall roadmap is approved.</p>
@@ -688,9 +695,6 @@ goals section.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

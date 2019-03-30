@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0115-rm-integer-fallback - </title>
+        <title>0115-rm-integer-fallback - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/115">rust-lang/rfcs#115</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/6023">rust-lang/rust#6023</a></li>
 </ul>
-<a class="header" href="0115-rm-integer-fallback.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Currently we use inference to find the current type of
 otherwise-unannotated integer literals, and when that fails the type
 defaults to <code>int</code>. This is often felt to be potentially error-prone
@@ -146,7 +153,7 @@ behavior.</p>
 <p>This proposal removes the integer inference fallback and strengthens
 the types required for several language features that interact with
 integer inference.</p>
-<a class="header" href="0115-rm-integer-fallback.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>With the integer fallback, small changes to code can change the
 inferred type in unexpected ways. It's not clear how big a problem
 this is, but previous experiments<a href="https://gist.github.com/nikomatsakis/11179747">1</a> indicate that removing
@@ -154,7 +161,7 @@ the fallback has a relatively small impact on existing code,
 so it's reasonable to back off of this feature in favor of more
 strict typing.</p>
 <p>See also https://github.com/mozilla/rust/issues/6023.</p>
-<a class="header" href="0115-rm-integer-fallback.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The primary change here is that, when integer type inference fails,
 the compiler will emit an error instead of assigning the value the
 type <code>int</code>.</p>
@@ -177,14 +184,14 @@ only require enum descriminants primitive integers of unspecified
 type; assigning an integer to an enum will behave as if casting from
 from the type of the integer to an unsigned integer with the size of
 the enum discriminant.</p>
-<a class="header" href="0115-rm-integer-fallback.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This will force users to type hint somewhat more often. In particular,
 ranges of unsigned ints may need to be type-hinted:</p>
 <pre><code>for _ in range(0u, 10) { }
 </code></pre>
-<a class="header" href="0115-rm-integer-fallback.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Do none of this.</p>
-<a class="header" href="0115-rm-integer-fallback.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>If we're putting new restrictions on shift operators, should we
 change the traits, or just make the primitives special?</li>
@@ -233,9 +240,6 @@ change the traits, or just make the primitives special?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

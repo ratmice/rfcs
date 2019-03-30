@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1651-movecell - </title>
+        <title>1651-movecell - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +146,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1651">rust-lang/rfcs#1651</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/39264">rust-lang/rust#39264</a></li>
 </ul>
-<a class="header" href="1651-movecell.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Extend <code>Cell</code> to work with non-<code>Copy</code> types.</p>
-<a class="header" href="1651-movecell.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>It allows safe inner-mutability of non-<code>Copy</code> types without the overhead of <code>RefCell</code>'s reference counting.</p>
 <p>The key idea of <code>Cell</code> is to provide a primitive building block to safely support inner mutability. This must be done while maintaining Rust's aliasing requirements for mutable references. Unlike <code>RefCell</code> which enforces this at runtime through reference counting, <code>Cell</code> does this statically by disallowing any reference (mutable or immutable) to the data contained in the cell.</p>
 <p>While the current implementation only supports <code>Copy</code> types, this restriction isn't actually necessary to maintain Rust's aliasing invariants. The only affected API is the <code>get</code> function which, by design, is only usable with <code>Copy</code> types.</p>
-<a class="header" href="1651-movecell.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -167,12 +174,12 @@ impl&lt;T: Default&gt; Cell&lt;T&gt; {
 <p>The <code>set</code> method is available for all <code>T</code>. It will need to be implemented by calling <code>replace</code> and dropping the returned value. Dropping the old value in-place is unsound since the <code>Drop</code> impl will hold a mutable reference to the cell contents.</p>
 <p>The <code>into_inner</code> and <code>replace</code> methods are added, which allow the value in a cell to be read even if <code>T</code> is not <code>Copy</code>. The <code>get</code> method can't be used since the cell must always contain a valid value.</p>
 <p>Finally, a <code>take</code> method is added which is equivalent to <code>self.replace(Default::default())</code>.</p>
-<a class="header" href="1651-movecell.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It makes the <code>Cell</code> type more complicated.</p>
 <p><code>Cell</code> will only be able to derive traits like <code>Eq</code> and <code>Ord</code> for types that are <code>Copy</code>, since there is no way to non-destructively read the contents of a non-<code>Copy</code> <code>Cell</code>.</p>
-<a class="header" href="1651-movecell.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The alternative is to use the <code>MoveCell</code> type from crates.io which provides the same functionality.</p>
-<a class="header" href="1651-movecell.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None</p>
 
                     </main>
@@ -218,9 +225,6 @@ impl&lt;T: Default&gt; Cell&lt;T&gt; {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

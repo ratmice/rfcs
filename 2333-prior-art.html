@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2333-prior-art - </title>
+        <title>2333-prior-art - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +146,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2333">rust-lang/rfcs#2333</a></li>
 <li>Rust Issue: <strong>self-executing</strong></li>
 </ul>
-<a class="header" href="2333-prior-art.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Adds a <em>Prior art</em> section to the RFC template where RFC authors
 may discuss the experience of other programming languages and their
 communities with respect to what is being proposed. This section may
 also discuss theoretical work such as papers.</p>
-<a class="header" href="2333-prior-art.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="2333-prior-art.html#precedent-has-some-importance" id="precedent-has-some-importance"><h2>Precedent has some importance</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#precedent-has-some-importance" id="precedent-has-some-importance"><h2>Precedent has some importance</h2></a>
 <p>It is arguable whether or not precedent is important or whether proposals
 should be considered solely on their own merits. This RFC argues that
 precedent is important.</p>
@@ -157,7 +164,7 @@ weight if a feature is supported in mainstream languages because the users
 of those languages, which may also be rustaceans, are used to those features.
 This is not to say that precedent alone is sufficient motivation for accepting
 an RFC; but neither is it useless.</p>
-<a class="header" href="2333-prior-art.html#experiences-from-other-languages-are-useful" id="experiences-from-other-languages-are-useful"><h2>Experiences from other languages are useful</h2></a>
+<a class="header" href="#experiences-from-other-languages-are-useful" id="experiences-from-other-languages-are-useful"><h2>Experiences from other languages are useful</h2></a>
 <p>This is the chief motivation of this RFC. By explicitly asking authors for
 information about the similarity of their proposal to those in other languages,
 we may get more information which aids us in better evaluating RFCs. Merely name
@@ -166,7 +173,7 @@ experience the communities of the language in question has had is more useful.
 A proposal need also not be a language or library proposal. If a proposal is
 made for changes to how we work as a community, it can be especially valuable
 how other communities have tackled a similar situation.</p>
-<a class="header" href="2333-prior-art.html#experiences-are-useful-to-the-author-themselves" id="experiences-are-useful-to-the-author-themselves"><h3>Experiences are useful to the author themselves</h3></a>
+<a class="header" href="#experiences-are-useful-to-the-author-themselves" id="experiences-are-useful-to-the-author-themselves"><h3>Experiences are useful to the author themselves</h3></a>
 <p>During the process of writing an RFC, an author may change certain aspects
 of the proposal from what they originally had in mind. They may tweak the RFC,
 change certain aspects in a more radical way, and so on. Here, the benefit of
@@ -175,19 +182,19 @@ about the proposal in relation to other languages. In search for this
 information, the author can come to new or better realizations about the
 trade-offs, advantages, and drawbacks of their proposal. Thus, their RFC as
 a whole is hopefully improved as a by-product.</p>
-<a class="header" href="2333-prior-art.html#papers-can-provide-greater-theoretical-understanding" id="papers-can-provide-greater-theoretical-understanding"><h2>Papers can provide greater theoretical understanding</h2></a>
+<a class="header" href="#papers-can-provide-greater-theoretical-understanding" id="papers-can-provide-greater-theoretical-understanding"><h2>Papers can provide greater theoretical understanding</h2></a>
 <p>This RFC argues that it valuable to us to be provided with papers or similar
 that explain proposals and/or their theoretical foundations in greater detail
 where such resources exist. This provides RFC readers with references if they
 want a deeper understanding of an RFC. At the same time, this alleviates the
 need to explain the minutiae of the theoretical background. The finer details
 can instead be referred to the referred-to papers.</p>
-<a class="header" href="2333-prior-art.html#an-improved-historical-record-of-rust-for-posterity" id="an-improved-historical-record-of-rust-for-posterity"><h2>An improved historical record of Rust for posterity</h2></a>
+<a class="header" href="#an-improved-historical-record-of-rust-for-posterity" id="an-improved-historical-record-of-rust-for-posterity"><h2>An improved historical record of Rust for posterity</h2></a>
 <p>Finally, by writing down and documenting where our ideas came from,
 we can better preserve the history and evolution of Rust for posterity.
 While this is not very important in right now, it will increase somewhat
 in importance as time goes by.</p>
-<a class="header" href="2333-prior-art.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>This Meta-RFC modifies the RFC template by adding a <em>Prior art</em> section
 before the <em>Unresolved questions</em>. The newly introduced section is intended
 to help authors reflect on the experience other languages have had with similar
@@ -196,13 +203,13 @@ provide RFC readers with more details so that the proposal may be more fairly
 and fully judged. The section also asks authors for other resources such as
 papers where those exist. Finally, the section notes that precedent from other
 languages on its own is not sufficient motivation to accept an RFC.</p>
-<p>Please read the <a href="2333-prior-art.html#reference-level-explanation">reference-level-explanation</a> for exact details of what an RFC
+<p>Please read the <a href="#reference-level-explanation">reference-level-explanation</a> for exact details of what an RFC
 author will see in the changed template.</p>
-<a class="header" href="2333-prior-art.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>The implementation of this RFC consists of inserting the following
 text to the RFC template before the section <em>Unresolved questions</em>:</p>
 <blockquote>
-<a class="header" href="2333-prior-art.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>Discuss prior art, both the good and the bad, in relation to this proposal.
 A few examples of what this can include are:</p>
 <ul>
@@ -226,7 +233,7 @@ from other languages.</p>
 not on its own motivate an RFC. Please also take into consideration that rust
 sometimes intentionally diverges from common language features.</p>
 </blockquote>
-<a class="header" href="2333-prior-art.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This might encourage RFC authors into the thinking that just because a feature
 exists in one language, it should also exist in Rust and that this can be the
 sole argument. This RFC argues that the risk of this is small, and that with a
@@ -246,9 +253,9 @@ by more clearly communicating that the RFC process is a collaborative effort.
 If an author does not have prior art to offer up right away, other participants
 in the RFC discussion may be able to provide such information which can then
 be amended into the RFC.</p>
-<a class="header" href="2333-prior-art.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>If we don't change the template as proposed in this RFC, the downsides
-are that we don't get the benefits enumerated within the <a href="2333-prior-art.html#motivation">motivation</a>.</p>
+are that we don't get the benefits enumerated within the <a href="#motivation">motivation</a>.</p>
 <p>As always, there is the simple alternative of not doing the changes proposed
 in the RFC.</p>
 <p>Other than that, we can come to the understanding that those that
@@ -256,13 +263,13 @@ want may include a prior art section if they wish, even if it is not
 in the template. This is already the case - authors can always provide
 extra information. The benefit of asking for the information explicitly
 in the template is that more authors are likely to provide such information.
-This is discussed more in the <a href="2333-prior-art.html#motivation">motivation</a>.</p>
+This is discussed more in the <a href="#motivation">motivation</a>.</p>
 <p>Finally, we can ask for information about prior art to be provided in each
 section (motivation, guide-level explanation, etc.). This is however likely to
 reduce the coherence and readability of RFCs. This RFC argues that it is better
 that prior art be discussed in one coherent section. This is also similar to
 how papers are structured in that they include a &quot;related work&quot; section.</p>
-<a class="header" href="2333-prior-art.html#prior-art-1" id="prior-art-1"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art-1" id="prior-art-1"><h1>Prior art</h1></a>
 <p>In many papers, a section entitled <em>Related work</em> is included which can
 be likened to this section. To not drive readers away or be attention
 stealing from the main contributions of a paper, it is usually recommended
@@ -276,7 +283,7 @@ is, before the <em>Unresolved questions</em> section, which we can liken to a
 within those communities templates. Some of these templates are quite similar
 and have probably inspired each other. To the RFC authors knowledge, no other
 mainstream programming language features a section such as this.</p>
-<a class="header" href="2333-prior-art.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>There are none as of yet.</p>
 <p>What is important in this RFC is that we establish whether we want a
 prior art section or not, and what it should contain in broad terms.
@@ -325,9 +332,6 @@ The exact language and wording can always be tweaked beyond this.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

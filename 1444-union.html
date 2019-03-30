@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1444-union - </title>
+        <title>1444-union - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1444">rust-lang/rfcs#1444</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/32836">rust-lang/rust#32836</a></li>
 </ul>
-<a class="header" href="1444-union.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Provide native support for C-compatible unions, defined via a new &quot;contextual
 keyword&quot; <code>union</code>, without breaking any existing code that uses <code>union</code> as an
 identifier.</p>
 <p><strong>Note:</strong> This RFC has been partially superseded by <code>unions-and-drop</code>.</p>
-<a class="header" href="1444-union.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Many FFI interfaces include unions.  Rust does not currently have any native
 representation for unions, so users of these FFI interfaces must define
 multiple structs and transmute between them via <code>std::mem::transmute</code>.  The
@@ -166,8 +173,8 @@ in the Rust grammar.</p>
 <p>To preserve memory safety, accesses to union fields may only occur in unsafe
 code.  Commonly, code using unions will provide safe wrappers around unsafe
 union field accesses.</p>
-<a class="header" href="1444-union.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1444-union.html#declaring-a-union-type" id="declaring-a-union-type"><h2>Declaring a union type</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#declaring-a-union-type" id="declaring-a-union-type"><h2>Declaring a union type</h2></a>
 <p>A union declaration uses the same field declaration syntax as a struct
 declaration, except with <code>union</code> in place of <code>struct</code>.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -182,14 +189,14 @@ union MyUnion {
 the <code>#[repr(C)]</code> attribute will have the same layout as an equivalent C union.</p>
 <p>A union must have at least one field; an empty union declaration produces a
 syntax error.</p>
-<a class="header" href="1444-union.html#contextual-keyword" id="contextual-keyword"><h2>Contextual keyword</h2></a>
+<a class="header" href="#contextual-keyword" id="contextual-keyword"><h2>Contextual keyword</h2></a>
 <p>Rust normally prevents the use of a keyword as an identifier; for instance, a
 declaration <code>fn struct() {}</code> will produce an error &quot;expected identifier, found
 keyword <code>struct</code>&quot;.  However, to avoid breaking existing declarations that use
 <code>union</code> as an identifier, Rust will only recognize <code>union</code> as a keyword when
 used to introduce a union declaration.  A declaration <code>fn union() {}</code> will not
 produce such an error.</p>
-<a class="header" href="1444-union.html#instantiating-a-union" id="instantiating-a-union"><h2>Instantiating a union</h2></a>
+<a class="header" href="#instantiating-a-union" id="instantiating-a-union"><h2>Instantiating a union</h2></a>
 <p>A union instantiation uses the same syntax as a struct instantiation, except
 that it must specify exactly one field:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -203,7 +210,7 @@ error.</p>
 accessing a field of the union.  Code that wishes to maintain invariants about
 the union fields should make the union fields private and provide public
 functions that maintain the invariants.</p>
-<a class="header" href="1444-union.html#reading-fields" id="reading-fields"><h2>Reading fields</h2></a>
+<a class="header" href="#reading-fields" id="reading-fields"><h2>Reading fields</h2></a>
 <p>Unsafe code may read from union fields, using the same dotted syntax as a
 struct:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -213,7 +220,7 @@ fn f(u: MyUnion) -&gt; f32 {
     unsafe { u.f2 }
 }
 #}</code></pre></pre>
-<a class="header" href="1444-union.html#writing-fields" id="writing-fields"><h2>Writing fields</h2></a>
+<a class="header" href="#writing-fields" id="writing-fields"><h2>Writing fields</h2></a>
 <p>Unsafe code may write to fields in a mutable union, using the same syntax as a
 struct:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -238,7 +245,7 @@ code can assign to the entire union instead of the field.  A union does not
 implicitly implement <code>Drop</code> even if its field types do.</p>
 <p>The lint warning produced when declaring a union field of a type that
 implements <code>Drop</code> should document this caveat in its explanatory text.</p>
-<a class="header" href="1444-union.html#pattern-matching" id="pattern-matching"><h2>Pattern matching</h2></a>
+<a class="header" href="#pattern-matching" id="pattern-matching"><h2>Pattern matching</h2></a>
 <p>Unsafe code may pattern match on union fields, using the same syntax as a
 struct, without the requirement to mention every field of the union in a match
 or use <code>..</code>:</p>
@@ -293,7 +300,7 @@ entire union must not make any assumptions about the value of the union's
 memory outside that field.  For example, if a union contains a <code>u8</code> and a
 <code>u32</code>, matching on the <code>u8</code> may not perform a <code>u32</code>-sized comparison over the
 entire union.</p>
-<a class="header" href="1444-union.html#borrowing-union-fields" id="borrowing-union-fields"><h2>Borrowing union fields</h2></a>
+<a class="header" href="#borrowing-union-fields" id="borrowing-union-fields"><h2>Borrowing union fields</h2></a>
 <p>Unsafe code may borrow a reference to a field of a union; doing so borrows the
 entire union, such that any borrow conflicting with a borrow of the union
 (including a borrow of another union field or a borrow of a structure
@@ -346,15 +353,15 @@ fn test() {
     assert_eq!(unsafe { u.s.y }, 10);
 }
 #}</code></pre></pre>
-<a class="header" href="1444-union.html#union-and-field-visibility" id="union-and-field-visibility"><h2>Union and field visibility</h2></a>
+<a class="header" href="#union-and-field-visibility" id="union-and-field-visibility"><h2>Union and field visibility</h2></a>
 <p>The <code>pub</code> keyword works on the union and on its fields, as with a struct.  The
 union and its fields default to private.  Using a private field in a union
 instantiation, field access, or pattern match produces an error.</p>
-<a class="header" href="1444-union.html#uninitialized-unions" id="uninitialized-unions"><h2>Uninitialized unions</h2></a>
+<a class="header" href="#uninitialized-unions" id="uninitialized-unions"><h2>Uninitialized unions</h2></a>
 <p>The compiler should consider a union uninitialized if declared without an
 initializer.  However, providing a field during instantiation, or assigning to
 a field, should cause the compiler to treat the entire union as initialized.</p>
-<a class="header" href="1444-union.html#unions-and-traits" id="unions-and-traits"><h2>Unions and traits</h2></a>
+<a class="header" href="#unions-and-traits" id="unions-and-traits"><h2>Unions and traits</h2></a>
 <p>A union may have trait implementations, using the same <code>impl</code> syntax as a
 struct.</p>
 <p>The compiler should provide a lint if a union field has a type that implements
@@ -364,7 +371,7 @@ allow disabling that lint with <code>#[allow(union_field_drop)]</code>, for code
 intentionally stores a type with Drop in a union.  The compiler must never
 implicitly generate a Drop implementation for the union itself, though Rust
 code may explicitly implement Drop for a union type.</p>
-<a class="header" href="1444-union.html#generic-unions" id="generic-unions"><h2>Generic unions</h2></a>
+<a class="header" href="#generic-unions" id="generic-unions"><h2>Generic unions</h2></a>
 <p>A union may have a generic type, with one or more type parameters or lifetime
 parameters.  As with a generic enum, the types within the union must make use
 of all the parameters; however, not all fields within the union must use all
@@ -372,7 +379,7 @@ parameters.</p>
 <p>Type inference works on generic union types.  In some cases, the compiler may
 not have enough information to infer the parameters of a generic type, and may
 require explicitly specifying them.</p>
-<a class="header" href="1444-union.html#unions-and-undefined-behavior" id="unions-and-undefined-behavior"><h2>Unions and undefined behavior</h2></a>
+<a class="header" href="#unions-and-undefined-behavior" id="unions-and-undefined-behavior"><h2>Unions and undefined behavior</h2></a>
 <p>Rust code must not use unions to invoke <a href="https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html">undefined
 behavior</a>.
 In particular, Rust code must not use unions to break the pointer aliasing
@@ -382,7 +389,7 @@ invalid value.</p>
 binary layout, code reading fields of such a union or pattern-matching such a
 union must not read from a field other than the one written to.  This includes
 pattern-matching a specific value in a union field.</p>
-<a class="header" href="1444-union.html#union-size-and-alignment" id="union-size-and-alignment"><h2>Union size and alignment</h2></a>
+<a class="header" href="#union-size-and-alignment" id="union-size-and-alignment"><h2>Union size and alignment</h2></a>
 <p>A union declared with <code>#[repr(C)]</code> must have the same size and alignment as an
 equivalent C union declaration for the target platform.  Typically, a union
 would have the maximum size of any of its fields, and the maximum alignment of
@@ -403,12 +410,12 @@ fn test() {
     assert_eq!(std::mem::align_of&lt;U&gt;(), 2);
 }
 #}</code></pre></pre>
-<a class="header" href="1444-union.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Adding a new type of data structure would increase the complexity of the
 language and the compiler implementation, albeit marginally.  However, this
 change seems likely to provide a net reduction in the quantity and complexity
 of unsafe code.</p>
-<a class="header" href="1444-union.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Proposals for unions in Rust have a substantial history, with many variants and
 alternatives prior to the syntax proposed here with a <code>union</code> pseudo-keyword.
 Thanks to many people in the Rust community for helping to refine this RFC.</p>
@@ -478,7 +485,7 @@ which writers of unsafe code must already take into account; the alternative
 would add an additional special case for writers of unsafe code.  This does
 provide further motivation for the lint for union fields implementing Drop;
 code that explicitly overrides that lint will need to take this into account.</p>
-<a class="header" href="1444-union.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Can the borrow checker support the rule that &quot;simultaneous borrows of multiple
 fields of a struct contained within a union do not conflict&quot;?  If not, omitting
 that rule would only marginally increase the verbosity of such code, by
@@ -493,7 +500,7 @@ structs.  For instance, a union may contain anonymous structs to define
 non-overlapping fields, and a struct may contain an anonymous union to define
 overlapping fields.  This RFC does not define anonymous unions or structs, but
 a subsequent RFC may wish to do so.</p>
-<a class="header" href="1444-union.html#edit-history" id="edit-history"><h1>Edit History</h1></a>
+<a class="header" href="#edit-history" id="edit-history"><h1>Edit History</h1></a>
 <ul>
 <li>This RFC was amended in https://github.com/rust-lang/rfcs/pull/1663/
 to clarify the behavior when an individual field whose type
@@ -543,9 +550,6 @@ implements <code>Drop</code>.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

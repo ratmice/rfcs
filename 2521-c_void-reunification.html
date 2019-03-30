@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2521-c_void-reunification - </title>
+        <title>2521-c_void-reunification - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2521">rust-lang/rfcs#2521</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/53856">rust-lang/rust#53856</a></li>
 </ul>
-<a class="header" href="2521-c_void-reunification.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Unify <code>std::os::raw::c_void</code> and <code>libc::c_void</code> by making them both re-exports
 of a definition in libcore.</p>
-<a class="header" href="2521-c_void-reunification.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p><code>std::os::raw::c_void</code> and <code>libc::c_void</code> are different types:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -189,7 +196,7 @@ and two <code>enum</code> types with identical definitions are still different t
 <li><a href="https://internals.rust-lang.org/t/duplicate-std-raw-in-core/8086">Internals #8086: Duplicate std::os::raw in core?</a></li>
 <li><a href="https://github.com/rust-lang/rust/pull/52839">PR #52839: Move std::os::raw into core</a></li>
 </ul>
-<a class="header" href="2521-c_void-reunification.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>With this RFC implemented in both the standard library and in the <code>libc</code> crate,
 <code>std::os::raw::c_void</code> and <code>libc::c_void</code> are now two ways to name the same type.</p>
 <p>If two independent libraries both provide FFI bindings to C functions that involve <code>void*</code> pointers,
@@ -197,7 +204,7 @@ one might use <code>std</code> while the other uses <code>libc</code> to access 
 <code>*mut c_void</code> in their respective public APIs.
 A pointer returned from one library can now be passed to the other library without an <code>as</code> pointer cast.</p>
 <p><code>#![no_std]</code> crates can now also access that same type at <code>core::ffi::c_void</code>.</p>
-<a class="header" href="2521-c_void-reunification.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>In the standard library:</p>
 <ul>
 <li>Create a new <code>core::ffi</code> module.</li>
@@ -216,7 +223,7 @@ and conditionally set a compilation flag for the library.</li>
 make <code>c_void</code> be either <code>pub use core::ffi::c_void;</code> or its current <code>enum</code> definition,
 to keep compatibility with older Rust versions.</li>
 </ul>
-<a class="header" href="2521-c_void-reunification.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This proposal is a breaking change for users who implement a trait of theirs like this:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -239,7 +246,7 @@ in order to test with a patched <code>libc</code> crate in addition to a patched
 before landing them in Rust</p>
 </li>
 </ul>
-<a class="header" href="2521-c_void-reunification.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p><code>libc</code> cannot reexport <code>std::os::raw::c_void</code>
 because this would regress compatibility with <code>#![no_std]</code>.</p>
 <p><a href="https://github.com/rust-lang/rfcs/pull/1783">RFC #1783</a> proposed adding
@@ -263,7 +270,7 @@ but forcing the ecosystem through that transition seems too costly for this theo
 Plus, this woud still be a nominal type.
 If this new type is to be present if both <code>libc</code> and <code>std</code>,
 it would still have to be in <code>core</code> as well.</p>
-<a class="header" href="2521-c_void-reunification.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>What is the appropriate location for <code>c_void</code> in libcore?</p>
 <p>This RFC proposes <code>core::ffi</code> rather than <code>core::os::raw</code>
 on the basis that C-compatible types are misplaced in <code>std::os::raw</code>.
@@ -327,9 +334,6 @@ This use case is also left for a future proposal or RFC.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

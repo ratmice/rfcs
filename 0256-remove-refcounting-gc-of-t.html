@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0256-remove-refcounting-gc-of-t - </title>
+        <title>0256-remove-refcounting-gc-of-t - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,14 +145,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/256">rust-lang/rfcs#256</a></li>
 <li>Rust Issue: https://github.com/rust-lang/rfcs/pull/256</li>
 </ul>
-<a class="header" href="0256-remove-refcounting-gc-of-t.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Remove the reference-counting based <code>Gc&lt;T&gt;</code> type from the standard
 library and its associated support infrastructure from <code>rustc</code>.</p>
 <p>Doing so lays a cleaner foundation upon which to prototype a proper
 tracing GC, and will avoid people getting incorrect impressions of
 Rust based on the current reference-counting implementation.</p>
-<a class="header" href="0256-remove-refcounting-gc-of-t.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="0256-remove-refcounting-gc-of-t.html#ancient-history" id="ancient-history"><h2>Ancient History</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#ancient-history" id="ancient-history"><h2>Ancient History</h2></a>
 <p>Long ago, the Rust language had integrated support for automatically
 managed memory with arbitrary graph structure (notably, multiple
 references to the same object), via the type constructors <code>@T</code> and
@@ -172,11 +179,11 @@ support for maintaining the reference-counts from the prior <code>@T</code> was
 still in place; the move to a library type <code>Gc&lt;T&gt;</code> was just a shift in
 perspective from the end-user's point of view (and that of the
 parser).</p>
-<a class="header" href="0256-remove-refcounting-gc-of-t.html#recent-history-removing-uses-of-gct-from-the-compiler" id="recent-history-removing-uses-of-gct-from-the-compiler"><h2>Recent history: Removing uses of Gc<T> from the compiler</h2></a>
+<a class="header" href="#recent-history-removing-uses-of-gct-from-the-compiler" id="recent-history-removing-uses-of-gct-from-the-compiler"><h2>Recent history: Removing uses of Gc<T> from the compiler</h2></a>
 <p>Largely due to the tireless efforts of <code>eddyb</code>, one of the primary
 clients of <code>Gc&lt;T&gt;</code>, namely the <code>rustc</code> compiler itself, has little to
 no remaining uses of <code>Gc&lt;T&gt;</code>.</p>
-<a class="header" href="0256-remove-refcounting-gc-of-t.html#a-new-hope" id="a-new-hope"><h2>A new hope</h2></a>
+<a class="header" href="#a-new-hope" id="a-new-hope"><h2>A new hope</h2></a>
 <p>This means that we have an opportunity now, to remove the <code>Gc&lt;T&gt;</code> type
 from <code>libstd</code>, and its associated built-in reference-counting support
 from <code>rustc</code> itself.</p>
@@ -206,7 +213,7 @@ future.  (Note that <code>Gc&lt;T&gt;</code> is already marked &quot;experimenta
 this particular motivation is not very strong.)</p>
 </li>
 </ul>
-<a class="header" href="0256-remove-refcounting-gc-of-t.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Remove the <code>std::gc</code> module.  This, I believe, is the extent of the
 end-user visible changes proposed by this RFC, at least for users who
 are using <code>libstd</code> (as opposed to implementing their own).</p>
@@ -217,7 +224,7 @@ implementation).  I propose leaving them, but it does not matter
 terribly to me.  The important thing is that once <code>std::gc</code> is gone,
 then we can remove the support code associated with those two lang
 items, which is the important thing.</p>
-<a class="header" href="0256-remove-refcounting-gc-of-t.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Taking out the reference-counting <code>Gc&lt;T&gt;</code> now may lead people to think
 that Rust will never have a <code>Gc&lt;T&gt;</code>.</p>
 <ul>
@@ -240,7 +247,7 @@ replacing the underlying implementation in such a severe manner.)</p>
 <p>Users may be using <code>Gc&lt;T&gt;</code> today, and they would have to switch to
 some other option (such as <code>Rc&lt;T&gt;</code>, though note that the two are not
 100% equivalent; see [Gc versus Rc] appendix).</p>
-<a class="header" href="0256-remove-refcounting-gc-of-t.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Keep the <code>Gc&lt;T&gt;</code> implementation that we have today, and wait until we
 have a tracing GC implemented and ready to be deployed before removing
 the reference-counting infrastructure that had been put in to support
@@ -249,10 +256,10 @@ goal, not a certainty, and thus we may be stuck supporting the
 reference-counting <code>Gc&lt;T&gt;</code> until we eventually do decide to remove
 <code>Gc&lt;T&gt;</code> in the future.  So this RFC is just suggesting we be proactive
 and pull that band-aid off now.</p>
-<a class="header" href="0256-remove-refcounting-gc-of-t.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None yet.</p>
-<a class="header" href="0256-remove-refcounting-gc-of-t.html#appendices" id="appendices"><h1>Appendices</h1></a>
-<a class="header" href="0256-remove-refcounting-gc-of-t.html#gc-versus-rc" id="gc-versus-rc"><h2>Gc versus Rc</h2></a>
+<a class="header" href="#appendices" id="appendices"><h1>Appendices</h1></a>
+<a class="header" href="#gc-versus-rc" id="gc-versus-rc"><h2>Gc versus Rc</h2></a>
 <p>There are performance differences between the current ref-counting
 <code>Gc&lt;T&gt;</code> and the library type <code>Rc&lt;T&gt;</code>, but such differences are beneath
 the level of abstraction of interest to this RFC.  The main user
@@ -387,9 +394,6 @@ printouts from the cases labelled <code>failure-cyclic-gc</code> and
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

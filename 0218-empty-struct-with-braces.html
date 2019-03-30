@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0218-empty-struct-with-braces - </title>
+        <title>0218-empty-struct-with-braces - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,14 +145,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/218/files">rust-lang/rfcs#218</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/24266">rust-lang/rust#218</a></li>
 </ul>
-<a class="header" href="0218-empty-struct-with-braces.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>When a struct type <code>S</code> has no fields (a so-called &quot;empty struct&quot;),
 allow it to be defined via either <code>struct S;</code> or <code>struct S {}</code>.
 When defined via <code>struct S;</code>, allow instances of it to be constructed
 and pattern-matched via either <code>S</code> or <code>S {}</code>.
 When defined via <code>struct S {}</code>, require instances to be constructed
 and pattern-matched solely via <code>S {}</code>.</p>
-<a class="header" href="0218-empty-struct-with-braces.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Today, when writing code, one must treat an empty struct as a
 special case, distinct from structs that include fields.
 That is, one must write code like this:</p>
@@ -168,7 +175,7 @@ match (s2, s0) {
 curly-braces, this special case handling of empty structs presents
 problems for two cases of interest: automatic code generators
 (including, but not limited to, Rust macros) and conditionalized code
-(i.e. code with <code>cfg</code> attributes; see the <a href="0218-empty-struct-with-braces.html#the-cfg-problem">CFG problem</a> appendix).
+(i.e. code with <code>cfg</code> attributes; see the <a href="#the-cfg-problem">CFG problem</a> appendix).
 The heart of the code-generator argument is: Why force all
 to-be-written code-generators and macros with special-case handling of
 the empty struct case (in terms of whether or not to include the
@@ -183,10 +190,10 @@ and also in extra noise introduced into commit histories).</p>
 <p>This RFC proposes an approach similar to the one we used circa February
 2013, when both <code>S0</code> and <code>S0 { }</code> were accepted syntaxes for an empty
 struct.  The parsing ambiguity that motivated removing support for
-<code>S0 { }</code> is no longer present (see the <a href="0218-empty-struct-with-braces.html#ancient-history">Ancient History</a> appendix).
+<code>S0 { }</code> is no longer present (see the <a href="#ancient-history">Ancient History</a> appendix).
 Supporting empty braces in the syntax for empty structs is easy to do
 in the language now.</p>
-<a class="header" href="0218-empty-struct-with-braces.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>There are two kinds of empty structs: Braced empty structs and
 flexible empty structs.  Flexible empty structs are a slight
 generalization of the structs that we have today.</p>
@@ -216,18 +223,18 @@ struct to a non-empty struct, it can start by first migrating to a
 braced empty struct (and then have a tool indicate all of the
 locations where braces need to be added); after that step has been
 completed, one can then take the next step of adding the actual field.</p>
-<a class="header" href="0218-empty-struct-with-braces.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Some people like &quot;There is only one way to do it.&quot;  But, there is
 precendent in Rust for violating &quot;one way to do it&quot; in favor of
 syntactic convenience or regularity; see
-the <a href="0218-empty-struct-with-braces.html#precedent-for-flexible-syntax-in-rust">Precedent for flexible syntax in Rust</a> appendix.
-Also, see the <a href="0218-empty-struct-with-braces.html#always-require-braces">Always Require Braces</a> alternative below.</p>
+the <a href="#precedent-for-flexible-syntax-in-rust">Precedent for flexible syntax in Rust</a> appendix.
+Also, see the <a href="#always-require-braces">Always Require Braces</a> alternative below.</p>
 <p>I have attempted to summarize the previous discussion from <a href="https://github.com/rust-lang/rfcs/pull/147">RFC PR
-147</a> in the <a href="0218-empty-struct-with-braces.html#recent-history">Recent History</a> appendix; some of the points there
-include drawbacks to this approach and to the <a href="0218-empty-struct-with-braces.html#always-require-braces">Always Require Braces</a>
+147</a> in the <a href="#recent-history">Recent History</a> appendix; some of the points there
+include drawbacks to this approach and to the <a href="#always-require-braces">Always Require Braces</a>
 alternative.</p>
-<a class="header" href="0218-empty-struct-with-braces.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0218-empty-struct-with-braces.html#always-require-braces" id="always-require-braces"><h2>Always Require Braces</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#always-require-braces" id="always-require-braces"><h2>Always Require Braces</h2></a>
 <p>Alternative 1: &quot;Always Require Braces&quot;.  Specifically, require empty
 curly braces on empty structs.  People who like the current syntax of
 curly-brace free structs can encode them this way: <code>enum S0 { S0 }</code>
@@ -237,13 +244,13 @@ author (pnkfelix) would be happy to take this tack.)</p>
 writing empty structs without braces, but do not want to switch to the
 unary enum version described in the previous paragraph.
 See &quot;I wouldn't want to force noisier syntax ...&quot;
-in the <a href="0218-empty-struct-with-braces.html#recent-history">Recent History</a> appendix.</p>
-<a class="header" href="0218-empty-struct-with-braces.html#status-quo" id="status-quo"><h2>Status quo</h2></a>
+in the <a href="#recent-history">Recent History</a> appendix.</p>
+<a class="header" href="#status-quo" id="status-quo"><h2>Status quo</h2></a>
 <p>Alternative 2: Status quo.  Macros and code-generators in general will
 need to handle empty structs as a special case.  We may continue
 hitting bugs like <a href="https://github.com/rust-lang/rust/issues/16819">CFG parse bug</a>.  Some users will be annoyed but
 most will probably cope.</p>
-<a class="header" href="0218-empty-struct-with-braces.html#synonymous-in-all-contexts" id="synonymous-in-all-contexts"><h2>Synonymous in all contexts</h2></a>
+<a class="header" href="#synonymous-in-all-contexts" id="synonymous-in-all-contexts"><h2>Synonymous in all contexts</h2></a>
 <p>Alternative 3: An earlier version of this RFC proposed having <code>struct S;</code> be entirely synonymous with <code>struct S { }</code>, and the expression
 <code>S { }</code> be synonymous with <code>S</code>.</p>
 <p>This was deemed problematic, since it would mean that <code>S { }</code> would
@@ -251,7 +258,7 @@ put an entry into both the type and value namespaces, while
 <code>S { x: int }</code> would only put an entry into the type namespace.
 Thus the current draft of the RFC proposes the &quot;flexible&quot; versus
 &quot;braced&quot; distinction for empty structs.</p>
-<a class="header" href="0218-empty-struct-with-braces.html#never-synonymous" id="never-synonymous"><h2>Never synonymous</h2></a>
+<a class="header" href="#never-synonymous" id="never-synonymous"><h2>Never synonymous</h2></a>
 <p>Alternative 4: Treat <code>struct S;</code> as requiring <code>S</code> at the expression
 and pattern sites, and <code>struct S { }</code> as requiring <code>S { }</code> at the
 expression and pattern sites.</p>
@@ -262,7 +269,7 @@ one would have the option of choosing between
 <code>enum S { S }</code>, <code>struct S;</code>, or <code>struct S { }</code>, each with their own
 idiosyncrasies about whether you have to write <code>S</code> or <code>S { }</code>.)
 I would rather adopt &quot;Always Require Braces&quot; than &quot;Never Synonymous&quot;</p>
-<a class="header" href="0218-empty-struct-with-braces.html#empty-tuple-structs" id="empty-tuple-structs"><h2>Empty Tuple Structs</h2></a>
+<a class="header" href="#empty-tuple-structs" id="empty-tuple-structs"><h2>Empty Tuple Structs</h2></a>
 <p>One might say &quot;why are you including support for curly braces, but not
 parentheses?&quot;  Or in other words, &quot;what about empty tuple structs?&quot;</p>
 <p>The code-generation argument could be applied to tuple-structs as
@@ -289,13 +296,13 @@ is that given a tuple struct <code>struct T2(int, int)</code>, the identifier
 tuple structs, we would be in the unfortunate situation given <code>struct T0();</code> of trying to treat <code>T0</code> simultaneously as an instance of the
 struct and as a constructor function.  So, the handling of empty
 structs proposed by this RFC does not generalize to tuple structs.</p>
-<p>(Note that if we adopt alternative 1, <a href="0218-empty-struct-with-braces.html#always-require-braces">Always Require Braces</a>, then
+<p>(Note that if we adopt alternative 1, <a href="#always-require-braces">Always Require Braces</a>, then
 the issue of how tuple structs are handled is totally orthogonal -- we
 could add support for <code>struct T0()</code> as a distinct type from <code>struct S0 {}</code>, if we so wished, or leave it aside.)</p>
-<a class="header" href="0218-empty-struct-with-braces.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None</p>
-<a class="header" href="0218-empty-struct-with-braces.html#appendices" id="appendices"><h1>Appendices</h1></a>
-<a class="header" href="0218-empty-struct-with-braces.html#the-cfg-problem" id="the-cfg-problem"><h2>The CFG problem</h2></a>
+<a class="header" href="#appendices" id="appendices"><h1>Appendices</h1></a>
+<a class="header" href="#the-cfg-problem" id="the-cfg-problem"><h2>The CFG problem</h2></a>
 <p>A program like this works today:</p>
 <pre><pre class="playpen"><code class="language-rust">fn main() {
     #[deriving(Show)]
@@ -351,7 +358,7 @@ not <em>necessary</em> that we add support for empty braces at the parsing
 level to support this feature at the semantic level.  But supporting
 empty-braces in the syntax still seems like the most consistent path
 to me.)</p>
-<a class="header" href="0218-empty-struct-with-braces.html#ancient-history" id="ancient-history"><h2>Ancient History</h2></a>
+<a class="header" href="#ancient-history" id="ancient-history"><h2>Ancient History</h2></a>
 <p>A parsing ambiguity was the original motivation for disallowing the
 syntax <code>S {}</code> in favor of <code>S</code> for constructing an instance of
 an empty struct.  The ambiguity and various options for dealing with it
@@ -388,7 +395,7 @@ one uses parentheses around struct literals in some contexts (such as
 <p>Note that there was never an ambiguity for uses of <code>struct S0 { }</code> in item
 position.  The issue was solely about expression position prior to the
 adoption of <a href="https://github.com/rust-lang/rfcs/blob/master/complete/0025-struct-grammar.md">Rust RFC 25</a>.</p>
-<a class="header" href="0218-empty-struct-with-braces.html#precedent-for-flexible-syntax-in-rust" id="precedent-for-flexible-syntax-in-rust"><h2>Precedent for flexible syntax in Rust</h2></a>
+<a class="header" href="#precedent-for-flexible-syntax-in-rust" id="precedent-for-flexible-syntax-in-rust"><h2>Precedent for flexible syntax in Rust</h2></a>
 <p>There is precendent in Rust for violating &quot;one way to do it&quot; in favor
 of syntactic convenience or regularity.</p>
 <p>For example, one can often include an optional trailing comma, for
@@ -413,7 +420,7 @@ println!(&quot;hi: {}&quot;, { if { x.len() &gt; 2 } { (&quot;whoa&quot;) } else
 <p>We do have lints for some style violations (though none catch the
 cases above), but lints are different from fundamental language
 restrictions.</p>
-<a class="header" href="0218-empty-struct-with-braces.html#recent-history" id="recent-history"><h2>Recent history</h2></a>
+<a class="header" href="#recent-history" id="recent-history"><h2>Recent history</h2></a>
 <p>There was a previous <a href="https://github.com/rust-lang/rfcs/pull/147">RFC PR</a> that was effectively the
 same in spirit to this one.  It was closed because it was not
 sufficient well fleshed out for further consideration by the core
@@ -421,14 +428,14 @@ team.  However, to save people the effort of reviewing the comments on
 that PR (and hopefully stave off potential bikeshedding on this PR), I
 here summarize the various viewpoints put forward on the comment
 thread there, and note for each one, whether that viewpoint would be
-addressed by this RFC (accept both syntaxes), by <a href="0218-empty-struct-with-braces.html#always-require-braces">Always Require Braces</a>,
-or by <a href="0218-empty-struct-with-braces.html#status-quo">Status Quo</a>.</p>
+addressed by this RFC (accept both syntaxes), by <a href="#always-require-braces">Always Require Braces</a>,
+or by <a href="#status-quo">Status Quo</a>.</p>
 <p>Note that this list of comments is <em>just</em> meant to summarize the list
 of views; it does not attempt to reflect the number of commenters who
 agreed or disagreed with a particular point.  (But since the RFC process
 is not a democracy, the number of commenters should not matter anyway.)</p>
 <ul>
-<li>&quot;+1&quot; ==&gt; Favors: This RFC (or potentially <a href="0218-empty-struct-with-braces.html#always-require-braces">Always Require Braces</a>; I think the content of <a href="https://github.com/rust-lang/rfcs/pull/147">RFC PR 147</a> shifted over time, so it is hard to interpret the &quot;+1&quot; comments now).</li>
+<li>&quot;+1&quot; ==&gt; Favors: This RFC (or potentially <a href="#always-require-braces">Always Require Braces</a>; I think the content of <a href="https://github.com/rust-lang/rfcs/pull/147">RFC PR 147</a> shifted over time, so it is hard to interpret the &quot;+1&quot; comments now).</li>
 <li>&quot;I find <code>let s = S0;</code> jarring, think its an enum initially.&quot; ==&gt; Favors: Always Require Braces</li>
 <li>&quot;Frequently start out with an empty struct and add fields as I need them.&quot; ==&gt; Favors: This RFC or Always Require Braces</li>
 <li>&quot;Foo{} suggests is constructing something that it's not; all uses of the value <code>Foo</code> are indistinguishable from each other&quot; ==&gt; Favors: Status Quo</li>
@@ -480,9 +487,6 @@ is not a democracy, the number of commenters should not matter anyway.)</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

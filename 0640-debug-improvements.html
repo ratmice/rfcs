@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0640-debug-improvements - </title>
+        <title>0640-debug-improvements - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/640">rust-lang/rfcs#640</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/23083">rust-lang/rust#23083</a></li>
 </ul>
-<a class="header" href="0640-debug-improvements.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>The <code>Debug</code> trait is intended to be implemented by every type and display
 useful runtime information to help with debugging. This RFC proposes two
 additions to the fmt API, one of which aids implementors of <code>Debug</code>, and one
@@ -146,8 +153,8 @@ which aids consumers of the output of <code>Debug</code>. Specifically, the <cod
 specifier modifier will cause <code>Debug</code> output to be &quot;pretty printed&quot;, and some
 utility builder types will be added to the <code>std::fmt</code> module to make it easier
 to implement <code>Debug</code> manually.</p>
-<a class="header" href="0640-debug-improvements.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="0640-debug-improvements.html#pretty-printing" id="pretty-printing"><h2>Pretty printing</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#pretty-printing" id="pretty-printing"><h2>Pretty printing</h2></a>
 <p>The conventions for <code>Debug</code> format state that output should resemble Rust
 struct syntax, without added line breaks. This can make output difficult to
 read in the presense of complex and deeply nested structures:</p>
@@ -189,7 +196,7 @@ HashMap {
 #}</code></pre></pre>
 <p>However, we wouldn't want this &quot;pretty printed&quot; version to be used by default,
 since it's significantly more verbose.</p>
-<a class="header" href="0640-debug-improvements.html#helper-types" id="helper-types"><h2>Helper types</h2></a>
+<a class="header" href="#helper-types" id="helper-types"><h2>Helper types</h2></a>
 <p>For many Rust types, a Debug implementation can be automatically generated by
 <code>#[derive(Debug)]</code>. However, many encapsulated types cannot use the
 derived implementation. For example, the types in std::io::buffered all have
@@ -237,8 +244,8 @@ impl&lt;S&gt; fmt::Debug for BufferedStream&lt;S&gt; where S: fmt::Debug {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="0640-debug-improvements.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0640-debug-improvements.html#pretty-printing-1" id="pretty-printing-1"><h2>Pretty printing</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#pretty-printing-1" id="pretty-printing-1"><h2>Pretty printing</h2></a>
 <p>The <code>#</code> modifier (e.g. <code>{:#?}</code>) will be interpreted by <code>Debug</code> implementations
 as a request for &quot;pretty printed&quot; output:</p>
 <ul>
@@ -298,7 +305,7 @@ Foo(
 #}</code></pre></pre>
 <p>In all cases, pretty printed and non-pretty printed output should differ <em>only</em>
 in the addition of newlines and whitespace.</p>
-<a class="header" href="0640-debug-improvements.html#helper-types-1" id="helper-types-1"><h2>Helper types</h2></a>
+<a class="header" href="#helper-types-1" id="helper-types-1"><h2>Helper types</h2></a>
 <p>Types will be added to <code>std::fmt</code> corresponding to each of the common <code>Debug</code>
 output formats. They will provide a builder-like API to create correctly
 formatted output, respecting the <code>#</code> flag as needed. A full implementation can
@@ -322,15 +329,15 @@ impl Formatter {
     pub fn padded&lt;'a&gt;(&amp;'a mut self) -&gt; PaddedWriter&lt;'a&gt; { ... }
 }
 #}</code></pre></pre>
-<a class="header" href="0640-debug-improvements.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The use of the <code>#</code> modifier adds complexity to <code>Debug</code> implementations.</p>
 <p>The builder types are adding extra <code>#[stable]</code> surface area to the standard
 library that will have to be maintained.</p>
-<a class="header" href="0640-debug-improvements.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could take the helper structs alone without the pretty printing format.
 They're still useful even if a library author doesn't have to worry about the
 second format.</p>
-<a class="header" href="0640-debug-improvements.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>The indentation level is currently hardcoded to 4 spaces. We could allow that
 to be configured as well by using the width or precision specifiers, for
 example, <code>{:2#?}</code> would pretty print with a 2-space indent. It's not totally
@@ -379,9 +386,6 @@ clear to me that this provides enough value to justify the extra complexity.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

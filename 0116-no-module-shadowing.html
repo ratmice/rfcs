@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0116-no-module-shadowing - </title>
+        <title>0116-no-module-shadowing - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR #: https://github.com/rust-lang/rfcs/pull/116</li>
 <li>Rust Issue #: https://github.com/rust-lang/rust/issues/16464</li>
 </ul>
-<a class="header" href="0116-no-module-shadowing.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Remove or feature gate the shadowing of view items on the same scope level, in order to have less
 complicated semantic and be more future proof for module system changes or experiments.</p>
 <p>This means the names brought in scope by <code>extern crate</code> and <code>use</code> may never collide with
@@ -163,7 +170,7 @@ fn bar() {
 }
 
 #}</code></pre></pre>
-<a class="header" href="0116-no-module-shadowing.html#definitions" id="definitions"><h1>Definitions</h1></a>
+<a class="header" href="#definitions" id="definitions"><h1>Definitions</h1></a>
 <p>Due to a certain lack of official, clearly defined semantics and terminology, a list of relevant
 definitions is included:</p>
 <ul>
@@ -246,7 +253,7 @@ with <code>use</code>, which are shadowable with any definition item.
 </ul>
 </li>
 </ul>
-<a class="header" href="0116-no-module-shadowing.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>As explained above, what is currently visible under which namespace in a given scope is determined
 by a somewhat complicated three step process:</p>
 <ol>
@@ -272,14 +279,14 @@ regard to shadowing and the ability to be reordered. It would also lift the weir
 <code>use foo::bar; mod foo;</code>.</p>
 <p>Implementing this RFC would also not change anything about how name resolution works, as its just
 a tightening of the existing rules.</p>
-<a class="header" href="0116-no-module-shadowing.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>Feature gating import shadowing might break some code using <code>#[feature(globs)]</code>.</li>
 <li>The behavior of <code>libstd</code>s prelude becomes more magical if it still allows shadowing,
 but this could be de-magified again by a new feature, see below in unresolved questions.</li>
 <li>Or the utility of <code>libstd</code>s prelude becomes more restricted if it doesn't allow shadowing.</li>
 </ul>
-<a class="header" href="0116-no-module-shadowing.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>A new feature gate <code>import_shadowing</code> gets created.</p>
 <p>During the name resolution phase of compilation, every time the compiler detects a shadowing
 between <code>extern crate</code>, <code>use</code> and definition items in the same scope level,
@@ -291,11 +298,11 @@ may not shadow each other in the respective namespace.</li>
 </ul>
 <p>Just like for the <code>globs</code> feature, the <code>libstd</code> prelude import would be preempt from this,
 and still be allowed to be shadowed.</p>
-<a class="header" href="0116-no-module-shadowing.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The alternative is to do nothing, and risk running into a backwards compatibility hazard,
 or committing to make a final design decision around the whole module system before 1.0 gets
 released.</p>
-<a class="header" href="0116-no-module-shadowing.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>It is unclear how the <code>libstd</code> preludes fits into this.</p>
@@ -374,9 +381,6 @@ however the current semantic seems like a accident anyway.
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

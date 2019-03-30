@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0042-regexps - </title>
+        <title>0042-regexps - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/42">rust-lang/rfcs#42</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/13700">rust-lang/rust#13700</a></li>
 </ul>
-<a class="header" href="0042-regexps.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add a <code>regexp</code> crate to the Rust distribution in addition to a small
 <code>regexp_macros</code> crate that provides a syntax extension for compiling regular
 expressions during the compilation of a Rust program.</p>
@@ -152,14 +159,14 @@ https://github.com/BurntSushi/regexp/tree/master/benchmark/regex-dna</p>
 https://github.com/BurntSushi/regexp/tree/master/benchmark</p>
 <p>(Perhaps the links should be removed if the RFC is accepted, since I can't
 guarantee they will always exist.)</p>
-<a class="header" href="0042-regexps.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Regular expressions provide a succinct method of matching patterns against
 search text and are frequently used. For example, many programming languages
 include some kind of support for regular expressions in its standard library.</p>
 <p>The outcome of this RFC is to include a regular expression library in the Rust
 distribution and resolve issue
 <a href="https://github.com/mozilla/rust/issues/3591">#3591</a>.</p>
-<a class="header" href="0042-regexps.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>(Note: This is describing an existing design that has been implemented. I have
 no idea how much of this is appropriate for an RFC.)</p>
 <p>The first choice that most regular expression libraries make is whether or not
@@ -179,7 +186,7 @@ performance characteristics seemed appealing. I was also drawn to the limited
 set of syntax supported by RE2 in comparison to other regexp flavors.</p>
 <p>With that out of the way, there are other things that inform the design of a
 regexp library.</p>
-<a class="header" href="0042-regexps.html#unicode" id="unicode"><h2>Unicode</h2></a>
+<a class="header" href="#unicode" id="unicode"><h2>Unicode</h2></a>
 <p>Given the already existing support for Unicode in Rust, this is a no-brainer.
 Unicode literals should be allowed in expressions and Unicode character classes
 should be included (e.g., general categories and scripts).</p>
@@ -200,19 +207,19 @@ that byte indices result in a lower cost abstraction. If character indices are
 desired, then a mapping can be maintained by the client at their discretion.</p>
 <p>Additionally, this makes it consistent with the <code>std::str</code> API, which also
 exposes byte indices.</p>
-<a class="header" href="0042-regexps.html#word-boundaries-word-characters-and-unicode" id="word-boundaries-word-characters-and-unicode"><h2>Word boundaries, word characters and Unicode</h2></a>
+<a class="header" href="#word-boundaries-word-characters-and-unicode" id="word-boundaries-word-characters-and-unicode"><h2>Word boundaries, word characters and Unicode</h2></a>
 <p>At least Python and D define word characters, word boundaries and space
 characters with Unicode character classes. My implementation does the same
 by augmenting the standard Perl character classes <code>\d</code>, <code>\s</code> and <code>\w</code> with
 corresponding Unicode categories.</p>
-<a class="header" href="0042-regexps.html#leftmost-first" id="leftmost-first"><h2>Leftmost-first</h2></a>
+<a class="header" href="#leftmost-first" id="leftmost-first"><h2>Leftmost-first</h2></a>
 <p>As of now, my implementation finds the leftmost-first match. This is consistent
 with PCRE style regular expressions.</p>
 <p>I've pretty much ignored POSIX, but I think it's very possible to add
 leftmost-longest semantics to the existing VM. (RE2 supports this as a
 parameter, but I believe still does not fully comply with POSIX with respect to
 picking the correct submatches.)</p>
-<a class="header" href="0042-regexps.html#public-api" id="public-api"><h2>Public API</h2></a>
+<a class="header" href="#public-api" id="public-api"><h2>Public API</h2></a>
 <p>There are three main questions that can be asked when searching text:</p>
 <ol>
 <li>Does the string match this expression?</li>
@@ -247,7 +254,7 @@ Rust's iterators.)</p>
 <p>This basically makes up the entirety of the public API, in addition to perhaps
 a <code>quote</code> function that escapes a string so that it may be used as a literal in
 an expression.</p>
-<a class="header" href="0042-regexps.html#the-regexp-macro" id="the-regexp-macro"><h2>The <code>regexp!</code> macro</h2></a>
+<a class="header" href="#the-regexp-macro" id="the-regexp-macro"><h2>The <code>regexp!</code> macro</h2></a>
 <p>With syntax extensions, it's possible to write an <code>regexp!</code> macro that compiles
 an expression when a Rust program is compiled. This includes translating the
 matching algorithm to Rust code specific to the expression given. This &quot;ahead
@@ -277,7 +284,7 @@ of the <code>regexp</code> crate.</p>
 <p><a href="https://github.com/rust-lang/rfcs/pull/42#issuecomment-40320112">@alexcrichton
 remarks</a>
 that this state of affairs is a wart that will be corrected in the future.</p>
-<a class="header" href="0042-regexps.html#untrusted-input" id="untrusted-input"><h2>Untrusted input</h2></a>
+<a class="header" href="#untrusted-input" id="untrusted-input"><h2>Untrusted input</h2></a>
 <p>Given worst case <code>O(mn)</code> time complexity, I don't think it's worth worrying
 about unsafe search text.</p>
 <p>Untrusted regular expressions are another matter. For example, it's very easy
@@ -286,7 +293,7 @@ to exhaust a system's resources with nested counted repetitions. For example,
 implementation does nothing to mitigate against this, but I think a simple hard
 limit on the number of instructions allowed would work fine. (Should it be
 configurable?)</p>
-<a class="header" href="0042-regexps.html#name" id="name"><h2>Name</h2></a>
+<a class="header" href="#name" id="name"><h2>Name</h2></a>
 <p>The name of the crate being proposed is <code>regexp</code> and the type describing a
 compiled regular expression is <code>Regexp</code>. I think an equally good name would be
 <code>regex</code> (and <code>Regex</code>). Either name seems to be frequently used, e.g., &quot;regexes&quot;
@@ -300,13 +307,13 @@ ambiguous since it's so short. <code>regexp</code> (or <code>regex</code>) unequ
 the crate as providing regular expressions.</p>
 <p>For consistency's sake, I propose that the syntax extension provided be named
 the same as the crate. So in this case, <code>regexp!</code>.</p>
-<a class="header" href="0042-regexps.html#summary-1" id="summary-1"><h2>Summary</h2></a>
+<a class="header" href="#summary-1" id="summary-1"><h2>Summary</h2></a>
 <p>My implementation is pretty much a port of most of RE2. The syntax should be
 identical or almost identical. I think matching an existing (and popular)
 library has benefits, since it will make it easier for people to pick it up and
 start using it. There will also be (hopefully) fewer surprises. There is also
 plenty of room for performance improvement by implementing a DFA.</p>
-<a class="header" href="0042-regexps.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>I think the single biggest alternative is to provide a backtracking
 implementation that supports backreferences and generalized zero-width
 assertions. I don't think my implementation precludes this possibility. For
@@ -322,7 +329,7 @@ favor a native Rust implementation if it's to be included in the Rust
 distribution. (Does the <code>regexp!</code> macro require it? If so, that's a huge
 advantage.) Also, a native implementation makes it maximally portable.</p>
 <p>Finally, it is always possible to persist without a regexp library.</p>
-<a class="header" href="0042-regexps.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>The public API design is fairly simple and straight-forward with no
 surprises.  I think most of the unresolved stuff is how the backend is
 implemented, which should be changeable without changing the public API (sans
@@ -340,7 +347,7 @@ future.)</p>
 implementation small, simple and fast. People who have more specialized needs
 can always pick one of the existing C or C++ libraries.</p>
 <p>For now, we could mark the API as <code>#[unstable]</code> or <code>#[experimental]</code>.</p>
-<a class="header" href="0042-regexps.html#future-work" id="future-work"><h1>Future work</h1></a>
+<a class="header" href="#future-work" id="future-work"><h1>Future work</h1></a>
 <p>I think most of the future work for this crate is to increase the performance,
 either by implementing different matching algorithms (e.g., a DFA) or by
 improving the code generator that produces native regexps with <code>regexp!</code>.</p>
@@ -392,9 +399,6 @@ support, specifically for simple case folding.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1849-non-static-type-id - </title>
+        <title>1849-non-static-type-id - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1849">rust-lang/rfcs#1849</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/41875">rust-lang/rust#41875</a></li>
 </ul>
-<a class="header" href="1849-non-static-type-id.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Remove the <code>'static</code> bound from the <code>type_id</code> intrinsic so users can experiment with usecases where lifetimes either soundly irrelevant to type checking or where lifetime correctness is enforced elsewhere in the program.</p>
-<a class="header" href="1849-non-static-type-id.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Sometimes it's useful to encode a type so it can be checked at runtime. This can be done using the <code>type_id</code> intrinsic, that gives an id value that's guaranteed to be unique across the types available to the program. The drawback is that it's only valid for types that are <code>'static</code>, because concrete lifetimes aren't encoded in the id. For most cases this makes sense, otherwise the encoded type could be used to represent data in lifetimes it isn't valid for. There are cases though where lifetimes can be soundly checked outside the type id, so it's not possible to misrepresent the validy of the data. These cases can't make use of type ids right now, they need to rely on workarounds. One such workaround is to define a trait with an associated type that's expected to be a <code>'static</code> version of the implementor:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -160,20 +167,20 @@ unsafe impl &lt;'a&gt; Keyed for NonStaticStruct&lt;'a&gt; {
 <p>This requires additional boilerplate that may lead to undefined behaviour if implemented incorrectly or not kept up to date.</p>
 <p>This RFC proposes simply removing the <code>'static</code> bound from the <code>type_id</code> intrinsic, leaving the stable <code>TypeId</code> and <code>Any</code> traits unchanged. That way users who opt-in to unstable intrinsics can build the type equality guarantees they need without waiting for stable API support.</p>
 <p>This is an important first step in expanding the tools available to users at runtime to reason about their data. With the ability to fetch a guaranteed unique type id for non-static types, users can build their own <code>TypeId</code> or <code>Any</code> traits.</p>
-<a class="header" href="1849-non-static-type-id.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Remove the <code>'static</code> bound from the <code>type_id</code> intrinsic in <code>libcore</code>.</p>
 <p>Allowing type ids for non-static types exposes the fact that concrete lifetimes aren't taken into account. This means a type id for <code>SomeStruct&lt;'a, 'b&gt;</code> will be the same as <code>SomeStruct&lt;'b, 'a&gt;</code>, even though they're different types.</p>
 <p>Users need to be very careful using <code>type_id</code> directly, because it can easily lead to undefined behaviour if lifetimes aren't verified properly.</p>
-<a class="header" href="1849-non-static-type-id.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>This changes an unstable compiler intrinsic so we don't need to teach it. The change does need to come with plenty of warning that it's unsound for type-checking and can't be used to produce something like a lifetime parameterised <code>Any</code> trait.</p>
-<a class="header" href="1849-non-static-type-id.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Removing the <code>'static</code> bound means callers may now depend on the fact that <code>type_id</code> doesn't consider concrete lifetimes, even though this probably isn't its intended final behaviour.</p>
-<a class="header" href="1849-non-static-type-id.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>Create a new intrinsic called <code>runtime_type_id</code> that's specifically designed ignore concrete lifetimes, like <code>type_id</code> does now. Having a totally separate intrinsic means <code>type_id</code> could be changed in the future to account for lifetimes without impacting the usecases that specifically ignore them.</li>
 <li>Don't do this. Stick with existing workarounds for getting a <code>TypeId</code> for non-static types.</li>
 </ul>
-<a class="header" href="1849-non-static-type-id.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 
                     </main>
 
@@ -218,9 +225,6 @@ unsafe impl &lt;'a&gt; Keyed for NonStaticStruct&lt;'a&gt; {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

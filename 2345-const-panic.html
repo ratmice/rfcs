@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2345-const-panic - </title>
+        <title>2345-const-panic - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2345">rust-lang/rfcs#2345</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/51999">rust-lang/rust#51999</a></li>
 </ul>
-<a class="header" href="2345-const-panic.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Allow the use of <code>panic!</code>, <code>assert!</code> and <code>assert_eq!</code> within constants and
 report their evaluation as a compile-time error.</p>
-<a class="header" href="2345-const-panic.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>It can often be desirable to terminate a constant evaluation due to invalid
 arguments. Currently there's no way to do this other than to use <code>Result</code> to
 produce an <code>Err</code> in case of errors. Unfortunately this will end up as a runtime
@@ -151,7 +158,7 @@ compile-time. There are already ways to abort compilation, e.g. by invoking
 <code>[&quot;some assert failed&quot;][42]</code> within a constant, which will abort with a
 compile-time error pointing at the span of the index operation. But this hack is
 not very convenient to use and produces the wrong error message.</p>
-<a class="header" href="2345-const-panic.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>You can now use <code>panic!</code> and <code>assert!</code> within <code>const fn</code>s. This means that when
 the const fn is invoked at runtime, you will get a regular panic, but if it is
 invoked at compile-time, the panic message will show up as an error message.</p>
@@ -182,7 +189,7 @@ note: during the evaluation of
 10 | parse_bool(&quot;foo&quot;);
    | ^^^^^^^^^^^^^^^^^
 </code></pre>
-<a class="header" href="2345-const-panic.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>MIR interpretation gets a special case for the panic machinery (which isn't
 const fn). If the <code>panic</code> lang item is entered, instead of producing an error
 about it not being const fn, we produce a specialized error with the panic's
@@ -194,10 +201,10 @@ The internal details of the panic handling might change in the future, but alway
 in a way that will keep allowing MIR interpretation to evaluate it. All future
 changes will have to address this directly and regression tests should ensure
 that we never break the const evaluability.</p>
-<a class="header" href="2345-const-panic.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>We have to implement some magic around processing <code>fmt::Arguments</code> objects and
 producing the panic message from that.</p>
-<a class="header" href="2345-const-panic.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <ul>
 <li>We could add a special constant error reporting mechanism. This has the
 disadvantage of widening the gap between const eval and runtime execution.</li>
@@ -208,7 +215,7 @@ and point the user to the panic location. This already works out of the box
 right now. We can improve the error message in the future with the <code>String</code> +
 formatting alternative. This is the most minimalistic alternative to this RFC</li>
 </ul>
-<a class="header" href="2345-const-panic.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Should there be some additional message in the error about this being a panic
@@ -263,9 +270,6 @@ become const fn, doing both in one go might be a good idea</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

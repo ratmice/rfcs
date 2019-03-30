@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2302-tuple-struct-self-ctor - </title>
+        <title>2302-tuple-struct-self-ctor - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2302">rust-lang/rfcs#2302</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/51994">rust-lang/rust#51994</a></li>
 </ul>
-<a class="header" href="2302-tuple-struct-self-ctor.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Tuple <code>struct</code>s can now be constructed and pattern matched with
 <code>Self(v1, v2, ..)</code>. A simple example:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -152,7 +159,7 @@ impl Default for TheAnswer {
 }
 #}</code></pre></pre>
 <p>Similarly, unit structs can also be constructed and pattern matched with <code>Self</code>.</p>
-<a class="header" href="2302-tuple-struct-self-ctor.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This RFC proposes a consistency fix allowing <code>Self</code> to be used in more
 places to better match the users' intuition of the language and to get
 closer to feature parity between tuple structs and structs with named fields.</p>
@@ -199,8 +206,8 @@ users with shorter working memory such as the author of this RFC.</p>
 will also extend to tuple and unit structs. Eliminating this discrepancy between
 tuple structs and those with named fields will therefore have all the benefits
 associated with this feature for structs with named fields.</p>
-<a class="header" href="2302-tuple-struct-self-ctor.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
-<a class="header" href="2302-tuple-struct-self-ctor.html#basic-concept" id="basic-concept"><h2>Basic concept</h2></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#basic-concept" id="basic-concept"><h2>Basic concept</h2></a>
 <p>For structs with named fields such as:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -223,7 +230,7 @@ impl Person {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2302-tuple-struct-self-ctor.html#through-type-aliases" id="through-type-aliases"><h2>Through type aliases</h2></a>
+<a class="header" href="#through-type-aliases" id="through-type-aliases"><h2>Through type aliases</h2></a>
 <p>This ability does not extend to tuple structs however in current Rust but will
 with this RFC. To continue on with the previous example, you can now also write:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -253,7 +260,7 @@ impl Default for BarFoo {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2302-tuple-struct-self-ctor.html#patterns" id="patterns"><h2>Patterns</h2></a>
+<a class="header" href="#patterns" id="patterns"><h2>Patterns</h2></a>
 <p>Currently, you can pattern match using <code>Self { .. }</code> on a named struct as in
 the following example:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -292,7 +299,7 @@ impl Person {
 #}</code></pre></pre>
 <p>Of course, this redundant reconstruction is not recommended in actual code,
 but illustrates what you can do.</p>
-<a class="header" href="2302-tuple-struct-self-ctor.html#self-as-a-function-pointer" id="self-as-a-function-pointer"><h2><code>Self</code> as a function pointer</h2></a>
+<a class="header" href="#self-as-a-function-pointer" id="self-as-a-function-pointer"><h2><code>Self</code> as a function pointer</h2></a>
 <p>When you define a tuple struct today such as:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -318,7 +325,7 @@ impl&lt;T&gt; Foo&lt;T&gt; {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2302-tuple-struct-self-ctor.html#unit-structs" id="unit-structs"><h2>Unit structs</h2></a>
+<a class="header" href="#unit-structs" id="unit-structs"><h2>Unit structs</h2></a>
 <p>With this RFC, you can also use <code>Self</code> in pattern and expression contexts when
 dealing with unit structs. For example:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -332,12 +339,12 @@ impl Default for TheAnswer {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2302-tuple-struct-self-ctor.html#teaching-the-contents" id="teaching-the-contents"><h2>Teaching the contents</h2></a>
+<a class="header" href="#teaching-the-contents" id="teaching-the-contents"><h2>Teaching the contents</h2></a>
 <p>This RFC should not require additional effort other than spreading the
 news that this now is possible as well as the reference. The changes are
 seen as intuitive enough that it supports what the user already assumes
 should work and will probably try at some point.</p>
-<a class="header" href="2302-tuple-struct-self-ctor.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>When entering one of the following contexts, a Rust compiler will extend
 the value namespace with <code>Self</code> which maps to the tuple constructor <code>fn</code>
 in the case of tuple struct, or a constant, in the case of a unit struct:</p>
@@ -353,7 +360,7 @@ legal patterns. This works since <code>TupleCtor(p_0, .., p_n)</code> patterns a
 handled by resolving them in the value namespace and checking that they
 resolve to a tuple constructor. Since by definition, <code>Self</code> referring
 to a tuple struct resolves to a tuple constructor, this is OK.</p>
-<a class="header" href="2302-tuple-struct-self-ctor.html#implementation-notes" id="implementation-notes"><h2>Implementation notes</h2></a>
+<a class="header" href="#implementation-notes" id="implementation-notes"><h2>Implementation notes</h2></a>
 <p>As an additional check on the sanity of a Rust compiler implementation,
 a well formed expression <code>Self(v0, v1, ..)</code>, must be semantically equivalent to
 <code>Self { 0: v0, 1: v1, .. }</code> and must also be permitted when the latter would.
@@ -387,19 +394,19 @@ same context.</p>
 -------------------------------------
 Γ ⊢ Self    ⇓ v
 </code></pre>
-<a class="header" href="2302-tuple-struct-self-ctor.html#in-relation-to-other-rfcs" id="in-relation-to-other-rfcs"><h2>In relation to other RFCs</h2></a>
-<p>This RFC expands on <a href="0593-forbid-Self-definitions.md">RFC 593</a> and <a href="1647-allow-self-in-where-clauses.md">RFC 1647</a> with
+<a class="header" href="#in-relation-to-other-rfcs" id="in-relation-to-other-rfcs"><h2>In relation to other RFCs</h2></a>
+<p>This RFC expands on <a href="0593-forbid-Self-definitions.html">RFC 593</a> and <a href="1647-allow-self-in-where-clauses.html">RFC 1647</a> with
 respect to where the keyword <code>Self</code> is allowed.</p>
-<a class="header" href="2302-tuple-struct-self-ctor.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There are potentially some, but the author could not think of any.</p>
-<a class="header" href="2302-tuple-struct-self-ctor.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>This is the only design that makes sense in the sense that there really
 aren't any other. Potentially, <code>Self(v0, ..)</code> should only work when the
 <code>impl</code>ed type is not behind a type alias. However, since structs with named
 fields supports type aliases in this respect, so should tuple structs.</p>
 <p>Not providing this feature would preserve papercuts
 and unintuitive surprises for developers.</p>
-<a class="header" href="2302-tuple-struct-self-ctor.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>There are none.</p>
 
                     </main>
@@ -445,9 +452,6 @@ and unintuitive surprises for developers.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

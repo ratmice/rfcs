@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0445-extension-trait-conventions - </title>
+        <title>0445-extension-trait-conventions - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,10 +145,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/445">rust-lang/rfcs#445</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/19324">rust-lang/rust#19324</a></li>
 </ul>
-<a class="header" href="0445-extension-trait-conventions.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This is a conventions RFC establishing a definition and naming
 convention for <em>extension traits</em>: <code>FooExt</code>.</p>
-<a class="header" href="0445-extension-trait-conventions.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This RFC is part of the ongoing API conventions and stabilization
 effort.</p>
 <p>Extension traits are a programming pattern that makes it
@@ -150,8 +157,8 @@ defining that type. While they should be used sparingly, the new
 <a href="https://github.com/rust-lang/rfcs/pull/255">object safety rules</a> have
 increased the need for this kind of trait, and hence the need for a
 clear convention.</p>
-<a class="header" href="0445-extension-trait-conventions.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0445-extension-trait-conventions.html#what-is-an-extension-trait" id="what-is-an-extension-trait"><h2>What is an extension trait?</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#what-is-an-extension-trait" id="what-is-an-extension-trait"><h2>What is an extension trait?</h2></a>
 <p>Rust currently allows inherent methods to be defined on a type only in
 the crate where that type is defined. But it is often the case that
 clients of a type would like to incorporate additional methods to
@@ -214,7 +221,7 @@ it is also more flexible: because <code>Box&lt;Iterator&lt;A&gt;&gt;</code> will
 <code>Iterator&lt;A&gt;</code>, you can now use <em>all</em> of the adapter methods provided
 in <code>IteratorExt</code> on trait objects, even though they are not object
 safe.</p>
-<a class="header" href="0445-extension-trait-conventions.html#the-convention" id="the-convention"><h2>The convention</h2></a>
+<a class="header" href="#the-convention" id="the-convention"><h2>The convention</h2></a>
 <p>The proposed convention is, first of all, to (1) prefer adding default
 methods to existing traits or (2) prefer generically useful traits to
 extension traits whenever feasible.</p>
@@ -227,11 +234,11 @@ that applies to iterators over numeric types. These extension traits
 should follow a similar convention, putting together the type/trait
 name and the qualifications, together with the <code>Ext</code> suffix:
 <code>IteratorAddExt</code>.</p>
-<a class="header" href="0445-extension-trait-conventions.html#what-about-prelude" id="what-about-prelude"><h3>What about <code>Prelude</code>?</h3></a>
+<a class="header" href="#what-about-prelude" id="what-about-prelude"><h3>What about <code>Prelude</code>?</h3></a>
 <p>A <a href="https://github.com/rust-lang/rfcs/pull/344">previous convention</a>
 used a <code>Prelude</code> suffix for extension traits that were also part of
 the <code>std</code> prelude; this new convention deprecates that one.</p>
-<a class="header" href="0445-extension-trait-conventions.html#future-proofing" id="future-proofing"><h2>Future proofing</h2></a>
+<a class="header" href="#future-proofing" id="future-proofing"><h2>Future proofing</h2></a>
 <p>In the future, the need for many of these extension traits may
 disappear as other languages features are added. For example,
 method-level <code>where</code> clauses will eliminate the need for
@@ -240,11 +247,11 @@ method-level <code>where</code> clauses will eliminate the need for
 need to stabilize the 1.0 libraries prior to these language features
 landing. So this is the proposed convention for now, and in the future
 it may be possible to deprecate some of the resulting traits.</p>
-<a class="header" href="0445-extension-trait-conventions.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>It seems clear that we need <em>some</em> convention here. Other possible
 suffixes would be <code>Util</code> or <code>Methods</code>, but <code>Ext</code> is both shorter and
 connects to the name of the pattern.</p>
-<a class="header" href="0445-extension-trait-conventions.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>In general, extension traits tend to require additional imports --
 especially painful when dealing with object safety. However, this is
 more to do with the language as it stands today than with the
@@ -300,9 +307,6 @@ feature are already under way, but are outside the scope of this RFC.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

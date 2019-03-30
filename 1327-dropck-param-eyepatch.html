@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1327-dropck-param-eyepatch - </title>
+        <title>1327-dropck-param-eyepatch - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1327">rust-lang/rfcs#1327</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/34761">rust-lang/rust#34761</a></li>
 </ul>
-<a class="header" href="1327-dropck-param-eyepatch.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Refine the unguarded-escape-hatch from <a href="https://github.com/rust-lang/rfcs/blob/master/text/1238-nonparametric-dropck.md">RFC 1238</a> (nonparametric
 dropck) so that instead of a single attribute side-stepping <em>all</em>
 dropck constraints for a type's destructor, we instead have a more
@@ -157,7 +164,7 @@ of generic type and lifetime parameters.</p>
 the lines of <code>#[fundamental]</code> and <em>will not</em> be stabilized
 as-is. Instead, we anticipate a more comprehensive approach to be
 proposed in a follow-up RFC.</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The unguarded escape hatch (UGEH) from <a href="https://github.com/rust-lang/rfcs/blob/master/text/1238-nonparametric-dropck.md">RFC 1238</a> is a blunt
 instrument: when you use <code>unsafe_destructor_blind_to_params</code>, it is
 asserting that your destructor does not access borrowed data whose
@@ -184,7 +191,7 @@ fine-grain enough for other cases of interest. In particular, it
 cannot express that the destructor will not access borrowed data
 behind a <em>subset</em> of the type parameters.</p>
 <p>Here are two concrete examples of where the need for this arises:</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#example-checkedhashmap" id="example-checkedhashmap"><h2>Example: <code>CheckedHashMap</code></h2></a>
+<a class="header" href="#example-checkedhashmap" id="example-checkedhashmap"><h2>Example: <code>CheckedHashMap</code></h2></a>
 <p>The original Sound Generic Drop proposal (<a href="https://github.com/rust-lang/rfcs/blob/master/text/0769-sound-generic-drop.md">RFC 769</a>)
 had an <a href="https://github.com/rust-lang/rfcs/blob/master/text/0769-sound-generic-drop.md#appendix-a-why-and-when-would-drop-read-from-borrowed-data">appendix</a> with an example of a
 <code>CheckedHashMap&lt;K, V&gt;</code> type that called the hashcode method
@@ -201,7 +208,7 @@ references to the keys or to other values in the map). However, we
 cannot express this today: There is no way to say that the
 <code>CheckedHashMap</code> will not access borrowed data that is behind <em>just</em>
 <code>V</code>.</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#example-vect-aallocatordefaultallocator" id="example-vect-aallocatordefaultallocator"><h2>Example: <code>Vec&lt;T, A:Allocator=DefaultAllocator&gt;</code></h2></a>
+<a class="header" href="#example-vect-aallocatordefaultallocator" id="example-vect-aallocatordefaultallocator"><h2>Example: <code>Vec&lt;T, A:Allocator=DefaultAllocator&gt;</code></h2></a>
 <p>The Rust developers have been talking for <a href="https://github.com/rust-lang/rfcs/issues/538">a long time</a>
 about adding an <code>Allocator</code> trait that would allow users to override
 the allocator used for the backing storage of collection types like
@@ -251,7 +258,7 @@ v = Vec::with_allocator(&amp;a);
 remove <code>unsafe_destructor_blind_to_params</code> from <code>RawVec</code>/ <code>Vec</code>, which
 would break other code (for example, code using <code>Vec</code> as the backing
 storage for <a href="https://github.com/rust-lang/rust/blob/098a7a07ee6d11cf6d2b9d18918f26be95ee2f66/src/test/run-pass/dropck_legal_cycles.rs">cyclic graph structures</a>).</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>First off: The proposal in this RFC is intended as a <em>temporary</em>
 solution (along the lines of <code>#[fundamental]</code> and <em>will not</em> be
 stabilized as-is. Instead, we anticipate a more comprehensive approach
@@ -285,7 +292,7 @@ compiler and thus must be verified by the programmer.</p>
 should be expressible via <code>#[may_dangle]</code>.</p>
 </li>
 </ol>
-<a class="header" href="1327-dropck-param-eyepatch.html#attributes-on-lifetime-or-type-parameters" id="attributes-on-lifetime-or-type-parameters"><h2>Attributes on lifetime or type parameters</h2></a>
+<a class="header" href="#attributes-on-lifetime-or-type-parameters" id="attributes-on-lifetime-or-type-parameters"><h2>Attributes on lifetime or type parameters</h2></a>
 <p>This is a simple extension to the syntax.</p>
 <p>It is guarded by the feature gate <code>generic_param_attrs</code>.</p>
 <p>Constructions like the following will now become legal.</p>
@@ -333,7 +340,7 @@ unsafe impl&lt;'a, X, Y&gt; Drop for Foo&lt;'a, #[may_dangle] X, Y&gt; {
     ...
 }
 #}</code></pre></pre>
-<a class="header" href="1327-dropck-param-eyepatch.html#the-eyepatch-attribute" id="the-eyepatch-attribute"><h2>The &quot;eyepatch&quot; attribute</h2></a>
+<a class="header" href="#the-eyepatch-attribute" id="the-eyepatch-attribute"><h2>The &quot;eyepatch&quot; attribute</h2></a>
 <p>Add a new attribute, <code>#[may_dangle]</code> (the &quot;eyepatch&quot;).</p>
 <p>It is guarded by the feature gate <code>dropck_eyepatch</code>.</p>
 <p>The eyepatch is similar to <code>unsafe_destructor_blind_to_params</code>: it is
@@ -363,17 +370,17 @@ asserting that no data behind a reference of lifetime <code>'a</code> will be
 accessed by the destructor. Thus, no fields will be accessed nor
 methods called on values of type <code>&amp;'a Struct</code>, ensuring that again no
 dangling references are ever accessed by the destructor.</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#require-unsafe-on-drop-implementations-using-the-eyepatch" id="require-unsafe-on-drop-implementations-using-the-eyepatch"><h2>Require <code>unsafe</code> on Drop implementations using the eyepatch</h2></a>
+<a class="header" href="#require-unsafe-on-drop-implementations-using-the-eyepatch" id="require-unsafe-on-drop-implementations-using-the-eyepatch"><h2>Require <code>unsafe</code> on Drop implementations using the eyepatch</h2></a>
 <p>The final detail is to add an additional check to the compiler
 to ensure that any use of <code>#[may_dangle]</code> on a <code>Drop</code> implementation
 imposes a requirement that that implementation block use
-<code>unsafe impl</code>.<sup><a href="1327-dropck-param-eyepatch.html#footnote1">2</a></sup></p>
+<code>unsafe impl</code>.<sup><a href="#footnote1">2</a></sup></p>
 <p>This reflects the fact that use of <code>#[may_dangle]</code> is a
 programmer-provided assertion about the behavior of the <code>Drop</code>
 implementation that must be valided manually by the programmer.
 It is analogous to other uses of <code>unsafe impl</code> (apart from the
 fact that the <code>Drop</code> trait itself is not an <code>unsafe trait</code>).</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#examples-adapted-from-the-rustonomicon" id="examples-adapted-from-the-rustonomicon"><h3>Examples adapted from the Rustonomicon</h3></a>
+<a class="header" href="#examples-adapted-from-the-rustonomicon" id="examples-adapted-from-the-rustonomicon"><h3>Examples adapted from the Rustonomicon</h3></a>
 <p>So, adapting some examples from the Rustonomicon
 <a href="https://doc.rust-lang.org/nightly/nomicon/dropck.html">Drop Check</a> chapter, we would be able to write
 the following.</p>
@@ -405,8 +412,8 @@ unsafe impl&lt;#[may_dangle] T: fmt::Display&gt; Drop for InspectorB&lt;T&gt; {
 #}</code></pre></pre>
 <p>Both of the above two examples are much the same as if we had used the
 old <code>unsafe_destructor_blind_to_params</code> UGEH attribute.</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#example-rawvec" id="example-rawvec"><h3>Example: RawVec</h3></a>
-<p>To generalize <code>RawVec</code> from the <a href="1327-dropck-param-eyepatch.html#motivation">motivation</a> with an
+<a class="header" href="#example-rawvec" id="example-rawvec"><h3>Example: RawVec</h3></a>
+<p>To generalize <code>RawVec</code> from the <a href="#motivation">motivation</a> with an
 <code>Allocator</code> correctly (that is, soundly and without breaking existing
 code), we would now write:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -428,7 +435,7 @@ borrowed data will occur via the type <code>T</code>.</p>
 <code>unsafe_destructor_blind_to_params</code>; there is no way to say that a
 type will not access <code>T</code> in its destructor while also ensuring the
 proper drop-ordering relationship between <code>RawVec&lt;T, A&gt;</code> and <code>A</code>.</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#example-multiple-lifetimes" id="example-multiple-lifetimes"><h3>Example; Multiple Lifetimes</h3></a>
+<a class="header" href="#example-multiple-lifetimes" id="example-multiple-lifetimes"><h3>Example; Multiple Lifetimes</h3></a>
 <p>Example: The above <code>InspectorA</code> carried a <code>&amp;'static str</code> that was
 always safe to access from the destructor.</p>
 <p>If we wanted to generalize this type a bit, we might write:</p>
@@ -476,7 +483,7 @@ fn this_will_not_work() {
     i = InspectorC(a, b, c);
 }
 #}</code></pre></pre>
-<a class="header" href="1327-dropck-param-eyepatch.html#semantics" id="semantics"><h2>Semantics</h2></a>
+<a class="header" href="#semantics" id="semantics"><h2>Semantics</h2></a>
 <p>How does this work, you might ask?</p>
 <p>The idea is actually simple: the dropck rule stays mostly the same,
 except for a small twist.</p>
@@ -506,12 +513,12 @@ are considering the <code>impl Drop for Vec</code>, we <em>still</em> honor the
 constraint that <code>'name</code> must strictly outlive the <code>Vec</code> (because we
 continue to consider all <code>D</code> that is data owned by a value <code>v</code>,
 including when <code>D</code> == <code>InspectorC&lt;'a,'name,'c&gt;</code>).</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#prototype" id="prototype"><h2>Prototype</h2></a>
+<a class="header" href="#prototype" id="prototype"><h2>Prototype</h2></a>
 <p>pnkfelix has implemented a proof-of-concept
 <a href="https://github.com/pnkfelix/rust/commits/dropck-eyepatch">implementation</a> of the <code>#[may_dangle]</code> attribute.
 It uses the substitution machinery we already have in the compiler
 to express the semantics above.</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#limitations-of-prototype-not-part-of-design" id="limitations-of-prototype-not-part-of-design"><h2>Limitations of prototype (not part of design)</h2></a>
+<a class="header" href="#limitations-of-prototype-not-part-of-design" id="limitations-of-prototype-not-part-of-design"><h2>Limitations of prototype (not part of design)</h2></a>
 <p>Here we note a few limitations of the current prototype. These
 limitations are <em>not</em> being proposed as part of the specification of
 the feature.</p>
@@ -521,20 +528,20 @@ the <code>#[may_dangle]</code> attribute.</p>
 <p>Fixing the above limitations should just be a matter of engineering,
 not a fundamental hurdle to overcome in the feature's design in the
 context of the language.</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
-<a class="header" href="1327-dropck-param-eyepatch.html#ugliness" id="ugliness"><h2>Ugliness</h2></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#ugliness" id="ugliness"><h2>Ugliness</h2></a>
 <p>This attribute, like the original <code>unsafe_destructor_blind_to_params</code>
 UGEH attribute, is ugly.</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#unchecked-assertions-boo" id="unchecked-assertions-boo"><h2>Unchecked assertions boo</h2></a>
+<a class="header" href="#unchecked-assertions-boo" id="unchecked-assertions-boo"><h2>Unchecked assertions boo</h2></a>
 <p>It would be nicer if to actually change the language in a way where we
 could check the assertions being made by the programmer, rather than
 trusting them. (pnkfelix has some thoughts on this, which are mostly
 reflected in what he wrote in the <a href="https://github.com/rust-lang/rfcs/blob/master/text/1238-nonparametric-dropck.md#continue-supporting-parametricity">RFC 1238 alternatives</a>.)</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Note: The alternatives section for this RFC is particularly
 note-worthy because the ideas here may serve as the basis for a more
 comprehensive long-term approach.</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#make-dropck-see-again-via-focused-where-clauses" id="make-dropck-see-again-via-focused-where-clauses"><h2>Make dropck &quot;see again&quot; via (focused) where-clauses</h2></a>
+<a class="header" href="#make-dropck-see-again-via-focused-where-clauses" id="make-dropck-see-again-via-focused-where-clauses"><h2>Make dropck &quot;see again&quot; via (focused) where-clauses</h2></a>
 <p>The idea is that we keep the UGEH attribute, blunt hammer that it is.
 You first opt out of the dropck ordering constraints via that, and
 then you add back in ordering constraints via <code>where</code> clauses.</p>
@@ -580,7 +587,7 @@ constraints.</li>
 <ul>
 <li>
 <p>Its not 100% clear what our implementation strategy will be for it,
-while the eyepatch attribute does have a <a href="1327-dropck-param-eyepatch.html#prototype">prototype</a>.</p>
+while the eyepatch attribute does have a <a href="#prototype">prototype</a>.</p>
 <p>I actually do not give this drawback much weight; resolving this
 may be merely a matter of just trying to do it: e.g., build up the
 set of where-clauses when we make the ADT's representatin, and
@@ -593,7 +600,7 @@ unsoundness, and rely on the developer to keep the set of
 <code>where</code>-clauses on the <code>fn drop</code> up to date.</p>
 <p>This would be a pretty bad drawback, <em>if</em> the language and
 compiler were to stagnate. But my intention/goal is to eventually
-put in a <a href="1327-dropck-param-eyepatch.html#wait-for-proper-parametricity">sound compiler analysis</a>.
+put in a <a href="#wait-for-proper-parametricity">sound compiler analysis</a>.
 In other words, in the future, I will be more concerned about the
 ergonomics of the code that uses the sound analysis. I will not be
 concerned about &quot;gotcha's&quot; associated with the UGEH escape hatch.</p>
@@ -603,8 +610,8 @@ concerned about &quot;gotcha's&quot; associated with the UGEH escape hatch.</p>
 the eyepatch attribute and fn-drop-with-where-clauses are capable of
 resolving the real issues that I face today, and I would be happy for
 either proposal to be accepted.)</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#wait-for-proper-parametricity" id="wait-for-proper-parametricity"><h2>Wait for proper parametricity</h2></a>
-<p>As alluded to in the <a href="1327-dropck-param-eyepatch.html#drawbacks">drawbacks</a>, in principle we could provide
+<a class="header" href="#wait-for-proper-parametricity" id="wait-for-proper-parametricity"><h2>Wait for proper parametricity</h2></a>
+<p>As alluded to in the <a href="#drawbacks">drawbacks</a>, in principle we could provide
 similar expressiveness to that offered by the eyepatch (which is
 acting as a fine-grained escape hatch from dropck) by instead offering
 some language extension where the compiler would actually analyze the
@@ -638,9 +645,9 @@ than just reasoning about the container on its own without any consideration
 of each type/lifetime parameter.</p>
 </li>
 </ol>
-<a class="header" href="1327-dropck-param-eyepatch.html#do-nothing" id="do-nothing"><h2>Do nothing</h2></a>
+<a class="header" href="#do-nothing" id="do-nothing"><h2>Do nothing</h2></a>
 <p>If we do nothing, then we cannot add <code>Vec&lt;T, A:Allocator&gt;</code> soundly.</p>
-<a class="header" href="1327-dropck-param-eyepatch.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Is the definition of the drop-check rule sound with this <code>patched(D)</code>
 variant?  (We have not proven any previous variation of the rule
 sound; I think it would be an interesting student project though.)</p>
@@ -688,9 +695,6 @@ sound; I think it would be an interesting student project though.)</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0453-macro-reform - </title>
+        <title>0453-macro-reform - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,13 +145,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/453">rust-lang/rfcs#453</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/20008">rust-lang/rust#20008</a></li>
 </ul>
-<a class="header" href="0453-macro-reform.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Various enhancements to macros ahead of their standardization in 1.0.</p>
 <p><strong>Note</strong>: This is not the final Rust macro system design for all time.  Rather,
 it addresses the largest usability problems within the limited time frame for
 1.0.  It's my hope that a lot of these problems can be solved in nicer ways
 in the long term (there is some discussion of this below).</p>
-<a class="header" href="0453-macro-reform.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p><code>macro_rules!</code> has <a href="https://github.com/rust-lang/rfcs/issues/440">many rough
 edges</a>.  A few of the big ones:</p>
 <ul>
@@ -157,10 +164,10 @@ edges</a>.  A few of the big ones:</p>
 </ul>
 <p>These issues in particular are things we have a chance of addressing for 1.0.
 This RFC contains plans to do so.</p>
-<a class="header" href="0453-macro-reform.html#semantic-changes" id="semantic-changes"><h1>Semantic changes</h1></a>
+<a class="header" href="#semantic-changes" id="semantic-changes"><h1>Semantic changes</h1></a>
 <p>These are the substantial changes to the macro system.  The examples also use
 the improved syntax, described later.</p>
-<a class="header" href="0453-macro-reform.html#crate" id="crate"><h2><code>$crate</code></h2></a>
+<a class="header" href="#crate" id="crate"><h2><code>$crate</code></h2></a>
 <p>The first change is to disallow importing macros from an <code>extern crate</code> that is
 not at the crate root.  In that case, if</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -181,7 +188,7 @@ rebase.</p>
 <p>We can add a lint to warn about cases where an exported macro has paths that
 are not absolute-with-crate or <code>$crate</code>-relative.  This will have some
 (hopefully rare) false positives.</p>
-<a class="header" href="0453-macro-reform.html#macro-scope" id="macro-scope"><h2>Macro scope</h2></a>
+<a class="header" href="#macro-scope" id="macro-scope"><h2>Macro scope</h2></a>
 <p>In this document, the &quot;syntax environment&quot; refers to the set of syntax
 extensions that can be invoked at a given position in the crate.  The names in
 the syntax environment are simple unqualified identifiers such as <code>panic</code> and
@@ -243,9 +250,9 @@ helper macros will need to list them in documentation so that users can import
 them.</p>
 <p>Procedural macros need their own way to manipulate the syntax environment, but
 that's an unstable internal API, so it's outside the scope of this RFC.</p>
-<a class="header" href="0453-macro-reform.html#new-syntax" id="new-syntax"><h1>New syntax</h1></a>
+<a class="header" href="#new-syntax" id="new-syntax"><h1>New syntax</h1></a>
 <p>We also clean up macro syntax in a way that complements the semantic changes above.</p>
-<a class="header" href="0453-macro-reform.html#macro_use-mod" id="macro_use-mod"><h2><code>#[macro_use(...)] mod</code></h2></a>
+<a class="header" href="#macro_use-mod" id="macro_use-mod"><h2><code>#[macro_use(...)] mod</code></h2></a>
 <p>The <code>macro_use</code> attribute can be applied to a <code>mod</code> item as well.  The
 specified macros will &quot;escape&quot; the module and become visible throughout the
 rest of the enclosing module, including any child modules.  A crate might start
@@ -262,7 +269,7 @@ definitions in <code>lib.rs</code>.</p>
 current <code>#[macro_escape]</code>.  However, the new convention is to use an outer
 attribute, in the file whose syntax environment is affected, rather than an
 inner attribute in the file defining the macros.</p>
-<a class="header" href="0453-macro-reform.html#macro-export-and-re-export" id="macro-export-and-re-export"><h2>Macro export and re-export</h2></a>
+<a class="header" href="#macro-export-and-re-export" id="macro-export-and-re-export"><h2>Macro export and re-export</h2></a>
 <p>Currently in Rust, a macro definition qualified by <code>#[macro_export]</code> becomes
 available to other crates.  We keep this behavior in the new system.  A macro
 qualified by <code>#[macro_export]</code> can be the target of <code>#[macro_use(...)]</code>, and
@@ -299,7 +306,7 @@ it's just an example.)</p>
 <p>Because macros are exported in crate metadata as strings, macro re-export &quot;just
 works&quot; as soon as <code>$crate</code> is available.  It's implemented as part of the
 <code>$crate</code> branch mentioned above.</p>
-<a class="header" href="0453-macro-reform.html#plugin-attribute" id="plugin-attribute"><h2><code>#[plugin]</code> attribute</h2></a>
+<a class="header" href="#plugin-attribute" id="plugin-attribute"><h2><code>#[plugin]</code> attribute</h2></a>
 <p><code>#[phase(plugin)]</code> becomes simply <code>#[plugin]</code> and is still feature-gated.  It
 only controls whether to search for and run a plugin registrar function.  The
 plugin itself will decide whether it's to be linked at runtime, by calling a
@@ -317,27 +324,27 @@ extern crate myplugin;
 to the plugin through a <code>Registry</code> method.  This facilitates plugin
 configuration.  The alternative in many cases is to use interacting side
 effects between procedural macros, which are harder to reason about.</p>
-<a class="header" href="0453-macro-reform.html#syntax-convention" id="syntax-convention"><h2>Syntax convention</h2></a>
+<a class="header" href="#syntax-convention" id="syntax-convention"><h2>Syntax convention</h2></a>
 <p><code>macro_rules!</code> already allows <code>{ }</code> for the macro body, but the convention is
 <code>( )</code> for some reason.  In accepting this RFC we would change to a <code>{ }</code>
 convention for consistency with the rest of the language.</p>
-<a class="header" href="0453-macro-reform.html#reserve-macro-as-a-keyword" id="reserve-macro-as-a-keyword"><h2>Reserve <code>macro</code> as a keyword</h2></a>
+<a class="header" href="#reserve-macro-as-a-keyword" id="reserve-macro-as-a-keyword"><h2>Reserve <code>macro</code> as a keyword</h2></a>
 <p>A lot of the syntax alternatives discussed for this RFC involved a <code>macro</code>
 keyword.  The consensus is that macros are too unfinished to merit using the
 keyword now.  However, we should reserve it for a future macro system.</p>
-<a class="header" href="0453-macro-reform.html#implementation-and-transition" id="implementation-and-transition"><h1>Implementation and transition</h1></a>
+<a class="header" href="#implementation-and-transition" id="implementation-and-transition"><h1>Implementation and transition</h1></a>
 <p>I will coordinate implementation of this RFC, and I expect to write most of the
 code myself.</p>
 <p>To ease the transition, we can keep the old syntax as a deprecated synonym, to
 be removed before 1.0.</p>
-<a class="header" href="0453-macro-reform.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This is big churn on a major feature, not long before 1.0.</p>
 <p>We can ship improved versions of <code>macro_rules!</code> in a back-compatible way (in
 theory; I would like to smoke test this idea before 1.0).  So we could defer
 much of this reform until after 1.0.  The main reason not to is macro
 import/export.  Right now every macro you import will be expanded using your
 local copy of <code>macro_rules!</code>, regardless of what the macro author had in mind.</p>
-<a class="header" href="0453-macro-reform.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could try to implement proper hygienic capture of crate names in macros.
 This would be wonderful, but I don't think we can get it done for 1.0.</p>
 <p>We would have to actually parse the macro RHS when it's defined, find all the
@@ -363,13 +370,13 @@ user's hand as to which file a particular piece of code goes in seems
 un-Rusty.</p>
 </li>
 </ul>
-<a class="header" href="0453-macro-reform.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Should we forbid <code>$crate</code> in non-exported macros?  It seems useless, however I
 think we should allow it anyway, to encourage the habit of writing <code>$crate::</code>
 for any references to the local crate.</p>
 <p>Should <code>#[macro_reexport]</code> support the &quot;glob&quot; behavior of <code>#[macro_use]</code> with
 no names listed?</p>
-<a class="header" href="0453-macro-reform.html#acknowledgements" id="acknowledgements"><h1>Acknowledgements</h1></a>
+<a class="header" href="#acknowledgements" id="acknowledgements"><h1>Acknowledgements</h1></a>
 <p>This proposal is edited by Keegan McAllister.  It has been refined through many
 engaging discussions with:</p>
 <ul>
@@ -424,9 +431,6 @@ categorized you as several different people.  Pull requests are welcome :)</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

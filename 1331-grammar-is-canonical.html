@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1331-grammar-is-canonical - </title>
+        <title>1331-grammar-is-canonical - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1331">rust-lang/rfcs#1331</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/30942">rust-lang/rust#30942</a></li>
 </ul>
-<a class="header" href="1331-grammar-is-canonical.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Grammar of the Rust language should not be rustc implementation-defined. We have a formal grammar
 at <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> which is to be used as the canonical and formal representation of the Rust
 language.</p>
-<a class="header" href="1331-grammar-is-canonical.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>In many RFCs proposing syntactic changes (<a href="https://github.com/rust-lang/rfcs/blob/master/text/1228-placement-left-arrow.md">#1228</a>, <a href="https://github.com/rust-lang/rfcs/blob/master/text/1219-use-group-as.md">#1219</a> and <a href="https://github.com/rust-lang/rfcs/blob/master/text/1192-inclusive-ranges.md">#1192</a> being some of more recently
 merged RFCs) the changes are described rather informally and are hard to both implement and
 discuss which also leads to discussions containing a lot of guess-work.</p>
@@ -152,17 +159,17 @@ to be presented in terms of changes to the formal grammar should greatly simplif
 discussion and implementation of the RFCs. Using a formal grammar also allows us to discover and
 rule out existence of various issues with the grammar changes (e.g. grammar ambiguities) during
 design phase rather than implementation phase or, even worse, after the stabilisation.</p>
-<a class="header" href="1331-grammar-is-canonical.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Sadly, the <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">grammar</a> in question is <a href="https://github.com/rust-lang/rust/issues?utf8=%E2%9C%93&amp;q=is:issue+is:open+label:A-grammar">not quite equivalent</a> to the
 implementation in rustc yet. We cannot possibly hope to catch all the quirks in the rustc parser
 implementation, therefore something else needs to be done.</p>
 <p>This RFC proposes following approach to making <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> the canonical Rust language grammar:</p>
 <ol>
 <li>Fix the already known discrepancies between implementation and <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a>;</li>
-<li>Make <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> a <a href="1331-grammar-is-canonical.html#semi-canonical-grammar">semi-canonical grammar</a>;</li>
-<li>After a period of time transition <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> to a <a href="1331-grammar-is-canonical.html#fully-canonical-grammar">fully-canonical grammar</a>.</li>
+<li>Make <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> a <a href="#semi-canonical-grammar">semi-canonical grammar</a>;</li>
+<li>After a period of time transition <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> to a <a href="#fully-canonical-grammar">fully-canonical grammar</a>.</li>
 </ol>
-<a class="header" href="1331-grammar-is-canonical.html#semi-canonical-grammar" id="semi-canonical-grammar"><h2>Semi-canonical grammar</h2></a>
+<a class="header" href="#semi-canonical-grammar" id="semi-canonical-grammar"><h2>Semi-canonical grammar</h2></a>
 <p>Once all known discrepancies between the <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> and rustc parser implementation are
 resolved, <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> enters the state of being semi-canonical grammar of the Rust language.</p>
 <p>Semi-canonical means that all new development involving syntax changes are made and discussed in
@@ -178,25 +185,25 @@ the implementation is canonical.</li>
 <p>This process is sure to become ambiguous over time as syntax is increasingly adjusted (it is harder
 to “blame” syntax changes compared to syntax additions), therefore the resolution process of
 discrepancies will also depend more on a decision from the Rust team.</p>
-<a class="header" href="1331-grammar-is-canonical.html#fully-canonical-grammar" id="fully-canonical-grammar"><h2>Fully-canonical grammar</h2></a>
+<a class="header" href="#fully-canonical-grammar" id="fully-canonical-grammar"><h2>Fully-canonical grammar</h2></a>
 <p>After some time passes, <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> will transition to the state of fully canonical grammar.
 After <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> transitions into this state, for any discovered discrepancies the
 rustc parser implementation must be adjusted to match the <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a>, unless decided otherwise
 by the RFC process.</p>
-<a class="header" href="1331-grammar-is-canonical.html#rfc-process-changes-for-syntactic-changes-and-additions" id="rfc-process-changes-for-syntactic-changes-and-additions"><h2>RFC process changes for syntactic changes and additions</h2></a>
+<a class="header" href="#rfc-process-changes-for-syntactic-changes-and-additions" id="rfc-process-changes-for-syntactic-changes-and-additions"><h2>RFC process changes for syntactic changes and additions</h2></a>
 <p>Once the <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> enters semi-canonical state, all RFCs must describe syntax additions and
 changes in terms of the formal <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a>. Discussion about these changes are also expected (but
 not necessarily will) to become more formal and easier to follow.</p>
-<a class="header" href="1331-grammar-is-canonical.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This RFC introduces a period of ambiguity during which neither implementation nor <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> are
 truly canonical representation of the Rust language. This will be less of an issue over time as
 discrepancies are resolved, but its an issue nevertheless.</p>
-<a class="header" href="1331-grammar-is-canonical.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>One alternative would be to immediately make <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> a fully-canonical grammar of the Rust
 language at some arbitrary point in the future.</p>
 <p>Another alternative is to simply forget idea of having a formal grammar be the canonical grammar of
 the Rust language.</p>
-<a class="header" href="1331-grammar-is-canonical.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>How much time should pass between <a href="https://github.com/rust-lang/rust/tree/master/src/grammar">src/grammar</a> becoming semi-canonical and fully-canonical?</p>
 
                     </main>
@@ -242,9 +249,6 @@ the Rust language.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

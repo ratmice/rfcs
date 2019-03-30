@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0504-show-stabilization - </title>
+        <title>0504-show-stabilization - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/504">rust-lang/rfcs#504</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/20013">rust-lang/rust#20013</a></li>
 </ul>
-<a class="header" href="0504-show-stabilization.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Today's <code>Show</code> trait will be tasked with the purpose of providing the ability to
 inspect the representation of implementors of the trait. A new trait, <code>String</code>,
 will be introduced to the <code>std::fmt</code> module to in order to represent data that
@@ -146,7 +153,7 @@ can essentially be serialized to a string, typically representing the precise
 internal state of the implementor.</p>
 <p>The <code>String</code> trait will take over the <code>{}</code> format specifier and the <code>Show</code> trait
 will move to the now-open <code>{:?}</code> specifier.</p>
-<a class="header" href="0504-show-stabilization.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The formatting traits today largely provide clear guidance to what they are
 intended for. For example the <code>Binary</code> trait is intended for printing the binary
 representation of a data type. The ubiquitous <code>Show</code> trait, however, is not
@@ -177,7 +184,7 @@ trait which is not necessarily implemented for all types.</li>
 <p>The purpose of this RFC is to clearly define what the <code>Show</code> trait is intended
 to be used for, as well as providing guidelines to implementors of what
 implementations should do.</p>
-<a class="header" href="0504-show-stabilization.html#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
 <p>As described in the motivation section, the intended use cases for the current
 <code>Show</code> trait are actually motivations for two separate formatting traits. One
 trait will be intended for all Rust types to implement in order to easily allow
@@ -187,7 +194,7 @@ faithfully represented as a string. These types can be represented as a string
 in a non-lossy fashion and are intended for general consumption by more than
 just developers.</p>
 <p>This RFC proposes naming these two traits <code>Show</code> and <code>String</code>, respectively.</p>
-<a class="header" href="0504-show-stabilization.html#the-string-trait" id="the-string-trait"><h2>The <code>String</code> trait</h2></a>
+<a class="header" href="#the-string-trait" id="the-string-trait"><h2>The <code>String</code> trait</h2></a>
 <p>A new formatting trait will be added to <code>std::fmt</code> as follows:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -228,7 +235,7 @@ The output format will not change from what it is today (no extra escaping or
 debugging will occur).</p>
 <p>The compiler will <strong>not</strong> provide an implementation of <code>#[deriving(String)]</code> for
 types.</p>
-<a class="header" href="0504-show-stabilization.html#the-show-trait" id="the-show-trait"><h2>The <code>Show</code> trait</h2></a>
+<a class="header" href="#the-show-trait" id="the-show-trait"><h2>The <code>Show</code> trait</h2></a>
 <p>The current <code>Show</code> trait will not change location nor definition, but it will
 instead move to the <code>{:?}</code> specifier instead of the <code>{}</code> specifier (which
 <code>String</code> now uses).</p>
@@ -253,7 +260,7 @@ into these types.</p>
 produce valid UTF-8 data. The compiler will continue to provide a
 <code>#[deriving(Show)]</code> implementation to facilitate printing and debugging
 user-defined structures.</p>
-<a class="header" href="0504-show-stabilization.html#the-tostring-trait" id="the-tostring-trait"><h2>The <code>ToString</code> trait</h2></a>
+<a class="header" href="#the-tostring-trait" id="the-tostring-trait"><h2>The <code>ToString</code> trait</h2></a>
 <p>Today the <code>ToString</code> trait is connected to the <code>Show</code> trait, but this RFC
 proposes wiring it to the newly-proposed <code>String</code> trait instead. This switch
 enables users of <code>to_string</code> to rely on the same guarantees provided by <code>String</code>
@@ -261,7 +268,7 @@ as well as not erroneously providing the <code>to_string</code> method on types 
 not intended to have one.</p>
 <p>It is strongly discouraged to provide an implementation of the <code>ToString</code> trait
 and not the <code>String</code> trait.</p>
-<a class="header" href="0504-show-stabilization.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It is inherently easier to understand fewer concepts from the standard library
 and introducing multiple traits for common formatting implementations may lead
 to frequently mis-remembering which to implement. It is expected, however, that
@@ -281,7 +288,7 @@ string). Due to the debugging nature of <code>Show</code>, it is seen as a non-s
 make it the &quot;default&quot; via <code>{}</code>.</p>
 <p>It may be too ambitious to define that <code>String</code> is a non-lossy representation of
 a type, eventually motivating other formatting traits.</p>
-<a class="header" href="0504-show-stabilization.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The names <code>String</code> and <code>Show</code> may not necessarily imply &quot;user readable&quot; and
 &quot;debuggable&quot;. An alternative proposal would be to use <code>Show</code> for user
 readability and <code>Inspect</code> for debugging. This alternative also opens up the door
@@ -291,7 +298,7 @@ chosen <code>String</code> for user readability to provide a clearer connection 
 represented as a <code>String</code>. Additionally, this RFC considers the name <code>Show</code>
 roughly on par with other alternatives and would help reduce churn for code
 migrating today.</p>
-<a class="header" href="0504-show-stabilization.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
 <p>None at this time.</p>
 
                     </main>
@@ -337,9 +344,6 @@ migrating today.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

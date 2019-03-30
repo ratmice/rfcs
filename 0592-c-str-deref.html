@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0592-c-str-deref - </title>
+        <title>0592-c-str-deref - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/592">rust-lang/rfcs#592</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/22469">rust-lang/rust#22469</a></li>
 </ul>
-<a class="header" href="0592-c-str-deref.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Make <code>CString</code> dereference to a token type <code>CStr</code>, which designates
 null-terminated string data.</p>
 <pre><pre class="playpen"><code class="language-rust">// Type-checked to only accept C strings
@@ -151,7 +158,7 @@ fn main() {
     safe_puts(s);
 }
 </code></pre></pre>
-<a class="header" href="0592-c-str-deref.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The type <code>std::ffi::CString</code> is used to prepare string data for passing
 as null-terminated strings to FFI functions. This type dereferences to a
 DST, <code>[libc::c_char]</code>. The slice type as it is, however, is a poor choice
@@ -177,7 +184,7 @@ to FFI functions without an intermediate allocation in <code>CString</code>.</li
 thoughout other modules (see e.g.
 <a href="https://github.com/rust-lang/rfcs/pull/474">path reform</a>),
 it makes sense that <code>CString</code> gets its own borrowed counterpart.</p>
-<a class="header" href="0592-c-str-deref.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>This proposal introduces <code>CStr</code>, a type to designate a null-terminated
 string. This type does not implement <code>Sized</code>, <code>Copy</code>, or <code>Clone</code>.
 References to <code>CStr</code> are only safely obtained by dereferencing <code>CString</code>
@@ -185,7 +192,7 @@ and a few other helper methods, described below. A <code>CStr</code> value shoul
 no size information, as there is intent to turn <code>CStr</code> into an
 <a href="https://github.com/rust-lang/rfcs/issues/813">unsized type</a>,
 pending resolution on that proposal.</p>
-<a class="header" href="0592-c-str-deref.html#stage-1-cstr-a-dst-with-a-weight-problem" id="stage-1-cstr-a-dst-with-a-weight-problem"><h2>Stage 1: CStr, a DST with a weight problem</h2></a>
+<a class="header" href="#stage-1-cstr-a-dst-with-a-weight-problem" id="stage-1-cstr-a-dst-with-a-weight-problem"><h2>Stage 1: CStr, a DST with a weight problem</h2></a>
 <p>As current Rust does not have unsized types that are not DSTs, at this stage
 <code>CStr</code> is defined as a newtype over a character slice:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -214,13 +221,13 @@ impl Deref for CString {
 <p>In implementation, the <code>CStr</code> value needs a length for the internal slice.
 This RFC provides no guarantees that the length will be equal to the length
 of the string, or be any particular value suitable for safe use.</p>
-<a class="header" href="0592-c-str-deref.html#stage-2-unsized-cstr" id="stage-2-unsized-cstr"><h2>Stage 2: unsized CStr</h2></a>
+<a class="header" href="#stage-2-unsized-cstr" id="stage-2-unsized-cstr"><h2>Stage 2: unsized CStr</h2></a>
 <p>If unsized types are enabled later one way of another, the definition
 of <code>CStr</code> would change to an unsized type with statically sized contents.
 The authors of this RFC believe this would constitute no breakage to code
 using <code>CStr</code> safely. With a view towards this future change, it's recommended
 to avoid any unsafe code depending on the internal representation of <code>CStr</code>.</p>
-<a class="header" href="0592-c-str-deref.html#returning-c-strings" id="returning-c-strings"><h2>Returning C strings</h2></a>
+<a class="header" href="#returning-c-strings" id="returning-c-strings"><h2>Returning C strings</h2></a>
 <p>In cases when an FFI function returns a pointer to a non-owned C string,
 it might be preferable to wrap the returned string safely as a 'thin'
 <code>&amp;CStr</code> rather than scan it into a slice up front. To facilitate this,
@@ -248,15 +255,15 @@ impl CStr {
 #}</code></pre></pre>
 <p>An odd consequence is that it is valid, if wasteful, to call <code>to_bytes</code> on
 a <code>CString</code> via auto-dereferencing.</p>
-<a class="header" href="0592-c-str-deref.html#remove-c_str_to_bytes" id="remove-c_str_to_bytes"><h2>Remove c_str_to_bytes</h2></a>
+<a class="header" href="#remove-c_str_to_bytes" id="remove-c_str_to_bytes"><h2>Remove c_str_to_bytes</h2></a>
 <p>The functions <code>c_str_to_bytes</code> and <code>c_str_to_bytes_with_nul</code>, with their
 problematic lifetime semantics, are deprecated and eventually removed
 in favor of composition of the functions described above:
 <code>c_str_to_bytes(&amp;ptr)</code> becomes <code>CStr::from_ptr(ptr).to_bytes()</code>.</p>
-<a class="header" href="0592-c-str-deref.html#proof-of-concept" id="proof-of-concept"><h2>Proof of concept</h2></a>
+<a class="header" href="#proof-of-concept" id="proof-of-concept"><h2>Proof of concept</h2></a>
 <p>The described interface changes are implemented in crate
 <a href="https://github.com/mzabaluev/rust-c-str">c_string</a>.</p>
-<a class="header" href="0592-c-str-deref.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The change of the deref target type is another breaking change to <code>CString</code>.
 In practice the main purpose of borrowing from <code>CString</code> is to obtain a
 raw pointer with <code>.as_ptr()</code>; for code which only does this and does not
@@ -268,13 +275,13 @@ intrinsic to <code>CString</code> and makes it less useful as a container for by
 This is countered by the fact that there are general purpose byte containers
 in the core libraries, whereas <code>CString</code> addresses the specific need to
 convey string data from Rust to C-style APIs.</p>
-<a class="header" href="0592-c-str-deref.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>If the proposed enhancements or other equivalent facilities are not adopted,
 users of Rust can turn to third-party libraries for better convenience
 and safety when working with C strings. This may result in proliferation of
 incompatible helper types in public APIs until a dominant de-facto solution
 is established.</p>
-<a class="header" href="0592-c-str-deref.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Need a <code>Cow</code>?</p>
 
                     </main>
@@ -320,9 +327,6 @@ is established.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

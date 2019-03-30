@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0136-no-privates-in-public - </title>
+        <title>0136-no-privates-in-public - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,11 +145,11 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/136">#136</a></li>
 <li>Rust Issue #: <a href="https://github.com/rust-lang/rust/issues/16463">#16463</a></li>
 </ul>
-<a class="header" href="0136-no-privates-in-public.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Require a feature gate to expose private items in public APIs, until we grow the
 appropriate language features to be able to remove the feature gate and forbid
 it entirely.</p>
-<a class="header" href="0136-no-privates-in-public.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Privacy is central to guaranteeing the invariants necessary to write
 correct code that employs unsafe blocks. Although the current language
 rules prevent a private item from being directly named from outside
@@ -153,8 +160,8 @@ function and, thanks to type inference, gain access to the private
 type (though they still could not invoke public methods or access
 public fields). This access could undermine the reasoning of the
 author of the module. Fortunately, it is not hard to prevent.</p>
-<a class="header" href="0136-no-privates-in-public.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0136-no-privates-in-public.html#overview" id="overview"><h2>Overview</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#overview" id="overview"><h2>Overview</h2></a>
 <p>The general idea is that:</p>
 <ul>
 <li>If an item is declared as public, items referred to in the
@@ -162,10 +169,10 @@ public-facing parts of that item (e.g. its type) must themselves be
 declared as public.</li>
 </ul>
 <p>Details follow.</p>
-<a class="header" href="0136-no-privates-in-public.html#the-rules" id="the-rules"><h2>The rules</h2></a>
+<a class="header" href="#the-rules" id="the-rules"><h2>The rules</h2></a>
 <p>These rules apply as long as the feature gate is not enabled. After the feature
 gate has been removed, they will apply always.</p>
-<a class="header" href="0136-no-privates-in-public.html#when-is-an-item-public" id="when-is-an-item-public"><h3>When is an item &quot;public&quot;?</h3></a>
+<a class="header" href="#when-is-an-item-public" id="when-is-an-item-public"><h3>When is an item &quot;public&quot;?</h3></a>
 <p>Items that are explicitly declared as <code>pub</code> are always public. In
 addition, items in the <code>impl</code> of a trait (not an inherent impl) are
 considered public if all of the following conditions are met:</p>
@@ -177,7 +184,7 @@ should be impossible for an outside to access the items defined in
 the impl. They cannot name the types nor they can get direct access
 to a value of those types.</li>
 </ul>
-<a class="header" href="0136-no-privates-in-public.html#what-restrictions-apply-to-public-items" id="what-restrictions-apply-to-public-items"><h3>What restrictions apply to public items?</h3></a>
+<a class="header" href="#what-restrictions-apply-to-public-items" id="what-restrictions-apply-to-public-items"><h3>What restrictions apply to public items?</h3></a>
 <p>The rules for various kinds of public items are as follows:</p>
 <ul>
 <li>
@@ -201,9 +208,9 @@ trait bounds of its type parameters, and in the signatures of its methods
 (see <code>fn</code> case above) must be public.</p>
 </li>
 </ul>
-<a class="header" href="0136-no-privates-in-public.html#examples" id="examples"><h3>Examples</h3></a>
+<a class="header" href="#examples" id="examples"><h3>Examples</h3></a>
 <p>Here are some examples to demonstrate the rules.</p>
-<a class="header" href="0136-no-privates-in-public.html#struct-fields" id="struct-fields"><h4>Struct fields</h4></a>
+<a class="header" href="#struct-fields" id="struct-fields"><h4>Struct fields</h4></a>
 <pre><code>// A private struct may refer to any type in any field.
 struct Priv {
     a: Priv,
@@ -234,7 +241,7 @@ pub struct Item {
 
 pub struct Pub { ... }
 </code></pre>
-<a class="header" href="0136-no-privates-in-public.html#methods" id="methods"><h4>Methods</h4></a>
+<a class="header" href="#methods" id="methods"><h4>Methods</h4></a>
 <pre><code>struct Priv { .. }
 pub struct Pub { .. }
 pub struct Foo { .. }
@@ -244,7 +251,7 @@ impl Foo {
     pub fn foo(&amp;self, p: Priv) { .. }
 }
 </code></pre>
-<a class="header" href="0136-no-privates-in-public.html#trait-bounds" id="trait-bounds"><h4>Trait bounds</h4></a>
+<a class="header" href="#trait-bounds" id="trait-bounds"><h4>Trait bounds</h4></a>
 <pre><code>trait PrivTrait { ... }
 
 // Error: type parameter on public item bounded by a private trait.
@@ -253,7 +260,7 @@ pub struct Foo&lt;X: PrivTrait&gt; { ... }
 // OK: type parameter on private item.
 struct Foo&lt;X: PrivTrait&gt; { ... }
 </code></pre>
-<a class="header" href="0136-no-privates-in-public.html#trait-definitions" id="trait-definitions"><h4>Trait definitions</h4></a>
+<a class="header" href="#trait-definitions" id="trait-definitions"><h4>Trait definitions</h4></a>
 <pre><code>struct PrivStruct { ... }
 
 pub trait PubTrait {
@@ -266,7 +273,7 @@ trait PrivTrait {
     fn method(x: PrivStruct) { ... }
 }
 </code></pre>
-<a class="header" href="0136-no-privates-in-public.html#implementations" id="implementations"><h4>Implementations</h4></a>
+<a class="header" href="#implementations" id="implementations"><h4>Implementations</h4></a>
 <p>To some extent, implementations are prevented from exposing private
 types because their types must match the trait. However, that is not
 true with generics.</p>
@@ -293,16 +300,16 @@ impl PubTrait&lt;PrivStruct&gt; for PubStruct {
     }
 }
 </code></pre>
-<a class="header" href="0136-no-privates-in-public.html#type-aliases" id="type-aliases"><h4>Type aliases</h4></a>
+<a class="header" href="#type-aliases" id="type-aliases"><h4>Type aliases</h4></a>
 <p>Note that the path to the public item does not have to be private.</p>
 <pre><code>mod impl {
     pub struct Foo { ... }
 }
 pub type Bar = self::impl::Foo;
 </code></pre>
-<a class="header" href="0136-no-privates-in-public.html#negative-examples" id="negative-examples"><h3>Negative examples</h3></a>
+<a class="header" href="#negative-examples" id="negative-examples"><h3>Negative examples</h3></a>
 <p>The following examples should fail to compile under these rules.</p>
-<a class="header" href="0136-no-privates-in-public.html#non-public-items-referenced-by-a-pub-use" id="non-public-items-referenced-by-a-pub-use"><h4>Non-public items referenced by a pub use</h4></a>
+<a class="header" href="#non-public-items-referenced-by-a-pub-use" id="non-public-items-referenced-by-a-pub-use"><h4>Non-public items referenced by a pub use</h4></a>
 <p>These examples are illegal because they use a <code>pub use</code> to re-export
 a private item:</p>
 <pre><code>struct Item { ... }
@@ -323,12 +330,12 @@ use, that can be achieved using a module:</p>
 }
 pub use Item = self::impl::ItemPriv;
 </code></pre>
-<a class="header" href="0136-no-privates-in-public.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Adds a (temporary) feature gate.</p>
 <p>Requires some existing code to opt-in to the feature gate before
 transitioning to a more explicit alternative.</p>
 <p>Requires effort to implement.</p>
-<a class="header" href="0136-no-privates-in-public.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>If we stick with the status quo, we'll have to resolve several bizarre questions
 and keep supporting its behavior indefinitely after 1.0.</p>
 <p>Instead of a feature gate, we could just ban these things outright right away,
@@ -405,9 +412,6 @@ expressive so that the intended scope can be stated directly.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - </title>
+        <title>Introduction - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -133,7 +140,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="introduction.html#rust-rfcs---a-hrefhttpsrfcbotrsactive-rfc-lista" id="rust-rfcs---a-hrefhttpsrfcbotrsactive-rfc-lista"><h1>Rust RFCs - <a href="https://rfcbot.rs/">Active RFC List</a></h1></a>
+                        <a class="header" href="#rust-rfcs---a-hrefhttpsrfcbotrsactive-rfc-lista" id="rust-rfcs---a-hrefhttpsrfcbotrsactive-rfc-lista"><h1>Rust RFCs - <a href="https://rfcbot.rs/">Active RFC List</a></h1></a>
 <p>Many changes, including bug fixes and documentation improvements can be
 implemented and reviewed via the normal GitHub pull request workflow.</p>
 <p>Some changes though are &quot;substantial&quot;, and we ask that these be put through a
@@ -143,21 +150,21 @@ the <a href="http://www.rust-lang.org/team.html">sub-team</a>s.</p>
 and controlled path for new features to enter the language and standard
 libraries, so that all stakeholders can be confident about the direction the
 language is evolving in.</p>
-<a class="header" href="introduction.html#table-of-contents" id="table-of-contents"><h2>Table of Contents</h2></a>
+<a class="header" href="#table-of-contents" id="table-of-contents"><h2>Table of Contents</h2></a>
 <ul>
-<li><a href="introduction.html#rust-rfcs">Opening</a></li>
-<li><a href="introduction.html#table-of-contents">Table of Contents</a></li>
-<li><a href="introduction.html#when-you-need-to-follow-this-process">When you need to follow this process</a></li>
-<li><a href="introduction.html#before-creating-an-rfc">Before creating an RFC</a></li>
-<li><a href="introduction.html#what-the-process-is">What the process is</a></li>
-<li><a href="introduction.html#the-rfc-life-cycle">The RFC life-cycle</a></li>
-<li><a href="introduction.html#reviewing-rfcs">Reviewing RFCs</a></li>
-<li><a href="introduction.html#implementing-an-rfc">Implementing an RFC</a></li>
-<li><a href="introduction.html#rfc-postponement">RFC Postponement</a></li>
-<li><a href="introduction.html#help-this-is-all-too-informal">Help this is all too informal!</a></li>
-<li><a href="introduction.html#license">License</a></li>
+<li><a href="#rust-rfcs">Opening</a></li>
+<li><a href="#table-of-contents">Table of Contents</a></li>
+<li><a href="#when-you-need-to-follow-this-process">When you need to follow this process</a></li>
+<li><a href="#before-creating-an-rfc">Before creating an RFC</a></li>
+<li><a href="#what-the-process-is">What the process is</a></li>
+<li><a href="#the-rfc-life-cycle">The RFC life-cycle</a></li>
+<li><a href="#reviewing-rfcs">Reviewing RFCs</a></li>
+<li><a href="#implementing-an-rfc">Implementing an RFC</a></li>
+<li><a href="#rfc-postponement">RFC Postponement</a></li>
+<li><a href="#help-this-is-all-too-informal">Help this is all too informal!</a></li>
+<li><a href="#license">License</a></li>
 </ul>
-<a class="header" href="introduction.html#when-you-need-to-follow-this-process" id="when-you-need-to-follow-this-process"><h2>When you need to follow this process</h2></a>
+<a class="header" href="#when-you-need-to-follow-this-process" id="when-you-need-to-follow-this-process"><h2>When you need to follow this process</h2></a>
 <p>You need to follow this process if you intend to make &quot;substantial&quot; changes to
 Rust, Cargo, Crates.io, or the RFC process itself. What constitutes a
 &quot;substantial&quot; change is evolving based on community norms and varies depending
@@ -182,15 +189,15 @@ invisible to users-of-rust.</li>
 </ul>
 <p>If you submit a pull request to implement a new feature without going through
 the RFC process, it may be closed with a polite request to submit an RFC first.</p>
-<a class="header" href="introduction.html#sub-team-specific-guidelines" id="sub-team-specific-guidelines"><h3>Sub-team specific guidelines</h3></a>
+<a class="header" href="#sub-team-specific-guidelines" id="sub-team-specific-guidelines"><h3>Sub-team specific guidelines</h3></a>
 <p>For more details on when an RFC is required for the following areas, please see
 the Rust community's <a href="http://www.rust-lang.org/team.html">sub-team</a> specific guidelines for:</p>
 <ul>
-<li><a href="lang_changes.md">language changes</a>,</li>
-<li><a href="libs_changes.md">library changes</a>,</li>
-<li><a href="compiler_changes.md">compiler changes</a>.</li>
+<li><a href="lang_changes.html">language changes</a>,</li>
+<li><a href="libs_changes.html">library changes</a>,</li>
+<li><a href="compiler_changes.html">compiler changes</a>.</li>
 </ul>
-<a class="header" href="introduction.html#before-creating-an-rfc" id="before-creating-an-rfc"><h2>Before creating an RFC</h2></a>
+<a class="header" href="#before-creating-an-rfc" id="before-creating-an-rfc"><h2>Before creating an RFC</h2></a>
 <p>A hastily-proposed RFC can hurt its chances of acceptance. Low quality
 proposals, proposals for previously-rejected features, or those that don't fit
 into the near-term roadmap, may be quickly rejected, which can be demotivating
@@ -207,7 +214,7 @@ on this repo for discussion, but these are not actively looked at by the teams.<
 <p>As a rule of thumb, receiving encouraging feedback from long-standing project
 developers, and particularly members of the relevant <a href="http://www.rust-lang.org/team.html">sub-team</a> is a good
 indication that the RFC is worth pursuing.</p>
-<a class="header" href="introduction.html#what-the-process-is" id="what-the-process-is"><h2>What the process is</h2></a>
+<a class="header" href="#what-the-process-is" id="what-the-process-is"><h2>What the process is</h2></a>
 <p>In short, to get a major feature added to Rust, one must first get the RFC
 merged into the RFC repository as a markdown file. At that point the RFC is
 &quot;active&quot; and may be implemented with the goal of eventual inclusion into Rust.</p>
@@ -268,7 +275,7 @@ is reached.</li>
 closed. However, sometimes substantial new arguments or ideas are raised,
 the FCP is canceled, and the RFC goes back into development mode.</li>
 </ul>
-<a class="header" href="introduction.html#the-rfc-life-cycle" id="the-rfc-life-cycle"><h2>The RFC life-cycle</h2></a>
+<a class="header" href="#the-rfc-life-cycle" id="the-rfc-life-cycle"><h2>The RFC life-cycle</h2></a>
 <p>Once an RFC becomes &quot;active&quot; then authors may implement it and submit the
 feature as a pull request to the Rust repo. Being &quot;active&quot; is not a rubber
 stamp, and in particular still does not mean the feature will ultimately be
@@ -290,8 +297,8 @@ next major release.</p>
 minor changes should be submitted as amendments. More substantial changes
 should be new RFCs, with a note added to the original RFC. Exactly what counts
 as a &quot;very minor change&quot; is up to the sub-team to decide; check
-<a href="introduction.html#sub-team-specific-guidelines">Sub-team specific guidelines</a> for more details.</p>
-<a class="header" href="introduction.html#reviewing-rfcs" id="reviewing-rfcs"><h2>Reviewing RFCs</h2></a>
+<a href="#sub-team-specific-guidelines">Sub-team specific guidelines</a> for more details.</p>
+<a class="header" href="#reviewing-rfcs" id="reviewing-rfcs"><h2>Reviewing RFCs</h2></a>
 <p>While the RFC pull request is up, the sub-team may schedule meetings with the
 author and/or relevant stakeholders to discuss the issues in greater detail,
 and in some cases the topic may be discussed at a sub-team meeting. In either
@@ -302,7 +309,7 @@ will regularly issue decisions. When a decision is made, the RFC pull request
 will either be merged or closed. In either case, if the reasoning is not clear
 from the discussion in thread, the sub-team will add a comment describing the
 rationale for the decision.</p>
-<a class="header" href="introduction.html#implementing-an-rfc" id="implementing-an-rfc"><h2>Implementing an RFC</h2></a>
+<a class="header" href="#implementing-an-rfc" id="implementing-an-rfc"><h2>Implementing an RFC</h2></a>
 <p>Some accepted RFCs represent vital features that need to be implemented right
 away. Other accepted RFCs can represent features that can wait until some
 arbitrary developer feels like doing the work. Every accepted RFC has an
@@ -315,7 +322,7 @@ review after the RFC has been accepted.</p>
 <p>If you are interested in working on the implementation for an &quot;active&quot; RFC, but
 cannot determine if someone else is already working on it, feel free to ask
 (e.g. by leaving a comment on the associated issue).</p>
-<a class="header" href="introduction.html#rfc-postponement" id="rfc-postponement"><h2>RFC Postponement</h2></a>
+<a class="header" href="#rfc-postponement" id="rfc-postponement"><h2>RFC Postponement</h2></a>
 <p>Some RFC pull requests are tagged with the &quot;postponed&quot; label when they are
 closed (as part of the rejection process). An RFC closed with &quot;postponed&quot; is
 marked as such because we want neither to think about evaluating the proposal
@@ -329,18 +336,18 @@ informal first round of evaluation, namely the round of &quot;do we think we wou
 ever possibly consider making this change, as outlined in the RFC pull request,
 or some semi-obvious variation of it.&quot; (When the answer to the latter question
 is &quot;no&quot;, then the appropriate response is to close the RFC, not postpone it.)</p>
-<a class="header" href="introduction.html#help-this-is-all-too-informal" id="help-this-is-all-too-informal"><h3>Help this is all too informal!</h3></a>
+<a class="header" href="#help-this-is-all-too-informal" id="help-this-is-all-too-informal"><h3>Help this is all too informal!</h3></a>
 <p>The process is intended to be as lightweight as reasonable for the present
 circumstances. As usual, we are trying to let the process be driven by
 consensus and community norms, not impose more structure than necessary.</p>
-<a class="header" href="introduction.html#license" id="license"><h2>License</h2></a>
+<a class="header" href="#license" id="license"><h2>License</h2></a>
 <p>This repository is currently in the process of being licensed under either of</p>
 <ul>
 <li>Apache License, Version 2.0, (<a href="LICENSE-APACHE">LICENSE-APACHE</a> or http://www.apache.org/licenses/LICENSE-2.0)</li>
 <li>MIT license (<a href="LICENSE-MIT">LICENSE-MIT</a> or http://opensource.org/licenses/MIT)</li>
 </ul>
 <p>at your option. Some parts of the repository are already licensed according to those terms. For more see <a href="https://github.com/rust-lang/rfcs/pull/2044">RFC 2044</a> and its <a href="https://github.com/rust-lang/rust/issues/43461">tracking issue</a>.</p>
-<a class="header" href="introduction.html#contributions" id="contributions"><h3>Contributions</h3></a>
+<a class="header" href="#contributions" id="contributions"><h3>Contributions</h3></a>
 <p>Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.</p>
 
                     </main>
@@ -378,9 +385,6 @@ consensus and community norms, not impose more structure than necessary.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

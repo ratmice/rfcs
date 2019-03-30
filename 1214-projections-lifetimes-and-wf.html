@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1214-projections-lifetimes-and-wf - </title>
+        <title>1214-projections-lifetimes-and-wf - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1214">rust-lang/rfcs#1214</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27579">rust-lang/rust#27579</a></li>
 </ul>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Type system changes to address the outlives relation with respect to
 projections, and to better enforce that all types are well-formed
 (meaning that they respect their declared bounds). The current
@@ -167,8 +174,8 @@ under the new rules.</li>
 <p>Note that although the changes do cause regressions, they also cause
 some code (like that in <a href="https://github.com/rust-lang/rust/issues/23442">#23442</a>) which currently gets errors to
 compile successfully.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#tldr" id="tldr"><h3>TL;DR</h3></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#tldr" id="tldr"><h3>TL;DR</h3></a>
 <p>This is a long detailed RFC that is attempting to specify in some
 detail aspects of the type system that were underspecified or buggily
 implemented before. This section just summarizes the effect on
@@ -244,7 +251,7 @@ this case, though <code>T=Self</code>, and <code>Self</code> is not <code>Sized<
 default. Therefore, this trait should be declared <code>trait Foo: Sized</code>
 to be legal. The compiler is currently <em>attempting</em> to enforce these
 rules, but many cases were overlooked in practice.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#impact-on-cratesio" id="impact-on-cratesio"><h3>Impact on crates.io</h3></a>
+<a class="header" href="#impact-on-cratesio" id="impact-on-cratesio"><h3>Impact on crates.io</h3></a>
 <p>This RFC has been largely implemented and tested against crates.io. A
 <a href="https://gist.github.com/nikomatsakis/364fae49de18268680f2#root-regressions-sorted-by-rank">total of 43 (root) crates are affected</a> by the
 changes. Interestingly, <strong>the vast majority of warnings/errors that
@@ -305,7 +312,7 @@ bound like <code>T: 'a</code>.</p>
 <p><strong>Case 3.</strong> The compiler currently permits non-object-safe traits to
 be used as types, even if objects could never actually be created
 (<a href="https://github.com/rust-lang/rust/issues/21953">#21953</a>).</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#projections-and-the-outlives-relation" id="projections-and-the-outlives-relation"><h3>Projections and the outlives relation</h3></a>
+<a class="header" href="#projections-and-the-outlives-relation" id="projections-and-the-outlives-relation"><h3>Projections and the outlives relation</h3></a>
 <p><a href="https://github.com/rust-lang/rfcs/blob/master/text/0192-bounds-on-object-and-generic-types.md">RFC 192</a> introduced the outlives relation <code>T: 'a</code> and described the
 rules that are used to decide when one type outlives a lifetime. In
 particular, the RFC describes rules that govern how the compiler
@@ -344,7 +351,7 @@ of reasonable and obviously correct code.</p>
 restore soundness and make working with associated types more
 convenient in some situations.</strong> The changes are largely but not
 completely backwards compatible.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#well-formed-types" id="well-formed-types"><h3>Well-formed types</h3></a>
+<a class="header" href="#well-formed-types" id="well-formed-types"><h3>Well-formed types</h3></a>
 <p>A type is considered <em>well-formed</em> (WF) if it meets some simple
 correctness criteria. For builtin types like <code>&amp;'a T</code> or <code>[T]</code>, these
 criteria are built into the language. For user-defined types like a
@@ -379,7 +386,7 @@ what <code>K</code> and <code>V</code> are, we have to surface this requirement 
 of a where-clause, so that users of the struct know that they must
 maintain this relationship in order for the struct to be interally
 coherent.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#an-aside-explicit-wf-requirements-on-types" id="an-aside-explicit-wf-requirements-on-types"><h4>An aside: explicit WF requirements on types</h4></a>
+<a class="header" href="#an-aside-explicit-wf-requirements-on-types" id="an-aside-explicit-wf-requirements-on-types"><h4>An aside: explicit WF requirements on types</h4></a>
 <p>You might wonder why you have to write <code>K:Hash</code> and <code>K:'a</code> explicitly.
 After all, they are obvious from the types of the fields. The reason
 is that we want to make it possible to check whether a type like
@@ -402,7 +409,7 @@ struct Wrap3&lt;'a,K&gt;(DeltaMap&lt;'a,K,K&gt;);
 hold, but this is not obvious from the declaration of
 <code>Wrap1</code>. Instead, you must trace deeply through its fields to find out
 that this obligation exists.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#implied-lifetime-bounds" id="implied-lifetime-bounds"><h4>Implied lifetime bounds</h4></a>
+<a class="header" href="#implied-lifetime-bounds" id="implied-lifetime-bounds"><h4>Implied lifetime bounds</h4></a>
 <p>To help avoid undue annotation, Rust relies on implied lifetime bounds
 in certain contexts. Currently, this is limited to fn bodies. The idea
 is that for functions, we can make callers do some portion of the WF
@@ -437,7 +444,7 @@ next section.</p>
 implied bounds and contravariance (<a href="https://github.com/rust-lang/rust/issues/25860">#25860</a>). To better separate the
 issues, this will be addressed in a follow-up RFC that should appear
 shortly.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#missing-wf-checks" id="missing-wf-checks"><h4>Missing WF checks</h4></a>
+<a class="header" href="#missing-wf-checks" id="missing-wf-checks"><h4>Missing WF checks</h4></a>
 <p>Unfortunately, the compiler currently fails to enforce WF in several
 important cases. For example, the
 <a href="http://is.gd/6JXjyg">following program</a> is accepted:</p>
@@ -480,9 +487,9 @@ impl header (trait reference) are well-formed, and in turn each &quot;user&quot;
 of an impl will validate this requirement whenever they project out of
 a trait reference (e.g., to do a method call, or normalize an
 associated type).</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>This section dives into detail on the proposed type rules.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#a-little-type-grammar" id="a-little-type-grammar"><h3>A little type grammar</h3></a>
+<a class="header" href="#a-little-type-grammar" id="a-little-type-grammar"><h3>A little type grammar</h3></a>
 <p>We extend the type grammar from <a href="https://github.com/rust-lang/rfcs/blob/master/text/0192-bounds-on-object-and-generic-types.md">RFC 192</a> with projections and slice
 types:</p>
 <pre><code>T = scalar (i32, u32, ...)        // Boring stuff
@@ -503,7 +510,7 @@ r = 'x                            // Region name
 object type: so if you have <code>Box&lt;FnMut()+Send&gt;</code>, <code>FnMut()</code> and <code>Send</code>
 are object type fragments. Object type fragments are identical to full
 trait references, except that they do not have a self type (no <code>P0</code>).</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#syntactic-definition-of-the-outlives-relation" id="syntactic-definition-of-the-outlives-relation"><h3>Syntactic definition of the outlives relation</h3></a>
+<a class="header" href="#syntactic-definition-of-the-outlives-relation" id="syntactic-definition-of-the-outlives-relation"><h3>Syntactic definition of the outlives relation</h3></a>
 <p>The outlives relation is defined in purely syntactic terms as follows.
 These are inference rules written in a primitive ASCII notation. :) As
 part of defining the outlives relation, we need to track the set of
@@ -511,7 +518,7 @@ lifetimes that are bound within the type we are looking at.  Let's
 call that set <code>R=&lt;r0..rn&gt;</code>. Initially, this set <code>R</code> is empty, but it
 will grow as we traverse through types like fns or object fragments,
 which can bind region names via <code>for&lt;..&gt;</code>.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#simple-outlives-rules" id="simple-outlives-rules"><h4>Simple outlives rules</h4></a>
+<a class="header" href="#simple-outlives-rules" id="simple-outlives-rules"><h4>Simple outlives rules</h4></a>
 <p>Here are the rules covering the simple cases, where no type parameters
 or projections are involved:</p>
 <pre><code>OutlivesScalar:
@@ -545,7 +552,7 @@ OutlivesFragment:
   --------------------------------------------------
   R ⊢ for&lt;r..&gt; TraitId&lt;P0..Pn&gt;: 'a
 </code></pre>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#outlives-for-lifetimes" id="outlives-for-lifetimes"><h4>Outlives for lifetimes</h4></a>
+<a class="header" href="#outlives-for-lifetimes" id="outlives-for-lifetimes"><h4>Outlives for lifetimes</h4></a>
 <p>The outlives relation for lifetimes depends on whether the lifetime in
 question was bound within a type or not. In the usual case, we decide
 the relationship between two lifetimes by consulting the environment,
@@ -578,7 +585,7 @@ on each call to the fn).</p>
   --------------------------------------------------
   R ⊢ 'x: 'a
 </code></pre>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#outlives-for-type-parameters" id="outlives-for-type-parameters"><h4>Outlives for type parameters</h4></a>
+<a class="header" href="#outlives-for-type-parameters" id="outlives-for-type-parameters"><h4>Outlives for type parameters</h4></a>
 <p>For type parameters, the only way to draw &quot;outlives&quot; conclusions is to
 find information in the environment (which is being threaded
 implicitly here, since it is never modified). In terms of a Rust
@@ -589,7 +596,7 @@ derived from the signature (discussed below).</p>
   --------------------------------------------------
   R ⊢ X: 'a
 </code></pre>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#outlives-for-projections" id="outlives-for-projections"><h4>Outlives for projections</h4></a>
+<a class="header" href="#outlives-for-projections" id="outlives-for-projections"><h4>Outlives for projections</h4></a>
 <p>Projections have the most possibilities. First, we may find
 information in the in-scope where clauses, as with type parameters,
 but we can also consult the trait definition to find bounds (consider
@@ -704,7 +711,7 @@ is true without ever knowing what <code>&lt;TYPE&gt;</code> is -- we just need t
 that the trait reference <code>&lt;Foo as Iterator&gt;</code> doesn't have any
 lifetimes or type parameters in it, and hence the impl cannot refer to
 any lifetime or type parameters.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#implementation-complications" id="implementation-complications"><h4>Implementation complications</h4></a>
+<a class="header" href="#implementation-complications" id="implementation-complications"><h4>Implementation complications</h4></a>
 <p>The current region inference code only permits constraints of the
 form:</p>
 <pre><code>C = r0: r1
@@ -749,7 +756,7 @@ still necessary to run inference because the bound may be a region
 variable.) So far this approach has sufficed for all situations
 encountered in practice. Eventually, we should extend the region
 inferencer to a richer model that includes &quot;OR&quot; constraints.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#the-wf-relation" id="the-wf-relation"><h3>The WF relation</h3></a>
+<a class="header" href="#the-wf-relation" id="the-wf-relation"><h3>The WF relation</h3></a>
 <p>This section describes the &quot;well-formed&quot; relation. In
 <a href="https://github.com/rust-lang/rfcs/blob/master/text/0192-bounds-on-object-and-generic-types.md">previous RFCs</a>, this was combined with the outlives
 relation. We separate it here for reasons that shall become clear when
@@ -797,7 +804,7 @@ WfProjection:
   --------------------------------------------------
   R ⊢ &lt;P0 as Trait&lt;P1..Pn&gt;&gt;::Id WF
 </code></pre>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#wf-checking-and-higher-ranked-types" id="wf-checking-and-higher-ranked-types"><h4>WF checking and higher-ranked types</h4></a>
+<a class="header" href="#wf-checking-and-higher-ranked-types" id="wf-checking-and-higher-ranked-types"><h4>WF checking and higher-ranked types</h4></a>
 <p>There are two places in Rust where types can introduce lifetime names
 into scope: fns and trait objects. These have somewhat different rules
 than the rest, simply because they modify the set <code>R</code> of bound
@@ -825,7 +832,7 @@ this. For one thing, it's forwards compatible with passing DST by
 value. For another, it means that non-defaulted trait methods to do
 not have to show that their argument types are <code>Sized</code> (this will be
 checked in the implementations, where more types are known). Since the
-implicit <code>Self</code> type parameter is not <code>Sized</code> by default (<a href="0546-Self-not-sized-by-default.md">RFC 546</a>),
+implicit <code>Self</code> type parameter is not <code>Sized</code> by default (<a href="0546-Self-not-sized-by-default.html">RFC 546</a>),
 requiring that argument types be <code>Sized</code> in trait definitions proves
 to be an annoying annotation burden.</p>
 <p>The object type rule is similar, though it includes an extra clause:</p>
@@ -860,7 +867,7 @@ itself. These are checked when the object is created. The reason not
 to check them here is because the <code>Self</code> type is not known (this is an
 object, after all), and hence we can't check them in general. (But see
 <em>unresolved questions</em>.)</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#wf-checking-a-trait-reference" id="wf-checking-a-trait-reference"><h4>WF checking a trait reference</h4></a>
+<a class="header" href="#wf-checking-a-trait-reference" id="wf-checking-a-trait-reference"><h4>WF checking a trait reference</h4></a>
 <p>In some contexts, we want to check a trait reference, such as the ones
 that appear in where clauses or type parameter bounds. The rules for
 this are given here:</p>
@@ -873,7 +880,7 @@ this are given here:</p>
 </code></pre>
 <p>The rules are fairly straightforward. The components must be well formed,
 and any where-clauses declared on the trait itself much hold.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#checking-conditions" id="checking-conditions"><h4>Checking conditions</h4></a>
+<a class="header" href="#checking-conditions" id="checking-conditions"><h4>Checking conditions</h4></a>
 <p>In various rules above, we have rules that declare that a where-clause
 must hold, which have the form <code>R ̣⊢ WhereClause</code>. Here, <code>R</code> represents
 the set of bound regions. It may well be that <code>WhereClause</code> does not
@@ -903,7 +910,7 @@ struct Foo&lt;'a, T:Eq&gt; { .. }
 show that <code>T: Eq</code> holds for that function to be well-formed.  This is
 because the condition which is geneated will be <code>'a ⊢ T: Eq</code>, but <code>'a</code>
 is not referenced there.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#implied-bounds" id="implied-bounds"><h4>Implied bounds</h4></a>
+<a class="header" href="#implied-bounds" id="implied-bounds"><h4>Implied bounds</h4></a>
 <p>Implied bounds can be derived from the WF and outlives relations.  The
 implied bounds from a type <code>T</code> are given by expanding the requirements
 that <code>T: WF</code>. Since we currently limit ourselves to implied region
@@ -918,7 +925,7 @@ bounds. If we encounter a requirement that e.g. <code>X::Id: 'r</code>, we canno
 for example deduce that <code>X: 'r</code> must hold. This is because while <code>X: 'r</code> is <em>sufficient</em> for <code>X::Id: 'r</code> to hold, it is not <em>necessary</em> for
 <code>X::Id: 'r</code> to hold. So we can only conclude that <code>X::Id: 'r</code> holds,
 and not <code>X: 'r</code>.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#when-should-we-check-the-wf-relation-and-under-what-conditions" id="when-should-we-check-the-wf-relation-and-under-what-conditions"><h4>When should we check the WF relation and under what conditions?</h4></a>
+<a class="header" href="#when-should-we-check-the-wf-relation-and-under-what-conditions" id="when-should-we-check-the-wf-relation-and-under-what-conditions"><h4>When should we check the WF relation and under what conditions?</h4></a>
 <p>Currently the compiler performs WF checking in a somewhat haphazard
 way: in some cases (such as impls), it omits checking WF, but in
 others (such as fn bodies), it checks WF when it should not have
@@ -985,11 +992,11 @@ to the rules given above.</p>
 <p><strong>Normalizing associated type references.</strong> Whenever a projection type
 like <code>T::Foo</code> is normalized, we will require that the trait reference
 is WF.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>N/A</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>I'm not aware of any appealing alternatives.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p><strong>Best policy for type aliases.</strong> The current policy is not to check
 type aliases, since they are transparent to type-checking, and hence
 their expansion can be checked instead. This is coherent, though
@@ -1010,7 +1017,7 @@ trait HashSet&lt;K:Hash&gt;
 <p>should an object like <code>Box&lt;HashSet&lt;NotHash&gt;&gt;</code> be illegal? It seems
 like that would be inline with our &quot;best effort&quot; approach to bound
 regions, so probably yes.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#appendix" id="appendix"><h1>Appendix</h1></a>
+<a class="header" href="#appendix" id="appendix"><h1>Appendix</h1></a>
 <p>The informal explanation glossed over some details. This appendix
 tries to be a bit more thorough with how it is that we can conclude
 that a projection outlives <code>'a</code> if its inputs outlive <code>'a</code>. To start,
@@ -1089,7 +1096,7 @@ the empty set.</li>
 <p><strong>Lemma 2:</strong> Given that <code>FV(T) ∈ X</code>, <code>∀i. Ri: 'a</code>, then <code>[X =&gt; R] T: 'a</code>. In other words, if all the type/lifetime parameters that appear
 in a type outlive <code>'a</code>, then the type outlives <code>'a</code>. Follows by
 inspection of the outlives rules.</p>
-<a class="header" href="1214-projections-lifetimes-and-wf.html#edit-history" id="edit-history"><h1>Edit History</h1></a>
+<a class="header" href="#edit-history" id="edit-history"><h1>Edit History</h1></a>
 <p><a href="https://github.com/rust-lang/rfcs/pull/1592">RFC1592</a> - amend to require that tuple fields be sized</p>
 
                     </main>
@@ -1135,9 +1142,6 @@ inspection of the outlives rules.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

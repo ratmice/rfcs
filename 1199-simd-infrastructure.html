@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1199-simd-infrastructure - </title>
+        <title>1199-simd-infrastructure - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1199">rust-lang/rfcs#1199</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27731">rust-lang/rust#27731</a></li>
 </ul>
-<a class="header" href="1199-simd-infrastructure.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Lay the ground work for building powerful SIMD functionality.</p>
-<a class="header" href="1199-simd-infrastructure.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>SIMD (Single-Instruction Multiple-Data) is an important part of
 performant modern applications. Most CPUs used for that sort of task
 provide dedicated hardware and instructions for operating on multiple
@@ -152,7 +159,7 @@ but doesn't fill everything out. The goal here is to provide the raw
 types and access to the raw instructions on each platform.</p>
 <p>(An earlier variant of this RFC was discussed as a
 <a href="https://internals.rust-lang.org/t/pre-rfc-simd-groundwork/2343">pre-RFC</a>.)</p>
-<a class="header" href="1199-simd-infrastructure.html#where-does-this-code-go-aka-why-not-in-std" id="where-does-this-code-go-aka-why-not-in-std"><h2>Where does this code go? Aka. why not in <code>std</code>?</h2></a>
+<a class="header" href="#where-does-this-code-go-aka-why-not-in-std" id="where-does-this-code-go-aka-why-not-in-std"><h2>Where does this code go? Aka. why not in <code>std</code>?</h2></a>
 <p>This RFC is focused on building stable, powerful SIMD functionality in
 external crates, not <code>std</code>.</p>
 <p>This makes it much easier to support functionality only &quot;occasionally&quot;
@@ -165,7 +172,7 @@ conditional API exposure.</p>
 <p>With an external crate, we can leverage <code>cargo</code>'s existing build
 infrastructure: compiling with some target features will rebuild with
 those features enabled.</p>
-<a class="header" href="1199-simd-infrastructure.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The design comes in three parts, all on the path to stabilisation:</p>
 <ul>
 <li>types (<code>feature(repr_simd)</code>)</li>
@@ -182,7 +189,7 @@ families (x86, x86-64, ARM, MIPS, ...), and even within a family
 <p>There is definitely a common core of SIMD functionality shared across
 many platforms, but this RFC doesn't try to extract that, it is just
 building tools that can be wrapped into a more uniform API later.</p>
-<a class="header" href="1199-simd-infrastructure.html#types" id="types"><h2>Types</h2></a>
+<a class="header" href="#types" id="types"><h2>Types</h2></a>
 <p>There is a new attribute: <code>repr(simd)</code>.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -208,7 +215,7 @@ implemented by types that will work).</p>
 <p>Adding <code>repr(simd)</code> to a type may increase its minimum/preferred
 alignment, based on platform behaviour. (E.g. x86 wants its 128-bit
 SSE vectors to be 128-bit aligned.)</p>
-<a class="header" href="1199-simd-infrastructure.html#operations" id="operations"><h2>Operations</h2></a>
+<a class="header" href="#operations" id="operations"><h2>Operations</h2></a>
 <p>CPU vendors usually offer &quot;standard&quot; C headers for their CPU specific
 operations, such as <a href="http://infocenter.arm.com/help/topic/com.arm.doc.ihi0073a/IHI0073A_arm_neon_intrinsics_ref.pdf"><code>arm_neon.h</code></a> and <a href="https://software.intel.com/sites/landingpage/IntrinsicsGuide">the <code>...mmintrin.h</code> headers for
 x86(-64)</a>.</p>
@@ -282,7 +289,7 @@ name. Why <code>platform-intrinsic</code> rather than say <code>simd-intrinsic</
 are non-SIMD platform-specific instructions that may be nice to expose
 (for example, Intel defines an <code>_addcarry_u32</code> intrinsic corresponding
 to the <code>ADC</code> instruction).</p>
-<a class="header" href="1199-simd-infrastructure.html#shuffles--element-operations" id="shuffles--element-operations"><h3>Shuffles &amp; element operations</h3></a>
+<a class="header" href="#shuffles--element-operations" id="shuffles--element-operations"><h3>Shuffles &amp; element operations</h3></a>
 <p>One of the most powerful features of SIMD is the ability to rearrange
 data within vectors, giving super-linear speed-ups sometimes. As such,
 shuffles are exposed generally: intrinsics that represent arbitrary
@@ -336,7 +343,7 @@ extern &quot;platform-intrinsic&quot; {
 <p>The <code>i0</code> indices do not have to be constant. These are equivalent to
 <code>v[i0] = elem</code> and <code>v[i0]</code> respectively. They are type checked
 similarly to the shuffles.</p>
-<a class="header" href="1199-simd-infrastructure.html#comparisons" id="comparisons"><h3>Comparisons</h3></a>
+<a class="header" href="#comparisons" id="comparisons"><h3>Comparisons</h3></a>
 <p>Comparisons are implemented via intrinsics. The raw signatures would
 look like:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -355,7 +362,7 @@ extern &quot;platform-intrinsic&quot; {
 shuffles: ensuring that <code>T</code> and <code>U</code> have the same length, and that <code>U</code>
 is appropriately &quot;boolean&quot;-y. Libraries can use traits to ensure that
 these will be enforced by the type checker too.</p>
-<a class="header" href="1199-simd-infrastructure.html#arithmetic" id="arithmetic"><h3>Arithmetic</h3></a>
+<a class="header" href="#arithmetic" id="arithmetic"><h3>Arithmetic</h3></a>
 <p>Intrinsics will be provided for arithmetic operations like addition
 and multiplication.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -376,7 +383,7 @@ integer type</li>
 </ul>
 <p>(The integer types are <code>i8</code>, ..., <code>i64</code>, <code>u8</code>, ..., <code>u64</code> and the
 float types are <code>f32</code> and <code>f64</code>.)</p>
-<a class="header" href="1199-simd-infrastructure.html#why-not-inline-asm" id="why-not-inline-asm"><h3>Why not inline asm?</h3></a>
+<a class="header" href="#why-not-inline-asm" id="why-not-inline-asm"><h3>Why not inline asm?</h3></a>
 <p>One alternative to providing intrinsics is to instead just use
 inline-asm to expose each CPU instruction. However, this approach has
 essentially only one benefit (avoiding defining the intrinsics), but
@@ -401,7 +408,7 @@ the result will be strictly worse). Those possible advantages of hand
 written assembly over intrinsics only come in to play when writing
 longer blocks of raw assembly, i.e. some inner loop might be faster
 when written as a single chunk of asm rather than as intrinsics.</p>
-<a class="header" href="1199-simd-infrastructure.html#platform-detection" id="platform-detection"><h2>Platform Detection</h2></a>
+<a class="header" href="#platform-detection" id="platform-detection"><h2>Platform Detection</h2></a>
 <p>The availability of efficient SIMD functionality is very fine-grained,
 and our current <code>cfg(target_arch = &quot;...&quot;)</code> is not precise enough. This
 RFC proposes a <code>target_feature</code> <code>cfg</code>, that would be set to the
@@ -440,7 +447,7 @@ cfg_if_else! {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="1199-simd-infrastructure.html#extensions" id="extensions"><h1>Extensions</h1></a>
+<a class="header" href="#extensions" id="extensions"><h1>Extensions</h1></a>
 <ul>
 <li>
 <p>scatter/gather operations allow (partially) operating on a SIMD
@@ -464,7 +471,7 @@ extern &quot;platform-intrinsic&quot; {
 <p>This should be a backwards-compatible generalisation.</p>
 </li>
 </ul>
-<a class="header" href="1199-simd-infrastructure.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>Intrinsics could instead by namespaced by ABI, <code>extern &quot;x86-intrinsic&quot;</code>, <code>extern &quot;arm-intrinsic&quot;</code>.</p>
@@ -525,7 +532,7 @@ and the generic intrinsics. This would probably require a relatively
 complicated set of traits (with compiler integration).</p>
 </li>
 </ul>
-<a class="header" href="1199-simd-infrastructure.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Should integer vectors get division automatically? Most CPUs
 don't support them for vectors.</li>
@@ -575,9 +582,6 @@ don't support them for vectors.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0109-remove-crate-id - </title>
+        <title>0109-remove-crate-id - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/109">rust-lang/rfcs#109</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/14470">rust-lang/rust#14470</a></li>
 </ul>
-<a class="header" href="0109-remove-crate-id.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <ul>
 <li>Remove the <code>crate_id</code> attribute and knowledge of versions from rustc.</li>
 <li>Add a <code>#[crate_name]</code> attribute similar to the old <code>#[crate_id]</code> attribute</li>
@@ -146,7 +153,7 @@
 <li>A new flag, <code>--extern</code>, will be used to override searching for external crates</li>
 <li>A new flag, <code>-C metadata=foo</code>, used when hashing symbols</li>
 </ul>
-<a class="header" href="0109-remove-crate-id.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The intent of CrateId and its support has become unclear over time as the
 initial impetus, <code>rustpkg</code>, has faded over time. With <code>cargo</code> on the horizon,
 doubts have been cast on the compiler's support for dealing with crate
@@ -156,7 +163,7 @@ heavy lifting.</p>
 <p>This new crate identification is designed to not compromise on the usability of
 the compiler independent of cargo. Additionally, all use cases support today
 with a CrateId should still be supported.</p>
-<a class="header" href="0109-remove-crate-id.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>A new <code>#[crate_name]</code> attribute will be accepted by the compiler, which is the
 equivalent of the old <code>#[crate_id]</code> attribute, except without the &quot;crate id&quot;
 support. This new attribute can have a string value describe a valid crate name.</p>
@@ -170,7 +177,7 @@ support. This new attribute can have a string value describe a valid crate name.
 #fn main() {
 pub fn foo() { /* ... */ }
 #}</code></pre></pre>
-<a class="header" href="0109-remove-crate-id.html#naming-library-filenames" id="naming-library-filenames"><h2>Naming library filenames</h2></a>
+<a class="header" href="#naming-library-filenames" id="naming-library-filenames"><h2>Naming library filenames</h2></a>
 <p>Currently, rustc creates filenames for library following this pattern:</p>
 <pre><code>lib&lt;name&gt;-&lt;version&gt;-&lt;hash&gt;.rlib
 </code></pre>
@@ -208,7 +215,7 @@ this later.</li>
 </ul>
 <p>Additionally, with a predictable filename output external tooling should be
 easier to write.</p>
-<a class="header" href="0109-remove-crate-id.html#loading-crates" id="loading-crates"><h2>Loading crates</h2></a>
+<a class="header" href="#loading-crates" id="loading-crates"><h2>Loading crates</h2></a>
 <p>The goal of the crate loading phase of the compiler is to map a set of <code>extern crate</code> statements to (dylib,rlib) pairs that are present on the filesystem. To
 do this, the current system matches dependencies via the CrateId syntax:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -249,7 +256,7 @@ will be easily weeded out once the compiler realizes that there is no metadata
 in the library.</p>
 <p>This scheme is strictly less powerful than the previous, but it moves a good
 deal of logic from the compiler to cargo.</p>
-<a class="header" href="0109-remove-crate-id.html#manually-specifying-dependencies" id="manually-specifying-dependencies"><h3>Manually specifying dependencies</h3></a>
+<a class="header" href="#manually-specifying-dependencies" id="manually-specifying-dependencies"><h3>Manually specifying dependencies</h3></a>
 <p>Cargo is often seen as &quot;expert mode&quot; in its usage of the compiler. Cargo will
 always have prior knowledge about what exact versions of a library will be used
 for any particular dependency, as well as where the outputs are located.</p>
@@ -268,7 +275,7 @@ the rlib/dylib pair are located next to one another at this location (<code>libj
 is the file stem).</p>
 <p>This will enable cargo to drive how the compiler loads crates by manually
 specifying where files are located and exactly what corresponds to what.</p>
-<a class="header" href="0109-remove-crate-id.html#symbol-mangling" id="symbol-mangling"><h2>Symbol mangling</h2></a>
+<a class="header" href="#symbol-mangling" id="symbol-mangling"><h2>Symbol mangling</h2></a>
 <p>Today, mangled symbols contain the version number at the end of the symbol
 itself. This was originally intended to tie into Linux's ability to version
 symbols, but in retrospect this is generally viewed as over-ambitious as the
@@ -277,12 +284,12 @@ support is not currently there, nor does it work on windows or OSX.</p>
 hash at the end of each symbol would only include the crate name and metadata
 from the command line. Metadata from the command line will be passed via a new
 command line flag, <code>-C metadata=foo</code>, which specifies a string to hash.</p>
-<a class="header" href="0109-remove-crate-id.html#the-standard-rust-distribution" id="the-standard-rust-distribution"><h2>The standard rust distribution</h2></a>
+<a class="header" href="#the-standard-rust-distribution" id="the-standard-rust-distribution"><h2>The standard rust distribution</h2></a>
 <p>The standard distribution would continue to put hashes in filenames manually
 because the libraries are intended to occupy a privileged space on the system.
 The build system would manually move a file after it was compiled to the correct
 destination filename.</p>
-<a class="header" href="0109-remove-crate-id.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>The compiler is able to operate fairly well independently of cargo today, and
@@ -298,7 +305,7 @@ manifest will contain the same identifier for each dependency that the source
 code will contain.</p>
 </li>
 </ul>
-<a class="header" href="0109-remove-crate-id.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>The compiler could go in the opposite direction of this proposal, enhancing
 <code>extern crate</code> instead of simplifying it. The compiler could learn about
@@ -307,7 +314,7 @@ tune its behavior. It is unclear whether this increase in complexity will be
 paired with a large enough gain in usability of the compiler independent of
 cargo.</li>
 </ul>
-<a class="header" href="0109-remove-crate-id.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>An implementation for the more advanced features of cargo does not currently
@@ -363,9 +370,6 @@ literal just for the <code>-</code> character may be overkill.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

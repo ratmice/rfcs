@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0235-collections-conventions - </title>
+        <title>0235-collections-conventions - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/235">rust-lang/rfcs#235</a></li>
 <li>Rust Issue #: <a href="https://github.com/rust-lang/rust/issues/18424">rust-lang/rust#18424</a></li>
 </ul>
-<a class="header" href="0235-collections-conventions.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This is a combined <em>conventions</em> and <em>library stabilization</em> RFC. The goal is to
 establish a set of naming and signature conventions for <code>std::collections</code>.</p>
 <p>The major components of the RFC include:</p>
@@ -162,11 +169,11 @@ establish a set of naming and signature conventions for <code>std::collections</
 </ul>
 <p><em>A big thank-you to @Gankro, who helped collect API information and worked
 through an initial pass of some of the proposals here.</em></p>
-<a class="header" href="0235-collections-conventions.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This RFC aims to improve the design of the <code>std::collections</code> module in
 preparation for API stabilization. There are a number of problems that need to
 be addressed, as spelled out in the subsections below.</p>
-<a class="header" href="0235-collections-conventions.html#collection-traits" id="collection-traits"><h2>Collection traits</h2></a>
+<a class="header" href="#collection-traits" id="collection-traits"><h2>Collection traits</h2></a>
 <p>The <code>collections</code> module defines several traits:</p>
 <ul>
 <li>Collection</li>
@@ -192,18 +199,18 @@ any of the existing collections.</p>
 of methods provided on the concrete collections that implement them.</p>
 </li>
 </ul>
-<a class="header" href="0235-collections-conventions.html#divergent-apis" id="divergent-apis"><h2>Divergent APIs</h2></a>
+<a class="header" href="#divergent-apis" id="divergent-apis"><h2>Divergent APIs</h2></a>
 <p>Despite the current collection traits, the APIs of various concrete collections
 has diverged; there is not a globally coherent design, and there are many
 inconsistencies.</p>
 <p>One problem in particular is the lack of clear guiding principles for the API
 design. This RFC proposes a few along the way.</p>
-<a class="header" href="0235-collections-conventions.html#providing-slice-apis-on-vec-and-string" id="providing-slice-apis-on-vec-and-string"><h2>Providing slice APIs on <code>Vec</code> and <code>String</code></h2></a>
+<a class="header" href="#providing-slice-apis-on-vec-and-string" id="providing-slice-apis-on-vec-and-string"><h2>Providing slice APIs on <code>Vec</code> and <code>String</code></h2></a>
 <p>The <code>String</code> and <code>Vec</code> types each provide a limited subset of the methods
 provides on string and vector slices, but there is not a clear reason to limit
 the API in this way. Today, one has to write things like
 <code>some_str.as_slice().contains(...)</code>, which is not ergonomic or intuitive.</p>
-<a class="header" href="0235-collections-conventions.html#the-equiv-problem" id="the-equiv-problem"><h2>The <code>Equiv</code> problem</h2></a>
+<a class="header" href="#the-equiv-problem" id="the-equiv-problem"><h2>The <code>Equiv</code> problem</h2></a>
 <p>There is a more subtle problem related to slices. It's common to use a <code>HashMap</code>
 with owned <code>String</code> keys, but then the natural API for things like lookup is not
 very usable:</p>
@@ -276,7 +283,7 @@ fn find_with(&amp;self, f: |&amp;K| -&gt; Ordering) -&gt; Option&lt;&amp;V&gt;
 <p>Besides being less convenient -- you cannot write <code>map.find_with(&quot;some literal&quot;)</code> --
 this function navigates the tree according to an ordering that may have no
 relationship to the actual ordering of the tree.</p>
-<a class="header" href="0235-collections-conventions.html#maybeowned" id="maybeowned"><h2><code>MaybeOwned</code></h2></a>
+<a class="header" href="#maybeowned" id="maybeowned"><h2><code>MaybeOwned</code></h2></a>
 <p>Sometimes a function does not know in advance whether it will need or produce an
 owned copy of some data, or whether a borrow suffices. A typical example is the
 <code>from_utf8_lossy</code> function:</p>
@@ -301,7 +308,7 @@ pub enum MaybeOwned&lt;'a&gt; {
 <code>MaybeOwned</code> type (and connected machinery) are somewhat ad hoc -- and
 specialized to <code>String</code>/<code>str</code>. It would be somewhat more palatable if there were
 a single &quot;maybe owned&quot; abstraction usable across a wide range of types.</p>
-<a class="header" href="0235-collections-conventions.html#iterable" id="iterable"><h2><code>Iterable</code></h2></a>
+<a class="header" href="#iterable" id="iterable"><h2><code>Iterable</code></h2></a>
 <p>A frequently-requested feature for the <code>collections</code> module is an <code>Iterable</code>
 trait for &quot;values that can be iterated over&quot;. There are two main motivations:</p>
 <ul>
@@ -327,8 +334,8 @@ for v in some_vec.iter() { ... }
 <p>and <code>consume_iter(some_vec)</code> rather than <code>consume_iter(some_vec.iter())</code>.</p>
 </li>
 </ul>
-<a class="header" href="0235-collections-conventions.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0235-collections-conventions.html#the-collections-today" id="the-collections-today"><h2>The collections today</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#the-collections-today" id="the-collections-today"><h2>The collections today</h2></a>
 <p>The concrete collections currently available in <code>std</code> fall into roughly three categories:</p>
 <ul>
 <li>
@@ -377,7 +384,7 @@ implementation), However, the implementation is actually generic with respect to
 this underlying map, and so in the long run (with HKT and other language
 changes) <code>LruCache</code> should probably add a type parameter for the underlying map,
 defaulted to <code>HashMap</code>.</p>
-<a class="header" href="0235-collections-conventions.html#design-principles" id="design-principles"><h2>Design principles</h2></a>
+<a class="header" href="#design-principles" id="design-principles"><h2>Design principles</h2></a>
 <ul>
 <li>
 <p><em>Centering on <code>Iterator</code>s</em>. The <code>Iterator</code> trait is a strength of Rust's
@@ -407,14 +414,14 @@ collections APIs. In general, APIs should be very clearly motivated by a wide
 variety of use cases, either for expressiveness, performance, or ergonomics.</p>
 </li>
 </ul>
-<a class="header" href="0235-collections-conventions.html#removing-the-traits" id="removing-the-traits"><h2>Removing the traits</h2></a>
+<a class="header" href="#removing-the-traits" id="removing-the-traits"><h2>Removing the traits</h2></a>
 <p>This RFC proposes a somewhat radical step for the collections traits: rather
 than reform them, we should eliminate them altogether -- <em>for now</em>.</p>
 <p>Unlike inherent methods, which can easily be added and deprecated over time, a
 trait is &quot;forever&quot;: there are very few backwards-compatible modifications to
 traits. Thus, for something as fundamental as collections, it is prudent to take
 our time to get the traits right.</p>
-<a class="header" href="0235-collections-conventions.html#lack-of-iterator-methods" id="lack-of-iterator-methods"><h3>Lack of iterator methods</h3></a>
+<a class="header" href="#lack-of-iterator-methods" id="lack-of-iterator-methods"><h3>Lack of iterator methods</h3></a>
 <p>In particular, there is one way in which the current traits are clearly <em>wrong</em>:
 they do not provide standard methods like <code>iter</code>, despite these being
 fundamental to working with collections in Rust. Sadly, this gap is due to
@@ -461,7 +468,7 @@ significant investment.</p>
 many potential use cases in the context of collections.</p>
 <p>Thus, the goal in this RFC is to do the best we can without HKT <em>for now</em>,
 while allowing a graceful migration if or when HKT is added.</p>
-<a class="header" href="0235-collections-conventions.html#persistentimmutable-collections" id="persistentimmutable-collections"><h3>Persistent/immutable collections</h3></a>
+<a class="header" href="#persistentimmutable-collections" id="persistentimmutable-collections"><h3>Persistent/immutable collections</h3></a>
 <p>Another problem with the current collection traits is the split between
 immutable and mutable versions. In the long run, we will probably want to
 provide <em>persistent</em> collections (which allow non-destructive &quot;updates&quot; that
@@ -469,7 +476,7 @@ create new collections that share most of their data with the old ones).</p>
 <p>However, persistent collection APIs have not been thoroughly explored in Rust;
 it would be hasty to standardize on a set of traits until we have more
 experience.</p>
-<a class="header" href="0235-collections-conventions.html#downsides-of-removal" id="downsides-of-removal"><h3>Downsides of removal</h3></a>
+<a class="header" href="#downsides-of-removal" id="downsides-of-removal"><h3>Downsides of removal</h3></a>
 <p>There are two main downsides to removing the traits without a replacement:</p>
 <ol>
 <li>
@@ -491,13 +498,13 @@ before settling on a design.</p>
 as we will see below. Second, this RFC is the antidote: we establish a clear set
 of conventions and APIs for concrete collections up front, and stabilize on
 those, which should make it easy to add traits later on.</p>
-<a class="header" href="0235-collections-conventions.html#why-not-leave-the-traits-as-experimental" id="why-not-leave-the-traits-as-experimental"><h3>Why not leave the traits as &quot;experimental&quot;?</h3></a>
+<a class="header" href="#why-not-leave-the-traits-as-experimental" id="why-not-leave-the-traits-as-experimental"><h3>Why not leave the traits as &quot;experimental&quot;?</h3></a>
 <p>An alternative to removal would be to leave the traits intact, but marked as
 experimental, with the intent to radically change them later.</p>
 <p>Such a strategy doesn't buy much relative to removal (given the arguments
 above), but risks the traits becoming &quot;de facto&quot; stable if people begin using
 them en masse.</p>
-<a class="header" href="0235-collections-conventions.html#solving-the-_equiv-and-maybeowned-problems" id="solving-the-_equiv-and-maybeowned-problems"><h2>Solving the <code>_equiv</code> and <code>MaybeOwned</code> problems</h2></a>
+<a class="header" href="#solving-the-_equiv-and-maybeowned-problems" id="solving-the-_equiv-and-maybeowned-problems"><h2>Solving the <code>_equiv</code> and <code>MaybeOwned</code> problems</h2></a>
 <p>The basic problem that leads to <code>_equiv</code> methods is that:</p>
 <ul>
 <li><code>&amp;String</code> and <code>&amp;str</code> are not the same type.</li>
@@ -507,7 +514,7 @@ not be suitable when <code>T</code> is instantiated with <code>String</code>.</l
 </ul>
 <p>A similar story plays out for <code>&amp;Vec&lt;T&gt;</code> and <code>&amp;[T]</code>, and with DST and custom
 slice types the same problem will arise elsewhere.</p>
-<a class="header" href="0235-collections-conventions.html#the-borrow-trait" id="the-borrow-trait"><h3>The <code>Borrow</code> trait</h3></a>
+<a class="header" href="#the-borrow-trait" id="the-borrow-trait"><h3>The <code>Borrow</code> trait</h3></a>
 <p>This RFC proposes to use a <em>trait</em>, <code>Borrow</code> to connect borrowed and owned data
 in a generic fashion:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -551,7 +558,7 @@ impl&lt;T&gt; Borrow&lt;[T]&gt; for Vec&lt;T&gt; {
 }
 #}</code></pre></pre>
 <p><em>(Note: thanks to @epdtry for <a href="https://github.com/rust-lang/rfcs/pull/235#issuecomment-55337168">suggesting this variation</a>! The original proposal
-is listed <a href="0235-collections-conventions.html#variants-of-borrow">in the Alternatives</a>.)</em></p>
+is listed <a href="#variants-of-borrow">in the Alternatives</a>.)</em></p>
 <p>A primary goal of the design is allowing a <em>blanket</em> <code>impl</code> for non-sliceable
 types (the first <code>impl</code> above). This blanket <code>impl</code> ensures that all new sized,
 cloneable types are automatically borrowable; new <code>impl</code>s are required only for
@@ -560,7 +567,7 @@ that we can freely add impls for unsized types (like <code>str</code> and <code>
 running afoul of coherence.</p>
 <p>Because of the blanket <code>impl</code>, the <code>Borrow</code> trait can largely be ignored except
 when it is actually used -- which we describe next.</p>
-<a class="header" href="0235-collections-conventions.html#using-borrow-to-replace-_equiv-methods" id="using-borrow-to-replace-_equiv-methods"><h3>Using <code>Borrow</code> to replace <code>_equiv</code> methods</h3></a>
+<a class="header" href="#using-borrow-to-replace-_equiv-methods" id="using-borrow-to-replace-_equiv-methods"><h3>Using <code>Borrow</code> to replace <code>_equiv</code> methods</h3></a>
 <p>With the <code>Borrow</code> trait in place, we can eliminate the <code>_equiv</code> method variants
 by asking map keys to be <code>Borrow</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -617,9 +624,9 @@ breaking key invariants of the data structure. This is already the case with
 <code>_equiv</code>.</p>
 </li>
 </ul>
-<p>The <a href="0235-collections-conventions.html#variants-of-borrow">Alternatives section</a> includes a variant of <code>Borrow</code>
+<p>The <a href="#variants-of-borrow">Alternatives section</a> includes a variant of <code>Borrow</code>
 that doesn't suffer from these downsides, but has some downsides of its own.</p>
-<a class="header" href="0235-collections-conventions.html#clone-on-write-cow-pointers" id="clone-on-write-cow-pointers"><h3>Clone-on-write (<code>Cow</code>) pointers</h3></a>
+<a class="header" href="#clone-on-write-cow-pointers" id="clone-on-write-cow-pointers"><h3>Clone-on-write (<code>Cow</code>) pointers</h3></a>
 <p>A side-benefit of the <code>Borrow</code> trait is that we can give a more general version
 of the <code>MaybeOwned</code> as a &quot;clone-on-write&quot; smart pointer:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -701,12 +708,12 @@ some other data structure (perhaps as part of a collection) and will internally
 track whether an owned copy is available.</p>
 <p>Altogether, this RFC proposes to introduce <code>Borrow</code> and <code>Cow</code> as above, and to
 deprecate <code>MaybeOwned</code> and <code>MaybeOwnedVector</code>. The API changes for the
-collections are discussed <a href="0235-collections-conventions.html#the-apis">below</a>.</p>
-<a class="header" href="0235-collections-conventions.html#intoiterator-and-iterable" id="intoiterator-and-iterable"><h2><code>IntoIterator</code> (and <code>Iterable</code>)</h2></a>
-<p>As discussed in <a href="0235-collections-conventions.html#iterable">earlier</a>, some form of an <code>Iterable</code> trait is
+collections are discussed <a href="#the-apis">below</a>.</p>
+<a class="header" href="#intoiterator-and-iterable" id="intoiterator-and-iterable"><h2><code>IntoIterator</code> (and <code>Iterable</code>)</h2></a>
+<p>As discussed in <a href="#iterable">earlier</a>, some form of an <code>Iterable</code> trait is
 desirable for both expressiveness and ergonomics. Unfortunately, a full
 treatment of <code>Iterable</code> requires HKT for similar reasons to
-<a href="0235-collections-conventions.html#lack-of-iterator-methods">the collection traits</a>. However, it's possible to
+<a href="#lack-of-iterator-methods">the collection traits</a>. However, it's possible to
 get some of the way there in a forwards-compatible fashion.</p>
 <p>In particular, the following two traits work fine (with
 <a href="https://github.com/rust-lang/rfcs/pull/195">associated items</a>):</p>
@@ -832,7 +839,7 @@ above, it can be used to deal with embedded lifetimes as in the
 <code>iter_through_rc</code> example; and if the HKT version of <code>Iterable</code> is later added,
 thanks to the suggested blanket <code>impl</code> for <code>IntoIterator</code> that <code>where</code> clause
 could be changed to use <code>Iterable</code> instead, again without breakage.</p>
-<a class="header" href="0235-collections-conventions.html#benefits-of-intoiterator" id="benefits-of-intoiterator"><h3>Benefits of <code>IntoIterator</code></h3></a>
+<a class="header" href="#benefits-of-intoiterator" id="benefits-of-intoiterator"><h3>Benefits of <code>IntoIterator</code></h3></a>
 <p>What do we gain by incorporating <code>IntoIterator</code> today?</p>
 <p>This RFC proposes that <code>for</code> loops should use <code>IntoIterator</code> rather than
 <code>Iterator</code>. With the blanket <code>impl</code> of <code>IntoIterator</code> for any <code>Iterator</code>, this
@@ -852,7 +859,7 @@ take <code>IntoIterator</code> instead, immediately becoming more general and mo
 ergonomic.</p>
 <p>In general, <code>IntoIterator</code> will allow us to move toward more <code>Iterator</code>-centric
 APIs today, in a way that's compatible with HKT tomorrow.</p>
-<a class="header" href="0235-collections-conventions.html#additional-methods" id="additional-methods"><h3>Additional methods</h3></a>
+<a class="header" href="#additional-methods" id="additional-methods"><h3>Additional methods</h3></a>
 <p>Another typical desire for an <code>Iterable</code> trait is to offer defaulted versions of
 methods that basically re-export iterator methods on containers (see
 <a href="https://github.com/rust-lang/rfcs/pull/17">the earlier RFC</a>). Usually these
@@ -885,7 +892,7 @@ general for collections, as we will see below).</p>
 <p>We will leave to later RFCs the incorporation of additional methods. Notice, in
 particular, that such methods can wait until we introduce an <code>Iterable</code> trait
 via HKT without breaking backwards compatibility.</p>
-<a class="header" href="0235-collections-conventions.html#minimizing-variants-byneed-and-predicate-traits" id="minimizing-variants-byneed-and-predicate-traits"><h2>Minimizing variants: <code>ByNeed</code> and <code>Predicate</code> traits</h2></a>
+<a class="header" href="#minimizing-variants-byneed-and-predicate-traits" id="minimizing-variants-byneed-and-predicate-traits"><h2>Minimizing variants: <code>ByNeed</code> and <code>Predicate</code> traits</h2></a>
 <p>There are several kinds of methods that, in their most general form take
 closures, but for which convenience variants taking simpler data are common:</p>
 <ul>
@@ -996,7 +1003,7 @@ pub trait CharPredicate: Predicate&lt;char&gt; {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="0235-collections-conventions.html#why-not-leverage-unboxed-closures" id="why-not-leverage-unboxed-closures"><h3>Why not leverage unboxed closures?</h3></a>
+<a class="header" href="#why-not-leverage-unboxed-closures" id="why-not-leverage-unboxed-closures"><h3>Why not leverage unboxed closures?</h3></a>
 <p>A natural question is: why not use the traits for unboxed closures to achieve a
 similar effect? For example, you could imagine writing a blanket <code>impl</code> for
 <code>Fn(&amp;T) -&gt; bool</code> for any <code>T: PartialEq</code>, which would allow <code>PartialEq</code> values to
@@ -1007,7 +1014,7 @@ preclude any others (at least, assuming that unboxed closure traits treat the
 argument and return types as associated (output) types).</p>
 <p>In addition, the explicit use of traits like <code>Predicate</code> makes the intended
 semantics more clear, and the overloading less surprising.</p>
-<a class="header" href="0235-collections-conventions.html#the-apis" id="the-apis"><h2>The APIs</h2></a>
+<a class="header" href="#the-apis" id="the-apis"><h2>The APIs</h2></a>
 <p>Now we'll delve into the detailed APIs for the various concrete
 collections. These APIs will often be given in tabular form, grouping together
 common APIs across multiple collections. When writing these function signatures:</p>
@@ -1031,7 +1038,7 @@ compare names and signatures across different kinds of collections. Then we will
 focus on some APIs specific to particular classes of collections -- e.g. sets
 and maps.  Finally, we will briefly discuss APIs that are specific to a single
 concrete collection.</p>
-<a class="header" href="0235-collections-conventions.html#construction" id="construction"><h3>Construction</h3></a>
+<a class="header" href="#construction" id="construction"><h3>Construction</h3></a>
 <p>All of the collections should support a static function:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1041,8 +1048,8 @@ fn new() -&gt; Self
 <p>that creates an empty version of the collection; the constructor may take
 arguments needed to set up the collection, e.g. the capacity for <code>LruCache</code>.</p>
 <p>Several collections also support separate constructors for providing capacities in
-advance; these are discussed <a href="0235-collections-conventions.html#capacity-management">below</a>.</p>
-<a class="header" href="0235-collections-conventions.html#the-fromiterator-trait" id="the-fromiterator-trait"><h4>The <code>FromIterator</code> trait</h4></a>
+advance; these are discussed <a href="#capacity-management">below</a>.</p>
+<a class="header" href="#the-fromiterator-trait" id="the-fromiterator-trait"><h4>The <code>FromIterator</code> trait</h4></a>
 <p>All of the collections should implement the <code>FromIterator</code> trait:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1053,13 +1060,13 @@ pub trait FromIterator {
 }
 #}</code></pre></pre>
 <p>Note that this varies from today's <code>FromIterator</code> by consuming an <code>IntoIterator</code>
-rather than <code>Iterator</code>. As explained <a href="0235-collections-conventions.html#intoiterator-and-iterable">above</a>, this
+rather than <code>Iterator</code>. As explained <a href="#intoiterator-and-iterable">above</a>, this
 choice is strictly more general and will not break any existing code.</p>
 <p>This constructor initializes the collection with the contents of the
 iterator. For maps, the iterator is over key/value pairs, and the semantics is
 equivalent to inserting those pairs in order; if keys are repeated, the last
 value is the one left in the map.</p>
-<a class="header" href="0235-collections-conventions.html#insertion" id="insertion"><h3>Insertion</h3></a>
+<a class="header" href="#insertion" id="insertion"><h3>Insertion</h3></a>
 <p>The table below gives methods for inserting items into various concrete collections:</p>
 <table><thead><tr><th>Operation </th><th> Collections</th></tr></thead><tbody>
 <tr><td><code>fn push(&amp;mut self, T)</code>         </td><td> <code>Vec</code>, <code>BinaryHeap</code>, <code>String</code></td></tr>
@@ -1087,8 +1094,8 @@ which has been dropped (consolidating needless method variants.)</p>
 <p>Aside from these changes, a number of insertion methods will be deprecated
 (e.g. the <code>append</code> and <code>append_one</code> methods on <code>Vec</code>). These are discussed
 further in the section on &quot;specialized operations&quot;
-<a href="0235-collections-conventions.html#specialized-operations">below</a>.</p>
-<a class="header" href="0235-collections-conventions.html#the-extend-trait-was-extendable" id="the-extend-trait-was-extendable"><h4>The <code>Extend</code> trait (was: <code>Extendable</code>)</h4></a>
+<a href="#specialized-operations">below</a>.</p>
+<a class="header" href="#the-extend-trait-was-extendable" id="the-extend-trait-was-extendable"><h4>The <code>Extend</code> trait (was: <code>Extendable</code>)</h4></a>
 <p>In addition to the standard insertion operations above, <em>all</em> collections will
 implement the <code>Extend</code> trait. This trait was previously called <code>Extendable</code>, but
 in general we
@@ -1106,7 +1113,7 @@ pub trait Extend: FromIterator {
 #}</code></pre></pre>
 <p>As with <code>FromIterator</code>, this trait has been modified to take an <code>IntoIterator</code>
 value.</p>
-<a class="header" href="0235-collections-conventions.html#deletion" id="deletion"><h3>Deletion</h3></a>
+<a class="header" href="#deletion" id="deletion"><h3>Deletion</h3></a>
 <p>The table below gives methods for removing items into various concrete collections:</p>
 <table><thead><tr><th>Operation </th><th> Collections</th></tr></thead><tbody>
 <tr><td><code>fn clear(&amp;mut self)</code> </td><td> <em>all</em></td></tr>
@@ -1139,8 +1146,8 @@ method, which has been dropped (consolidating needless method variants.)</p>
 </li>
 </ul>
 <p>Again, some of the more specialized methods are not discussed here; see
-&quot;specialized operations&quot; <a href="0235-collections-conventions.html#specialized-operations">below</a>.</p>
-<a class="header" href="0235-collections-conventions.html#inspectionmutation" id="inspectionmutation"><h3>Inspection/mutation</h3></a>
+&quot;specialized operations&quot; <a href="#specialized-operations">below</a>.</p>
+<a class="header" href="#inspectionmutation" id="inspectionmutation"><h3>Inspection/mutation</h3></a>
 <p>The next table gives methods for inspection and mutation of existing items in collections:</p>
 <table><thead><tr><th>Operation </th><th> Collections</th></tr></thead><tbody>
 <tr><td><code>fn len(&amp;self) -&gt; uint</code> </td><td> <em>all</em></td></tr>
@@ -1181,7 +1188,7 @@ more clear and allows us to drop the <code>_copy</code> variants. Moreover, <em>
 of <code>Option</code> benefit from the new convenience method.</p>
 </li>
 </ul>
-<a class="header" href="0235-collections-conventions.html#the-index-trait" id="the-index-trait"><h4>The <code>Index</code> trait</h4></a>
+<a class="header" href="#the-index-trait" id="the-index-trait"><h4>The <code>Index</code> trait</h4></a>
 <p>The <code>Index</code> and <code>IndexMut</code> traits provide indexing notation like <code>v[0]</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1207,7 +1214,7 @@ non-failing variant that returns an <code>Option</code> value.</p>
 <p>This allows us to keep indexing notation maximally concise, while still
 providing convenient non-failing variants (which can be used to provide a check
 for index validity).</p>
-<a class="header" href="0235-collections-conventions.html#iteration" id="iteration"><h3>Iteration</h3></a>
+<a class="header" href="#iteration" id="iteration"><h3>Iteration</h3></a>
 <p>Every collection should provide the standard trio of iteration methods:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1218,7 +1225,7 @@ fn into_iter(self) -&gt; ItemsMove;
 #}</code></pre></pre>
 <p>and in particular implement the <code>IntoIterator</code> trait on both the collection type
 and on (mutable) references to it.</p>
-<a class="header" href="0235-collections-conventions.html#capacity-management" id="capacity-management"><h3>Capacity management</h3></a>
+<a class="header" href="#capacity-management" id="capacity-management"><h3>Capacity management</h3></a>
 <p>many of the collections have some notion of &quot;capacity&quot;, which may be fixed, grow
 explicitly, or grow implicitly:</p>
 <ul>
@@ -1227,7 +1234,7 @@ explicitly, or grow implicitly:</p>
 <li>Implicit growth: <code>Vec</code>, <code>RingBuf</code>, <code>HashMap</code>, <code>HashSet</code>, <code>BitvSet</code>, <code>BinaryHeap</code></li>
 </ul>
 <p>Growable collections provide functions for capacity management, as follows.</p>
-<a class="header" href="0235-collections-conventions.html#explicit-growth" id="explicit-growth"><h4>Explicit growth</h4></a>
+<a class="header" href="#explicit-growth" id="explicit-growth"><h4>Explicit growth</h4></a>
 <p>For explicitly-grown collections, the normal constructor (<code>new</code>) takes a
 capacity argument. Capacity can later be inspected or updated as follows:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1238,7 +1245,7 @@ fn set_capacity(&amp;mut self, capacity: uint)
 #}</code></pre></pre>
 <p>(Note, this renames <code>LruCache::change_capacity</code> to <code>set_capacity</code>, the
 prevailing style for setter method.)</p>
-<a class="header" href="0235-collections-conventions.html#implicit-growth" id="implicit-growth"><h4>Implicit growth</h4></a>
+<a class="header" href="#implicit-growth" id="implicit-growth"><h4>Implicit growth</h4></a>
 <p>For implicitly-grown collections, the normal constructor (<code>new</code>) does not take a
 capacity, but there is an explicit <code>with_capacity</code> constructor, along with other
 functions to work with the capacity later on:</p>
@@ -1266,7 +1273,7 @@ methods are deprecated.</p>
 uniformity with <code>new</code>. This change affects <code>Bitv</code> in particular.</p>
 </li>
 </ul>
-<a class="header" href="0235-collections-conventions.html#bounded-iterators" id="bounded-iterators"><h4>Bounded iterators</h4></a>
+<a class="header" href="#bounded-iterators" id="bounded-iterators"><h4>Bounded iterators</h4></a>
 <p>Some of the maps (e.g. <code>TreeMap</code>) currently offer specialized iterators over
 their entries starting at a given key (called <code>lower_bound</code>) and above a given
 key (called <code>upper_bound</code>), along with <code>_mut</code> variants. While the functionality
@@ -1298,8 +1305,8 @@ fn range_mut(&amp;self, min: Bound&lt;&amp;T&gt;, max: Bound&lt;&amp;T&gt;) -&gt
 <code>TrieMap</code> and <code>SmallIntMap</code>).</p>
 <p>In addition, analogous methods should be provided for sets over ordered keys
 (<code>TreeSet</code>, <code>TrieSet</code>, <code>BitvSet</code>).</p>
-<a class="header" href="0235-collections-conventions.html#set-operations" id="set-operations"><h3>Set operations</h3></a>
-<a class="header" href="0235-collections-conventions.html#comparisons" id="comparisons"><h4>Comparisons</h4></a>
+<a class="header" href="#set-operations" id="set-operations"><h3>Set operations</h3></a>
+<a class="header" href="#comparisons" id="comparisons"><h4>Comparisons</h4></a>
 <p>All sets should offer the following methods, as they do today:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1308,7 +1315,7 @@ fn is_disjoint(&amp;self, other: &amp;Self) -&gt; bool;
 fn is_subset(&amp;self, other: &amp;Self) -&gt; bool;
 fn is_superset(&amp;self, other: &amp;Self) -&gt; bool;
 #}</code></pre></pre>
-<a class="header" href="0235-collections-conventions.html#combinations" id="combinations"><h4>Combinations</h4></a>
+<a class="header" href="#combinations" id="combinations"><h4>Combinations</h4></a>
 <p>Sets can also be combined using the standard operations -- union, intersection,
 difference and symmetric difference (exclusive or). Today's APIs for doing so
 look like this:</p>
@@ -1347,8 +1354,8 @@ fn symmetric_difference_with(&amp;mut self, other: &amp;BitvSet)
 of names. Ideally, we would add operations like <code>|=</code> in a separate RFC, and use
 those conventionally for sets. If not, we will choose fallback names during the
 stabilization of <code>BitvSet</code>.</p>
-<a class="header" href="0235-collections-conventions.html#map-operations" id="map-operations"><h3>Map operations</h3></a>
-<a class="header" href="0235-collections-conventions.html#combined-methods" id="combined-methods"><h4>Combined methods</h4></a>
+<a class="header" href="#map-operations" id="map-operations"><h3>Map operations</h3></a>
+<a class="header" href="#combined-methods" id="combined-methods"><h4>Combined methods</h4></a>
 <p>The <code>HashMap</code> type currently provides a somewhat bewildering set of <code>find</code>/<code>insert</code> variants:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1364,7 +1371,7 @@ method variants seems overly complex.</p>
 <p>There is <a href="https://github.com/rust-lang/rfcs/pull/216">another RFC</a> already in
 the queue addressing this problem in a very nice way, and this RFC defers to
 that one</p>
-<a class="header" href="0235-collections-conventions.html#key-and-value-iterators" id="key-and-value-iterators"><h4>Key and value iterators</h4></a>
+<a class="header" href="#key-and-value-iterators" id="key-and-value-iterators"><h4>Key and value iterators</h4></a>
 <p>In addition to the standard iterators, maps should provide by-reference
 convenience iterators over keys and values:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1375,12 +1382,12 @@ fn values(&amp;'a self) -&gt; Values&lt;'a, V&gt;
 #}</code></pre></pre>
 <p>While these iterators are easy to define in terms of the main <code>iter</code> method,
 they are used often enough to warrant including convenience methods.</p>
-<a class="header" href="0235-collections-conventions.html#specialized-operations" id="specialized-operations"><h3>Specialized operations</h3></a>
+<a class="header" href="#specialized-operations" id="specialized-operations"><h3>Specialized operations</h3></a>
 <p>Many concrete collections offer specialized operations beyond the ones given
 above. These will largely be addressed through the API stabilization process
 (which focuses on local API issues, as opposed to general conventions), but a
 few broad points are addressed below.</p>
-<a class="header" href="0235-collections-conventions.html#relating-vec-and-string-to-slices" id="relating-vec-and-string-to-slices"><h4>Relating <code>Vec</code> and <code>String</code> to slices</h4></a>
+<a class="header" href="#relating-vec-and-string-to-slices" id="relating-vec-and-string-to-slices"><h4>Relating <code>Vec</code> and <code>String</code> to slices</h4></a>
 <p>One goal of this RFC is to supply all of the methods on (mutable) slices on
 <code>Vec</code> and <code>String</code>. There are a few ways to achieve this, so concretely the
 proposal is for <code>Vec&lt;T&gt;</code> to implement <code>Deref&lt;[T]&gt;</code> and <code>DerefMut&lt;[T]&gt;</code>, and
@@ -1392,7 +1399,7 @@ corresponding slice types. While counterintuitive at first, this perspective
 actually makes a fair amount of sense, especially with DST.</p>
 <p>(Initially, it was unclear whether this strategy would play well with method
 resolution, but the planned resolution rules should work fine.)</p>
-<a class="header" href="0235-collections-conventions.html#string-api" id="string-api"><h4><code>String</code> API</h4></a>
+<a class="header" href="#string-api" id="string-api"><h4><code>String</code> API</h4></a>
 <p>One of the key difficulties with the <code>String</code> API is that strings use utf8
 encoding, and some operations are only efficient when working at the byte level
 (and thus taking this encoding into account).</p>
@@ -1400,7 +1407,7 @@ encoding, and some operations are only efficient when working at the byte level
 index-related operations always work in terms of bytes, other operations deal
 with chars by default (but can have suffixed variants for working at other
 granularities when appropriate.)</p>
-<a class="header" href="0235-collections-conventions.html#dlist" id="dlist"><h4><code>DList</code></h4></a>
+<a class="header" href="#dlist" id="dlist"><h4><code>DList</code></h4></a>
 <p>The <code>DList</code> type offers a number of specialized methods:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1410,8 +1417,8 @@ swap_remove, insert_when, insert_ordered, merge, rotate_forward and rotate_backw
 <p>Prior to stabilizing the <code>DList</code> API, we will attempt to simplify its API
 surface, possibly by using idea from the
 <a href="https://github.com/rust-lang/rfcs/pull/216">collection views RFC</a>.</p>
-<a class="header" href="0235-collections-conventions.html#minimizing-method-variants-via-iterators" id="minimizing-method-variants-via-iterators"><h3>Minimizing method variants via iterators</h3></a>
-<a class="header" href="0235-collections-conventions.html#partitioning-via-fromiterator" id="partitioning-via-fromiterator"><h4>Partitioning via <code>FromIterator</code></h4></a>
+<a class="header" href="#minimizing-method-variants-via-iterators" id="minimizing-method-variants-via-iterators"><h3>Minimizing method variants via iterators</h3></a>
+<a class="header" href="#partitioning-via-fromiterator" id="partitioning-via-fromiterator"><h4>Partitioning via <code>FromIterator</code></h4></a>
 <p>One place we can move toward iterators is functions like <code>partition</code> and
 <code>partitioned</code> on vectors and slices:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1489,7 +1496,7 @@ let (u, w): (Vec&lt;T&gt;, Vec&lt;T&gt;) = v.iter_cloned().partition(f).collect(
 but the API is much more flexible, since the partitioned data can now be
 collected into other collections (or even differing collections). In addition,
 partitioning is supported for <em>any</em> iterator.</p>
-<a class="header" href="0235-collections-conventions.html#removing-methods-like-from_elem-from_fn-grow-and-grow_fn" id="removing-methods-like-from_elem-from_fn-grow-and-grow_fn"><h4>Removing methods like <code>from_elem</code>, <code>from_fn</code>, <code>grow</code>, and <code>grow_fn</code></h4></a>
+<a class="header" href="#removing-methods-like-from_elem-from_fn-grow-and-grow_fn" id="removing-methods-like-from_elem-from_fn-grow-and-grow_fn"><h4>Removing methods like <code>from_elem</code>, <code>from_fn</code>, <code>grow</code>, and <code>grow_fn</code></h4></a>
 <p>Vectors and some other collections offer constructors and growth functions like
 the following:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1528,7 +1535,7 @@ v.extend(range(0, n).map(f));
 is <em>memorability</em>: by placing greater emphasis on iterators, programmers will
 quickly learn the iterator APIs and have those at their fingertips, while
 remembering ad hoc method variants like <code>grow_fn</code> is more difficult.</p>
-<a class="header" href="0235-collections-conventions.html#long-term-removing-push_all-and-push_all_move" id="long-term-removing-push_all-and-push_all_move"><h4>Long-term: removing <code>push_all</code> and <code>push_all_move</code></h4></a>
+<a class="header" href="#long-term-removing-push_all-and-push_all_move" id="long-term-removing-push_all-and-push_all_move"><h4>Long-term: removing <code>push_all</code> and <code>push_all_move</code></h4></a>
 <p>The <code>push_all</code> and <code>push_all_move</code> methods on vectors are yet more API variants
 that could, in principle, go through iterators:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1551,9 +1558,9 @@ optimization and allow us to deprecate the <code>push_all</code> and
 <code>push_all_move</code> variants. (This is unlikely to happen before 1.0, so
 the methods will probably still be included with &quot;experimental&quot;
 status, and likely with different names.)</p>
-<a class="header" href="0235-collections-conventions.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0235-collections-conventions.html#borrow-and-the-equiv-problem" id="borrow-and-the-equiv-problem"><h2><code>Borrow</code> and the <code>Equiv</code> problem</h2></a>
-<a class="header" href="0235-collections-conventions.html#variants-of-borrow" id="variants-of-borrow"><h3>Variants of <code>Borrow</code></h3></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#borrow-and-the-equiv-problem" id="borrow-and-the-equiv-problem"><h2><code>Borrow</code> and the <code>Equiv</code> problem</h2></a>
+<a class="header" href="#variants-of-borrow" id="variants-of-borrow"><h3>Variants of <code>Borrow</code></h3></a>
 <p>The original version of <code>Borrow</code> was somewhat more subtle:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1641,7 +1648,7 @@ associated type to <em>uniquely determine</em> the corresponding owned data type
 take an <code>&amp;str</code> key argument, while <code>insert</code> would take an owned <code>String</code>. On the
 other hand, for some other type <code>Foo</code> a <code>HashMap&lt;Foo, V&gt;</code> would take
 <code>&amp;Foo</code> for <code>find</code> and <code>Foo</code> for <code>insert</code>. (More discussion on the choice of
-ownership is given in the <a href="0235-collections-conventions.html#ownership-management-for-keys">alternatives section</a>.</p>
+ownership is given in the <a href="#ownership-management-for-keys">alternatives section</a>.</p>
 <p><strong>Benefits of this alternative</strong>:</p>
 <ul>
 <li>
@@ -1691,7 +1698,7 @@ somewhat less intuitive.</p>
 </ul>
 <p>On the balance, the approach proposed in the RFC seems better, because using the
 map APIs in the obvious ways works by default.</p>
-<a class="header" href="0235-collections-conventions.html#the-hashmapkey-trait-and-friends" id="the-hashmapkey-trait-and-friends"><h3>The <code>HashMapKey</code> trait and friends</h3></a>
+<a class="header" href="#the-hashmapkey-trait-and-friends" id="the-hashmapkey-trait-and-friends"><h3>The <code>HashMapKey</code> trait and friends</h3></a>
 <p>An earlier proposal for solving the <code>_equiv</code> problem was given in the
 <a href="https://github.com/rust-lang/rfcs/pull/195">associated items RFC</a>):</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1733,7 +1740,7 @@ a key doesn't implement the key trait, forcing you to newtype.</p>
 <p>It doesn't help with the <code>MaybeOwned</code> problem.</p>
 </li>
 </ul>
-<a class="header" href="0235-collections-conventions.html#daniel-micays-hack" id="daniel-micays-hack"><h3>Daniel Micay's hack</h3></a>
+<a class="header" href="#daniel-micays-hack" id="daniel-micays-hack"><h3>Daniel Micay's hack</h3></a>
 <p>@strcat has a <a href="https://github.com/rust-lang/rust/pull/16713">PR</a> that makes it
 possible to, for example, coerce a <code>&amp;str</code> to an <code>&amp;String</code> value.</p>
 <p>This provides some help for the <code>_equiv</code> problem, since the <code>_equiv</code> methods
@@ -1760,8 +1767,8 @@ support user-defined unsized types or slices.</p>
 owned values, which we may not want to commit to or reveal.</p>
 </li>
 </ul>
-<a class="header" href="0235-collections-conventions.html#for-intoiterator" id="for-intoiterator"><h2>For <code>IntoIterator</code></h2></a>
-<a class="header" href="0235-collections-conventions.html#handling-of-for-loops" id="handling-of-for-loops"><h3>Handling of <code>for</code> loops</h3></a>
+<a class="header" href="#for-intoiterator" id="for-intoiterator"><h2>For <code>IntoIterator</code></h2></a>
+<a class="header" href="#handling-of-for-loops" id="handling-of-for-loops"><h3>Handling of <code>for</code> loops</h3></a>
 <p>The fact that <code>for x in v</code> moves elements from <code>v</code>, while <code>for x in v.iter()</code>
 yields references, may be a bit surprising. On the other hand, moving is the
 default almost everywhere in Rust, and with the proposed approach you get to use <code>&amp;</code> and
@@ -1777,7 +1784,7 @@ iterators repeatedly.</p>
 <p>If <code>for</code> demanded an <code>Iterable</code>, then <code>for x in v.iter()</code> and <code>for x in v.iter_mut()</code>
 would cease to work -- we'd have to find some other approach. It might be
 doable, but it's not obvious how to do it.</p>
-<a class="header" href="0235-collections-conventions.html#input-versus-output-type-parameters" id="input-versus-output-type-parameters"><h3>Input versus output type parameters</h3></a>
+<a class="header" href="#input-versus-output-type-parameters" id="input-versus-output-type-parameters"><h3>Input versus output type parameters</h3></a>
 <p>An important aspect of the <code>IntoIterator</code> design is that the element type is an
 associated type, <em>not</em> an input type.</p>
 <p>This is a tradeoff:</p>
@@ -1797,18 +1804,18 @@ implicit magic, <em>especially</em> when it can involve hidden costs like clonin
 the more explicit design given in this RFC seems best.</p>
 </li>
 </ul>
-<a class="header" href="0235-collections-conventions.html#downsides" id="downsides"><h1>Downsides</h1></a>
+<a class="header" href="#downsides" id="downsides"><h1>Downsides</h1></a>
 <p>Design tradeoffs were discussed inline.</p>
-<a class="header" href="0235-collections-conventions.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="0235-collections-conventions.html#unresolved-conventionsapis" id="unresolved-conventionsapis"><h2>Unresolved conventions/APIs</h2></a>
-<p>As mentioned <a href="0235-collections-conventions.html#combinations">above</a>, this RFC does not resolve the question of
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-conventionsapis" id="unresolved-conventionsapis"><h2>Unresolved conventions/APIs</h2></a>
+<p>As mentioned <a href="#combinations">above</a>, this RFC does not resolve the question of
 what to call set operations that update the set in place.</p>
 <p>It likewise does not settle the APIs that appear in only single concrete
 collections. These will largely be handled through the API stabilization
 process, unless radical changes are proposed.</p>
 <p>Finally, additional methods provided via the <code>IntoIterator</code> API are left for
 future consideration.</p>
-<a class="header" href="0235-collections-conventions.html#coercions" id="coercions"><h2>Coercions</h2></a>
+<a class="header" href="#coercions" id="coercions"><h2>Coercions</h2></a>
 <p>Using the <code>Borrow</code> trait, it might be possible to safely add a coercion for auto-slicing:</p>
 <pre><code>  If T: Borrow:
     coerce  &amp;'a T::Owned      to  &amp;'a T
@@ -1862,9 +1869,6 @@ would involve running user code is for unsized values.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2126-path-clarity - </title>
+        <title>2126-path-clarity - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2126">rust-lang/rfcs#2126</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44660">rust-lang/rust#44660</a></li>
 </ul>
-<a class="header" href="2126-path-clarity.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC seeks to clarify and streamline Rust's story around paths and visibility for modules and crates. That story will look as follows:</p>
 <ul>
 <li>Absolute paths should begin with a crate name, where the keyword <code>crate</code> refers to the current crate (other forms are linted, see below)</li>
@@ -149,7 +156,7 @@
 </ul>
 <p><strong>These changes do not require a new epoch</strong>. The new features are purely additive. They can ship with <strong>allow-by-default</strong> lints, which can gradually be moved to warn-by-default and deny-by-default over time, as better tooling is developed and more code has actively made the switch.</p>
 <p><em>This RFC incorporates some text written by @withoutboats and @cramertj, who have both been involved in the long-running discussions on this topic.</em></p>
-<a class="header" href="2126-path-clarity.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>A major theme of this year's <a href="https://github.com/rust-lang/rfcs/pull/1774">roadmap</a> is improving the learning curve and
 ergonomics of the core language. That's based on overwhelming feedback that the
 single biggest barrier to Rust adoption is its learning curve.</p>
@@ -168,11 +175,11 @@ we’ll dig into below. Ideally, we can solve these problems while also making
 modules easier to learn.</p>
 </li>
 </ul>
-<a class="header" href="2126-path-clarity.html#the-core-problems" id="the-core-problems"><h2>The core problems</h2></a>
+<a class="header" href="#the-core-problems" id="the-core-problems"><h2>The core problems</h2></a>
 <p>This RFC does not attempt to <em>comprehensively</em> solve the problems that have been
 raised in today's module system. The focus is instead high-impact problems with
 noninvasive solutions.</p>
-<a class="header" href="2126-path-clarity.html#defining-versus-bringing-into-scope" id="defining-versus-bringing-into-scope"><h3>Defining versus bringing into scope</h3></a>
+<a class="header" href="#defining-versus-bringing-into-scope" id="defining-versus-bringing-into-scope"><h3>Defining versus bringing into scope</h3></a>
 <p>A persistent point of confusion is the relationship between <em>defining an item</em>
 and <em>bringing an item into scope</em>. First, let's look at the rules as they exist
 today:</p>
@@ -262,7 +269,7 @@ explanation. As we'll see below, in practice these changes will also improve
 clarity and readability even for users with a full understanding of the rules.</p>
 <p>(We'll revisit this example at the end of the Guide section to explain how the
 RFC helps.)</p>
-<a class="header" href="2126-path-clarity.html#nonlocal-reasoning" id="nonlocal-reasoning"><h3>Nonlocal reasoning</h3></a>
+<a class="header" href="#nonlocal-reasoning" id="nonlocal-reasoning"><h3>Nonlocal reasoning</h3></a>
 <p>There are at least two ways in which today's module system doesn't support local
 reasoning. These affect newcomers and old hands alike.</p>
 <ul>
@@ -285,7 +292,7 @@ up the module tree looking for re-exports to know exactly how public an item
 is.</p>
 </li>
 </ul>
-<a class="header" href="2126-path-clarity.html#the-modrs-file" id="the-modrs-file"><h3>The <code>mod.rs</code> file</h3></a>
+<a class="header" href="#the-modrs-file" id="the-modrs-file"><h3>The <code>mod.rs</code> file</h3></a>
 <p>A final issue, though far less important, is the use of <code>mod.rs</code> files when
 creating a directory containing submodules. There are several downsides:</p>
 <ul>
@@ -304,7 +311,7 @@ you often have to move existing files around. Another papercut.</li>
 <p>The main <em>benefit</em> to <code>mod.rs</code> is that the code for a parent module and its
 children live more closely together (not necessarily desirable!) and that it
 provides a consistent story with <code>lib.rs</code>.</p>
-<a class="header" href="2126-path-clarity.html#some-evidence-of-learning-struggles" id="some-evidence-of-learning-struggles"><h2>Some evidence of learning struggles</h2></a>
+<a class="header" href="#some-evidence-of-learning-struggles" id="some-evidence-of-learning-struggles"><h2>Some evidence of learning struggles</h2></a>
 <p>In the survey data collected in both 2016 and 2017, learnability and ergonomics
 issues were one of the major challenges for people using or considering
 Rust. While there were other features that were raised more frequently than the
@@ -336,11 +343,11 @@ submodules, but if it was only imported in a submodule it wouldn't work.</p>
 similar, some of which has been collected into <a href="https://gist.github.com/aturon/2f10f19f084f39330cfe2ee028b2ea0c">a gist</a>.</p>
 <p>The problems presented above represent a boiled down subset of the problems
 raised in this feedback.</p>
-<a class="header" href="2126-path-clarity.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
-<a class="header" href="2126-path-clarity.html#as-we-would-teach-it" id="as-we-would-teach-it"><h2>As we would teach it</h2></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#as-we-would-teach-it" id="as-we-would-teach-it"><h2>As we would teach it</h2></a>
 <p>The following sections sketch a plausible way of teaching the module system once
 this RFC has been fully implemented.</p>
-<a class="header" href="2126-path-clarity.html#using-external-dependencies" id="using-external-dependencies"><h3>Using external dependencies</h3></a>
+<a class="header" href="#using-external-dependencies" id="using-external-dependencies"><h3>Using external dependencies</h3></a>
 <p>To add an external dependency, record it in the <code>[dependencies]</code> section of
 <code>Cargo.toml</code>:</p>
 <pre><code class="language-toml">[dependencies]
@@ -383,7 +390,7 @@ leading <code>::</code> optional for them.</p>
 <p><strong>Note: that means that you can write <code>use serde::Serialize</code> in <em>any</em> module
 without trouble, as long as <code>serde</code> is an external dependency!</strong></p>
 </blockquote>
-<a class="header" href="2126-path-clarity.html#adding-a-new-file-to-your-crate" id="adding-a-new-file-to-your-crate"><h3>Adding a new file to your crate</h3></a>
+<a class="header" href="#adding-a-new-file-to-your-crate" id="adding-a-new-file-to-your-crate"><h3>Adding a new file to your crate</h3></a>
 <p>Rust crates have a distinguished entry point (generally called <code>main.rs</code> or
 <code>lib.rs</code>) which is used to determine the crate's structure. Other files and
 directories within <code>src/</code> are <em>not</em> automatically included in the crate.
@@ -430,7 +437,7 @@ the entry point, <code>main.rs</code>, has its children modules as sibling files
 default, <code>mod</code> declarations assume this kind of direct mapping to the
 filesystem; they are used to tell Rust to incorporate those files, and to set
 attributes on the resulting modules (as we'll see in a moment).</p>
-<a class="header" href="2126-path-clarity.html#importing-items-from-other-parts-of-your-crate" id="importing-items-from-other-parts-of-your-crate"><h3>Importing items from other parts of your crate</h3></a>
+<a class="header" href="#importing-items-from-other-parts-of-your-crate" id="importing-items-from-other-parts-of-your-crate"><h3>Importing items from other parts of your crate</h3></a>
 <p>In Rust, all items defined in a module are <em>private</em> by default, which means
 they can only be accessed by the module defining them (or any of its
 submodules). If you want an item to have greater visibility, you can use a
@@ -487,7 +494,7 @@ fn main() {
 </code></pre></pre>
 <p>In general, then, fully qualified paths always start with an initial location: an external
 crate name, or <code>crate</code>/<code>self</code>/<code>super</code>.</p>
-<a class="header" href="2126-path-clarity.html#guide-level-thoughts-when-comparing-to-todays-system" id="guide-level-thoughts-when-comparing-to-todays-system"><h2>Guide-level thoughts when comparing to today's system</h2></a>
+<a class="header" href="#guide-level-thoughts-when-comparing-to-todays-system" id="guide-level-thoughts-when-comparing-to-todays-system"><h2>Guide-level thoughts when comparing to today's system</h2></a>
 <p>Let's revisit one of the motivating examples. Today, you might write:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -537,14 +544,14 @@ strongly reinforces the idea that:</p>
 <li><code>use</code> brings items into scope, based on paths that start by identifying the crate</li>
 <li>an item needs to be in scope before you can refer to it</li>
 </ul>
-<a class="header" href="2126-path-clarity.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>First, a bit of terminology: a <em>fully qualified path</em> is a path starting with
 <code>::</code>, which <em>all</em> paths in <code>use</code> do implicitly.</p>
 <p>The actual changes in this RFC are fairly small tweaks to the current module
 system; most of the complexity comes from the migration plans.</p>
 <p>The proposed migration plan is minimally disruptive; <strong>it does not require an
 epoch</strong>.</p>
-<a class="header" href="2126-path-clarity.html#basic-changes" id="basic-changes"><h2>Basic changes</h2></a>
+<a class="header" href="#basic-changes" id="basic-changes"><h2>Basic changes</h2></a>
 <ul>
 <li>
 <p>You can write <code>mod bar;</code> statements even when not in a <code>mod.rs</code> or equivalent;
@@ -596,7 +603,7 @@ should be used for crate-level visibility.</p>
 </ul>
 </li>
 </ul>
-<a class="header" href="2126-path-clarity.html#resolving-fully-qualified-paths" id="resolving-fully-qualified-paths"><h2>Resolving fully-qualified paths</h2></a>
+<a class="header" href="#resolving-fully-qualified-paths" id="resolving-fully-qualified-paths"><h2>Resolving fully-qualified paths</h2></a>
 <p>The only way to refer to an external crate without using <code>extern crate</code> is
 through a fully-qualified path.</p>
 <p>When resolving a fully-qualified path that begins with a name (and not <code>crate</code>,
@@ -619,7 +626,7 @@ name. Allowing that would require all fully-qualified paths into the current
 crate to start with <code>crate</code>, which can only be done on a future epoch. We can
 and should consider making such a change eventually, but it is not required for
 this RFC.</p>
-<a class="header" href="2126-path-clarity.html#migration-experience" id="migration-experience"><h2>Migration experience</h2></a>
+<a class="header" href="#migration-experience" id="migration-experience"><h2>Migration experience</h2></a>
 <p>We will provide a high-fidelity <code>rustfix</code> tool that makes changes to the a crate
 such that the lints proposed in this RFC would not fire. In particular, the tool
 will introduce <code>crate::</code> prefixes, downgrade from <code>pub</code> to <code>crate</code> where
@@ -628,7 +635,7 @@ of code intact and keep it compiling) but may not be complete (i.e. you may
 still get some deprecation warnings after running it).</p>
 <p>Such a tool should be working at with very high coverage before we consider
 changing any of the lints to warn-by-default.</p>
-<a class="header" href="2126-path-clarity.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The most important drawback is that this RFC pushes toward <em>ultimately</em> changing
 most Rust code in existence. There is risk of this reintroducing a sense that
 Rust is unstable, if not handled properly. However, that risk is mitigated by
@@ -659,19 +666,19 @@ qualified paths.</p>
 <p>Moving crate renaming externally has implications for procedural macros with
 dependencies: their clients must include those dependencies without renaming
 them.</p>
-<a class="header" href="2126-path-clarity.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
 <p>The core rationale here should be clear given the detailed analysis in the
 motivation. The crucial insight of the design is that, by making absolute paths
 unambiguous about which crate they draw from, we can solve a number of
 confusions and papercuts with the module system.</p>
-<a class="header" href="2126-path-clarity.html#epoch-based-migration-story" id="epoch-based-migration-story"><h2>Epoch-based migration story</h2></a>
+<a class="header" href="#epoch-based-migration-story" id="epoch-based-migration-story"><h2>Epoch-based migration story</h2></a>
 <p>We can avoid the need for fallback in resolution by leveraging epochs instead.
 On the current epoch, we would make <code>crate::</code> paths available and start warning
 about <em>not</em> using them for crate-internal paths, but we would not issue warnings
 about <code>extern crate</code>. In the next epoch, we would change absolute path
 interpretations, such that warning-free code on the previous epoch would
 continue to compile and have the same meaning.</p>
-<a class="header" href="2126-path-clarity.html#bike-sheddy-choices" id="bike-sheddy-choices"><h2>Bike-sheddy choices</h2></a>
+<a class="header" href="#bike-sheddy-choices" id="bike-sheddy-choices"><h2>Bike-sheddy choices</h2></a>
 <p>There are a few aspects of this proposal that could be colored a bit differently
 without fundamental change.</p>
 <ul>
@@ -703,7 +710,7 @@ annotate definitions with e.g. <code>pub(super)</code>, though maybe this is a s
 the <code>pub(restricted)</code> syntax is too unergonomic or underused.</p>
 </li>
 </ul>
-<a class="header" href="2126-path-clarity.html#the-community-discussion-around-modules" id="the-community-discussion-around-modules"><h2>The community discussion around modules</h2></a>
+<a class="header" href="#the-community-discussion-around-modules" id="the-community-discussion-around-modules"><h2>The community discussion around modules</h2></a>
 <p>For the past several months, the Rust community has been investigating the
 module system, its weaknesses, strengths, and areas of potential
 improvement. The discussion is far too wide-ranging to summarize here, so I'll
@@ -736,7 +743,7 @@ ideas off into a separate <em>experimental</em> RFC:</p>
 <blockquote>
 <p>We recognize that this is a major point of controversy and so will put aside trying to complete a full RFC on the topic at this time; however, we believe the idea has enough merit that it's worth an experimental implementation in the compiler that we can use to gather more data, e.g. around the impact on workflow. We would still like to do this before the impl period, so that we can do that exploration during the impl period. (To be clear: experimental RFCs are to approve landing unstable features that seem promising but where we need more experience; they require a standard RFC to be merged before they can be stabilized.)</p>
 </blockquote>
-<a class="header" href="2126-path-clarity.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>How should we approach migration? Via a fallback, as proposed, or via epochs?
 It is probably best to make this determination with more experience,
@@ -786,9 +793,6 @@ e.g. after we have a <code>rustfix</code> tool in hand.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

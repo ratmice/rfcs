@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0160-if-let - </title>
+        <title>0160-if-let - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,11 +145,11 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/160">rust-lang/rfcs#160</a></li>
 <li>Rust Issue #: <a href="https://github.com/rust-lang/rust/issues/16779">rust-lang/rust#16779</a></li>
 </ul>
-<a class="header" href="0160-if-let.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce a new <code>if let PAT = EXPR { BODY }</code> construct. This allows for refutable pattern matching
 without the syntactic and semantic overhead of a full <code>match</code>, and without the corresponding extra
 rightward drift. Informally this is known as an &quot;if-let statement&quot;.</p>
-<a class="header" href="0160-if-let.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Many times in the past, people have proposed various mechanisms for doing a refutable let-binding.
 None of them went anywhere, largely because the syntax wasn't great, or because the suggestion
 introduced runtime failure if the pattern match failed.</p>
@@ -191,7 +198,7 @@ if let Some(x) = optVal {
     doSomethingWith(x);
 }
 #}</code></pre></pre>
-<a class="header" href="0160-if-let.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The <code>if let</code> construct is based on the precedent set by Swift, which introduced its own <code>if let</code>
 statement. In Swift, <code>if let var = expr { ... }</code> is directly tied to the notion of optional values,
 and unwraps the optional value that <code>expr</code> evaluates to. In this proposal, the equivalent is <code>if let Some(var) = expr { ... }</code>.</p>
@@ -218,7 +225,7 @@ result. Otherwise, this is an unnecessary transformation.</p>
 <p>Due to some uncertainty regarding potentially-surprising fallout of AST rewrites, and some worries
 about exhaustiveness-checking (e.g. a tautological <code>if let</code> would be an error, which may be
 unexpected), this is put behind a feature gate named <code>if_let</code>.</p>
-<a class="header" href="0160-if-let.html#examples" id="examples"><h2>Examples</h2></a>
+<a class="header" href="#examples" id="examples"><h2>Examples</h2></a>
 <p>Source:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -319,14 +326,14 @@ match foo() {
     _ =&gt; {}
 }
 #}</code></pre></pre>
-<a class="header" href="0160-if-let.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It's one more addition to the grammar.</p>
-<a class="header" href="0160-if-let.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>This could plausibly be done with a macro, but the invoking syntax would be pretty terrible and
 would largely negate the whole point of having this sugar.</p>
 <p>Alternatively, this could not be done at all. We've been getting alone just fine without it so far,
 but at the cost of making <code>Option</code> just a bit more annoying to work with.</p>
-<a class="header" href="0160-if-let.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>It's been suggested that alternates or pattern guards should be allowed. I think if you need those
 you could just go ahead and use a <code>match</code>, and that <code>if let</code> could be extended to support those in
 the future if a compelling use-case is found.</p>
@@ -376,9 +383,6 @@ syntax. Probably quite a few, but it would be informative to have real data on t
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0463-future-proof-literal-suffixes - </title>
+        <title>0463-future-proof-literal-suffixes - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,13 +145,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/463">#463</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/19088">#19088</a></li>
 </ul>
-<a class="header" href="0463-future-proof-literal-suffixes.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Include identifiers immediately after literals in the literal token to
 allow future expansion, e.g. <code>&quot;foo&quot;bar</code> and a <code>1baz</code> are considered
 whole (but semantically invalid) tokens, rather than two separate
 tokens <code>&quot;foo&quot;</code>, <code>bar</code> and <code>1</code>, <code>baz</code> respectively. This allows future
 expansion of handling literals without risking breaking (macro) code.</p>
-<a class="header" href="0463-future-proof-literal-suffixes.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently a few kinds of literals (integers and floats) can have a
 fixed set of suffixes and other kinds do not include any suffixes. The
 valid suffixes on numbers are:</p>
@@ -188,7 +195,7 @@ very nice, proposals for &quot;bit data&quot; would like to use types like <code
 and <code>u5</code> (e.g. <a href="https://github.com/rust-lang/rfcs/pull/327">RFC PR 327</a>), and there are &quot;fringe&quot; types like
 <a href="http://en.wikipedia.org/wiki/Half-precision_floating-point_format"><code>f16</code></a>, <a href="https://en.wikipedia.org/wiki/Quadruple-precision_floating-point_format"><code>f128</code></a> and <code>u128</code> that have uses but are not
 common enough to warrant adding to the language now.</p>
-<a class="header" href="0463-future-proof-literal-suffixes.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The tokenizer will have grammar <code>literal: raw_literal identifier?</code>
 where <code>raw_literal</code> covers strings, characters and numbers without
 suffixes (e.g. <code>&quot;foo&quot;</code>, <code>'a'</code>, <code>1</code>, <code>0x10</code>).</p>
@@ -221,14 +228,14 @@ handling them as a token, i.e. <code>tt</code>, there is the possibility that it
 wouldn't have to be illegal, e.g. <code>stringify!(1u256)</code> doesn't have to
 be illegal because the <code>1u256</code> never occurs at runtime/in the type
 system.)</p>
-<a class="header" href="0463-future-proof-literal-suffixes.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>None beyond outlawing placing a literal immediately before a pattern,
 but the current behaviour can easily be restored with a space: <code>123u 456</code>. (If a macro is using this for the purpose of hacky generalised
 literals, the unresolved question below touches on this.)</p>
-<a class="header" href="0463-future-proof-literal-suffixes.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Don't do this, or consider doing it for adjacent suffixes with an
 alternative syntax, e.g. <code>10'bar</code> or <code>10$bar</code>.</p>
-<a class="header" href="0463-future-proof-literal-suffixes.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Should it be the parser or the tokenizer rejecting invalid suffixes?
@@ -284,9 +291,6 @@ extension accept and handle literals like <code>foo!(1u2)</code>?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

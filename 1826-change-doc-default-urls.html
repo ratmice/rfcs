@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1826-change-doc-default-urls - </title>
+        <title>1826-change-doc-default-urls - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1826">rust-lang/rfcs#1826</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44687">rust-lang/rust#44687</a></li>
 </ul>
-<a class="header" href="1826-change-doc-default-urls.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Change doc.rust-lang.org to redirect to the latest release instead of an alias
 of stable.</p>
 <p>Introduce a banner that contains a dropdown allowing users to switch between versions,
 noting when a release is not the most current release.</p>
-<a class="header" href="1826-change-doc-default-urls.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Today, if you hit https://doc.rust-lang.org/, you'll see the same thing as if
 you hit https://doc.rust-lang.org/stable/. It does not redirect, but instead
 displays the same documentation. This is suboptimal for multiple reasons:</p>
@@ -181,7 +188,7 @@ that's affecting other parts of the project in an adverse way.</p>
 what you get by default. By changing the default, people will link to the
 specific version instead. This means that their links will not break, and will
 allow us to update the URL structure of our documentation more freely.</p>
-<a class="header" href="1826-change-doc-default-urls.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>https://doc.rust-lang.org/ will be updated to have a heading
 with a drop-down that allows you to select between different versions of the docs. It
 will also display a message when looking at older documentation.</p>
@@ -189,12 +196,12 @@ will also display a message when looking at older documentation.</p>
 where RELEASE is the latest stable release, like <code>1.14.0</code>.</p>
 <p>The exact details will be worked out before this is 'stabilized' on doc.rust-lang.org;
 only the general approach is presented in this RFC.</p>
-<a class="header" href="1826-change-doc-default-urls.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>There's not a lot to teach; users end up on a different page than they used to.</p>
-<a class="header" href="1826-change-doc-default-urls.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Losing short URLs is a drawback. This is outweighed by other considerations,
 in my opinion, as the rest of the RFC shows.</p>
-<a class="header" href="1826-change-doc-default-urls.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could make no changes. We've dealt with all of these problems so far, so
 it's possible that we won't run into more issues in the future.</p>
 <p>We could do work on the <code>rel=canonical</code> issue instead, which would solve this
@@ -204,7 +211,7 @@ the duplication issue.</p>
 <code>/</code>, which would be an index page showing all of the various places to go. Right
 now, it's unclear how many people even know that we host specific old versions,
 or stuff like <code>/beta</code>.</p>
-<a class="header" href="1826-change-doc-default-urls.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -250,9 +257,6 @@ or stuff like <code>/beta</code>.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

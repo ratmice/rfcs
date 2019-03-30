@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1937-ques-in-main - </title>
+        <title>1937-ques-in-main - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,23 +146,23 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1937">rust-lang/rfcs#1937</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/43301">rust-lang/rust#43301</a></li>
 </ul>
-<a class="header" href="1937-ques-in-main.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Allow the <code>?</code> operator to be used in <code>main</code>, and in <code>#[test]</code>
 functions and doctests.</p>
 <p>To make this possible, the return type of these functions are
 generalized from <code>()</code> to a new trait, provisionally called
 <code>Termination</code>.  libstd implements this trait for a set of types
-partially TBD (see <a href="1937-ques-in-main.html#standard-impls-of-termination">list below</a>);
+partially TBD (see <a href="#standard-impls-of-termination">list below</a>);
 applications can provide impls themselves if they want.</p>
 <p>There is no magic added to function signatures in rustc.  If you want
 to use <code>?</code> in either <code>main</code> or a <code>#[test]</code> function you have to write
 <code>-&gt; Result&lt;(), ErrorT&gt;</code> (or whatever) yourself.  Initially, it will
 also be necessary to write a hidden function head for any doctest that
 wants to use <code>?</code>, but eventually (see the
-<a href="1937-ques-in-main.html#deployment-plan">deployment plan</a> below) the default doctest
+<a href="#deployment-plan">deployment plan</a> below) the default doctest
 template will be adjusted to make this unnecessary most of the time.</p>
 <p><a href="https://internals.rust-lang.org/t/rfc-mentoring-opportunity-permit-in-main/4600">Pre-RFC discussion</a>.  <a href="https://github.com/rust-lang/rfcs/issues/1176">Prior RFC issue</a>.</p>
-<a class="header" href="1937-ques-in-main.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>It is currently not possible to use <code>?</code> in <code>main</code>, because <code>main</code>'s
 return type is required to be <code>()</code>.  This is a trip hazard for new
 users of the language, and complicates &quot;programming in the small&quot;.
@@ -272,7 +279,7 @@ fn main() -&gt; () {
 </code></pre></pre>
 <p>These problems can be solved by generalizing the return type of <code>main</code>
 and test functions.</p>
-<a class="header" href="1937-ques-in-main.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The design goals for this new feature are, in decreasing order of
 importance:</p>
 <ol>
@@ -302,15 +309,15 @@ obliged to implement Error.</p>
 <p>To achieve goal 2 at the same time as goal 1, <code>main</code>'s return type
 must be allowed to vary from program to program.  This can be dealt
 with by making the <code>start</code> lang item polymorphic (as
-<a href="1937-ques-in-main.html#changes-to-lang-start">described below</a>) over a
+<a href="#changes-to-lang-start">described below</a>) over a
 trait which both <code>()</code> and <code>Result&lt;(), E&gt;</code> implement, and similarly for
-<a href="1937-ques-in-main.html#changes-to-doctests">doctests</a> and
-<a href="1937-ques-in-main.html#changes-to-the-test-harness"><code>#[test]</code> functions</a>.</p>
+<a href="#changes-to-doctests">doctests</a> and
+<a href="#changes-to-the-test-harness"><code>#[test]</code> functions</a>.</p>
 <p>Goals 3 and 4 are largely a matter of quality of implementation; at
 the level of programmer-visible interfaces, people who don't care are
 well-served by not breaking existing code (which is goal 2) and by
 removing a way in which <code>main</code> is not like other functions (goal 1).</p>
-<a class="header" href="1937-ques-in-main.html#the-termination-trait" id="the-termination-trait"><h2>The <code>Termination</code> trait</h2></a>
+<a class="header" href="#the-termination-trait" id="the-termination-trait"><h2>The <code>Termination</code> trait</h2></a>
 <p>When <code>main</code> returns a nontrivial value, the runtime needs to know two
 things about it: what error message, if any, to print, and what value
 to pass to <code>std::process::exit</code>.  These are naturally encapsulated in
@@ -334,11 +341,11 @@ of success or failure.  The return type is <code>i32</code> to match
 primitive), but (as already documented for <code>process::exit</code>) on &quot;most
 Unix-like&quot; operating systems, only the low 8 bits of this value are
 significant.</p>
-<a class="header" href="1937-ques-in-main.html#standard-impls-of-termination" id="standard-impls-of-termination"><h2>Standard impls of Termination</h2></a>
+<a class="header" href="#standard-impls-of-termination" id="standard-impls-of-termination"><h2>Standard impls of Termination</h2></a>
 <p>At least the following implementations of Termination will be added to
 libstd.  (Code samples below use the constants <code>EXIT_SUCCESS</code> and
 <code>EXIT_FAILURE</code> for exposition;
-<a href="1937-ques-in-main.html#values-used-for-success-and-failure">see below</a> for discussion of
+<a href="#values-used-for-success-and-failure">see below</a> for discussion of
 what the actual numeric values should be.)  The first two are
 essential to the proposal:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -418,7 +425,7 @@ passed implements <code>Error</code> as well as <code>Display</code>, it should 
 <code>cause</code> chain if there is one (this may necessitate a separate
 Termination impl for <code>Result&lt;_, Error&gt;</code>, but that's an implementation
 detail).</p>
-<a class="header" href="1937-ques-in-main.html#changes-to-lang_start" id="changes-to-lang_start"><h2>Changes to <code>lang_start</code></h2></a>
+<a class="header" href="#changes-to-lang_start" id="changes-to-lang_start"><h2>Changes to <code>lang_start</code></h2></a>
 <p>The <code>start</code> &quot;lang item&quot;, the function that calls <code>main</code>, takes the
 address of <code>main</code> as an argument.  Its signature is currently</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -479,7 +486,7 @@ fn lang_start&lt;T: Termination&gt;
     });
 }
 #}</code></pre></pre>
-<a class="header" href="1937-ques-in-main.html#changes-to-doctests" id="changes-to-doctests"><h2>Changes to doctests</h2></a>
+<a class="header" href="#changes-to-doctests" id="changes-to-doctests"><h2>Changes to doctests</h2></a>
 <p>Simple doctests form the body of a <code>main</code> function, so they require
 only a small modification to rustdoc: when <code>maketest</code> sees that it
 needs to insert a function head for <code>main</code>, it will now write out</p>
@@ -489,13 +496,13 @@ needs to insert a function head for <code>main</code>, it will now write out</p>
 }
 </code></pre></pre>
 <p>for some value of <code>ErrorT</code> to be worked out
-<a href="1937-ques-in-main.html#deployment-plan">during deployment</a>.  This head will work correctly
+<a href="#deployment-plan">during deployment</a>.  This head will work correctly
 for function bodies without any uses of <code>?</code>, so rustdoc does not need
 to parse each function body; it can use this head unconditionally.</p>
 <p>If the doctest specifies its own function head for <code>main</code> (visibly or
 invisibly), then it is the programmer's responsibility to give it an
 appropriate type signature, as for regular <code>main</code>.</p>
-<a class="header" href="1937-ques-in-main.html#changes-to-the-test-harness" id="changes-to-the-test-harness"><h2>Changes to the <code>#[test]</code> harness</h2></a>
+<a class="header" href="#changes-to-the-test-harness" id="changes-to-the-test-harness"><h2>Changes to the <code>#[test]</code> harness</h2></a>
 <p>The appropriate semantics for test functions with rich return values
 are straightforward: Call the <code>report</code> method on the value returned.
 If <code>report</code> returns a nonzero value, the test has failed.
@@ -607,7 +614,7 @@ pub fn make_test_closure(config: &amp;Config, testpaths: &amp;TestPaths)
 (the only cases I can find in the stdlib are as an adapter mechanism
 within libtest itself, and the compiletest harness) I think it makes
 most sense to not support rich return values from dynamic tests for now.</p>
-<a class="header" href="1937-ques-in-main.html#main-in-nostd-environments" id="main-in-nostd-environments"><h2><code>main</code> in nostd environments</h2></a>
+<a class="header" href="#main-in-nostd-environments" id="main-in-nostd-environments"><h2><code>main</code> in nostd environments</h2></a>
 <p>Some no-std environments do have a notion of processes that run and
 then exit, but do not have a notion of &quot;exit status&quot;.  In this case,
 <code>process::exit</code> probably already ignores its argument, so <code>main</code> and
@@ -624,7 +631,7 @@ implemented correctly, such environments should be able to get that
 effect by omitting all stock impls of <code>Termination</code> other than for
 <code>!</code>.  Perhaps there should also be a compiler hook that allows such
 environments to refuse to let you impl Termination yourself.</p>
-<a class="header" href="1937-ques-in-main.html#the-values-used-for-exit_success-and-exit_failure-by-standard-impls-of-termination" id="the-values-used-for-exit_success-and-exit_failure-by-standard-impls-of-termination"><h2>The values used for <code>EXIT_SUCCESS</code> and <code>EXIT_FAILURE</code> by standard impls of Termination</h2></a>
+<a class="header" href="#the-values-used-for-exit_success-and-exit_failure-by-standard-impls-of-termination" id="the-values-used-for-exit_success-and-exit_failure-by-standard-impls-of-termination"><h2>The values used for <code>EXIT_SUCCESS</code> and <code>EXIT_FAILURE</code> by standard impls of Termination</h2></a>
 <p>The C standard only specifies <code>0</code>, <code>EXIT_SUCCESS</code> and <code>EXIT_FAILURE</code>
 as arguments to the <a href="http://www.cplusplus.com/reference/cstdlib/exit/"><code>exit</code></a> primitive.  It does not require
 <code>EXIT_SUCCESS</code> to be zero, but it does require <code>exit(0)</code> to have the
@@ -649,7 +656,7 @@ important not to use 1, even though <code>EXIT_FAILURE</code> is usually 1,
 because some existing programs (notably <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/grep.html"><code>grep</code></a>) give 1 a
 specific meaning; as far as I know, 2 has no specific meaning
 anywhere.)</p>
-<a class="header" href="1937-ques-in-main.html#deployment-plan" id="deployment-plan"><h1>Deployment Plan</h1></a>
+<a class="header" href="#deployment-plan" id="deployment-plan"><h1>Deployment Plan</h1></a>
 <p>This is a complicated feature; it needs two mostly-orthogonal feature
 gates and a multi-phase deployment sequence.</p>
 <p>The first feature gate is <code>#![feature(rich_main_return)]</code>, which must
@@ -675,7 +682,7 @@ with it.</p>
 its template for <code>main</code>.  In order to use <code>?</code> in a doctest, at first
 it will be necessary for the doctest to specify its own function head.
 For instance, the <code>ToSocketAddrs</code> example from the
-<a href="1937-ques-in-main.html#motivation">&quot;motivation&quot; section</a> will initially need to be written</p>
+<a href="#motivation">&quot;motivation&quot; section</a> will initially need to be written</p>
 <pre><pre class="playpen"><code class="language-rust">/// # #![feature(rich_main_return)]
 /// # fn main() -&gt; Result&lt;(), io::Error&gt; {
 /// use std::net::UdpSocket;
@@ -691,7 +698,7 @@ main is, and only then should rustdoc's template be changed.
 (Ideally, this would happen at the same time that <code>rich_main_return</code>
 is stabilized, but it might need to wait longer, depending on how
 enthusiastic people are about changing their doctests.)</p>
-<a class="header" href="1937-ques-in-main.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>This should be taught alongside the <code>?</code> operator and error handling in
 general.  The stock <code>Termination</code> impls in libstd mean that simple
 programs that can fail don't need to do anything special.</p>
@@ -778,19 +785,19 @@ as a thing that most programs will not need to deal with directly.</p>
 <p>Once the doctest default template is changed, doctest examples can
 freely use <code>?</code> with no extra boilerplate, but <code>#[test]</code> examples
 involving <code>?</code> will need their boilerplate adjusted.</p>
-<a class="header" href="1937-ques-in-main.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Generalizing the return type of <code>main</code> complicates libstd and/or the
 compiler.  It also adds an additional thing to remember when complete
 newbies to the language get to error handling.  On the other hand,
 people coming to Rust from other languages may find this <em>less</em>
 surprising than the status quo.</p>
-<a class="header" href="1937-ques-in-main.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Do nothing; continue to live with the trip hazard, the extra
 boilerplate required to comply with platform conventions, and people
 using <code>panic!</code> to report ordinary errors because it's less hassle.
 &quot;Template projects&quot; (e.g. <a href="https://github.com/rusttemplates/quickstart">quickstart</a>) mean that one need not write
 out all the boilerplate by hand, but it's still there.</p>
-<a class="header" href="1937-ques-in-main.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
 <p>We need to decide what to call the new trait.  The names proposed in
 the pre-RFC thread were <code>Terminate</code>, which I like OK but have changed
 to <code>Termination</code> because value traits should be nouns, and <code>Fallible</code>,
@@ -811,7 +818,7 @@ problem to move pieces from libstd to libcore later.</p>
 <em>dynamic</em> test-harness tests, but I do not think this is an urgent problem.</p>
 <p>All of the code samples in this RFC need to be reviewed for
 correctness and proper use of idiom.</p>
-<a class="header" href="1937-ques-in-main.html#related-proposals" id="related-proposals"><h1>Related Proposals</h1></a>
+<a class="header" href="#related-proposals" id="related-proposals"><h1>Related Proposals</h1></a>
 <p>This proposal formerly included changes to <code>process::ExitStatus</code>
 intended to make it usable as a <code>main</code> return type.  That has now been
 spun off as its own <a href="https://internals.rust-lang.org/t/mini-pre-rfc-redesigning-process-exitstatus/5426">pre-RFC</a>, so that we can take our
@@ -872,9 +879,6 @@ it conflict.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

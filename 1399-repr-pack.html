@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1399-repr-pack - </title>
+        <title>1399-repr-pack - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1399">rust-lang/rfcs#1399</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/33158">rust-lang/rust#33158</a></li>
 </ul>
-<a class="header" href="1399-repr-pack.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Extend the existing <code>#[repr]</code> attribute on structs with a <code>packed = &quot;N&quot;</code> option to
 specify a custom packing for <code>struct</code> types.</p>
-<a class="header" href="1399-repr-pack.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Many C/C++ compilers allow a packing to be specified for structs which
 effectively lowers the alignment for a struct and its fields (for example with
 MSVC there is <code>#pragma pack(N)</code>). Such packing is used extensively in certain
@@ -154,7 +161,7 @@ fill in padding which is a burdensome task. Even then that isn't quite right
 because the overall alignment of the struct would end up as 1 even though it
 needs to be N (or the default if that is smaller than N), so this fills in a gap
 which is impossible to do in Rust at the moment.</p>
-<a class="header" href="1399-repr-pack.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The <code>#[repr]</code> attribute on <code>struct</code>s will be extended to include a form such as:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -194,15 +201,15 @@ result in an error.</p>
 <p>Specifying <code>#[repr(packed = &quot;A&quot;)]</code> and <code>#[repr(align = &quot;B&quot;)]</code> should still pack
 together fields with the packing specified, but then increase the overall
 alignment to the alignment specified. Depends on <a href="https://github.com/rust-lang/rfcs/pull/1358">RFC #1358</a> landing.</p>
-<a class="header" href="1399-repr-pack.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
-<a class="header" href="1399-repr-pack.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>The alternative is not doing this and forcing people to continue using
 <code>#[repr(packed)]</code> with manual padding, although such structs would always have
 an alignment of 1 which is often wrong.</li>
 <li>Alternatively a new attribute could be used such as <code>#[pack]</code>.</li>
 </ul>
-<a class="header" href="1399-repr-pack.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>The behavior specified here should match the behavior of MSVC at least. Does
 it match the behavior of other C/C++ compilers as well?</li>
@@ -253,9 +260,6 @@ to the specified packing or should all field borrows be unsafe?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1618-ergonomic-format-args - </title>
+        <title>1618-ergonomic-format-args - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1618">rust-lang/rfcs#1618</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/pull/33642">rust-lang/rust#33642</a></li>
 </ul>
-<a class="header" href="1618-ergonomic-format-args.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Removes the one-type-only restriction on <code>format_args!</code> arguments.
 Expressions like <code>format_args!(&quot;{0:x} {0:o}&quot;, foo)</code> now work as intended,
 where each argument is still evaluated only once, in order of appearance
 (i.e. left-to-right).</p>
-<a class="header" href="1618-ergonomic-format-args.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The <code>format_args!</code> macro and its friends historically only allowed a single
 type per argument, such that trivial format strings like <code>&quot;{0:?} == {0:x}&quot;</code> or
 <code>&quot;rgb({r}, {g}, {b}) is #{r:02x}{g:02x}{b:02x}&quot;</code> are illegal. This is
@@ -158,7 +165,7 @@ all the placeholders sequentially, but rather chose to remember only one type
 per argument. Also the formatting logic has not received significant attention
 since after its conception, but the uses have greatly expanded over the years,
 so the mechanism as a whole certainly needs more love.</p>
-<a class="header" href="1618-ergonomic-format-args.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Formatting is done during both compile-time (expansion-time to be pedantic)
 and runtime in Rust. As we are concerned with format string parsing, not
 outputting, this RFC only touches the compile-time side of the existing
@@ -177,7 +184,7 @@ visual hint for distinction.</p>
 </ul>
 <p>As most of the details is best described in the code itself, we only
 illustrate some of the high-level changes below.</p>
-<a class="header" href="1618-ergonomic-format-args.html#implicit-reference-resolution" id="implicit-reference-resolution"><h2>Implicit reference resolution</h2></a>
+<a class="header" href="#implicit-reference-resolution" id="implicit-reference-resolution"><h2>Implicit reference resolution</h2></a>
 <p>Currently two forms of implicit references exist: <code>ArgumentNext</code> and
 <code>CountIsNextParam</code>. Both take a positional <em>macro argument</em> and advance the
 same internal pointer, but format is parsed before position, as shown in
@@ -188,24 +195,24 @@ whole format string to be known beforehand, the resolution can happen just
 inside the parser after a <em>placeholder</em> is successfully parsed. As a natural
 consequence, both forms can be removed from the rest of the compiler,
 simplifying work later.</p>
-<a class="header" href="1618-ergonomic-format-args.html#named-argument-resolution" id="named-argument-resolution"><h2>Named argument resolution</h2></a>
+<a class="header" href="#named-argument-resolution" id="named-argument-resolution"><h2>Named argument resolution</h2></a>
 <p>Not seen elsewhere in Rust, named arguments in format macros are best seen as
 syntactic sugar, and we'd better actually treat them as such. Just after
 successfully parsing the <em>macro arguments</em>, we immediately rewrite every name
 to its respective position in the argument list, which again simplifies the
 process.</p>
-<a class="header" href="1618-ergonomic-format-args.html#processing-and-expansion" id="processing-and-expansion"><h2>Processing and expansion</h2></a>
+<a class="header" href="#processing-and-expansion" id="processing-and-expansion"><h2>Processing and expansion</h2></a>
 <p>We only have absolute positional references to <em>macro arguments</em> at this point,
 and it's straightforward to remember all unique <em>placeholders</em> encountered for
 each. The unique <em>placeholders</em> are emitted into <em>argument objects</em> in order,
 to preserve evaluation order, but no difference in behavior otherwise.</p>
-<a class="header" href="1618-ergonomic-format-args.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Due to the added data structures and processing, time and memory costs of
 compilations may slightly increase. However this is mere speculation without
 actual profiling and benchmarks. Also the ergonomical benefits alone justifies
 the additional costs.</p>
-<a class="header" href="1618-ergonomic-format-args.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1618-ergonomic-format-args.html#do-nothing" id="do-nothing"><h2>Do nothing</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#do-nothing" id="do-nothing"><h2>Do nothing</h2></a>
 <p>One can always write a little more code to simulate the proposed behavior,
 and this is what people have most likely been doing under today's constraints.
 As in:</p>
@@ -244,7 +251,7 @@ fn main() {
 </code></pre></pre>
 <p>While the effects are the same and nothing requires modification, the
 ergonomics is simply bad and the code becomes unnecessarily convoluted.</p>
-<a class="header" href="1618-ergonomic-format-args.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -290,9 +297,6 @@ ergonomics is simply bad and the code becomes unnecessarily convoluted.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

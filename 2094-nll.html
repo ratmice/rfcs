@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2094-nll - </title>
+        <title>2094-nll - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2094">rust-lang/rfcs#2094</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44928">rust-lang/rust#44928</a></li>
 </ul>
-<a class="header" href="2094-nll.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Extend Rust's borrow system to support <strong>non-lexical lifetimes</strong> --
 these are lifetimes that are based on the control-flow graph, rather
 than lexical scopes. The RFC describes in detail how to infer these
@@ -149,8 +156,8 @@ checker, the total effect of which is to eliminate many common cases
 where small, function-local code modifications would be required to pass the
 borrow check. (The appendix describes some of the remaining
 borrow-checker limitations that are not addressed by this RFC.)</p>
-<a class="header" href="2094-nll.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="2094-nll.html#what-is-a-lifetime" id="what-is-a-lifetime"><h2>What is a lifetime?</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#what-is-a-lifetime" id="what-is-a-lifetime"><h2>What is a lifetime?</h2></a>
 <p>The basic idea of the borrow checker is that values may not be mutated
 or moved while they are borrowed, but how do we know whether a value
 is borrowed? The idea is quite simple: whenever you create a borrow,
@@ -206,7 +213,7 @@ might like, hence this RFC):</p>
 <ul>
 <li>A scope generally corresponds to some block (or, more specifically,
 a <em>suffix</em> of a block that stretches from the <code>let</code> until the end of
-the enclosing block) [<a href="2094-nll.html#temporaries">1</a>].</li>
+the enclosing block) [<a href="#temporaries">1</a>].</li>
 <li>A lifetime, in contrast, can also span an individual expression, as
 this example demonstrates. The lifetime of the borrow in the example
 is confined to just the call to <code>capitalize</code>, and doesn't extend
@@ -221,7 +228,7 @@ block) that encloses both statements, and that is typically much
 bigger than is really necessary or desired. Let's look at some example
 problem cases. Later on, we'll see how non-lexical lifetimes fix these
 cases.</p>
-<a class="header" href="2094-nll.html#problem-case-1-references-assigned-into-a-variable" id="problem-case-1-references-assigned-into-a-variable"><h2>Problem case #1: references assigned into a variable</h2></a>
+<a class="header" href="#problem-case-1-references-assigned-into-a-variable" id="problem-case-1-references-assigned-into-a-variable"><h2>Problem case #1: references assigned into a variable</h2></a>
 <p>One common problem case is when a reference is assigned into a
 variable. Consider this trivial variation of the previous example,
 where the <code>&amp;mut data[..]</code> slice is not passed directly to
@@ -264,7 +271,7 @@ fn bar() {
 and hence the resulting lifetime is smaller. Introducing a
 block like this is kind of artificial and also not an entirely obvious
 solution.</p>
-<a class="header" href="2094-nll.html#problem-case-2-conditional-control-flow" id="problem-case-2-conditional-control-flow"><h2>Problem case #2: conditional control flow</h2></a>
+<a class="header" href="#problem-case-2-conditional-control-flow" id="problem-case-2-conditional-control-flow"><h2>Problem case #2: conditional control flow</h2></a>
 <p>Another common problem case is when references are used in only one
 given match arm (or, more generally, one control-flow path). This most
 commonly arises around maps. Consider this function, which, given some
@@ -319,7 +326,7 @@ part of the match, and hence it is not part of the borrow.  While this
 works, it is unfortunate to require these sorts of
 manipulations, just as it was when we introduced an artificial block
 in the previous example.</p>
-<a class="header" href="2094-nll.html#problem-case-3-conditional-control-flow-across-functions" id="problem-case-3-conditional-control-flow-across-functions"><h2>Problem case #3: conditional control flow across functions</h2></a>
+<a class="header" href="#problem-case-3-conditional-control-flow-across-functions" id="problem-case-3-conditional-control-flow-across-functions"><h2>Problem case #3: conditional control flow across functions</h2></a>
 <p>While we were able to work around problem case #2 in a relatively
 simple, if irritating, fashion, there are other variations of
 conditional control flow that cannot be so easily resolved. This is
@@ -449,7 +456,7 @@ checker, even if in practice using the <code>entry</code> API would be
 preferable. (Interestingly, the limitation of the borrow checker here
 was one of the motivations for developing the <code>entry</code> API in the first
 place!)</p>
-<a class="header" href="2094-nll.html#problem-case-4-mutating-mut-references" id="problem-case-4-mutating-mut-references"><h2>Problem case #4: mutating <code>&amp;mut</code> references</h2></a>
+<a class="header" href="#problem-case-4-mutating-mut-references" id="problem-case-4-mutating-mut-references"><h2>Problem case #4: mutating <code>&amp;mut</code> references</h2></a>
 <p>The current borrow checker forbids reassigning an <code>&amp;mut</code> variable <code>x</code>
 when the referent (<code>*x</code>) has been borrowed. This most commonly arises
 when writing a loop that progressively &quot;walks down&quot; a data structure.
@@ -527,7 +534,7 @@ is not specific to non-lexical lifetimes per se. Rather, it is that
 the rules which the borrow checker enforces when a path is borrowed
 are too strict and do not account for the indirection inherent in a
 borrowed reference. This RFC proposes a tweak to address that.</p>
-<a class="header" href="2094-nll.html#the-rough-outline-of-our-solution" id="the-rough-outline-of-our-solution"><h2>The rough outline of our solution</h2></a>
+<a class="header" href="#the-rough-outline-of-our-solution" id="the-rough-outline-of-our-solution"><h2>The rough outline of our solution</h2></a>
 <p>This RFC proposes a more flexible model for lifetimes. Whereas
 previously lifetimes were based on the abstract syntax tree, we now
 propose lifetimes that are defined via the control-flow graph. More
@@ -555,8 +562,8 @@ outlive those portions of <code>'b</code> that are reachable from P.</p>
 control-flow graph that allows one to create the various kinds of
 region constraints that can arise and implements the region inference
 algorithm which then solves those constraints.</p>
-<a class="header" href="2094-nll.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="2094-nll.html#layering-the-design" id="layering-the-design"><h2>Layering the design</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#layering-the-design" id="layering-the-design"><h2>Layering the design</h2></a>
 <p>We describe the design in &quot;layers&quot;:</p>
 <ol>
 <li>Initially, we will describe a basic design focused on control-flow
@@ -568,7 +575,7 @@ within one function.</li>
 like those in problem case 3.</li>
 <li>Finally, we give a brief description of the borrow checker.</li>
 </ol>
-<a class="header" href="2094-nll.html#layer-0-definitions" id="layer-0-definitions"><h2>Layer 0: Definitions</h2></a>
+<a class="header" href="#layer-0-definitions" id="layer-0-definitions"><h2>Layer 0: Definitions</h2></a>
 <p>Before we can describe the design, we have to define the terms that we
 will be using. The RFC is defined in terms of a simplified version of
 MIR, eliding various details that don't introduce fundamental
@@ -606,8 +613,8 @@ performs this transformation).</li>
 stack-allocated values to use the same stack slot (if their live storage ranges are disjoint).
 <a href="https://www.ralfj.de/blog/2017/06/06/MIR-semantics.html">Ralf Jung's recent blog post has more details.</a></li>
 </ul>
-<a class="header" href="2094-nll.html#layer-1-control-flow-within-a-function" id="layer-1-control-flow-within-a-function"><h2>Layer 1: Control-flow within a function</h2></a>
-<a class="header" href="2094-nll.html#running-example" id="running-example"><h3>Running Example</h3></a>
+<a class="header" href="#layer-1-control-flow-within-a-function" id="layer-1-control-flow-within-a-function"><h2>Layer 1: Control-flow within a function</h2></a>
+<a class="header" href="#running-example" id="running-example"><h3>Running Example</h3></a>
 <p>We will explain the design with reference to a running example, called
 <strong>Example 4</strong>. After presenting the design, we will apply it to the three
 problem cases, as well as a number of other interesting examples.</p>
@@ -662,7 +669,7 @@ C      v
 <p>We will use a notation like <code>Block/Index</code> to refer to a specific
 statement or terminate in the control-flow graph. <code>A/0</code> and <code>B/4</code>
 refer to <code>p = &amp;foo</code> and <code>goto C</code>, respectively.</p>
-<a class="header" href="2094-nll.html#what-is-a-lifetime-and-how-does-it-interact-with-the-borrow-checker" id="what-is-a-lifetime-and-how-does-it-interact-with-the-borrow-checker"><h3>What is a lifetime and how does it interact with the borrow checker</h3></a>
+<a class="header" href="#what-is-a-lifetime-and-how-does-it-interact-with-the-borrow-checker" id="what-is-a-lifetime-and-how-does-it-interact-with-the-borrow-checker"><h3>What is a lifetime and how does it interact with the borrow checker</h3></a>
 <p>To start with, we will consider lifetimes as a <strong>set of points in the
 control-flow graph</strong>; later in the RFC we will extend the domain of
 these sets to include &quot;skolemized&quot; lifetimes, which correspond to
@@ -715,7 +722,7 @@ This corresponds to imposing the fewest restrictions we can.</p>
 that <code>'foo</code> is <code>{A/1, B/0, C/0}</code>, which notably excludes the points B/1
 through B/4. <code>'bar</code> should be inferred to the set <code>{B/3, B/4, C/0}</code>. The lifetime <code>'p</code> will be the union of <code>'foo</code> and <code>'bar</code>, since
 it contains all the points where the variable <code>p</code> is valid.</p>
-<a class="header" href="2094-nll.html#lifetime-inference-constraints" id="lifetime-inference-constraints"><h3>Lifetime inference constraints</h3></a>
+<a class="header" href="#lifetime-inference-constraints" id="lifetime-inference-constraints"><h3>Lifetime inference constraints</h3></a>
 <p>The inference algorithm works by analyzing the MIR and creating a
 series of <strong>constraints</strong>. These constraints obey the following
 grammar:</p>
@@ -738,7 +745,7 @@ to satisfy all constraints.</p>
 <p>(If you'd like to compare this to the prototype code, the file
 <a href="https://github.com/nikomatsakis/nll/blob/master/nll/src/regionck.rs"><code>regionck.rs</code></a> is responsible for creating the constraints, and
 <a href="https://github.com/nikomatsakis/nll/blob/master/nll/src/infer.rs"><code>infer.rs</code></a> is responsible for solving them.)</p>
-<a class="header" href="2094-nll.html#liveness" id="liveness"><h3>Liveness</h3></a>
+<a class="header" href="#liveness" id="liveness"><h3>Liveness</h3></a>
 <p>One key ingredient to understanding how NLL should work is
 understanding <strong>liveness</strong>. The term &quot;liveness&quot; derives from compiler
 analysis, but it's fairly intuitive. We say that <strong>a variable is live
@@ -784,7 +791,7 @@ shown below, subtyping constraints introduced by subsequent
 analyses will eventually require <code>'foo</code> and <code>'bar</code> to <em>outlive</em>
 <code>'p</code>.</li>
 </ul>
-<a class="header" href="2094-nll.html#liveness-based-constraints-for-lifetimes" id="liveness-based-constraints-for-lifetimes"><h4>Liveness-based constraints for lifetimes</h4></a>
+<a class="header" href="#liveness-based-constraints-for-lifetimes" id="liveness-based-constraints-for-lifetimes"><h4>Liveness-based constraints for lifetimes</h4></a>
 <p>The first set of constraints that we generate are derived from
 liveness. Specifically, if a lifetime L is live at the point P,
 then we will introduce a constraint like:</p>
@@ -802,7 +809,7 @@ liveness constraints:</p>
 ('p: {B/4}) @ B/4
 ('p: {C/0}) @ C/0
 </code></pre>
-<a class="header" href="2094-nll.html#subtyping" id="subtyping"><h3>Subtyping</h3></a>
+<a class="header" href="#subtyping" id="subtyping"><h3>Subtyping</h3></a>
 <p>Whenever references are copied from one location to another, the Rust
 subtyping rules require that the lifetime of the source reference
 <strong>outlives</strong> the lifetime of the target location. As discussed
@@ -843,7 +850,7 @@ constraints:</p>
 <pre><code>('foo: 'p) @ A/1
 ('bar: 'p) @ B/3
 </code></pre>
-<a class="header" href="2094-nll.html#reborrow-constraints" id="reborrow-constraints"><h3>Reborrow constraints</h3></a>
+<a class="header" href="#reborrow-constraints" id="reborrow-constraints"><h3>Reborrow constraints</h3></a>
 <p>There is one final source of constraints. It frequently happens that we
 have a borrow expression that &quot;reborrows&quot; the referent of an
 existing reference:</p>
@@ -973,7 +980,7 @@ the same memory. The key is to recognize that <code>r</code> represents an
 indirect use of <code>q</code> (and <code>q</code> in turn is an indirect use of <code>p</code>), and
 hence so long as <code>r</code> is in use, <code>p</code> and <code>q</code> must also be considered &quot;in
 use&quot; (and hence their &quot;locks&quot; still enforced).</p>
-<a class="header" href="2094-nll.html#solving-constraints" id="solving-constraints"><h3>Solving constraints</h3></a>
+<a class="header" href="#solving-constraints" id="solving-constraints"><h3>Solving constraints</h3></a>
 <p>Once the constraints are created, the <strong>inference algorithm</strong> solves
 the constraints. This is done via fixed-point iteration: each
 lifetime variable begins as an empty set and we iterate over the
@@ -1000,7 +1007,7 @@ which are precisely the answers we expected:</p>
 'foo = {A/1, B/0, C/0}
 'bar = {B/3, B/4, C/0}
 </code></pre>
-<a class="header" href="2094-nll.html#intuition-for-why-this-algorithm-is-correct" id="intuition-for-why-this-algorithm-is-correct"><h3>Intuition for why this algorithm is correct</h3></a>
+<a class="header" href="#intuition-for-why-this-algorithm-is-correct" id="intuition-for-why-this-algorithm-is-correct"><h3>Intuition for why this algorithm is correct</h3></a>
 <p>For the algorithm to be correct, there is a critical invariant that we
 must maintain. Consider some path H that is borrowed with lifetime L
 at a point P to create a reference R; this reference R (or some
@@ -1067,11 +1074,11 @@ though L2 has point Q2). This is because the value in R2 at Q2 cannot
 have come from the assignment at A1; if it could have done, then
 either R2 would have to be live between A1 and Q2 or else there would
 be a subtyping constraint.</p>
-<a class="header" href="2094-nll.html#other-examples" id="other-examples"><h3>Other examples</h3></a>
+<a class="header" href="#other-examples" id="other-examples"><h3>Other examples</h3></a>
 <p>Let us work through some more examples. We begin with problem cases #1
 and #2 (problem case #3 will be covered after we cover named lifetimes
 in a later section).</p>
-<a class="header" href="2094-nll.html#problem-case-1" id="problem-case-1"><h4>Problem case #1.</h4></a>
+<a class="header" href="#problem-case-1" id="problem-case-1"><h4>Problem case #1.</h4></a>
 <p>Translated into MIR, the example will look roughly as follows:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1094,7 +1101,7 @@ START {
 <p>Both <code>'slice</code> and <code>'borrow</code> will therefore be inferred to START/2, and
 hence the accesses to <code>data</code> in START/3 and the following statements
 are permitted.</p>
-<a class="header" href="2094-nll.html#problem-case-2" id="problem-case-2"><h4>Problem case #2.</h4></a>
+<a class="header" href="#problem-case-2" id="problem-case-2"><h4>Problem case #2.</h4></a>
 <p>Translated into MIR, the example will look roughly as follows (some
 irrelevant details are elided). Note that the <code>match</code> statement is
 translated into a SWITCH, which tests the variant, and a &quot;downcast&quot;,
@@ -1154,7 +1161,7 @@ the constraints above, we will get:</p>
 arm; <code>map</code> could also be mutated in the <code>Some</code> arm, but only after
 <code>process()</code> is called (i.e., starting at SOME/2). This is the desired
 result.</p>
-<a class="header" href="2094-nll.html#example-4-invariant" id="example-4-invariant"><h4>Example 4, invariant</h4></a>
+<a class="header" href="#example-4-invariant" id="example-4-invariant"><h4>Example 4, invariant</h4></a>
 <p>It's worth looking at a variant of our running example (&quot;Example 4&quot;).
 This is the same pattern as before, but instead of using <code>&amp;'a T</code>
 references, we use <code>Foo&lt;'a&gt;</code> references, which are <strong>invariant</strong> with
@@ -1193,7 +1200,7 @@ also have <code>'p: 'foo</code> and <code>'p: 'bar</code> constraints:</p>
 </code></pre>
 <p>The key point is that the new constraints don't affect the final answer:
 the new constraints were already satisfied with the older answer.</p>
-<a class="header" href="2094-nll.html#vec-push-ref" id="vec-push-ref"><h4>vec-push-ref</h4></a>
+<a class="header" href="#vec-push-ref" id="vec-push-ref"><h4>vec-push-ref</h4></a>
 <p>In previous iterations of this proposal, the location-aware subtyping
 rules were replaced with transformations such as SSA form. The
 vec-push-ref example demonstrates the value of location-aware
@@ -1259,7 +1266,7 @@ include both halves of the <code>if</code></strong> -- because it is used in bot
 -- but <code>'vec</code> only becomes &quot;entangled&quot; with the lifetime <code>'p</code> on one
 path. Thus even though <code>'vec</code> has to outlive <code>'p</code>, <code>'p</code> never winds up
 including the &quot;else&quot; branch thanks to location-aware subtyping.</p>
-<a class="header" href="2094-nll.html#layer-2-avoiding-infinite-loops" id="layer-2-avoiding-infinite-loops"><h2>Layer 2: Avoiding infinite loops</h2></a>
+<a class="header" href="#layer-2-avoiding-infinite-loops" id="layer-2-avoiding-infinite-loops"><h2>Layer 2: Avoiding infinite loops</h2></a>
 <p>The previous design was described in terms of the &quot;pure&quot; MIR
 control-flow graph. However, using the raw graph has some undesirable
 properties around infinite loops. In such cases, the graph has no
@@ -1310,7 +1317,7 @@ modified both during the infinite loop and by the thread launched by
 that a destructor <em>may</em> run, since every scope may theoretically
 execute. This extends the <code>&amp;mut foo</code> borrow given to <code>scope.spawn()</code>
 to cover the body of the loop, resulting in a borrowck error.</p>
-<a class="header" href="2094-nll.html#layer-3-accommodating-dropck" id="layer-3-accommodating-dropck"><h2>Layer 3: Accommodating dropck</h2></a>
+<a class="header" href="#layer-3-accommodating-dropck" id="layer-3-accommodating-dropck"><h2>Layer 3: Accommodating dropck</h2></a>
 <p>MIR includes an action that corresponds to &quot;dropping&quot; a variable:</p>
 <pre><code>DROP(variable)
 </code></pre>
@@ -1375,7 +1382,7 @@ START {
 #}</code></pre></pre>
 <p>This poses no problem for our analysis, however, because <code>'slice</code> &quot;may
 dangle&quot; during the drop, and hence is not considered live.</p>
-<a class="header" href="2094-nll.html#layer-4-named-lifetimes" id="layer-4-named-lifetimes"><h2>Layer 4: Named lifetimes</h2></a>
+<a class="header" href="#layer-4-named-lifetimes" id="layer-4-named-lifetimes"><h2>Layer 4: Named lifetimes</h2></a>
 <p>Until now, we've only considered lifetimes that are confined to the
 extent of a function. Often, we want to reason about
 lifetimes that begin or end after the current function has ended. More
@@ -1472,7 +1479,7 @@ return).</p>
 <p>NB: This part of the prototype is partially
 implemented. <a href="https://github.com/nikomatsakis/nll/issues/12">Issue #12</a>
 describes the current status and links to the in-progress PRs.</p>
-<a class="header" href="2094-nll.html#layer-5-how-the-borrow-check-works" id="layer-5-how-the-borrow-check-works"><h2>Layer 5: How the borrow check works</h2></a>
+<a class="header" href="#layer-5-how-the-borrow-check-works" id="layer-5-how-the-borrow-check-works"><h2>Layer 5: How the borrow check works</h2></a>
 <p>For the most part, the focus of this RFC is on the structure of
 lifetimes, but it's worth talking a bit about how to integrate
 these non-lexical lifetimes into the borrow checker. In particular,
@@ -1490,7 +1497,7 @@ borrow to be delayed.</p>
 modified, even if their referent is borrowed.</strong> This refers to the
 &quot;Problem Case #4&quot; described in the introduction; we wish to accept the
 original program.</p>
-<a class="header" href="2094-nll.html#borrow-checker-phase-1-computing-loans-in-scope" id="borrow-checker-phase-1-computing-loans-in-scope"><h3>Borrow checker phase 1: computing loans in scope</h3></a>
+<a class="header" href="#borrow-checker-phase-1-computing-loans-in-scope" id="borrow-checker-phase-1-computing-loans-in-scope"><h3>Borrow checker phase 1: computing loans in scope</h3></a>
 <p>The first phase of the borrow checker computes, at each point in
 the CFG, the set of in-scope <strong>loans</strong>. A &quot;loan&quot; is represented as a tuple
 <code>('a, shared|uniq|mut, lvalue)</code> indicating:</p>
@@ -1542,7 +1549,7 @@ our example, this would be the case if the type of <code>list</code> had been
 <code>List&lt;T&gt;</code> and not <code>&amp;mut List&lt;T&gt;</code>.  In such cases, errors will be
 reported by the next portion of the borrowck, described in the next
 section.</p>
-<a class="header" href="2094-nll.html#borrow-checker-phase-2-reporting-errors" id="borrow-checker-phase-2-reporting-errors"><h3>Borrow checker phase 2: reporting errors</h3></a>
+<a class="header" href="#borrow-checker-phase-2-reporting-errors" id="borrow-checker-phase-2-reporting-errors"><h3>Borrow checker phase 2: reporting errors</h3></a>
 <p>At this point, we have computed which loans are in scope at each
 point. Next, we traverse the MIR and identify actions that are illegal
 given the loans in scope. Rather than go through every kind of MIR statement,
@@ -1686,8 +1693,8 @@ illegal if <code>*a</code> is mutably borrowed</li>
 WRITE, like a move, but this is overly conservative. The rules here
 are under active development, see
 <a href="https://github.com/nikomatsakis/nll-rfc/issues/40">#40</a>.</p>
-<a class="header" href="2094-nll.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
-<a class="header" href="2094-nll.html#terminology" id="terminology"><h2>Terminology</h2></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#terminology" id="terminology"><h2>Terminology</h2></a>
 <p>In this RFC, I've opted to continue using the term &quot;lifetime&quot; to refer
 to the portion of the program in which a reference is in active use
 (or, alternatively, to the &quot;duration of a borrow&quot;). As the intro to
@@ -1701,7 +1708,7 @@ attempt do so. To avoid confusion, however, it seems best if the error
 messages result from the region and borrow check avoid the term
 lifetime where possible, or use qualification to make the meaning more
 clear.</p>
-<a class="header" href="2094-nll.html#leveraging-intuition-framing-errors-in-terms-of-points" id="leveraging-intuition-framing-errors-in-terms-of-points"><h2>Leveraging intuition: framing errors in terms of points</h2></a>
+<a class="header" href="#leveraging-intuition-framing-errors-in-terms-of-points" id="leveraging-intuition-framing-errors-in-terms-of-points"><h2>Leveraging intuition: framing errors in terms of points</h2></a>
 <p>Part of the reason that Rust currently uses lexical scopes to
 determine lifetimes is that it was thought that they would be simpler
 for users to reason about. Time and experience have not borne this
@@ -1793,10 +1800,10 @@ we would display the error as follows:</p>
 </code></pre>
 <p>(Note that the assignment in the <code>None</code> arm is not an error, since the
 borrow is never used again.)</p>
-<a class="header" href="2094-nll.html#some-special-cases" id="some-special-cases"><h2>Some special cases</h2></a>
+<a class="header" href="#some-special-cases" id="some-special-cases"><h2>Some special cases</h2></a>
 <p>There are some cases where the three points are not all visible
 in the user syntax where we may need some careful treatment.</p>
-<a class="header" href="2094-nll.html#drop-as-last-use" id="drop-as-last-use"><h3>Drop as last use</h3></a>
+<a class="header" href="#drop-as-last-use" id="drop-as-last-use"><h3>Drop as last use</h3></a>
 <p>There are times when the last use of a variable will in fact be its
 destructor. Consider an example like this:</p>
 <pre><pre class="playpen"><code class="language-rust">struct Foo&lt;'a&gt; { field: &amp;'a u32 }
@@ -1821,7 +1828,7 @@ message might be shown as follows:</p>
  8 | }
    | - borrow is later used here, when `y` is dropped
 </code></pre>
-<a class="header" href="2094-nll.html#method-calls" id="method-calls"><h3>Method calls</h3></a>
+<a class="header" href="#method-calls" id="method-calls"><h3>Method calls</h3></a>
 <p>One example would be method calls:</p>
 <pre><pre class="playpen"><code class="language-rust">fn main() {
     let mut x = vec![1];
@@ -1852,12 +1859,12 @@ but be similar in concept:</p>
 <p>We can detect this scenario in MIR readily enough by checking when the
 point of use turns out to be a &quot;call&quot; terminator. We'll have to tweak
 the spans to get everything to look correct, but that is easy enough.</p>
-<a class="header" href="2094-nll.html#closures" id="closures"><h3>Closures</h3></a>
+<a class="header" href="#closures" id="closures"><h3>Closures</h3></a>
 <p>As today, when the initial borrow is part of constructing a closure,
 we wish to highlight not only the point where the closure is
 constructed, but the point <em>within</em> the closure where the variable in
 question is used.</p>
-<a class="header" href="2094-nll.html#borrowing-a-variable-for-longer-than-its-scope" id="borrowing-a-variable-for-longer-than-its-scope"><h2>Borrowing a variable for longer than its scope</h2></a>
+<a class="header" href="#borrowing-a-variable-for-longer-than-its-scope" id="borrowing-a-variable-for-longer-than-its-scope"><h2>Borrowing a variable for longer than its scope</h2></a>
 <p>Consider this example:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1890,7 +1897,7 @@ error in the same &quot;three-point style&quot;:</p>
  5 | println!(&quot;{}&quot;, p);
    |                - borrow used here, after invalidation
 </code></pre>
-<a class="header" href="2094-nll.html#errors-during-inference" id="errors-during-inference"><h2>Errors during inference</h2></a>
+<a class="header" href="#errors-during-inference" id="errors-during-inference"><h2>Errors during inference</h2></a>
 <p>The remaining set of lifetime-related errors come about primarily due
 to the interaction with function signatures. For example:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1910,15 +1917,15 @@ function signature to match the body (or at least diagnose the problem
 more clearly).</p>
 <p>Whenever possible, we should leverage points in the control-flow and
 try to explain errors in &quot;narrative&quot; form.</p>
-<a class="header" href="2094-nll.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There are very few drawbacks to this proposal. The primary one is that
 the <strong>rules</strong> for the system become more complex. However, this
 permits us to accept a larger number of programs, and so we expect
 that <strong>using Rust</strong> will feel simpler. Moreover, experience has shown
 that -- for many users -- the current scheme of tying reference
 lifetimes to lexical scoping is confusing and surprising.</p>
-<a class="header" href="2094-nll.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="2094-nll.html#alternative-formulations-of-nll" id="alternative-formulations-of-nll"><h3>Alternative formulations of NLL</h3></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternative-formulations-of-nll" id="alternative-formulations-of-nll"><h3>Alternative formulations of NLL</h3></a>
 <p>During the runup to this RFC, a number of alternate schemes and
 approaches to describing NLL were tried and discarded.</p>
 <p><strong>RFC 396.</strong> <a href="https://github.com/rust-lang/rfcs/pull/396">RFC 396</a> defined lifetimes to be a &quot;prefix&quot; of the
@@ -1971,7 +1978,7 @@ each point) and far fewer constraints (we don't need constraints just
 for connecting the type of a variable between distinct points). It is
 also a more natural fit for the surface language, in which variables
 have a single type.</p>
-<a class="header" href="2094-nll.html#different-lifetime-roles" id="different-lifetime-roles"><h3>Different &quot;lifetime roles&quot;</h3></a>
+<a class="header" href="#different-lifetime-roles" id="different-lifetime-roles"><h3>Different &quot;lifetime roles&quot;</h3></a>
 <p>In the discussion about nested method calls (<a href="https://github.com/rust-lang/rfcs/pull/2025">RFC 2025</a>, and the
 discussions that led up to it), there were various proposals that were
 aimed at accepting the naive desugaring of a call like <code>vec.push(vec.len())</code>:</p>
@@ -1999,9 +2006,9 @@ but in the <code>Ref2</code> approach, only the read lifetime would have to
 contain P. This implies that lifetimes are treated differently
 depending on their &quot;role&quot;. It seems like a good idea to isolate such a
 change into a distinct RFC.</p>
-<a class="header" href="2094-nll.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None at present.</p>
-<a class="header" href="2094-nll.html#appendix-what-this-proposal-will-not-fix" id="appendix-what-this-proposal-will-not-fix"><h1>Appendix: What this proposal will not fix</h1></a>
+<a class="header" href="#appendix-what-this-proposal-will-not-fix" id="appendix-what-this-proposal-will-not-fix"><h1>Appendix: What this proposal will not fix</h1></a>
 <p>It is worth discussing a few kinds of borrow check errors that the
 current RFC will <strong>not</strong> eliminate. These are generally errors that
 cross procedural boundaries in some form or another.</p>
@@ -2064,7 +2071,7 @@ be an adequate solution for some uses cases, actually (it's basically
 a way of modeling &quot;existential lifetimes&quot; in library code). For the
 case of futures especially, <a href="https://github.com/rust-lang/rfcs/pull/1858">the <code>?Move</code> RFC</a> proposes another
 lightweight and interesting approach.</p>
-<a class="header" href="2094-nll.html#endnotes" id="endnotes"><h1>Endnotes</h1></a>
+<a class="header" href="#endnotes" id="endnotes"><h1>Endnotes</h1></a>
 <p><a name="temporaries"></a></p>
 <p><strong>1.</strong> Scopes always correspond to blocks with one exception: the
 scope of a temporary value is sometimes the enclosing
@@ -2113,9 +2120,6 @@ statement.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

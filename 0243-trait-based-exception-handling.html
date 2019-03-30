@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0243-trait-based-exception-handling - </title>
+        <title>0243-trait-based-exception-handling - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/243">rust-lang/rfcs#243</a></li>
 <li>Rust Issue #: <a href="https://github.com/rust-lang/rust/issues/31436">rust-lang/rust#31436</a></li>
 </ul>
-<a class="header" href="0243-trait-based-exception-handling.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add syntactic sugar for working with the <code>Result</code> type which models common
 exception handling constructs.</p>
 <p>The new constructs are:</p>
@@ -154,7 +161,7 @@ exception handling constructs.</p>
 </ul>
 <p>The idea for the <code>?</code> operator originates from <a href="https://github.com/rust-lang/rfcs/pull/204">RFC PR 204</a> by
 <a href="https://github.com/aturon">@aturon</a>.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#motivation-and-overview" id="motivation-and-overview"><h1>Motivation and overview</h1></a>
+<a class="header" href="#motivation-and-overview" id="motivation-and-overview"><h1>Motivation and overview</h1></a>
 <p>Rust currently uses the <code>enum Result</code> type for error handling. This solution is
 simple, well-behaved, and easy to understand, but often gnarly and inconvenient
 to work with. We would like to solve the latter problem while retaining the
@@ -173,7 +180,7 @@ propagating &quot;exceptions&quot; and a <code>catch {..}</code> expression for 
 them. By an &quot;exception&quot;, for now, we essentially just mean the <code>Err</code>
 variant of a <code>Result</code>, though the Unresolved Questions includes some
 discussion of extending to other types.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#a-operator" id="a-operator"><h2><code>?</code> operator</h2></a>
+<a class="header" href="#-operator" id="-operator"><h2><code>?</code> operator</h2></a>
 <p>The postfix <code>?</code> operator can be applied to <code>Result</code> values and is equivalent to
 the current <code>try!()</code> macro. It either returns the <code>Ok</code> value directly, or
 performs an early exit and propagates the <code>Err</code> value further out. (So given
@@ -205,7 +212,7 @@ behavior changes, which is a good thing. Finally, because exceptions are tracked
 in the type system, and there is no silent propagation of exceptions, and all
 points where an exception may be thrown are readily apparent visually, this also
 means that we do not have to worry very much about &quot;exception safety&quot;.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#exception-type-upcasting" id="exception-type-upcasting"><h3>Exception type upcasting</h3></a>
+<a class="header" href="#exception-type-upcasting" id="exception-type-upcasting"><h3>Exception type upcasting</h3></a>
 <p>In a language with checked exceptions and subtyping, it is clear that if a
 function is declared as throwing a particular type, its body should also be able
 to throw any of its subtypes. Similarly, in a language with structural sum types
@@ -231,7 +238,7 @@ nature of a subtype-to-supertype coercion. The present RFC uses the
 forwarding from <code>From</code>). The precise requirements for a conversion to be &quot;like&quot;
 a subtyping coercion are an open question; see the &quot;Unresolved questions&quot;
 section.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#catch-expressions" id="catch-expressions"><h2><code>catch</code> expressions</h2></a>
+<a class="header" href="#catch-expressions" id="catch-expressions"><h2><code>catch</code> expressions</h2></a>
 <p>This RFC also introduces an expression form <code>catch {..}</code>, which serves
 to &quot;scope&quot; the <code>?</code> operator. The <code>catch</code> operator executes its
 associated block. If no exception is thrown, then the result is
@@ -247,12 +254,12 @@ exceptions -- <code>catch { foo()?.bar()?.baz()? }</code> -- into a single
 <code>Result</code>, which you wish to then e.g. pass on as-is to another
 function, rather than analyze yourself. (The last example could also
 be expressed using a series of <code>and_then</code> calls.)</p>
-<a class="header" href="0243-trait-based-exception-handling.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The meaning of the constructs will be specified by a source-to-source
 translation. We make use of an &quot;early exit from any block&quot; feature
 which doesn't currently exist in the language, generalizes the current
 <code>break</code> and <code>return</code> constructs, and is independently useful.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#early-exit-from-any-block" id="early-exit-from-any-block"><h2>Early exit from any block</h2></a>
+<a class="header" href="#early-exit-from-any-block" id="early-exit-from-any-block"><h2>Early exit from any block</h2></a>
 <p>The capability can be exposed either by generalizing <code>break</code> to take an optional
 value argument and break out of any block (not just loops), or by generalizing
 <code>return</code> to take an optional lifetime argument and return from any block, not
@@ -284,7 +291,7 @@ the lifetime of the whole function: in this case, <code>break 'fn</code> is equi
 <p>Again, this RFC does not propose generalizing <code>break</code> in this way at this time:
 it is only used as a way to explain the meaning of the constructs it does
 propose.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#definition-of-constructs" id="definition-of-constructs"><h2>Definition of constructs</h2></a>
+<a class="header" href="#definition-of-constructs" id="definition-of-constructs"><h2>Definition of constructs</h2></a>
 <p>Finally we have the definition of the new constructs in terms of a
 source-to-source translation.</p>
 <p>In each case except the first, I will provide two definitions: a single-step
@@ -337,7 +344,7 @@ a source-to-source translation in this manner, they need not necessarily be
 <em>implemented</em> this way.)</p>
 <p>As a result of this RFC, both <code>Into</code> and <code>Result</code> would have to become lang
 items.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#laws" id="laws"><h2>Laws</h2></a>
+<a class="header" href="#laws" id="laws"><h2>Laws</h2></a>
 <p>Without any attempt at completeness, here are some things which should be true:</p>
 <ul>
 <li><code>catch { foo() }</code> = <code>Ok(foo())</code></li>
@@ -346,14 +353,14 @@ items.</p>
 </ul>
 <p>(In the above, <code>foo()</code> is a function returning any type, and <code>try_foo()</code> is a
 function returning a <code>Result</code>.)</p>
-<a class="header" href="0243-trait-based-exception-handling.html#feature-gates" id="feature-gates"><h2>Feature gates</h2></a>
+<a class="header" href="#feature-gates" id="feature-gates"><h2>Feature gates</h2></a>
 <p>The two major features here, the <code>?</code> syntax and <code>catch</code> expressions,
 will be tracked by independent feature gates. Each of the features has
 a distinct motivation, and we should evaluate them independently.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>These questions should be satisfactorally resolved before stabilizing the
 relevant features, at the latest.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#optional-match-sugar" id="optional-match-sugar"><h2>Optional <code>match</code> sugar</h2></a>
+<a class="header" href="#optional-match-sugar" id="optional-match-sugar"><h2>Optional <code>match</code> sugar</h2></a>
 <p>Originally, the RFC included the ability to <code>match</code> the errors caught
 by a <code>catch</code> by writing <code>catch { .. } match { .. }</code>, which could be translated
 as follows:</p>
@@ -408,7 +415,7 @@ as follows:</p>
 <p>It may be worth adding such a sugar in the future, or perhaps a
 variant that binds irrefutably and does not immediately lead into a
 <code>match</code> block.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#choice-of-keywords" id="choice-of-keywords"><h2>Choice of keywords</h2></a>
+<a class="header" href="#choice-of-keywords" id="choice-of-keywords"><h2>Choice of keywords</h2></a>
 <p>The RFC to this point uses the keyword <code>catch</code>, but there are a number
 of other possibilities, each with different advantages and drawbacks:</p>
 <ul>
@@ -453,7 +460,7 @@ always catches the &quot;exception&quot;; the second only branches on it.</p>
 how this could or should be handled.</p>
 </li>
 </ul>
-<a class="header" href="0243-trait-based-exception-handling.html#semantics-for-upcasting" id="semantics-for-upcasting"><h2>Semantics for &quot;upcasting&quot;</h2></a>
+<a class="header" href="#semantics-for-upcasting" id="semantics-for-upcasting"><h2>Semantics for &quot;upcasting&quot;</h2></a>
 <p>What should the contract for a <code>From</code>/<code>Into</code> <code>impl</code> be? Are these even the right
 <code>trait</code>s to use for this feature?</p>
 <p>Two obvious, minimal requirements are:</p>
@@ -501,10 +508,10 @@ the <em>existing</em> <code>impl From&lt;u32&gt; for Ipv4Addr</code> feels suspe
 supertype of <code>u32</code>.)</p>
 </li>
 </ul>
-<a class="header" href="0243-trait-based-exception-handling.html#forwards-compatibility" id="forwards-compatibility"><h2>Forwards-compatibility</h2></a>
+<a class="header" href="#forwards-compatibility" id="forwards-compatibility"><h2>Forwards-compatibility</h2></a>
 <p>If we later want to generalize this feature to other types such as <code>Option</code>, as
 described below, will we be able to do so while maintaining backwards-compatibility?</p>
-<a class="header" href="0243-trait-based-exception-handling.html#monadic-do-notation" id="monadic-do-notation"><h2>Monadic do notation</h2></a>
+<a class="header" href="#monadic-do-notation" id="monadic-do-notation"><h2>Monadic do notation</h2></a>
 <p>There have been many comparisons drawn between this syntax and monadic
 do notation. Before stabilizing, we should determine whether we plan
 to make changes to better align this feature with a possible <code>do</code>
@@ -512,7 +519,7 @@ notation (for example, by removing the implicit <code>Ok</code> at the end of a
 <code>catch</code> block). Note that such a notation would have to extend the
 standard monadic bind to accommodate rich control flow like <code>break</code>,
 <code>continue</code>, and <code>return</code>.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>Increases the syntactic surface area of the language.</p>
@@ -534,7 +541,7 @@ exception types via <code>Into</code> (the exception (<code>Either</code>, <code
 does not do this, and it's not clear whether it can), and potentially others.</p>
 </li>
 </ul>
-<a class="header" href="0243-trait-based-exception-handling.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>Don't.</p>
@@ -567,10 +574,10 @@ reason to believe that it would be much less of one than in C++.</p>
 <p>Wait (and hope) for HKTs and generic monad sugar.</p>
 </li>
 </ul>
-<a class="header" href="0243-trait-based-exception-handling.html#future-possibilities" id="future-possibilities"><h1>Future possibilities</h1></a>
-<a class="header" href="0243-trait-based-exception-handling.html#expose-a-generalized-form-of-break-or-return-as-described" id="expose-a-generalized-form-of-break-or-return-as-described"><h2>Expose a generalized form of <code>break</code> or <code>return</code> as described</h2></a>
+<a class="header" href="#future-possibilities" id="future-possibilities"><h1>Future possibilities</h1></a>
+<a class="header" href="#expose-a-generalized-form-of-break-or-return-as-described" id="expose-a-generalized-form-of-break-or-return-as-described"><h2>Expose a generalized form of <code>break</code> or <code>return</code> as described</h2></a>
 <p>This RFC doesn't propose doing so at this time, but as it would be an independently useful feature, it could be added as well.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#throw-and-throws" id="throw-and-throws"><h2><code>throw</code> and <code>throws</code></h2></a>
+<a class="header" href="#throw-and-throws" id="throw-and-throws"><h2><code>throw</code> and <code>throws</code></h2></a>
 <p>It is possible to carry the exception handling analogy further and also add
 <code>throw</code> and <code>throws</code> constructs.</p>
 <p><code>throw</code> is very simple: <code>throw EXPR</code> is essentially the same thing as
@@ -585,7 +592,7 @@ are implicitly turned into <code>Ok</code> or <code>Err</code> for the caller. T
 overhead from both &quot;normal&quot; and &quot;throwing&quot; code paths and (apart from <code>?</code> to
 propagate exceptions) matches what code might look like in a language with
 native exceptions.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#generalize-over-result-option-and-other-result-carrying-types" id="generalize-over-result-option-and-other-result-carrying-types"><h2>Generalize over <code>Result</code>, <code>Option</code>, and other result-carrying types</h2></a>
+<a class="header" href="#generalize-over-result-option-and-other-result-carrying-types" id="generalize-over-result-option-and-other-result-carrying-types"><h2>Generalize over <code>Result</code>, <code>Option</code>, and other result-carrying types</h2></a>
 <p><code>Option&lt;T&gt;</code> is completely equivalent to <code>Result&lt;T, ()&gt;</code> modulo names, and many
 common APIs use the <code>Option</code> type, so it would be useful to extend all of the
 above syntax to <code>Option</code>, and other (potentially user-defined)
@@ -626,7 +633,7 @@ and then translating it to a second result-carrying type should be the same as
 embedding it into the second type directly.</p>
 <p>The third law says that translating to a different result-carrying type and then
 translating back should be a no-op.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#impls-of-the-trait" id="impls-of-the-trait"><h2><code>impl</code>s of the trait</h2></a>
+<a class="header" href="#impls-of-the-trait" id="impls-of-the-trait"><h2><code>impl</code>s of the trait</h2></a>
 <pre><code>impl&lt;T, E&gt; ResultCarrier for Result&lt;T, E&gt; {
     type Normal = T;
     type Exception = E;
@@ -677,7 +684,7 @@ translate to a different result-carrying type and then back without losing
 information.</p>
 <p>The <code>bool</code> impl may be surprising, or not useful, but it <em>is</em> well-behaved:
 <code>bool</code> is, after all, isomorphic to <code>Result&lt;(), ()&gt;</code>.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#other-miscellaneous-notes-about-resultcarrier" id="other-miscellaneous-notes-about-resultcarrier"><h3>Other miscellaneous notes about <code>ResultCarrier</code></h3></a>
+<a class="header" href="#other-miscellaneous-notes-about-resultcarrier" id="other-miscellaneous-notes-about-resultcarrier"><h3>Other miscellaneous notes about <code>ResultCarrier</code></h3></a>
 <ul>
 <li>
 <p>Our current lint for unused results could be replaced by one which warns for
@@ -706,7 +713,7 @@ this, I don't know.)</p>
 functors, but I'm not category theorist enough for it to be obvious.</p>
 </li>
 </ul>
-<a class="header" href="0243-trait-based-exception-handling.html#alternative-formulations-of-the-resultcarrier-trait" id="alternative-formulations-of-the-resultcarrier-trait"><h3>Alternative formulations of the <code>ResultCarrier</code> trait</h3></a>
+<a class="header" href="#alternative-formulations-of-the-resultcarrier-trait" id="alternative-formulations-of-the-resultcarrier-trait"><h3>Alternative formulations of the <code>ResultCarrier</code> trait</h3></a>
 <p>All of these have the form:</p>
 <pre><code>trait ResultCarrier {
     type Normal;
@@ -715,7 +722,7 @@ functors, but I'm not category theorist enough for it to be obvious.</p>
 }
 </code></pre>
 <p>and differ only in the methods, which will be given.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#explicit-isomorphism-with-result" id="explicit-isomorphism-with-result"><h4>Explicit isomorphism with <code>Result</code></h4></a>
+<a class="header" href="#explicit-isomorphism-with-result" id="explicit-isomorphism-with-result"><h4>Explicit isomorphism with <code>Result</code></h4></a>
 <pre><code>fn from_result(Result&lt;Normal, Exception&gt;) -&gt; Self;
 fn to_result(Self) -&gt; Result&lt;Normal, Exception&gt;;
 </code></pre>
@@ -732,7 +739,7 @@ they only require one.</p>
 </ul>
 <p>Laws for the remaining formulations below are left as an exercise for the
 reader.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#avoid-privileging-result-most-naive-version" id="avoid-privileging-result-most-naive-version"><h4>Avoid privileging <code>Result</code>, most naive version</h4></a>
+<a class="header" href="#avoid-privileging-result-most-naive-version" id="avoid-privileging-result-most-naive-version"><h4>Avoid privileging <code>Result</code>, most naive version</h4></a>
 <pre><code>fn embed_normal(Normal) -&gt; Self;
 fn embed_exception(Exception) -&gt; Self;
 fn is_normal(&amp;Self) -&gt; bool;
@@ -741,7 +748,7 @@ fn assert_normal(Self) -&gt; Normal;
 fn assert_exception(Self) -&gt; Exception;
 </code></pre>
 <p>Of course this is horrible.</p>
-<a class="header" href="0243-trait-based-exception-handling.html#destructuring-with-hofs-aka-churchscott-encoding" id="destructuring-with-hofs-aka-churchscott-encoding"><h4>Destructuring with HOFs (a.k.a. Church/Scott-encoding)</h4></a>
+<a class="header" href="#destructuring-with-hofs-aka-churchscott-encoding" id="destructuring-with-hofs-aka-churchscott-encoding"><h4>Destructuring with HOFs (a.k.a. Church/Scott-encoding)</h4></a>
 <pre><code>fn embed_normal(Normal) -&gt; Self;
 fn embed_exception(Exception) -&gt; Self;
 fn match_carrier&lt;T&gt;(Self, FnOnce(Normal) -&gt; T, FnOnce(Exception) -&gt; T) -&gt; T;
@@ -749,7 +756,7 @@ fn match_carrier&lt;T&gt;(Self, FnOnce(Normal) -&gt; T, FnOnce(Exception) -&gt; 
 <p>This is probably the right approach for Haskell, but not for Rust.</p>
 <p>With this formulation, because they each take ownership of them, the two
 closures may not even close over the same variables!</p>
-<a class="header" href="0243-trait-based-exception-handling.html#destructuring-with-hofs-round-2" id="destructuring-with-hofs-round-2"><h4>Destructuring with HOFs, round 2</h4></a>
+<a class="header" href="#destructuring-with-hofs-round-2" id="destructuring-with-hofs-round-2"><h4>Destructuring with HOFs, round 2</h4></a>
 <pre><code>trait BiOnceFn {
     type ArgA;
     type ArgB;
@@ -815,9 +822,6 @@ even more awkward syntactically.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

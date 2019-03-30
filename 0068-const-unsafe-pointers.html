@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0068-const-unsafe-pointers - </title>
+        <title>0068-const-unsafe-pointers - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,9 +145,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/68">rust-lang/rfcs#68</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/7362">rust-lang/rust#7362</a></li>
 </ul>
-<a class="header" href="0068-const-unsafe-pointers.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Rename <code>*T</code> to <code>*const T</code>, retain all other semantics of unsafe pointers.</p>
-<a class="header" href="0068-const-unsafe-pointers.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently the <code>T*</code> type in C is equivalent to <code>*mut T</code> in Rust, and the <code>const T*</code> type in C is equivalent to the <code>*T</code> type in Rust. Noticeably, the two most
 similar types, <code>T*</code> and <code>*T</code> have different meanings in Rust and C, frequently
 causing confusion and often incorrect declarations of C functions.</p>
@@ -151,7 +158,7 @@ declarations in Rust are faithful to the declaration in C.</p>
 proving to be too error prone to realistically enable these optimizations at a
 future date. By renaming Rust's unsafe pointers to closely match their C
 brethren, the likelihood for erroneously transcribing a signature is diminished.</p>
-<a class="header" href="0068-const-unsafe-pointers.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <blockquote>
 <p>This section will assume that the current unsafe pointer design is forgotten
 completely, and will explain the unsafe pointer design from scratch.</p>
@@ -167,7 +174,7 @@ that coercion occurs today. It will also be possible to explicitly cast with an
 <p>The two unsafe pointer types will be freely castable among one another via <code>as</code>
 expressions, but no coercion will occur between the two. Additionally, values of
 type <code>uint</code> can be casted to unsafe pointers.</p>
-<a class="header" href="0068-const-unsafe-pointers.html#when-is-a-coercion-valid" id="when-is-a-coercion-valid"><h2>When is a coercion valid?</h2></a>
+<a class="header" href="#when-is-a-coercion-valid" id="when-is-a-coercion-valid"><h2>When is a coercion valid?</h2></a>
 <p>When coercing from <code>&amp;'a T</code> to <code>*const T</code>, Rust will guarantee that the memory
 will remain valid for the lifetime <code>'a</code> and the memory will be immutable up to
 memory stored in <code>Unsafe&lt;U&gt;</code>. It is the responsibility of the code working with
@@ -186,7 +193,7 @@ coercions.</p>
 internal invariants, such as <code>Box&lt;T&gt;</code> never being <code>NULL</code>. This is often a
 per-type invariant, so it is the responsibility of the unsafe code to uphold
 these invariants.</p>
-<a class="header" href="0068-const-unsafe-pointers.html#when-is-a-safe-cast-valid" id="when-is-a-safe-cast-valid"><h2>When is a safe cast valid?</h2></a>
+<a class="header" href="#when-is-a-safe-cast-valid" id="when-is-a-safe-cast-valid"><h2>When is a safe cast valid?</h2></a>
 <p>Unsafe code can convert an unsafe pointer to a safe pointer via dereferencing
 inside of an unsafe block. This section will discuss when this action is valid.</p>
 <p>When converting <code>*mut T</code> to <code>&amp;'a mut T</code>, it must be guaranteed that the memory
@@ -195,13 +202,13 @@ is initialized to start out with and that nobody will access the memory during
 <p>When converting <code>*const T</code> to <code>&amp;'a T</code>, it must be guaranteed that the memory is
 initialized to start out with and that nobody will write to the pointer during
 <code>'a</code> except for memory within <code>Unsafe&lt;U&gt;</code>.</p>
-<a class="header" href="0068-const-unsafe-pointers.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Today's unsafe pointers design is consistent with the borrowed pointers types in
 Rust, using the <code>mut</code> qualifier for a mutable pointer, and no qualifier for an
 &quot;immutable&quot; pointer. Renaming the pointers would be divergence from this
 consistency, and would also introduce a keyword that is not used elsewhere in
 the language, <code>const</code>.</p>
-<a class="header" href="0068-const-unsafe-pointers.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>The current <code>*mut T</code> type could be removed entirely, leaving only one unsafe
@@ -220,7 +227,7 @@ solution is as it is currently not yet implemented. There may still be
 confusion as well that <code>*T</code> is not equivalent to C's <code>T*</code>.</p>
 </li>
 </ul>
-<a class="header" href="0068-const-unsafe-pointers.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>How much can the compiler help out when coercing <code>&amp;mut T</code> to <code>*mut T</code>? As
@@ -319,9 +326,6 @@ informing optimization passes about const vs non-const pointers.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

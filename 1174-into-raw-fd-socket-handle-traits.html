@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1174-into-raw-fd-socket-handle-traits - </title>
+        <title>1174-into-raw-fd-socket-handle-traits - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1174">rust-lang/rfcs#1174</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27062">rust-lang/rust#27062</a></li>
 </ul>
-<a class="header" href="1174-into-raw-fd-socket-handle-traits.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce and implement <code>IntoRaw{Fd, Socket, Handle}</code> traits to complement the
 existing <code>AsRaw{Fd, Socket, Handle}</code> traits already in the standard library.</p>
-<a class="header" href="1174-into-raw-fd-socket-handle-traits.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The <code>FromRaw{Fd, Socket, Handle}</code> traits each take ownership of the provided
 handle, however, the <code>AsRaw{Fd, Socket, Handle}</code> traits do not give up
 ownership. Thus, converting from one handle wrapper to another (for example
@@ -152,7 +159,7 @@ is unergonomic and can be prone to mistakes.</p>
 <p>Traits such as <code>IntoRaw{Fd, Socket, Handle}</code> will allow for easily transferring
 ownership of OS handles, and it will allow wrappers to perform any
 cleanup/setup as they find necessary.</p>
-<a class="header" href="1174-into-raw-fd-socket-handle-traits.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The <code>IntoRaw{Fd, Socket, Handle}</code> traits will behave exactly like their
 <code>AsRaw{Fd, Socket, Handle}</code> counterparts, except they will consume the wrapper
 before transferring ownership of the handle.</p>
@@ -177,16 +184,16 @@ pub trait IntoRawHandle {
     fn into_raw_handle(self) -&gt; RawHandle;
 }
 #}</code></pre></pre>
-<a class="header" href="1174-into-raw-fd-socket-handle-traits.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This adds three new traits and methods which would have to be maintained.</p>
-<a class="header" href="1174-into-raw-fd-socket-handle-traits.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Instead of defining three new traits we could instead use the
 <code>std::convert::Into&lt;T&gt;</code> trait over the different OS handles. However, this
 approach will not offer a duality between methods such as
 <code>as_raw_fd()</code>/<code>into_raw_fd()</code>, but will instead be <code>as_raw_fd()</code>/<code>into()</code>.</p>
 <p>Another possibility is defining both the newly proposed traits as well as the
 <code>Into&lt;T&gt;</code> trait over the OS handles letting the caller choose what they prefer.</p>
-<a class="header" href="1174-into-raw-fd-socket-handle-traits.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None at the moment.</p>
 
                     </main>
@@ -232,9 +239,6 @@ approach will not offer a duality between methods such as
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

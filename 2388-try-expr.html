@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2388-try-expr - </title>
+        <title>2388-try-expr - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2388">rust-lang/rfcs#2388</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/50412">rust-lang/rust#50412</a></li>
 </ul>
-<a class="header" href="2388-try-expr.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p><a href="https://github.com/rust-lang/rfcs/blob/master/text/0243-trait-based-exception-handling.md#choice-of-keywords">RFC 243</a> left the choice of keyword for <code>catch { .. }</code> expressions unresolved.
 This RFC settles the choice of keyword. Namely, it:</p>
 <ol>
@@ -147,10 +154,10 @@ This RFC settles the choice of keyword. Namely, it:</p>
 <li>replaces <code>do catch { .. }</code> with <code>try { .. }</code></li>
 <li>does <strong>not</strong> reserve <code>catch</code> as a keyword.</li>
 </ol>
-<a class="header" href="2388-try-expr.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This RFC does not motivate <code>catch { .. }</code> or <code>try { .. }</code> expressions.
 To read the motivation for that, please consult <a href="https://github.com/rust-lang/rfcs/blob/master/text/0243-trait-based-exception-handling.md#catch-expressions">the original <code>catch</code> RFC</a>.</p>
-<a class="header" href="2388-try-expr.html#for-reserving-a-keyword" id="for-reserving-a-keyword"><h2>For reserving a keyword</h2></a>
+<a class="header" href="#for-reserving-a-keyword" id="for-reserving-a-keyword"><h2>For reserving a keyword</h2></a>
 <p>Whatever keyword is chosen, it can't be contextual.</p>
 <p>As with <code>catch { .. }</code>, the syntactic form <code>&lt;word&gt; { .. }</code> where <code>&lt;word&gt;</code>
 is replaced with any possible keyword would conflict with a struct named
@@ -162,16 +169,16 @@ fn main() {
     };
 }
 </code></pre></pre>
-<a class="header" href="2388-try-expr.html#aside-note" id="aside-note"><h3>Aside note:</h3></a>
+<a class="header" href="#aside-note" id="aside-note"><h3>Aside note:</h3></a>
 <p>The snippet above emits the following warning:</p>
 <pre><code>warning: type `try` should have a camel case name such as `Try`
 </code></pre>
 <p>which is also the case for <code>catch</code>.
 This warning decreases the risk that someone has defined a type named <code>try</code>
 anywhere in the ecosystem which happens to be beneficial to us.</p>
-<a class="header" href="2388-try-expr.html#for-reserving-try-specifically" id="for-reserving-try-specifically"><h2>For reserving <code>try</code> specifically</h2></a>
-<p>This is discussed in the <a href="2388-try-expr.html#rationale-for-try">rationale for <code>try</code></a>.</p>
-<a class="header" href="2388-try-expr.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#for-reserving-try-specifically" id="for-reserving-try-specifically"><h2>For reserving <code>try</code> specifically</h2></a>
+<p>This is discussed in the <a href="#rationale-for-try">rationale for <code>try</code></a>.</p>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>The keyword <code>try</code> will be reserved.
 This will allow you to write expressions such as:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -185,13 +192,13 @@ try {
     x + y
 }
 #}</code></pre></pre>
-<a class="header" href="2388-try-expr.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>The word <code>try</code> is reserved as a keyword in the <a href="https://doc.rust-lang.org/book/second-edition/appendix-01-keywords.html#keywords-currently-in-use">list of keywords</a>
 in Rust edition 2018 and later editions.</p>
 <p>The keyword <code>try</code> is used in &quot;try expressions&quot; of the form <code>try { .. }</code>.</p>
-<a class="header" href="2388-try-expr.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There are two main drawbacks to the <code>try</code> keyword.</p>
-<a class="header" href="2388-try-expr.html#association-with-exception-handling---both-a-pro-and-con" id="association-with-exception-handling---both-a-pro-and-con"><h2>Association with exception handling - Both a pro and con</h2></a>
+<a class="header" href="#association-with-exception-handling---both-a-pro-and-con" id="association-with-exception-handling---both-a-pro-and-con"><h2>Association with exception handling - Both a pro and con</h2></a>
 <blockquote>
 <p>I think that there is a belief – one that I have shared from time to time – that it is not helpful to use familiar keywords unless the semantics are a perfect match, the concern being that they will setup an intuition that will lead people astray. I think that is a danger, but it works both ways: those intuitions also help people to understand, particularly in the early days. So it’s a question of “how far along will you get before the differences start to matter” and “how damaging is it if you misunderstand for a while”.</p>
 <p>[..]</p>
@@ -199,7 +206,7 @@ in Rust edition 2018 and later editions.</p>
 </blockquote>
 <p>- <a href="https://internals.rust-lang.org/t/bikeshed-rename-catch-blocks-to-fallible-blocks/7121/4">Niko Matsakis</a></p>
 <p>For some people, the association to <code>try { .. } catch { .. }</code> in languages such
-as Java, and others in the <a href="2388-try-expr.html#prior-art">prior-art</a> section, is unhelpful wrt. teachability
+as Java, and others in the <a href="#prior-art">prior-art</a> section, is unhelpful wrt. teachability
 because they see the explicit, reified, and manually propagated exceptions in
 Rust as something very different than the much more implicit exception handling
 stories in Java et al.</p>
@@ -212,7 +219,7 @@ formulations of the exception idea.</p>
 <p>The benefit of familiarity, even if not a perfect match, as Niko puts it,
 helps in learning, particularly because Rust is not a language in lack of
 concepts to learn.</p>
-<a class="header" href="2388-try-expr.html#breakage-of-the-a-hrefhttpsdocrust-langorgnightlystdmacrotryhtmltrya-macro" id="breakage-of-the-a-hrefhttpsdocrust-langorgnightlystdmacrotryhtmltrya-macro"><h2>Breakage of the <a href="https://doc.rust-lang.org/nightly/std/macro.try.html"><code>try!</code></a> macro</h2></a>
+<a class="header" href="#breakage-of-the-a-hrefhttpsdocrust-langorgnightlystdmacrotryhtmltrya-macro" id="breakage-of-the-a-hrefhttpsdocrust-langorgnightlystdmacrotryhtmltrya-macro"><h2>Breakage of the <a href="https://doc.rust-lang.org/nightly/std/macro.try.html"><code>try!</code></a> macro</h2></a>
 <p>One possible result of introducing <code>try</code> as a keyword be that the old <code>try!</code>
 macro would break. This could potentially be avoided but with great technical
 challenges.</p>
@@ -247,7 +254,7 @@ have both already removed all mentions of <code>try!</code>.</li>
 <p>In the RFC author's opinion however, the sum total benefits of <code>try { .. }</code>
 seem to outweigh the drawbacks of the difficulty with purging <a href="https://doc.rust-lang.org/nightly/std/macro.try.html"><code>try!</code></a> from
 our collective memory.</p>
-<a class="header" href="2388-try-expr.html#inverse-semantics-of-" id="inverse-semantics-of-"><h2>Inverse semantics of <code>?</code></h2></a>
+<a class="header" href="#inverse-semantics-of-" id="inverse-semantics-of-"><h2>Inverse semantics of <code>?</code></h2></a>
 <p>The <code>?</code> postfix operator is sometimes referred to as the &quot;try operator&quot;,
 and can be seen as having the inverse semantics as <code>try { .. }</code>.</p>
 <p>To many, this is a drawback. To others, this makes the <code>?</code> and <code>try { .. }</code>
@@ -256,8 +263,8 @@ in relation to each other.</p>
 <p>There is currently some ongoing debate about renaming the <code>?</code> operator to
 something other than the &quot;try operator&quot;. This could help in mitigating the
 effects of picking <code>try</code> as the keyword.</p>
-<a class="header" href="2388-try-expr.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
-<a class="header" href="2388-try-expr.html#review-considerations" id="review-considerations"><h2>Review considerations</h2></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#review-considerations" id="review-considerations"><h2>Review considerations</h2></a>
 <p>Among the considerations when picking a keyword are, ordered by importance:</p>
 <ol>
 <li>
@@ -270,7 +277,7 @@ effects of picking <code>try</code> as the keyword.</p>
 <li>Fidelity to behavior in those languages.</li>
 <li>Familiarity with respect to their analogous constructs.</li>
 </ol>
-<p>See the <a href="2388-try-expr.html#prior-art">prior art</a> the <a href="2388-try-expr.html#rationale-for-try">rationale for try</a>
+<p>See the <a href="#prior-art">prior art</a> the <a href="#rationale-for-try">rationale for try</a>
 for more discussion on precedent.</p>
 </li>
 <li>
@@ -299,10 +306,10 @@ If the first clause is called <code>try</code>,
 then <code>try { }</code> and <code>try!()</code> would have essentially inverse meanings.</p>
 </li>
 </ol>
-<a class="header" href="2388-try-expr.html#rationale-for-try" id="rationale-for-try"><h2>Rationale for <code>try</code></h2></a>
+<a class="header" href="#rationale-for-try" id="rationale-for-try"><h2>Rationale for <code>try</code></h2></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong> Very high</li>
-<li><strong>Precedent from existing languages:</strong> A lot, see <a href="2388-try-expr.html#prior-art">prior-art</a>
+<li><strong>Precedent from existing languages:</strong> A lot, see <a href="#prior-art">prior-art</a>
 <ol>
 <li><strong>Popularity of the languages:</strong> Massive accumulated dominance</li>
 <li><strong>Fidelity to behavior in those languages:</strong> Very high</li>
@@ -324,7 +331,7 @@ then <code>try { }</code> and <code>try!()</code> would have essentially inverse
 </li>
 <li><strong>Consistency with old learning material:</strong> Inconsistent (<a href="https://doc.rust-lang.org/nightly/std/macro.try.html"><code>try!</code></a>)</li>
 </ol>
-<a class="header" href="2388-try-expr.html#review" id="review"><h3>Review</h3></a>
+<a class="header" href="#review" id="review"><h3>Review</h3></a>
 <p>This is our choice of keyword, because it:</p>
 <ol>
 <li>has a massive dominance in both popular and less known languages and is
@@ -338,10 +345,10 @@ complexity budget.</li>
 a programmers intent, i.e: &quot;I want to try a bunch of stuff in this block&quot;.</li>
 <li>it can be further extended with <code>catch { .. }</code> handlers if we wish.</li>
 </ol>
-<a class="header" href="2388-try-expr.html#alternative-reserving-catch" id="alternative-reserving-catch"><h2>Alternative: reserving <code>catch</code></h2></a>
+<a class="header" href="#alternative-reserving-catch" id="alternative-reserving-catch"><h2>Alternative: reserving <code>catch</code></h2></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong> High</li>
-<li><strong>Precedent from existing languages:</strong> Erlang and Tcl, see <a href="2388-try-expr.html#prior-art">prior-art</a></li>
+<li><strong>Precedent from existing languages:</strong> Erlang and Tcl, see <a href="#prior-art">prior-art</a></li>
 <li><strong>Brevity / Length:</strong> 6</li>
 <li><strong>Consistency with related libstd fn conventions:</strong> Somewhat consistent</li>
 <li><strong>Consistency with the naming of the trait used for <code>?</code>:</strong> Inconsistent</li>
@@ -357,7 +364,7 @@ a programmers intent, i.e: &quot;I want to try a bunch of stuff in this block&qu
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#review-1" id="review-1"><h3>Review</h3></a>
+<a class="header" href="#review-1" id="review-1"><h3>Review</h3></a>
 <p>We believe <code>catch</code> to be a poor choice of keyword, because it:</p>
 <ol>
 <li>is used in few in other languages to demarcate the body which can result in
@@ -374,13 +381,13 @@ not <code>Try</code> style exceptions.</li>
 </ol>
 <p>However, <code>catch</code> has high fidelity wrt. the operational semantics of &quot;catching&quot;
 any exceptions in the <code>try { .. }</code> block.</p>
-<a class="header" href="2388-try-expr.html#alternative-keeping-do-catch---" id="alternative-keeping-do-catch---"><h2>Alternative: keeping <code>do catch { .. }</code></h2></a>
+<a class="header" href="#alternative-keeping-do-catch---" id="alternative-keeping-do-catch---"><h2>Alternative: keeping <code>do catch { .. }</code></h2></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong> Middle</li>
 <li><strong>Precedent from existing languages:</strong>
 <ul>
 <li><code>do</code>: Haskell, Idris</li>
-<li><code>catch</code>: Erlang and Tcl, see <a href="2388-try-expr.html#prior-art">prior-art</a></li>
+<li><code>catch</code>: Erlang and Tcl, see <a href="#prior-art">prior-art</a></li>
 </ul>
 </li>
 <li><strong>Brevity / Length:</strong> 8</li>
@@ -398,13 +405,13 @@ any exceptions in the <code>try { .. }</code> block.</p>
 <p>An alternative would be to simply use the <code>do catch { ... }</code> syntax we have
 in the nightly compiler. However, this syntax was not in the accepted <code>catch</code>
 RFC and was only a temporarly fix around <code>catch { .. }</code> not working.</p>
-<a class="header" href="2388-try-expr.html#alternative-do-try---" id="alternative-do-try---"><h2>Alternative: <code>do try { .. }</code></h2></a>
+<a class="header" href="#alternative-do-try---" id="alternative-do-try---"><h2>Alternative: <code>do try { .. }</code></h2></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong> High</li>
 <li><strong>Precedent from existing languages:</strong>
 <ul>
 <li><code>do</code>: Haskell, Idris</li>
-<li><code>try</code>: A lot, see <a href="2388-try-expr.html#prior-art">prior-art</a></li>
+<li><code>try</code>: A lot, see <a href="#prior-art">prior-art</a></li>
 </ul>
 <ol>
 <li><strong>Popularity of the languages:</strong> Massive accumulated dominance</li>
@@ -424,7 +431,7 @@ RFC and was only a temporarly fix around <code>catch { .. }</code> not working.<
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#review-2" id="review-2"><h3>Review</h3></a>
+<a class="header" href="#review-2" id="review-2"><h3>Review</h3></a>
 <p>We could in fact decide to keep the <code>do</code>-prefix but change the suffix to <code>try</code>.
 The benefit here would be two-fold:</p>
 <ul>
@@ -454,7 +461,7 @@ accumulate to a significant overhead when a large codebase is considered.</p>
 </ul>
 <p>Other than this, the argument for <code>do try</code> over <code>do catch</code> boils down to an
 argument of <code>try</code> over <code>catch</code>.</p>
-<a class="header" href="2388-try-expr.html#alternative-using-do---" id="alternative-using-do---"><h2>Alternative: using <code>do { .. }</code></h2></a>
+<a class="header" href="#alternative-using-do---" id="alternative-using-do---"><h2>Alternative: using <code>do { .. }</code></h2></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> Haskell, Idris
@@ -470,7 +477,7 @@ argument of <code>try</code> over <code>catch</code>.</p>
 <li><strong>Risk of breakage:</strong> Impossible (already reserved keyword)</li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#review-3" id="review-3"><h3>Review</h3></a>
+<a class="header" href="#review-3" id="review-3"><h3>Review</h3></a>
 <p>The keyword <code>do</code> was probably originally reserved for two use cases:</p>
 <ol>
 <li>
@@ -572,7 +579,7 @@ problematic as it:</p>
 <li>is in the way of use for monads in general.</li>
 <li><code>do</code> is generic and unclear wrt. semantics.</li>
 </ol>
-<a class="header" href="2388-try-expr.html#alternative-reserving-trap" id="alternative-reserving-trap"><h2>Alternative: reserving <code>trap</code></h2></a>
+<a class="header" href="#alternative-reserving-trap" id="alternative-reserving-trap"><h2>Alternative: reserving <code>trap</code></h2></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong> Good</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -591,14 +598,14 @@ problematic as it:</p>
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#review-4" id="review-4"><h3>Review</h3></a>
+<a class="header" href="#review-4" id="review-4"><h3>Review</h3></a>
 <p>Arguably, this candidate keyword is a somewhat a good choice.</p>
 <p>To <code>trap</code> an error is sufficently clear on the &quot;exception boundary&quot; semantics
 we wish to communicate.</p>
 <p>However, <code>trap</code> is used as an error handler in at least one langauge.</p>
 <p>It also does not have the familiarity that <code>try</code> does have and is entirely
 inconsistent wrt. naming in the standard library.</p>
-<a class="header" href="2388-try-expr.html#alternative-reserving-wrap" id="alternative-reserving-wrap"><h2>Alternative: reserving <code>wrap</code></h2></a>
+<a class="header" href="#alternative-reserving-wrap" id="alternative-reserving-wrap"><h2>Alternative: reserving <code>wrap</code></h2></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong> Somewhat good</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -617,13 +624,13 @@ inconsistent wrt. naming in the standard library.</p>
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#review-5" id="review-5"><h3>Review</h3></a>
+<a class="header" href="#review-5" id="review-5"><h3>Review</h3></a>
 <p>With <code>wrap { .. }</code> we can say that it &quot;wraps&quot; the result of the block as a
 <code>Result</code> / <code>Option</code>, etc. and it is logically related to <code>.unwrap()</code>,
 which is however a partial function, wherefore the connotation might be bad.</p>
 <p>Also, <code>wrap</code> could be considered too generic as with <code>do</code> in that it could
 fit for any monad.</p>
-<a class="header" href="2388-try-expr.html#alternative-reserving-result" id="alternative-reserving-result"><h2>Alternative: reserving <code>result</code></h2></a>
+<a class="header" href="#alternative-reserving-result" id="alternative-reserving-result"><h2>Alternative: reserving <code>result</code></h2></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong> Somewhat good</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -642,16 +649,16 @@ fit for any monad.</p>
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#review-6" id="review-6"><h2>Review</h2></a>
+<a class="header" href="#review-6" id="review-6"><h2>Review</h2></a>
 <p>The fidelity of <code>result</code> is somewhat good due to the association with the
 <code>Result</code> type as well as <code>Try</code> being a <a href="http://okmij.org/ftp/tagless-final/course/lecture.pdf">final encoding</a> of <code>Result</code>.</p>
 <p>However, when you consider <code>Option</code>, the association is less direct,
 and thus it does not fit <code>Option</code> and other types well.</p>
 <p>The breakage of the <code>result</code> module is however quite problematic,
 making this particular choice of keyword more or less a non-starter.</p>
-<a class="header" href="2388-try-expr.html#alternative-a-smattering-of-other-possible-keywords" id="alternative-a-smattering-of-other-possible-keywords"><h2>Alternative: a smattering of other possible keywords</h2></a>
+<a class="header" href="#alternative-a-smattering-of-other-possible-keywords" id="alternative-a-smattering-of-other-possible-keywords"><h2>Alternative: a smattering of other possible keywords</h2></a>
 <p>There are a host of other keywords which have been suggested.</p>
-<a class="header" href="2388-try-expr.html#fallible" id="fallible"><h3><code>fallible</code></h3></a>
+<a class="header" href="#fallible" id="fallible"><h3><code>fallible</code></h3></a>
 <p>On an <a href="https://internals.rust-lang.org/t/bikeshed-rename-catch-blocks-to-fallible-blocks/7121/">internals thread</a>, <code>fallible</code> was suggested. However, this keyword lacks the verb-form that
 is the convention in Rust. Breaking with this convention should only be done
 if there are significant reasons to do so, which do not seem to exist in this
@@ -672,9 +679,9 @@ for constructions which are oft used.</p>
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#synonyms-of-catch" id="synonyms-of-catch"><h3>Synonyms of <code>catch</code>:</h3></a>
+<a class="header" href="#synonyms-of-catch" id="synonyms-of-catch"><h3>Synonyms of <code>catch</code>:</h3></a>
 <p>Some synonyms of <code>catch</code> <a href="https://internals.rust-lang.org/t/bikeshed-rename-catch-blocks-to-fallible-blocks/7121/2">have been suggested</a>:</p>
-<a class="header" href="2388-try-expr.html#accept" id="accept"><h4><code>accept</code></h4></a>
+<a class="header" href="#accept" id="accept"><h4><code>accept</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -693,7 +700,7 @@ for constructions which are oft used.</p>
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#capture" id="capture"><h4><code>capture</code></h4></a>
+<a class="header" href="#capture" id="capture"><h4><code>capture</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong> Good.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -712,7 +719,7 @@ for constructions which are oft used.</p>
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#collect" id="collect"><h4><code>collect</code></h4></a>
+<a class="header" href="#collect" id="collect"><h4><code>collect</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong> Very much not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -731,7 +738,7 @@ for constructions which are oft used.</p>
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#recover" id="recover"><h4><code>recover</code></h4></a>
+<a class="header" href="#recover" id="recover"><h4><code>recover</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong> Good</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -750,7 +757,7 @@ for constructions which are oft used.</p>
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#resolve" id="resolve"><h4><code>resolve</code></h4></a>
+<a class="header" href="#resolve" id="resolve"><h4><code>resolve</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -769,7 +776,7 @@ for constructions which are oft used.</p>
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#take" id="take"><h4><code>take</code></h4></a>
+<a class="header" href="#take" id="take"><h4><code>take</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -788,14 +795,14 @@ for constructions which are oft used.</p>
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#review-7" id="review-7"><h4>Review</h4></a>
+<a class="header" href="#review-7" id="review-7"><h4>Review</h4></a>
 <p>Of these, only <code>recover</code> and <code>capture</code> seem reasonable semantically.
 But <code>recover</code> is even more problematic than <code>catch</code> because it enhances
 the feeling of exception-handling instead of exception-boundaries.
 However, <code>capture</code> is reasonable as a substitute for <code>try</code>,
 but it seems obscure and lacks familiarity, which is counted as a strong downside.</p>
-<a class="header" href="2388-try-expr.html#a-hrefhttpsinternalsrust-langorgtbikeshed-rename-catch-blocks-to-fallible-blocks712113and-some-other-keywordsa" id="a-hrefhttpsinternalsrust-langorgtbikeshed-rename-catch-blocks-to-fallible-blocks712113and-some-other-keywordsa"><h3><a href="https://internals.rust-lang.org/t/bikeshed-rename-catch-blocks-to-fallible-blocks/7121/13">and some other keywords:</a></h3></a>
-<a class="header" href="2388-try-expr.html#coalesce" id="coalesce"><h4><code>coalesce</code></h4></a>
+<a class="header" href="#a-hrefhttpsinternalsrust-langorgtbikeshed-rename-catch-blocks-to-fallible-blocks712113and-some-other-keywordsa" id="a-hrefhttpsinternalsrust-langorgtbikeshed-rename-catch-blocks-to-fallible-blocks712113and-some-other-keywordsa"><h3><a href="https://internals.rust-lang.org/t/bikeshed-rename-catch-blocks-to-fallible-blocks/7121/13">and some other keywords:</a></h3></a>
+<a class="header" href="#coalesce" id="coalesce"><h4><code>coalesce</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -814,7 +821,7 @@ but it seems obscure and lacks familiarity, which is counted as a strong downsid
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#fuse" id="fuse"><h4><code>fuse</code></h4></a>
+<a class="header" href="#fuse" id="fuse"><h4><code>fuse</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -833,7 +840,7 @@ but it seems obscure and lacks familiarity, which is counted as a strong downsid
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#unite" id="unite"><h4><code>unite</code></h4></a>
+<a class="header" href="#unite" id="unite"><h4><code>unite</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -852,7 +859,7 @@ but it seems obscure and lacks familiarity, which is counted as a strong downsid
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#cohere" id="cohere"><h4><code>cohere</code></h4></a>
+<a class="header" href="#cohere" id="cohere"><h4><code>cohere</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -871,7 +878,7 @@ but it seems obscure and lacks familiarity, which is counted as a strong downsid
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#consolidate" id="consolidate"><h4><code>consolidate</code></h4></a>
+<a class="header" href="#consolidate" id="consolidate"><h4><code>consolidate</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -890,7 +897,7 @@ but it seems obscure and lacks familiarity, which is counted as a strong downsid
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#unify" id="unify"><h4><code>unify</code></h4></a>
+<a class="header" href="#unify" id="unify"><h4><code>unify</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -909,7 +916,7 @@ but it seems obscure and lacks familiarity, which is counted as a strong downsid
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#combine" id="combine"><h4><code>combine</code></h4></a>
+<a class="header" href="#combine" id="combine"><h4><code>combine</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -928,7 +935,7 @@ but it seems obscure and lacks familiarity, which is counted as a strong downsid
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#resultof" id="resultof"><h4><code>resultof</code></h4></a>
+<a class="header" href="#resultof" id="resultof"><h4><code>resultof</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong> Somewhat</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -947,7 +954,7 @@ but it seems obscure and lacks familiarity, which is counted as a strong downsid
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#returned" id="returned"><h4><code>returned</code></h4></a>
+<a class="header" href="#returned" id="returned"><h4><code>returned</code></h4></a>
 <ol>
 <li><strong>Fidelity to the construct's actual behavior:</strong>  Not at all.</li>
 <li><strong>Precedent from existing languages:</strong> None</li>
@@ -966,7 +973,7 @@ but it seems obscure and lacks familiarity, which is counted as a strong downsid
 </li>
 <li><strong>Consistency with old learning material:</strong> Untaught</li>
 </ol>
-<a class="header" href="2388-try-expr.html#review-8" id="review-8"><h4>Review</h4></a>
+<a class="header" href="#review-8" id="review-8"><h4>Review</h4></a>
 <p>Of these, only <code>resultof</code> seems to be semantically descriptive and has some support. However, it has three major drawbacks:</p>
 <ul>
 <li>
@@ -981,7 +988,7 @@ Furthermore, there are no current keywords in use that are concatenations of two
 <p><code>Result&lt;T, E&gt;</code> oriented: <code>resultof</code> is too tied to <code>Result&lt;T, E&gt;</code> and fits poorly with <code>Option&lt;T&gt;</code> or other types that implement <code>Try</code>.</p>
 </li>
 </ul>
-<a class="header" href="2388-try-expr.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>All of the languages listed below have a <code>try { .. } &lt;handler_kw&gt; { .. }</code> concept
 (modulo layout syntax / braces) where <code>&lt;handler_kw&gt;</code> is one of:
 <code>catch</code>, <code>with</code>, <code>except</code>, <code>trap</code>, <code>rescue</code>.</p>
@@ -1031,7 +1038,7 @@ part and not for the handler, these languages are:</p>
 </ul>
 <p>However, the combined popularity of these langauges are not significant as
 compared to that for <code>try { .. }</code>.</p>
-<a class="header" href="2388-try-expr.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None as of yet.</p>
 
                     </main>
@@ -1077,9 +1084,6 @@ compared to that for <code>try { .. }</code>.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

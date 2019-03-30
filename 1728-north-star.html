@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1728-north-star - </title>
+        <title>1728-north-star - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: #1728</li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1728-north-star.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>A refinement of the Rust planning and reporting process, to establish a shared
 vision of the project among contributors, to make clear the roadmap toward that
 vision, and to celebrate our achievements.</p>
@@ -162,7 +169,7 @@ consistent way to:</p>
 <li>Advertise our goals as a published roadmap.</li>
 <li>Celebrate our achievements with an informative publicity-bomb.</li>
 </ul>
-<a class="header" href="1728-north-star.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Rust is a massive project and ecosystem, developed by a massive team of
 mostly-independent contributors. What we've achieved together already is
 mind-blowing: we've created a uniquely powerful platform that solves problems
@@ -229,7 +236,7 @@ management in Rust, nor to fit the Rust process into any particular project
 management structure. Let's make a few incremental improvements that will have
 the greatest impact, and that we can accomplish without disruptive changes to
 the way we work today.</p>
-<a class="header" href="1728-north-star.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Rust's roadmap will be established in year-long cycles, where we identify up
 front the most critical problems facing the project, formulated as <em>problem
 statements</em>. Work toward solving those problems, <em>goals</em>, will be planned as
@@ -247,7 +254,7 @@ union'. This is where we tell Rust's story, describe the new best practices
 enabled by the new features we've delivered, celebrate those contributors who
 helped achieve our goals, honestly evaluate our performance, and look forward to
 the year to come.</p>
-<a class="header" href="1728-north-star.html#summary-of-terminology" id="summary-of-terminology"><h2>Summary of terminology</h2></a>
+<a class="header" href="#summary-of-terminology" id="summary-of-terminology"><h2>Summary of terminology</h2></a>
 <p>Key terminology used in this RFC:</p>
 <ul>
 <li>
@@ -283,7 +290,7 @@ cycle milestone corresponding to the time period in which the work is
 completed.</p>
 </li>
 </ul>
-<a class="header" href="1728-north-star.html#problem-statements-and-the-north-star-rfc" id="problem-statements-and-the-north-star-rfc"><h2>Problem statements and the north star RFC</h2></a>
+<a class="header" href="#problem-statements-and-the-north-star-rfc" id="problem-statements-and-the-north-star-rfc"><h2>Problem statements and the north star RFC</h2></a>
 <p>The full planning cycle spans one year. At the beginning of the cycle we
 identify areas of Rust that need the most improvement, and at the end of the
 cycle is a 'rallying point' where we deliver to the world the results of our
@@ -350,7 +357,7 @@ linking to tracking issues.</p>
 arise during the year, it may be amended, even to the extent of adding
 additional problem statements; though it is not appropriate for the project
 to continually rehash the RFC.</p>
-<a class="header" href="1728-north-star.html#goal-setting-and-tracking-progress" id="goal-setting-and-tracking-progress"><h2>Goal setting and tracking progress</h2></a>
+<a class="header" href="#goal-setting-and-tracking-progress" id="goal-setting-and-tracking-progress"><h2>Goal setting and tracking progress</h2></a>
 <p>During the regular 6-week release cycles is where the solutions take shape and
 are carried out. Each cycle teams are expected to set concrete <em>goals</em> that work
 toward solving the project's stated problems; and to review and revise their
@@ -394,7 +401,7 @@ report summarizing their goal progress for the cycle. Some project member
 will compile all the team reports and post them to internals.rust-lang.org.
 In addition to providing visibility into progress, these will be sources
 to draw from for the subsequent release announcements.</p>
-<a class="header" href="1728-north-star.html#the-retrospective-rallying-point" id="the-retrospective-rallying-point"><h2>The retrospective (rallying point)</h2></a>
+<a class="header" href="#the-retrospective-rallying-point" id="the-retrospective-rallying-point"><h2>The retrospective (rallying point)</h2></a>
 <p>The retrospective is an opportunity to showcase the best of Rust and its
 community to the world.</p>
 <p>It is a report covering all the Rust activity of the past year. It is written
@@ -417,7 +424,7 @@ better next year?</p>
 <p>Since the retrospective must be a high-quality document, and cover a lot of
 material, it is expected to require significant planning, editing and revision.
 The details of how this will work are to be determined.</p>
-<a class="header" href="1728-north-star.html#presenting-the-roadmap" id="presenting-the-roadmap"><h2>Presenting the roadmap</h2></a>
+<a class="header" href="#presenting-the-roadmap" id="presenting-the-roadmap"><h2>Presenting the roadmap</h2></a>
 <p>As a result of this process the Rust roadmap for the year is encoded in three
 main ways, that evolve over the year:</p>
 <ul>
@@ -436,7 +443,7 @@ way that is prominent, succinct, and layered with progressive detail. There is a
 lot of opportunity for design here; an early prototype of one possible view is
 available <a href="https://brson.github.io/rust-z">here</a>.</p>
 <p>Again, the details are to be determined.</p>
-<a class="header" href="1728-north-star.html#calendar" id="calendar"><h2>Calendar</h2></a>
+<a class="header" href="#calendar" id="calendar"><h2>Calendar</h2></a>
 <p>The timing of the events specified by this RFC is precisely specified in order
 to set clear expectations and accountability, and to avoid process slippage. The
 activities specified here are not the focus of the project and we need to get
@@ -456,7 +463,7 @@ quarter; and the development of the yearly retrospective approximately for the
 month of August.</p>
 <p>The survey and other forms of outreach and data gathering should be timed to fit
 well into the overall calendar.</p>
-<a class="header" href="1728-north-star.html#references" id="references"><h2>References</h2></a>
+<a class="header" href="#references" id="references"><h2>References</h2></a>
 <ul>
 <li>[Refining RFCs part 1: Roadmap]
 (https://internals.rust-lang.org/t/refining-rfcs-part-1-roadmap/3656),
@@ -482,7 +489,7 @@ another strong indicator of Rust's needs.</li>
 (https://brson.github.io/rust-z),
 a prototype tool to organize the roadmap.</li>
 </ul>
-<a class="header" href="1728-north-star.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The yearly north star RFC could be an unpleasant bikeshed, because it
 simultaneously raises the stakes of discussion while moving away from concrete
 proposals. That said, the <em>problem</em> orientation should help facilitate
@@ -494,7 +501,7 @@ benefits will outweigh the costs.</p>
 <p>The end-of-year retrospective will require significant effort. It's not clear
 who will be motivated to do it, and at the level of quality it demands. This is
 the piece of the proposal that will probably need the most follow-up work.</p>
-<a class="header" href="1728-north-star.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Instead of imposing further process structure on teams we might attempt to
 derive a roadmap solely from the data they are currently producing.</p>
 <p>To serve the purposes of a 'rallying point', a high-profile deliverable, we
@@ -502,7 +509,7 @@ might release a software product instead of the retrospective. A larger-scope
 product than the existing rustc+cargo pair could accomplish this, i.e.
 <a href="http://aturon.github.io/blog/2016/07/27/rust-platform/">The Rust Platform</a> idea.</p>
 <p>Another rallying point could be a long-term support release.</p>
-<a class="header" href="1728-north-star.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Are 1 year cycles long enough?</p>
 <p>Are 1 year cycles too long? What happens if important problems come up
 mid-cycle?</p>
@@ -577,9 +584,6 @@ minimal - read the R-problem-statement issues.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

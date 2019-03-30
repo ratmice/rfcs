@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2071-impl-trait-existential-types - </title>
+        <title>2071-impl-trait-existential-types - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -140,7 +147,7 @@
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44685">rust-lang/rust#44685</a> (existential types)</li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44686">rust-lang/rust#44686</a> (impl Trait in const/static/let)</li>
 </ul>
-<a class="header" href="2071-impl-trait-existential-types.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add the ability to create named existential types and
 support <code>impl Trait</code> in <code>let</code>, <code>const</code>, and <code>static</code> declarations.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -170,7 +177,7 @@ fn my_func() {
     ...
 }
 #}</code></pre></pre>
-<a class="header" href="2071-impl-trait-existential-types.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This RFC proposes two expansions to Rust's <code>impl Trait</code> feature.
 <code>impl Trait</code>, first introduced in <a href="https://github.com/rust-lang/rfcs/blob/master/text/1522-conservative-impl-trait.md">RFC 1522</a>, allows functions to return
 types which implement a given trait, but whose concrete type remains anonymous.
@@ -265,8 +272,8 @@ items could make it harder to tell what sort of value is being stored in a
 Allowing <code>impl Trait</code> in <code>const</code>s and <code>static</code>s would resolve the unnameable
 type issue while still allowing users to provide some information about the
 type.</p>
-<a class="header" href="2071-impl-trait-existential-types.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-Level Explanation</h1></a>
-<a class="header" href="2071-impl-trait-existential-types.html#guide-impl-trait-in-let-const-and-static" id="guide-impl-trait-in-let-const-and-static"><h2>Guide: <code>impl Trait</code> in <code>let</code>, <code>const</code> and <code>static</code>:</h2></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-Level Explanation</h1></a>
+<a class="header" href="#guide-impl-trait-in-let-const-and-static" id="guide-impl-trait-in-let-const-and-static"><h2>Guide: <code>impl Trait</code> in <code>let</code>, <code>const</code> and <code>static</code>:</h2></a>
 <p><code>impl Trait</code> can be used in <code>let</code>, <code>const</code>, and <code>static</code> declarations,
 like this:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -356,7 +363,7 @@ let x: impl Iterator&lt;Item = i32&gt; = (0..100).map(|x| x * 3).filter(|x| x % 
 // `impl std::iter::Iterator` in the current scope
 x.bogus_missing_method();
 #}</code></pre></pre>
-<a class="header" href="2071-impl-trait-existential-types.html#guide-existential-types" id="guide-existential-types"><h2>Guide: Existential types</h2></a>
+<a class="header" href="#guide-existential-types" id="guide-existential-types"><h2>Guide: Existential types</h2></a>
 <p>Rust allows users to declare <code>existential type</code>s.
 An existential type allows you to give a name to a type without revealing
 exactly what type is being used.</p>
@@ -496,8 +503,8 @@ impl&lt;T&gt; Foo&lt;T&gt; for MyStruct {
 }
 #}</code></pre></pre>
 <p>However, as in 1951, lifetime parameters must be explicitly annotated.</p>
-<a class="header" href="2071-impl-trait-existential-types.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-Level Explanation</h1></a>
-<a class="header" href="2071-impl-trait-existential-types.html#reference-impl-trait-in-let-const-and-static" id="reference-impl-trait-in-let-const-and-static"><h2>Reference: <code>impl Trait</code> in <code>let</code>, <code>const</code> and <code>static</code>:</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-Level Explanation</h1></a>
+<a class="header" href="#reference-impl-trait-in-let-const-and-static" id="reference-impl-trait-in-let-const-and-static"><h2>Reference: <code>impl Trait</code> in <code>let</code>, <code>const</code> and <code>static</code>:</h2></a>
 <p>The rules for <code>impl Trait</code> values in <code>let</code>, <code>const</code>, and <code>static</code> declarations
 work mostly the same as <code>impl Trait</code> return values as specified in
 <a href="https://github.com/rust-lang/rfcs/blob/master/text/1951-expand-impl-trait.md">RFC 1951</a>.</p>
@@ -508,7 +515,7 @@ inherit any lifetime parameters in scope. This is necessary in order for
 <code>let</code> bindings to use <code>impl Trait</code>. <code>let</code> bindings often contain references
 which last for anonymous scope-based lifetimes, and annotating these lifetimes
 manually would be impossible.</p>
-<a class="header" href="2071-impl-trait-existential-types.html#reference-existential-types" id="reference-existential-types"><h2>Reference: Existential Types</h2></a>
+<a class="header" href="#reference-existential-types" id="reference-existential-types"><h2>Reference: Existential Types</h2></a>
 <p>Existential types are similar to normal type aliases, except that their
 concrete type is determined from the scope in which they are defined
 (usually a module or a trait impl).
@@ -605,7 +612,7 @@ to express conditional bounds in existential type signatures
 (e.g. <code>existential type Foo&lt;T&gt;: Debug; impl&lt;T: Clone&gt; Clone for Foo&lt;T&gt; { ... }</code>).
 This is a complicated design space which has not yet been explored fully
 enough. In the future, such a feature could be added backwards-compatibly.</p>
-<a class="header" href="2071-impl-trait-existential-types.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This RFC proposes the addition of a complicated feature that will take time
 for Rust developers to learn and understand.
 There are potentially simpler ways to achieve some of the goals of this RFC,
@@ -618,7 +625,7 @@ However, there are other places such a type can appear where <code>impl Trait</c
 cannot, such as <code>impl</code> blocks and <code>struct</code> definitions
 (i.e. <code>struct Foo { x: impl Trait }</code>).
 This inconsistency may be surprising to users.</p>
-<a class="header" href="2071-impl-trait-existential-types.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could instead expand <code>impl Trait</code> in a more focused but limited way,
 such as specifically extending <code>impl Trait</code> to work in traits without
 allowing full existential type aliases.
@@ -663,8 +670,8 @@ existential type.</li>
 <p>Because of these downsides, we are open to reconsidering this question with
 more practical experience, and the final syntax is left as an unresolved
 question for the RFC.</p>
-<a class="header" href="2071-impl-trait-existential-types.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<p>As discussed in the <a href="2071-impl-trait-existential-types.html#alternatives">alternatives</a> section above, we will need to
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<p>As discussed in the <a href="#alternatives">alternatives</a> section above, we will need to
 reconsider the optimal syntax before stabilizing this feature.</p>
 <p>Additionally, the following extensions should be considered in the future:</p>
 <ul>
@@ -731,9 +738,6 @@ RFC.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

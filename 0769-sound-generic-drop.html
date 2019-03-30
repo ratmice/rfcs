@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0769-sound-generic-drop - </title>
+        <title>0769-sound-generic-drop - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,10 +145,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/769">rust-lang/rfcs#769</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/8861">rust-lang/rust#8861</a></li>
 </ul>
-<a class="header" href="0769-sound-generic-drop.html#history" id="history"><h1>History</h1></a>
+<a class="header" href="#history" id="history"><h1>History</h1></a>
 <p>2015.09.18 -- This RFC was partially superceded by RFC 1238, which
 removed the parametricity-based reasoning in favor of an attribute.</p>
-<a class="header" href="0769-sound-generic-drop.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Remove <code>#[unsafe_destructor]</code> from the Rust language.  Make it safe
 for developers to implement <code>Drop</code> on type- and lifetime-parameterized
 structs and enum (i.e. &quot;Generic Drop&quot;) by imposing new rules on code
@@ -165,7 +172,7 @@ might take in the future (which allows for hypothetical language
 extensions).</p>
 </li>
 </ol>
-<a class="header" href="0769-sound-generic-drop.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Part of Rust's design is rich use of Resource Acquisition Is
 Initialization (RAII) patterns, which requires destructors: code
 attached to certain types that runs only when a value of the type goes
@@ -190,7 +197,7 @@ stands: as soon as a developer attaches <code>#[unsafe_destructor]</code> to suc
 a type, it is imposing a subtle and <em>unchecked</em> restriction on clients
 of that type that they will not ever allow the borrowed data to expire
 first.</p>
-<a class="header" href="0769-sound-generic-drop.html#lifetime-parameterization-the-sneetch-example" id="lifetime-parameterization-the-sneetch-example"><h2>Lifetime parameterization: the Sneetch example</h2></a>
+<a class="header" href="#lifetime-parameterization-the-sneetch-example" id="lifetime-parameterization-the-sneetch-example"><h2>Lifetime parameterization: the Sneetch example</h2></a>
 <p>If today Sylvester writes:</p>
 <pre><pre class="playpen"><code class="language-rust">// opt-in to the unsoundness!
 #![feature(unsafe_destructor)]
@@ -301,7 +308,7 @@ another lifetime or type (the form <code>'a:'b</code> only formally says that
 <p>Thus, client code like that in <code>unwary_client</code> can inadvertantly set
 up scenarios where Sylvester's code may break, and Sylvester might be
 completely unaware of the vulnerability.</p>
-<a class="header" href="0769-sound-generic-drop.html#type-parameterization-the-problem-of-trait-bounds" id="type-parameterization-the-problem-of-trait-bounds"><h2>Type parameterization: the problem of trait bounds</h2></a>
+<a class="header" href="#type-parameterization-the-problem-of-trait-bounds" id="type-parameterization-the-problem-of-trait-bounds"><h2>Type parameterization: the problem of trait bounds</h2></a>
 <p>One might think that all instances of this problem can
 be identified by the use of a lifetime-parametric <code>Drop</code> implementation,
 such as <code>impl&lt;'a&gt; Drop for Sneetch&lt;'a&gt; { ..&gt; }</code></p>
@@ -341,18 +348,18 @@ fn main() {
 <p>Within the <code>zook</code> there is a hidden reference to borrowed data,
 <code>ticking</code>, that is assigned the same lifetime as <code>zook</code> but that
 will be dropped before <code>zook</code> is.</p>
-<p>(These examples may seem contrived; see <a href="0769-sound-generic-drop.html#appendix-a-why-and-when-would-drop-read-from-borrowed-data">Appendix A</a> for a far less
+<p>(These examples may seem contrived; see <a href="#appendix-a-why-and-when-would-drop-read-from-borrowed-data">Appendix A</a> for a far less
 contrived example, that also illustrates how the use of borrowed data
 can lie hidden behind type parameters.)</p>
-<a class="header" href="0769-sound-generic-drop.html#the-proposal" id="the-proposal"><h2>The proposal</h2></a>
+<a class="header" href="#the-proposal" id="the-proposal"><h2>The proposal</h2></a>
 <p>This RFC is proposes to fix this scenario, by having the compiler
 ensure that types with destructors are only employed in contexts where
 either any borrowed data with lifetime <code>'a</code> within the type either
 strictly outlives the value of that type, or such borrowed data is
 provably not accessible from any <code>Drop</code> implementation via a reference
 of type <code>&amp;'a</code>/<code>&amp;'a mut</code>. This is the &quot;Drop-Check&quot; (aka <code>dropck</code>) rule.</p>
-<a class="header" href="0769-sound-generic-drop.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0769-sound-generic-drop.html#the-drop-check-rule" id="the-drop-check-rule"><h2>The Drop-Check Rule</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#the-drop-check-rule" id="the-drop-check-rule"><h2>The Drop-Check Rule</h2></a>
 <p>The Motivation section alluded to the compiler enforcing a new rule.
 Here is a more formal statement of that rule:</p>
 <p>Let <code>v</code> be some value (either temporary or named)
@@ -375,8 +382,8 @@ one method,</p>
 <p>then <code>'a</code> must strictly outlive the scope of <code>v</code>.</p>
 <p>(Note: This rule is using two phrases that deserve further
 elaboration and that are discussed further in sections that
-follow: <a href="0769-sound-generic-drop.html#when-does-one-type-own-another">&quot;the type owns data of type <code>D</code>&quot;</a>
-and <a href="0769-sound-generic-drop.html#strictly-outlives">&quot;must strictly outlive&quot;</a>.)</p>
+follow: <a href="#when-does-one-type-own-another">&quot;the type owns data of type <code>D</code>&quot;</a>
+and <a href="#strictly-outlives">&quot;must strictly outlive&quot;</a>.)</p>
 <p>(Note: When encountering a <code>D</code> of the form <code>Box&lt;Trait+'b&gt;</code>, we
 conservatively assume that such a type has a <code>Drop</code> implementation
 parametric in <code>'b</code>.)</p>
@@ -389,13 +396,13 @@ does not apply to them.</p>
 possibly reference borrowed data via a reference of type <code>&amp;'a _</code> or
 <code>&amp;'a mut_</code>. Here is why:</p>
 <p>Condition (A.) ensures that a type like <code>Sneetch&lt;'a&gt;</code>
-from <a href="0769-sound-generic-drop.html#lifetime-parameterization-the-sneetch-example">the Sneetch example</a> will only be
+from <a href="#lifetime-parameterization-the-sneetch-example">the Sneetch example</a> will only be
 assigned to an expression <code>s</code> where <code>'a</code> strictly outlives <code>s</code>.</p>
 <p>Condition (B.) catches cases like <code>Zook&lt;B&lt;'a&gt;&gt;</code> from
-<a href="0769-sound-generic-drop.html#type-parameterization-the-problem-of-trait-bounds">the Zook example</a>, where the destructor's interaction with borrowed
+<a href="#type-parameterization-the-problem-of-trait-bounds">the Zook example</a>, where the destructor's interaction with borrowed
 data is hidden behind a method call in the <code>fn drop</code>.</p>
-<a class="header" href="0769-sound-generic-drop.html#near-complete-parametricity-suffices" id="near-complete-parametricity-suffices"><h2>Near-complete parametricity suffices</h2></a>
-<a class="header" href="0769-sound-generic-drop.html#noncopy-types" id="noncopy-types"><h3>Noncopy types</h3></a>
+<a class="header" href="#near-complete-parametricity-suffices" id="near-complete-parametricity-suffices"><h2>Near-complete parametricity suffices</h2></a>
+<a class="header" href="#noncopy-types" id="noncopy-types"><h3>Noncopy types</h3></a>
 <p>All non-<code>Copy</code> type parameters are (still) assumed to have a
 destructor. Thus, one would be correct in noting that even a type
 <code>T</code> with no bounds may still have one hidden method attached; namely,
@@ -416,13 +423,13 @@ constructed instance of <code>T</code> will only be able to access either
 borrowed data from <code>v</code> itself (and thus such data will already have
 lifetime that strictly outlives <code>v</code>) or data created during the
 execution of the destructor.</p>
-<a class="header" href="0769-sound-generic-drop.html#any-instances" id="any-instances"><h3><code>Any</code> instances</h3></a>
+<a class="header" href="#any-instances" id="any-instances"><h3><code>Any</code> instances</h3></a>
 <p>All types implementing <code>Any</code> is forced to outlive <code>'static</code>. So one
 should not be able to hide borrowed data behind the <code>Any</code> trait, and
 therefore it is okay for the analysis to treat <code>Any</code> like a black box
 whose destructor is safe to run (at least with respect to not
 accessing borrowed data).</p>
-<a class="header" href="0769-sound-generic-drop.html#strictly-outlives" id="strictly-outlives"><h2>Strictly outlives</h2></a>
+<a class="header" href="#strictly-outlives" id="strictly-outlives"><h2>Strictly outlives</h2></a>
 <p>There is a notion of &quot;strictly outlives&quot; within the compiler
 internals.  (This RFC is not adding such a notion to the language
 itself; expressing &quot;'a strictly outlives 'b&quot; as an API constraint is
@@ -462,8 +469,8 @@ both the same lifetime.) This is an important detail,
 because there are situations where one <em>must</em> assign the same
 lifetime to two distinct bindings in order to allow them to
 mutually refer to each other's data.</p>
-<p>For more details on this &quot;strictly outlives&quot; model, see <a href="0769-sound-generic-drop.html#appendix-b-strictly-outlives-details">Appendix B</a>.</p>
-<a class="header" href="0769-sound-generic-drop.html#when-does-one-type-own-another" id="when-does-one-type-own-another"><h2>When does one type own another</h2></a>
+<p>For more details on this &quot;strictly outlives&quot; model, see <a href="#appendix-b-strictly-outlives-details">Appendix B</a>.</p>
+<a class="header" href="#when-does-one-type-own-another" id="when-does-one-type-own-another"><h2>When does one type own another</h2></a>
 <p>The definition of the Drop-Check Rule used the phrase
 &quot;if the type owns data of type <code>D</code>&quot;.</p>
 <p>This criteria is based on recursive descent of the
@@ -507,7 +514,7 @@ not</em> fall into this category, as they are handled up above; but
 this does cover cases like <code>Box&lt;Trait&lt;T_1, T_2&gt;+'a&gt;</code>).</p>
 </li>
 </ul>
-<a class="header" href="0769-sound-generic-drop.html#phantom-data" id="phantom-data"><h3>Phantom Data</h3></a>
+<a class="header" href="#phantom-data" id="phantom-data"><h3>Phantom Data</h3></a>
 <p>The above definition for type-ownership is (believed to be) sound for
 pure Rust programs that do not use <code>unsafe</code>, but it does not suffice
 for several important types without some tweaks.</p>
@@ -539,8 +546,8 @@ for when the type <code>E</code> owns data of type <code>D</code>, we include:</
 <ul>
 <li>If <code>E</code> is <code>PhantomData&lt;T&gt;</code>, then recurse on <code>T</code>.</li>
 </ul>
-<a class="header" href="0769-sound-generic-drop.html#examples-of-changes-imposed-by-the-drop-check-rule" id="examples-of-changes-imposed-by-the-drop-check-rule"><h2>Examples of changes imposed by the Drop-Check Rule</h2></a>
-<a class="header" href="0769-sound-generic-drop.html#some-cyclic-structure-is-still-allowed" id="some-cyclic-structure-is-still-allowed"><h3>Some cyclic structure is still allowed</h3></a>
+<a class="header" href="#examples-of-changes-imposed-by-the-drop-check-rule" id="examples-of-changes-imposed-by-the-drop-check-rule"><h2>Examples of changes imposed by the Drop-Check Rule</h2></a>
+<a class="header" href="#some-cyclic-structure-is-still-allowed" id="some-cyclic-structure-is-still-allowed"><h3>Some cyclic structure is still allowed</h3></a>
 <p>Earlier versions of the Drop-Check rule were quite conservative, to
 the point where cyclic data would be disallowed in many contexts.
 The Drop-Check rule presented in this RFC was crafted to try
@@ -589,12 +596,12 @@ reference to the two other nodes, and those references are stored in a
 <code>Vec</code>.  Note that all of the bindings are introduced by a single
 let-statement; this is to accommodate the region inference system
 which wants to assign a single code extent to the <code>'a</code> lifetime, as
-discussed in the <a href="0769-sound-generic-drop.html#strictly-outlives">strictly-outlives</a> section.</p>
+discussed in the <a href="#strictly-outlives">strictly-outlives</a> section.</p>
 <p>Even though <code>Vec&lt;T&gt;</code> itself is defined as implementing <code>Drop</code>,
 it puts no bounds on <code>T</code>, and therefore that <code>Drop</code> implementation is
 ignored by the Drop-Check rule.</p>
-<a class="header" href="0769-sound-generic-drop.html#directly-mixing-cycles-and-drop-is-rejected" id="directly-mixing-cycles-and-drop-is-rejected"><h3>Directly mixing cycles and <code>Drop</code> is rejected</h3></a>
-<p><a href="0769-sound-generic-drop.html#lifetime-parameterization-the-sneetch-example">The Sneetch example</a> illustrates a scenario were borrowed data is
+<a class="header" href="#directly-mixing-cycles-and-drop-is-rejected" id="directly-mixing-cycles-and-drop-is-rejected"><h3>Directly mixing cycles and <code>Drop</code> is rejected</h3></a>
+<p><a href="#lifetime-parameterization-the-sneetch-example">The Sneetch example</a> illustrates a scenario were borrowed data is
 dropped while there is still an outstanding borrow that will be
 accessed by a destructor.  In that particular example, one can easily
 reorder the bindings to ensure that the <code>StarOffMachine</code> outlives all
@@ -669,8 +676,8 @@ it solely cares about the public API presented by the type to its
 clients.  After all, the <code>Drop</code> implementation for <code>C&lt;'a&gt;</code> could be
 rewritten tomorrow to contain code that accesses the neighboring
 nodes.</p>
-<a class="header" href="0769-sound-generic-drop.html#some-temporaries-need-to-be-given-names" id="some-temporaries-need-to-be-given-names"><h3>Some temporaries need to be given names</h3></a>
-<p>Due to the way that <code>rustc</code> implements the <a href="0769-sound-generic-drop.html#strictly-outlives">strictly-outlives</a>
+<a class="header" href="#some-temporaries-need-to-be-given-names" id="some-temporaries-need-to-be-given-names"><h3>Some temporaries need to be given names</h3></a>
+<p>Due to the way that <code>rustc</code> implements the <a href="#strictly-outlives">strictly-outlives</a>
 relation in terms of code-extents, the analysis does not know in an
 expression like <code>foo().bar().quux()</code> in what order the temporary
 values <code>foo()</code> and <code>foo().bar()</code> will be dropped.</p>
@@ -731,7 +738,7 @@ the compiler knows that the temporary from <code>stdin()</code> will outlive the
 temporary from <code>stdin().lock()</code>.  However, such a change to the
 code extents could have unexpected fallout, analogous to the
 fallout that was associated with <a href="https://github.com/rust-lang/rust/pull/21657">Rust PR 21657</a>.)</p>
-<a class="header" href="0769-sound-generic-drop.html#mixing-acyclic-structure-and-drop-is-sometimes-rejected" id="mixing-acyclic-structure-and-drop-is-sometimes-rejected"><h3>Mixing acyclic structure and <code>Drop</code> is sometimes rejected</h3></a>
+<a class="header" href="#mixing-acyclic-structure-and-drop-is-sometimes-rejected" id="mixing-acyclic-structure-and-drop-is-sometimes-rejected"><h3>Mixing acyclic structure and <code>Drop</code> is sometimes rejected</h3></a>
 <p>This is an example of sound code, accepted today, that is
 unfortunately rejected by the Drop-Check rule (at least in pnkfelix's
 prototype):</p>
@@ -779,7 +786,7 @@ remainder extent that is actually covered by the <code>let c2;</code>.</p>
 <p>(This may just be a bug somewhere in the prototype, but for the time
 being pnkfelix is going to assume that it will be a bug that this RFC
 is forced to live with indefinitely.)</p>
-<a class="header" href="0769-sound-generic-drop.html#unsound-apis-need-to-be-revised-or-removed-entirely" id="unsound-apis-need-to-be-revised-or-removed-entirely"><h2>Unsound APIs need to be revised or removed entirely</h2></a>
+<a class="header" href="#unsound-apis-need-to-be-revised-or-removed-entirely" id="unsound-apis-need-to-be-revised-or-removed-entirely"><h2>Unsound APIs need to be revised or removed entirely</h2></a>
 <p>While the Drop-Check rule is designed to ensure that safe Rust code is
 sound in its use of destructors, it cannot assure us that unsafe code
 is sound. It is the responsibility of the author of unsafe code to
@@ -900,11 +907,11 @@ to be sound or not.  For example, the <code>arena::TypedArena&lt;T&gt;</code> ty
 appears to be sound (as long as it carries <code>PhantomData&lt;T&gt;</code> just like
 <code>Vec&lt;T&gt;</code> does). In particular, when one ports the above example to use
 <code>TypedArena</code> instead of <code>Arena</code>, it is statically rejected by <code>rustc</code>.</p>
-<a class="header" href="0769-sound-generic-drop.html#the-final-goal-remove-unsafe_destructor" id="the-final-goal-remove-unsafe_destructor"><h2>The final goal: remove #[unsafe_destructor]</h2></a>
+<a class="header" href="#the-final-goal-remove-unsafe_destructor" id="the-final-goal-remove-unsafe_destructor"><h2>The final goal: remove #[unsafe_destructor]</h2></a>
 <p>Once all of the above pieces have landed, lifetime- and
 type-parameterized <code>Drop</code> will be safe, and thus we will be able to
 remove <code>#[unsafe_destructor]</code>!</p>
-<a class="header" href="0769-sound-generic-drop.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>The Drop-Check rule is a little complex, and does disallow some
@@ -929,8 +936,8 @@ data that has been already dropped. But again, that decision is out
 of scope for this RFC.)</p>
 </li>
 </ul>
-<a class="header" href="0769-sound-generic-drop.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<p>We considered simpler versions of <a href="0769-sound-generic-drop.html#the-drop-check-rule">the Drop-Check rule</a>; in
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<p>We considered simpler versions of <a href="#the-drop-check-rule">the Drop-Check rule</a>; in
 particular, an earlier version of it simply said that if the type of
 <code>v</code> owns any type <code>D</code> that implements <code>Drop</code>, then for any lifetime
 <code>'a</code> that <code>D</code> refers to, <code>'a</code> must strictly outlive the scope of <code>v</code>,
@@ -941,7 +948,7 @@ data of lifetime <code>'a</code>.</p>
 <p>This rule is simpler in the sense that it more obviously sound.</p>
 </li>
 <li>
-<p>But this rule disallowed far more code; e.g.  the <a href="0769-sound-generic-drop.html#some-cyclic-structure-is-still-allowed">Cyclic structure
+<p>But this rule disallowed far more code; e.g.  the <a href="#some-cyclic-structure-is-still-allowed">Cyclic structure
 still allowed</a> example was rejected under this more naive rule,
 because <code>C&lt;'a&gt;</code> owns D = <code>Vec&lt;Cell&lt;Option&lt;&amp;'a C&lt;'a&gt;&gt;&gt;&gt;</code>, and this
 particular D refers to <code>'a</code>.</p>
@@ -952,7 +959,7 @@ particular D refers to <code>'a</code>.</p>
 and type-parametric types that implement <code>Drop</code> is not really tenable;
 we need to do something (and we have been planning to do something
 like this RFC for over a year).</p>
-<a class="header" href="0769-sound-generic-drop.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Is the Drop-Check rule provably sound?  pnkfelix has based his
@@ -968,15 +975,15 @@ prototype.)</p>
 dtors may benefit from variance on type params&quot;</p>
 </li>
 </ul>
-<p>Before adding Condition (B.) to <a href="0769-sound-generic-drop.html#the-drop-check-rule">the Drop-Check Rule</a>, it seemed
+<p>Before adding Condition (B.) to <a href="#the-drop-check-rule">the Drop-Check Rule</a>, it seemed
 like enabling covariance in more standard library types was going to
 be very important for landing this work.  And even now, it is
 possible that covariance could still play an important role.
 But nonetheless, there are some API's whose current form is fundamentally
 incompatible with covariance; e.g. the current <code>TypedArena&lt;T&gt;</code> API
 is fundamentally invariant with respect to <code>T</code>.</p>
-<a class="header" href="0769-sound-generic-drop.html#appendices" id="appendices"><h1>Appendices</h1></a>
-<a class="header" href="0769-sound-generic-drop.html#appendix-a-why-and-when-would-drop-read-from-borrowed-data" id="appendix-a-why-and-when-would-drop-read-from-borrowed-data"><h2>Appendix A: Why and when would Drop read from borrowed data</h2></a>
+<a class="header" href="#appendices" id="appendices"><h1>Appendices</h1></a>
+<a class="header" href="#appendix-a-why-and-when-would-drop-read-from-borrowed-data" id="appendix-a-why-and-when-would-drop-read-from-borrowed-data"><h2>Appendix A: Why and when would Drop read from borrowed data</h2></a>
 <p>Here is a story, about two developers, Julia and Kurt, and the code
 they hacked on.</p>
 <p>Julia inherited some code, and it is misbehaving.  It appears like
@@ -1033,15 +1040,15 @@ it holds a reference to a slice of name that likewise may not still be
 valid.</p>
 <p>This illustrates a case where one might legitimately mix destructor
 code with borrowed data.  (Is this example any less contrived than
-<a href="0769-sound-generic-drop.html#lifetime-parameterization-the-sneetch-example">the Sneetch example</a>? That is in the eye of the beholder.)</p>
-<a class="header" href="0769-sound-generic-drop.html#appendix-b-strictly-outlives-details" id="appendix-b-strictly-outlives-details"><h2>Appendix B: strictly-outlives details</h2></a>
+<a href="#lifetime-parameterization-the-sneetch-example">the Sneetch example</a>? That is in the eye of the beholder.)</p>
+<a class="header" href="#appendix-b-strictly-outlives-details" id="appendix-b-strictly-outlives-details"><h2>Appendix B: strictly-outlives details</h2></a>
 <p>The rest of this section gets into some low-level details of parts of
 how <code>rustc</code> is implemented, largely because the changes described here
 do have an impact on what results the <code>rustc</code> region inference system
 produces (or fails to produce). It serves mostly to explain (1.) why
 <a href="https://github.com/rust-lang/rust/pull/21657">Rust PR 21657</a> was implemented, and (2.) why one may sometimes see
 indecipherable region-inference errors.</p>
-<a class="header" href="0769-sound-generic-drop.html#review-code-extents" id="review-code-extents"><h3>Review: Code Extents</h3></a>
+<a class="header" href="#review-code-extents" id="review-code-extents"><h3>Review: Code Extents</h3></a>
 <p>(Nothing here is meant to be new; its just providing context for the
 next subsection.)</p>
 <p>Every Rust expression evaluates to a value <code>V</code> that is either placed
@@ -1085,7 +1092,7 @@ just will assume that these things do exist.)</p>
 it exists, potentially holds bits of code that will execute after <code>S</code>
 is done.  Any cleanup code for any values assigned to <code>P</code> will only
 run after we have finished with <em>all</em> code associated with <code>S</code>.</p>
-<a class="header" href="0769-sound-generic-drop.html#a-problem-with-10-alpha-code-extents" id="a-problem-with-10-alpha-code-extents"><h3>A problem with 1.0 alpha code extents</h3></a>
+<a class="header" href="#a-problem-with-10-alpha-code-extents" id="a-problem-with-10-alpha-code-extents"><h3>A problem with 1.0 alpha code extents</h3></a>
 <p>So, with the above established, we have a hint at how to express that
 a lifetime <code>'a</code> needs to strictly outlive a particular code extent <code>S</code>:
 simply say that <code>'a</code> needs to live at least long as <code>P</code>.</p>
@@ -1121,7 +1128,7 @@ does not live at least as long as the parent of the block; it only
 lives until the end of the block itself.</p>
 <p>This illustrates why &quot;All the bindings established by let statements
 in a block are assigned the same code extent&quot; is a problem</p>
-<a class="header" href="0769-sound-generic-drop.html#block-remainder-code-extents" id="block-remainder-code-extents"><h3>Block Remainder Code Extents</h3></a>
+<a class="header" href="#block-remainder-code-extents" id="block-remainder-code-extents"><h3>Block Remainder Code Extents</h3></a>
 <p>The solution proposed here (motivated by experience with the
 prototype) is to introduce finer-grained code extents.  This solution
 is essentially <a href="https://github.com/rust-lang/rust/pull/21657">Rust PR 21657</a>, which has already landed in <code>rustc</code>.
@@ -1164,7 +1171,7 @@ as well as the temporary values created during evaluation of
 <code>EXPR_2</code>.
 Likewise, <code>c</code> strictly outlives the bindings and temporaries created
 in the <code>...</code> that follows it.</p>
-<a class="header" href="0769-sound-generic-drop.html#why-stop-at-let-statements" id="why-stop-at-let-statements"><h3>Why stop at let-statements?</h3></a>
+<a class="header" href="#why-stop-at-let-statements" id="why-stop-at-let-statements"><h3>Why stop at let-statements?</h3></a>
 <p>This RFC does <em>not</em> propose that we attempt to go further and track
 the order of destruction of the values bound by a <em>single</em> let
 statement.</p>
@@ -1178,7 +1185,7 @@ grain scopes, at least not right now, is that there are scenarios
 where it is <em>important</em> to be able to assign the same region to two
 distinct pieces of data; in particular, this often arises when one
 wants to build cyclic structure, as discussed in
-<a href="0769-sound-generic-drop.html#some-cyclic-structure-is-still-allowed">Cyclic structure still allowed</a>.</p>
+<a href="#some-cyclic-structure-is-still-allowed">Cyclic structure still allowed</a>.</p>
 
                     </main>
 
@@ -1223,9 +1230,6 @@ wants to build cyclic structure, as discussed in
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1861-extern-types - </title>
+        <title>1861-extern-types - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1861">rust-lang/rfcs#1861</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/43467">rust-lang/rust#43467</a></li>
 </ul>
-<a class="header" href="1861-extern-types.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add an <code>extern type</code> syntax for declaring types which are opaque to Rust's type
 system.</p>
-<a class="header" href="1861-extern-types.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>When interacting with external libraries we often need to be able to handle pointers to data that we don't know the size or layout of.</p>
 <p>In C it's possible to declare a type but not define it.
 These incomplete types can only be used behind pointers, a compilation error will result if the user tries to use them in such a way that the compiler would need to know their layout.</p>
@@ -172,7 +179,7 @@ None of this is of course valid.</p>
 <p>This RFC instead proposes a way to directly express that a type exists but is unknown to Rust.</p>
 <p>Finally, In the 2017 roadmap, <a href="https://github.com/rust-lang/rfcs/blob/master/text/1774-roadmap-2017.md#integration-with-other-languages">integration with other languages</a>, is listed as a priority.
 Just like unions, this is an unsafe feature necessary for dealing with legacy code in a correct and understandable manner.</p>
-<a class="header" href="1861-extern-types.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Add a new kind of type declaration, an extern type:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -209,7 +216,7 @@ The exact mechanism is more the domain of the custom DST RFC, <a href="https://g
 Unifying these is out of scope for this RFC, but this feature should be used in their definition instead of the current tricks.
 Strictly speaking, this is a breaking change, but the <code>std</code> docs explicitly say that <code>void</code> shouldn't be used without indirection.
 And <code>libc</code> can, in the worst-case, make a breaking change.</p>
-<a class="header" href="1861-extern-types.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>Really, the question is &quot;how do we teach <em>without</em> this&quot;.
 As described above, the current tricks for doing this are wrong.
 Furthermore, they are quite advanced touching upon many advanced corners of the language: zero-sized and uninhabited types are phenomena few programmer coming from mainstream languages have encountered.
@@ -220,18 +227,18 @@ Second, there is annoyance that none of the current tricks, by nature of them al
 As they see various options fail: moves, stack variables, they can discover these semantics incrementally.
 The benefits are such that this would soon displace the current hacks, making code in the wild more readable through consistent use of a pattern.</p>
 <p>This should be taught in the foreign function interface chapter of the rust book in place of where it currently tells people to use uninhabited enums (ack!).</p>
-<a class="header" href="1861-extern-types.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Very slight addition of complexity to the language.</p>
 <p>The syntax has the potential to be confused with introducing a type alias, rather than a new nominal type.
 The use of <code>extern</code> here is also a bit of a misnomer as the name of the type does not refer to anything external to Rust.</p>
-<a class="header" href="1861-extern-types.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Not do this.</p>
 <p>Alternatively, rather than provide a way to create opaque types, we could just offer one distinguished type (<code>std::mem::OpaqueData</code> or something like that).
 Then, to create new opaque types, users just declare a struct with a member of type <code>OpaqueData</code>.
 This has the advantage of introducing no new syntax, and issues like FFI-compatibility would fall out of existing rules.</p>
 <p>Another alternative is to drop the <code>extern</code> and allow a declaration to be written <code>type A;</code>.
 This removes the (arguably disingenuous) use of the <code>extern</code> keyword although it makes the syntax look even more like a type alias.</p>
-<a class="header" href="1861-extern-types.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Should we allow generic lifetime and type parameters on extern types?
@@ -288,9 +295,6 @@ Somebody should check what Clang does.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

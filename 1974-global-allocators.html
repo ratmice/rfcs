@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1974-global-allocators - </title>
+        <title>1974-global-allocators - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +146,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1974">rust-lang/rfcs#1974</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27389">rust-lang/rust#27389</a></li>
 </ul>
-<a class="header" href="1974-global-allocators.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Overhaul the global allocator APIs to put them on a path to stabilization, and
 switch the default allocator to the system allocator when the feature
 stabilizes.</p>
 <p>This RFC is a refinement of the previous <a href="https://github.com/rust-lang/rfcs/blob/master/text/1183-swap-out-jemalloc.md">RFC 1183</a>.</p>
-<a class="header" href="1974-global-allocators.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="1974-global-allocators.html#the-current-api" id="the-current-api"><h2>The current API</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#the-current-api" id="the-current-api"><h2>The current API</h2></a>
 <p>The unstable <code>allocator</code> feature allows developers to select the global
 allocator which will be used in a program. A crate identifies itself as an
 allocator with the <code>#![allocator]</code> annotation, and declares a number of
@@ -165,7 +172,7 @@ around allocations to attempt to detect buffer overflows in unsafe code. To do
 this currently, the underlying allocator would need to be split into two
 crates, one which contains all of the functionality and another which is tagged
 as an <code>#![allocator]</code>.</p>
-<a class="header" href="1974-global-allocators.html#jemalloc" id="jemalloc"><h2>jemalloc</h2></a>
+<a class="header" href="#jemalloc" id="jemalloc"><h2>jemalloc</h2></a>
 <p>Rust's default allocator has historically been jemalloc. While jemalloc does
 provide significant speedups over certain system allocators for some allocation
 heavy workflows, it has has been a source of problems. For example, it has
@@ -178,8 +185,8 @@ allocator is a more reasonable and unsurprising default choice.</p>
 <p>A third party crate allowing users to opt-into jemalloc would also open the door
 to provide access to some of the library's other features such as tracing, arena
 pinning, and diagnostic output dumps for code that depends on jemalloc directly.</p>
-<a class="header" href="1974-global-allocators.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1974-global-allocators.html#defining-an-allocator" id="defining-an-allocator"><h2>Defining an allocator</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#defining-an-allocator" id="defining-an-allocator"><h2>Defining an allocator</h2></a>
 <p>Global allocators will use the <code>Allocator</code> trait defined in <a href="https://github.com/rust-lang/rfcs/blob/master/text/1398-kinds-of-allocators.md">RFC 1398</a>.
 However <code>Allocator</code>'s methods take <code>&amp;mut self</code> since it's designed to be used
 with individual collections. Since this allocator is global across threads, we
@@ -196,7 +203,7 @@ impl&lt;'a&gt; Allocator for &amp;'a Jemalloc {
     // ...
 }
 #}</code></pre></pre>
-<a class="header" href="1974-global-allocators.html#using-an-allocator" id="using-an-allocator"><h2>Using an allocator</h2></a>
+<a class="header" href="#using-an-allocator" id="using-an-allocator"><h2>Using an allocator</h2></a>
 <p>The <code>alloc::heap</code> module will contain several items:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -279,7 +286,7 @@ As a vestige of the current implementation this is only to get around linkage
 errors where the liballoc rlib references symbols defined in the &quot;allocator
 crate&quot;. With this RFC the compiler has far more control over the ABI and linkage
 here, so this restriction is no longer necessary.</p>
-<a class="header" href="1974-global-allocators.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>Global allocator selection would be a somewhat advanced topic - the system
 allocator is sufficient for most use cases. It is a new tool that developers can
 use to optimize for their program's specific workload when necessary.</p>
@@ -289,7 +296,7 @@ allocator. Libraries should be agnostic over the global allocator unless they
 are specifically designed to augment functionality of a specific allocator.</p>
 <p>Defining an allocator is an even more advanced topic that should probably live
 in the <em>Nomicon</em>.</p>
-<a class="header" href="1974-global-allocators.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Dropping the default of jemalloc will regress performance of some programs until
 they manually opt back into that allocator, which may produce confusion in the
 community as to why things suddenly became slower.</p>
@@ -307,7 +314,7 @@ with this currently.</p>
 They're purely convenience functions, but if a global allocator overrides them,
 the custom implementations will not be used when going through the <code>Heap</code> type.
 This may be confusing.</p>
-<a class="header" href="1974-global-allocators.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could define a separate <code>GlobalAllocator</code> trait with methods taking <code>&amp;self</code>
 to avoid the strange implementation for references requirement. This does
 require the duplication of some or all of the API surface and documentation of
@@ -317,7 +324,7 @@ which implements <code>Allocator</code>. This avoids the duplication or the stra
 implementation for references issues in the other possibilities, but can't be
 defined in a reasonable way without HKT, and is a somewhat strange layer of
 indirection.</p>
-<a class="header" href="1974-global-allocators.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Are <code>System</code> and <code>Heap</code> the right names for the two <code>Allocator</code> implementations
 in <code>std::heap</code>?</p>
 <p>Should <code>std::heap</code> also have free functions which forward to the global
@@ -366,9 +373,6 @@ allocator?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

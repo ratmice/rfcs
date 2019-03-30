@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1191-hir - </title>
+        <title>1191-hir - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +146,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1191">rust-lang/rfcs#1191</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1191-hir.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add a high-level intermediate representation (HIR) to the compiler. This is
 basically a new (and additional) AST more suited for use by the compiler.</p>
 <p>This is purely an implementation detail of the compiler. It has no effect on the
 language.</p>
 <p>Note that adding a HIR does not preclude adding a MIR or LIR in the future.</p>
-<a class="header" href="1191-hir.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently the AST is used by libsyntax for syntactic operations, by the compiler
 for pretty much everything, and in syntax extensions. I propose splitting the
 AST into a libsyntax version that is specialised for syntactic operation and
@@ -164,7 +171,7 @@ loops, <code>if let</code>) moving to the lowering step from AST to HIR, rather 
 AST manipulations. That should make both error messages and tool support better
 for such constructs. It would be nice to move lifetime elision to the lowering
 step too, in order to make the HIR as explicit as possible.</p>
-<a class="header" href="1191-hir.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Initially, the HIR will be an (almost) identical copy of the AST and the
 lowering step will simply be a copy operation. Since some constructs (macros,
 <code>for</code> loops, etc.) are expanded away in libsyntax, these will not be part of the
@@ -174,18 +181,18 @@ matter of change the imports). Incrementally, I expect to move expansion of
 language constructs to the lowering step. Further in the future, the HIR should
 get more abstract and compact, and the AST should get closer to the surface
 syntax.</p>
-<a class="header" href="1191-hir.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Potentially slower compilations and higher memory use. However, this should be
 offset in the long run by making improvements to the compiler easier by having a
 more appropriate data structure.</p>
-<a class="header" href="1191-hir.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Leave things as they are.</p>
 <p>Skip the HIR and lower straight to a MIR later in compilation. This has
 advantages which adding a HIR does not have, however, it is a far more complex
 refactoring and also misses some benefits of the HIR, notably being able to
 stabilise the AST for tools and syntax extensions without locking in the
 compiler.</p>
-<a class="header" href="1191-hir.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>How to deal with spans and source code. We could keep the AST around and
 reference back to it from the HIR. Or we could copy span information to the HIR
 (I plan on doing this initially). Possibly some other solution like keeping the
@@ -235,9 +242,6 @@ we do in libsyntax, which is in turn less than tools want).</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2091-inline-semantic - </title>
+        <title>2091-inline-semantic - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -140,7 +147,7 @@
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/47809">rust-lang/rust#47809</a></li>
 </ul>
 <hr />
-<a class="header" href="2091-inline-semantic.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Enable accurate caller location reporting during panic in <code>{Option, Result}::{unwrap, expect}</code> with
 the following changes:</p>
 <ol>
@@ -166,61 +173,61 @@ let m = n.unwrap();
 #}</code></pre></pre>
 <!-- TOC updateOnSave:false -->
 <ul>
-<li><a href="2091-inline-semantic.html#summary">Summary</a></li>
-<li><a href="2091-inline-semantic.html#motivation">Motivation</a></li>
-<li><a href="2091-inline-semantic.html#guide-level-explanation">Guide-level explanation</a>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#motivation">Motivation</a></li>
+<li><a href="#guide-level-explanation">Guide-level explanation</a>
 <ul>
-<li><a href="2091-inline-semantic.html#lets-reimplement-unwrap">Let's reimplement <code>unwrap()</code></a></li>
-<li><a href="2091-inline-semantic.html#track-the-caller">Track the caller</a></li>
-<li><a href="2091-inline-semantic.html#location-type">Location type</a></li>
-<li><a href="2091-inline-semantic.html#propagation-of-tracker">Propagation of tracker</a></li>
-<li><a href="2091-inline-semantic.html#why-do-we-use-implicit-caller-location">Why do we use implicit caller location</a></li>
+<li><a href="#lets-reimplement-unwrap">Let's reimplement <code>unwrap()</code></a></li>
+<li><a href="#track-the-caller">Track the caller</a></li>
+<li><a href="#location-type">Location type</a></li>
+<li><a href="#propagation-of-tracker">Propagation of tracker</a></li>
+<li><a href="#why-do-we-use-implicit-caller-location">Why do we use implicit caller location</a></li>
 </ul>
 </li>
-<li><a href="2091-inline-semantic.html#reference-level-explanation">Reference-level explanation</a>
+<li><a href="#reference-level-explanation">Reference-level explanation</a>
 <ul>
-<li><a href="2091-inline-semantic.html#survey-of-panicking-standard-functions">Survey of panicking standard functions</a></li>
-<li><a href="2091-inline-semantic.html#procedural-attribute-macro">Procedural attribute macro</a></li>
-<li><a href="2091-inline-semantic.html#redirection-mir-inlining">Redirection (MIR inlining)</a></li>
-<li><a href="2091-inline-semantic.html#standard-libraries">Standard libraries</a></li>
-<li><a href="2091-inline-semantic.html#my-fault-vs-your-fault">“My fault” vs “Your fault”</a></li>
-<li><a href="2091-inline-semantic.html#location-detail-control">Location detail control</a></li>
+<li><a href="#survey-of-panicking-standard-functions">Survey of panicking standard functions</a></li>
+<li><a href="#procedural-attribute-macro">Procedural attribute macro</a></li>
+<li><a href="#redirection-mir-inlining">Redirection (MIR inlining)</a></li>
+<li><a href="#standard-libraries">Standard libraries</a></li>
+<li><a href="#my-fault-vs-your-fault">“My fault” vs “Your fault”</a></li>
+<li><a href="#location-detail-control">Location detail control</a></li>
 </ul>
 </li>
-<li><a href="2091-inline-semantic.html#drawbacks">Drawbacks</a>
+<li><a href="#drawbacks">Drawbacks</a>
 <ul>
-<li><a href="2091-inline-semantic.html#code-bloat">Code bloat</a></li>
-<li><a href="2091-inline-semantic.html#narrow-solution-scope">Narrow solution scope</a></li>
-<li><a href="2091-inline-semantic.html#confusing-scoping-rule">Confusing scoping rule</a></li>
+<li><a href="#code-bloat">Code bloat</a></li>
+<li><a href="#narrow-solution-scope">Narrow solution scope</a></li>
+<li><a href="#confusing-scoping-rule">Confusing scoping rule</a></li>
 </ul>
 </li>
-<li><a href="2091-inline-semantic.html#rationale-and-alternatives">Rationale and alternatives</a>
+<li><a href="#rationale-and-alternatives">Rationale and alternatives</a>
 <ul>
-<li><a href="2091-inline-semantic.html#rationale">Rationale</a></li>
-<li><a href="2091-inline-semantic.html#alternatives">Alternatives</a>
+<li><a href="#rationale">Rationale</a></li>
+<li><a href="#alternatives">Alternatives</a>
 <ul>
-<li><a href="2091-inline-semantic.html#-name-of-everything-">🚲 Name of everything 🚲</a></li>
-<li><a href="2091-inline-semantic.html#using-an-abi-instead-of-an-attribute">Using an ABI instead of an attribute</a></li>
-<li><a href="2091-inline-semantic.html#repurposing-file-line-column">Repurposing <code>file!()</code>, <code>line!()</code>, <code>column!()</code></a></li>
-<li><a href="2091-inline-semantic.html#inline-mir">Inline MIR</a></li>
-<li><a href="2091-inline-semantic.html#default-function-arguments">Default function arguments</a></li>
-<li><a href="2091-inline-semantic.html#semantic-inlining">Semantic inlining</a></li>
-<li><a href="2091-inline-semantic.html#design-by-contract">Design-by-contract</a></li>
+<li><a href="#-name-of-everything-">🚲 Name of everything 🚲</a></li>
+<li><a href="#using-an-abi-instead-of-an-attribute">Using an ABI instead of an attribute</a></li>
+<li><a href="#repurposing-file-line-column">Repurposing <code>file!()</code>, <code>line!()</code>, <code>column!()</code></a></li>
+<li><a href="#inline-mir">Inline MIR</a></li>
+<li><a href="#default-function-arguments">Default function arguments</a></li>
+<li><a href="#semantic-inlining">Semantic inlining</a></li>
+<li><a href="#design-by-contract">Design-by-contract</a></li>
 </ul>
 </li>
-<li><a href="2091-inline-semantic.html#non-viable-alternatives">Non-viable alternatives</a>
+<li><a href="#non-viable-alternatives">Non-viable alternatives</a>
 <ul>
-<li><a href="2091-inline-semantic.html#macros">Macros</a></li>
-<li><a href="2091-inline-semantic.html#backtrace">Backtrace</a></li>
-<li><a href="2091-inline-semantic.html#sourcecontext-generic-parameter"><code>SourceContext</code> generic parameter</a></li>
+<li><a href="#macros">Macros</a></li>
+<li><a href="#backtrace">Backtrace</a></li>
+<li><a href="#sourcecontext-generic-parameter"><code>SourceContext</code> generic parameter</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="2091-inline-semantic.html#unresolved-questions">Unresolved questions</a></li>
+<li><a href="#unresolved-questions">Unresolved questions</a></li>
 </ul>
 <!-- /TOC -->
-<a class="header" href="2091-inline-semantic.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>It is well-known that the error message reported by <code>unwrap()</code> is useless:</p>
 <pre><code class="language-text">thread 'main' panicked at 'called `Option::unwrap()` on a `None` value', /checkout/src/libcore/option.rs:335
 note: Run with `RUST_BACKTRACE=1` for a backtrace.
@@ -232,8 +239,8 @@ convention is too entrenched.</p>
 <p>This RFC introduces line numbers into <code>unwrap()</code> without requiring users to adapt a new
 idiom, i.e. the user should be able to see the precise location without changing any source
 code.</p>
-<a class="header" href="2091-inline-semantic.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
-<a class="header" href="2091-inline-semantic.html#lets-reimplement-unwrap" id="lets-reimplement-unwrap"><h2>Let's reimplement <code>unwrap()</code></h2></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#lets-reimplement-unwrap" id="lets-reimplement-unwrap"><h2>Let's reimplement <code>unwrap()</code></h2></a>
 <p><code>unwrap()</code> and <code>expect()</code> are two methods on <code>Option</code> and <code>Result</code> that are commonly used when you
 are <em>absolutely sure</em> they contain a successful value and you want to extract it.</p>
 <pre><pre class="playpen"><code class="language-rust">// 1.rs
@@ -327,7 +334,7 @@ println!(&quot;args[1] = {}&quot;, my_unwrap!(args().nth(1)));
 #}</code></pre></pre>
 <p>What if you have already published the <code>my_unwrap</code> crate that has thousands of users, and you
 want to maintain API stability? Before Rust 1.XX, the builtin <code>unwrap()</code> had the same problem!</p>
-<a class="header" href="2091-inline-semantic.html#track-the-caller" id="track-the-caller"><h2>Track the caller</h2></a>
+<a class="header" href="#track-the-caller" id="track-the-caller"><h2>Track the caller</h2></a>
 <p>The reason the <code>my_unwrap!</code> macro works is because it copy-and-pastes the entire content of its macro
 definition every time it is used.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -388,7 +395,7 @@ location as an additional argument. The attribute also instructs the compiler to
 <code>my_unwrap(x)</code> with <code>my_unwrap_at_source_location(x, file!(), line!(), column!())</code> (sort of)
 whenever it sees it. This allows us to maintain the stability guarantee while allowing the user to
 get the new behavior with just one recompile.</p>
-<a class="header" href="2091-inline-semantic.html#location-type" id="location-type"><h2>Location type</h2></a>
+<a class="header" href="#location-type" id="location-type"><h2>Location type</h2></a>
 <p>Let's enhance <code>my_unwrap</code> to also log a message to the log file before panicking. We would need to
 get the caller's location as a value. This is supported using the method <code>Location::caller()</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -407,7 +414,7 @@ pub fn my_unwrap&lt;T&gt;(input: Option&lt;T&gt;) -&gt; T {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2091-inline-semantic.html#propagation-of-tracker" id="propagation-of-tracker"><h2>Propagation of tracker</h2></a>
+<a class="header" href="#propagation-of-tracker" id="propagation-of-tracker"><h2>Propagation of tracker</h2></a>
 <p>When your <code>#[track_caller]</code> function calls another <code>#[track_caller]</code> function, the caller location
 will be propagated downwards:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -436,7 +443,7 @@ pub fn my_get_index&lt;T&gt;(input: &amp;[T], index: usize) -&gt; &amp;T {
     })()
 }
 #}</code></pre></pre>
-<a class="header" href="2091-inline-semantic.html#why-do-we-use-implicit-caller-location" id="why-do-we-use-implicit-caller-location"><h2>Why do we use implicit caller location</h2></a>
+<a class="header" href="#why-do-we-use-implicit-caller-location" id="why-do-we-use-implicit-caller-location"><h2>Why do we use implicit caller location</h2></a>
 <p>If you are learning Rust alongside other languages, you may wonder why Rust obtains the caller
 information in such a strange way. There are two restrictions that force us to adopt this solution:</p>
 <ol>
@@ -453,8 +460,8 @@ does not (yet) support default function arguments or function overloading becaus
 with type inference, so such solutions are ruled out.</p>
 </li>
 </ol>
-<a class="header" href="2091-inline-semantic.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2091-inline-semantic.html#survey-of-panicking-standard-functions" id="survey-of-panicking-standard-functions"><h2>Survey of panicking standard functions</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#survey-of-panicking-standard-functions" id="survey-of-panicking-standard-functions"><h2>Survey of panicking standard functions</h2></a>
 <p>Many standard functions may panic. These are divided into three categories depending on whether they
 should receive caller information despite the inlining cost associated with it.</p>
 <p>The list of functions is not exhaustive. Only those with a &quot;Panics&quot; section in the documentation
@@ -593,7 +600,7 @@ enough clue to let programmers figure out where the error comes from.</p>
 functions. The <code>index</code> and <code>index_mut</code> functions should also have it if possible, but this is
 currently postponed as it is not investigated yet how to insert the transformation after
 monomorphization.</p>
-<a class="header" href="2091-inline-semantic.html#procedural-attribute-macro" id="procedural-attribute-macro"><h2>Procedural attribute macro</h2></a>
+<a class="header" href="#procedural-attribute-macro" id="procedural-attribute-macro"><h2>Procedural attribute macro</h2></a>
 <p>The <code>#[track_caller]</code> attribute will modify a function at the AST and MIR levels without touching
 the type-checking (HIR level) or the low-level LLVM passes.</p>
 <p>It will first wrap the body of the function in a closure, and then call it:</p>
@@ -631,7 +638,7 @@ location when one calls <code>foo::{{closure}}</code> directly.</p>
 <p>Currently the <code>foo::{{closure}}</code> cannot inherit attributes defined on the main function. To prevent
 problems regarding ABI, using <code>#[naked]</code> or <code>extern &quot;ABI&quot;</code> together with
 <code>#[rustc_implicit_caller_location]</code> should raise an error.</p>
-<a class="header" href="2091-inline-semantic.html#redirection-mir-inlining" id="redirection-mir-inlining"><h2>Redirection (MIR inlining)</h2></a>
+<a class="header" href="#redirection-mir-inlining" id="redirection-mir-inlining"><h2>Redirection (MIR inlining)</h2></a>
 <p>After all type-checking and validation is done, we can now inject the caller location. This is done
 by redirecting all calls to <code>foo</code> to <code>foo::{{closure}}</code>.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -735,7 +742,7 @@ assert!(f == g); // This must remain `true`.
 f(None);
 g(None); // The effect of these two calls must be the same.
 #}</code></pre></pre>
-<a class="header" href="2091-inline-semantic.html#standard-libraries" id="standard-libraries"><h2>Standard libraries</h2></a>
+<a class="header" href="#standard-libraries" id="standard-libraries"><h2>Standard libraries</h2></a>
 <p>The <code>caller_location()</code> intrinsic returns the <code>Location</code> structure which encodes the file, line and
 column of the callsite. This shares the same structure as the existing type <code>std::panic::Location</code>.
 Therefore, the type is promoted to a lang-item, and moved into <code>core::panicking::Location</code>. It is
@@ -774,7 +781,7 @@ this RFC.</p>
 <code>caller_location()</code> intrinsic will pass unchanged through all MIR passes into trans. As a fallback,
 the intrinsic will expand to <code>Location { file: file!(), line: line!(), col: column!() }</code> during
 trans.</p>
-<a class="header" href="2091-inline-semantic.html#my-fault-vs-your-fault" id="my-fault-vs-your-fault"><h2>“My fault” vs “Your fault”</h2></a>
+<a class="header" href="#my-fault-vs-your-fault" id="my-fault-vs-your-fault"><h2>“My fault” vs “Your fault”</h2></a>
 <p>In a <code>#[track_caller]</code> function, we expect all panics being attributed to the caller (thus the
 attribute name). However, sometimes the code panics not due to the caller, but the implementation
 itself. It may be important to distinguish between &quot;my fault&quot; (implementation error) and
@@ -873,9 +880,9 @@ fn count_slices&lt;T: Hash + Eq&gt;(array: &amp;[T], window: usize) -&gt; HashMa
 }
 #}</code></pre></pre>
 <p>Anyway, treating everything as &quot;your fault&quot; will encourage that <code>#[track_caller]</code> functions should
-be short, which goes in line with the <a href="2091-inline-semantic.html#survey-of-panicking-standard-functions">&quot;must have&quot; list</a> in
+be short, which goes in line with the <a href="#survey-of-panicking-standard-functions">&quot;must have&quot; list</a> in
 the RFC. Thus the RFC will remain advocating for propagating caller location implicitly.</p>
-<a class="header" href="2091-inline-semantic.html#location-detail-control" id="location-detail-control"><h2>Location detail control</h2></a>
+<a class="header" href="#location-detail-control" id="location-detail-control"><h2>Location detail control</h2></a>
 <p>An unstable flag <code>-Z location-detail</code> is added to <code>rustc</code> to control how much factual detail will
 be emitted when using <code>caller_location()</code>. The user can toggle <code>file</code>, <code>line</code> and <code>column</code> separately,
 e.g. when compiling with:</p>
@@ -884,8 +891,8 @@ e.g. when compiling with:</p>
 <p>only the line number will be real. The file and column will always be a dummy value like</p>
 <pre><code>thread 'main' panicked at 'error message', &lt;redacted&gt;:192:0
 </code></pre>
-<a class="header" href="2091-inline-semantic.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
-<a class="header" href="2091-inline-semantic.html#code-bloat" id="code-bloat"><h2>Code bloat</h2></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#code-bloat" id="code-bloat"><h2>Code bloat</h2></a>
 <p>Previously, all calls to <code>unwrap()</code> and <code>expect()</code> referred to the same location. Therefore, the
 panicking branch will only needed to reuse a pointer to a single global tuple.</p>
 <p>After this RFC is implemented, the panicking branch will need to allocate space to store the varying caller location,
@@ -913,12 +920,12 @@ if (b.tag != SOME) {
 a.value_of_some + b.value_of_some
 #}</code></pre></pre>
 <p>One can use <code>-Z location-detail</code> to get the old optimization behavior.</p>
-<a class="header" href="2091-inline-semantic.html#narrow-solution-scope" id="narrow-solution-scope"><h2>Narrow solution scope</h2></a>
+<a class="header" href="#narrow-solution-scope" id="narrow-solution-scope"><h2>Narrow solution scope</h2></a>
 <p><code>#[track_caller]</code> is only useful in solving the &quot;get caller location&quot; problem. Introducing an
 entirely new feature just for this problem seems wasteful.</p>
-<p><a href="2091-inline-semantic.html#default-function-arguments">Default function arguments</a> is another possible solution for this
+<p><a href="#default-function-arguments">Default function arguments</a> is another possible solution for this
 problem but with much wider application.</p>
-<a class="header" href="2091-inline-semantic.html#confusing-scoping-rule" id="confusing-scoping-rule"><h2>Confusing scoping rule</h2></a>
+<a class="header" href="#confusing-scoping-rule" id="confusing-scoping-rule"><h2>Confusing scoping rule</h2></a>
 <p>Consts, statics and closures are separate MIR items, meaning the following marked places will <em>not</em>
 get caller locations:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -934,8 +941,8 @@ fn foo() {
 <p>This is confusing, but if we don't support this, we will need two <code>panic!</code> macros which is not a
 better solution.</p>
 <p>Clippy could provide a lint against using <code>Location::caller()</code> outside of <code>#[track_caller]</code>.</p>
-<a class="header" href="2091-inline-semantic.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
-<a class="header" href="2091-inline-semantic.html#rationale" id="rationale"><h2>Rationale</h2></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale" id="rationale"><h2>Rationale</h2></a>
 <p>This RFC tries to abide by the following restrictions:</p>
 <ol>
 <li>
@@ -963,15 +970,15 @@ location.</p>
 <p>Restriction 4 &quot;interface independence&quot; is currently not implemented due to lack of
 post-monomorphized MIR pass, but implementing <code>#[track_caller]</code> as a language feature follows this
 restriction.</p>
-<a class="header" href="2091-inline-semantic.html#alternatives" id="alternatives"><h2>Alternatives</h2></a>
-<a class="header" href="2091-inline-semantic.html#a-name-of-everything-" id="a-name-of-everything-"><h3>🚲 Name of everything 🚲</h3></a>
+<a class="header" href="#alternatives" id="alternatives"><h2>Alternatives</h2></a>
+<a class="header" href="#-name-of-everything-" id="-name-of-everything-"><h3>🚲 Name of everything 🚲</h3></a>
 <ul>
 <li>Is <code>#[track_caller]</code> an accurate description?</li>
 <li>Should we move <code>std::panic::Location</code> into <code>core</code>, or just use a 3-tuple to represent the
 location? Note that the former is advocated in <a href="https://github.com/rust-lang/rfcs/pull/2070">RFC 2070</a>.</li>
 <li>Is <code>Location::caller()</code> properly named?</li>
 </ul>
-<a class="header" href="2091-inline-semantic.html#using-an-abi-instead-of-an-attribute" id="using-an-abi-instead-of-an-attribute"><h3>Using an ABI instead of an attribute</h3></a>
+<a class="header" href="#using-an-abi-instead-of-an-attribute" id="using-an-abi-instead-of-an-attribute"><h3>Using an ABI instead of an attribute</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -991,13 +998,13 @@ let f: fn(Option&lt;u32&gt;) -&gt; u32 = Option::unwrap;
 <p>Making this pass will require supporting implicitly coercing <code>extern &quot;implicit-caller-location&quot; fn</code>
 pointer to a normal function pointer. Also, an ABI is not powerful enough to implicitly insert a
 parameter, making it less competitive than just using an attribute.</p>
-<a class="header" href="2091-inline-semantic.html#repurposing-file-line-column" id="repurposing-file-line-column"><h3>Repurposing <code>file!()</code>, <code>line!()</code>, <code>column!()</code></h3></a>
+<a class="header" href="#repurposing-file-line-column" id="repurposing-file-line-column"><h3>Repurposing <code>file!()</code>, <code>line!()</code>, <code>column!()</code></h3></a>
 <p>We could change the meaning of <code>file!()</code>, <code>line!()</code> and <code>column!()</code> so they are only converted to
 real constants after redirection (a MIR or trans pass) instead of early during macro expansion (an
 AST pass). Inside <code>#[track_caller]</code> functions, these macros behave as this RFC's
 <code>caller_location()</code>. The drawback is using these macro will have different values at compile time
 (e.g. inside <code>include!(file!())</code>) vs. runtime.</p>
-<a class="header" href="2091-inline-semantic.html#inline-mir" id="inline-mir"><h3>Inline MIR</h3></a>
+<a class="header" href="#inline-mir" id="inline-mir"><h3>Inline MIR</h3></a>
 <p>Introduced as an <a href="https://github.com/rust-lang/rfcs/pull/1669#issuecomment-231031865">alternative to RFC 1669</a>, instead of the <code>caller_location()</code> intrinsic,
 we could provide a full-fledged inline MIR macro <code>mir!</code> similar to the inline assembler:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1028,7 +1035,7 @@ fn unwrap(self) -&gt; T {
 generic mechanism which requires stabilizing the MIR syntax and considering the interaction with
 the surrounding code. Besides, <code>#[track_caller]</code> itself still exists and the magic constants
 <code>$CallerFile</code> etc are still magical.</p>
-<a class="header" href="2091-inline-semantic.html#default-function-arguments" id="default-function-arguments"><h3>Default function arguments</h3></a>
+<a class="header" href="#default-function-arguments" id="default-function-arguments"><h3>Default function arguments</h3></a>
 <p>Assume this is solved by implementing <a href="https://github.com/rust-lang/rfcs/issues/323">RFC issue 323</a>.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1069,7 +1076,7 @@ where
 #}</code></pre></pre>
 <p>This can be resolved if the future default argument proposal takes this into account. But again,
 this feature itself is going to be large and controversial.</p>
-<a class="header" href="2091-inline-semantic.html#semantic-inlining" id="semantic-inlining"><h3>Semantic inlining</h3></a>
+<a class="header" href="#semantic-inlining" id="semantic-inlining"><h3>Semantic inlining</h3></a>
 <p>Treat <code>#[track_caller]</code> as the same as a very forceful <code>#[inline(always)]</code>. This eliminates the
 procedural macro pass. This was the approach suggested in the first edition of this RFC, since the
 target functions (<code>unwrap</code>, <code>expect</code>, <code>index</code>) are just a few lines long. However, it experienced
@@ -1083,9 +1090,9 @@ it inlining may confuse beginners.</li>
 </ol>
 <p>Therefore the RFC is changed to the current form, and the inlining pass is now described as just an
 implementation detail.</p>
-<a class="header" href="2091-inline-semantic.html#design-by-contract" id="design-by-contract"><h3>Design-by-contract</h3></a>
+<a class="header" href="#design-by-contract" id="design-by-contract"><h3>Design-by-contract</h3></a>
 <p>This is inspired when investigating the difference in
-<a href="2091-inline-semantic.html#my-fault-vs-your-fault">&quot;my fault&quot; vs &quot;your fault&quot;</a>. We incorporate ideas from <a href="https://en.wikipedia.org/wiki/Design_by_contract">design-by-contract</a>
+<a href="#my-fault-vs-your-fault">&quot;my fault&quot; vs &quot;your fault&quot;</a>. We incorporate ideas from <a href="https://en.wikipedia.org/wiki/Design_by_contract">design-by-contract</a>
 (DbC) by specifying that &quot;your fault&quot; is a kind of contract violation. Preconditions are listed as
 part of the function signature, e.g.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1135,11 +1142,11 @@ assert!(condition_3 || (condition_2a &amp;&amp; condition_2b) || condition_1);
 <p>Before Rust 1.0, there was the <a href="https://crates.io/crates/hoare"><code>hoare</code></a> compiler plugin which introduces DbC using the similar
 syntax. However, the conditions are expanded inside the function, so the assertions will not fail
 with the caller's location. A proper solution will be similar to what this RFC proposes.</p>
-<a class="header" href="2091-inline-semantic.html#non-viable-alternatives" id="non-viable-alternatives"><h2>Non-viable alternatives</h2></a>
+<a class="header" href="#non-viable-alternatives" id="non-viable-alternatives"><h2>Non-viable alternatives</h2></a>
 <p>Many alternatives have been proposed before but failed to satisfy the restrictions laid out in the
-<a href="2091-inline-semantic.html#rationale">Rationale</a> subsection, thus should <em>not</em> be considered viable alternatives within this
+<a href="#rationale">Rationale</a> subsection, thus should <em>not</em> be considered viable alternatives within this
 RFC, at least at the time being.</p>
-<a class="header" href="2091-inline-semantic.html#macros" id="macros"><h3>Macros</h3></a>
+<a class="header" href="#macros" id="macros"><h3>Macros</h3></a>
 <p>The <code>unwrap!()</code> macro introduced in <a href="https://github.com/rust-lang/rfcs/pull/1669">RFC 1669</a> allows the user to write <code>unwrap!(x)</code> instead of
 <code>x.unwrap()</code>.</p>
 <p>A similar solution is introducing a <code>loc!()</code> macro that expands to
@@ -1153,7 +1160,7 @@ violating restriction 2 &quot;source compatibility&quot;, ~~unless we are willin
 macros~~.</p>
 <p>All pre-typeck rewrites are prone to false-positive failures affecting unrelated types that have an
 <code>unwrap()</code> method. Post-typeck rewrites are no different from this RFC.</p>
-<a class="header" href="2091-inline-semantic.html#backtrace" id="backtrace"><h3>Backtrace</h3></a>
+<a class="header" href="#backtrace" id="backtrace"><h3>Backtrace</h3></a>
 <p>When given debug information (DWARF section/file on Linux, <code>*.pdb</code> file on Windows, <code>*.dSYM</code> folder
 on macOS), the program is able to obtain the source code location for each address. This solution is
 often used in runtime-heavy languages like Python, Java and <a href="https://golang.org/pkg/runtime/#Caller">Go</a>.</p>
@@ -1183,7 +1190,7 @@ issue now.</p>
 <p>These drawbacks are the main reason why restriction 3 &quot;debug-info independence&quot; is added to the
 motivation.</p>
 <p>(A debuginfo-based stack trace proposal can be found at <a href="https://github.com/rust-lang/rfcs/pull/2154">RFC 2154</a>.)</p>
-<a class="header" href="2091-inline-semantic.html#sourcecontext-generic-parameter" id="sourcecontext-generic-parameter"><h3><code>SourceContext</code> generic parameter</h3></a>
+<a class="header" href="#sourcecontext-generic-parameter" id="sourcecontext-generic-parameter"><h3><code>SourceContext</code> generic parameter</h3></a>
 <p>Introduced as an <a href="https://github.com/rust-lang/rfcs/pull/1669#issuecomment-231896669">alternative in RFC 1669</a>, inspired by GHC's implicit parameter:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1198,7 +1205,7 @@ fn unwrap&lt;C: SourceContext = CallerSourceContext&gt;(self) -&gt; T {
 <code>HashMap::index</code> as this will require a change of the method signature of <code>index()</code> which has been
 stabilized. Methods applying this solution will also lose object-safety.</p>
 <p>The same drawback exists if we base the solution on <a href="https://github.com/rust-lang/rfcs/pull/2000">RFC 2000</a>  (<em>const generics</em>).</p>
-<a class="header" href="2091-inline-semantic.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>If we want to support adding <code>#[track_caller]</code> to trait methods, the redirection
@@ -1261,9 +1268,6 @@ used though.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

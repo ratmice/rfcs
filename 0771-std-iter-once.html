@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0771-std-iter-once - </title>
+        <title>0771-std-iter-once - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,11 +145,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/771">rust-lang/rfcs#771</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/24443">rust-lang/rust#24443</a></li>
 </ul>
-<a class="header" href="0771-std-iter-once.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add a <code>once</code> function to <code>std::iter</code> to construct an iterator yielding a given value one time, and an <code>empty</code> function to construct an iterator yielding no values.</p>
-<a class="header" href="0771-std-iter-once.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This is a common task when working with iterators. Currently, this can be done in many ways, most of which are unergonomic, do not work for all types (e.g. requiring Copy/Clone), or both. <code>once</code> and <code>empty</code> are simple to implement, simple to use, and simple to understand.</p>
-<a class="header" href="0771-std-iter-once.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p><code>once</code> will return a new struct, <code>std::iter::Once&lt;T&gt;</code>, implementing Iterator<T>. Internally, <code>Once&lt;T&gt;</code> is simply a newtype wrapper around <code>std::option::IntoIter&lt;T&gt;</code>. The actual body of <code>once</code> is thus trivial:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -168,14 +175,14 @@ pub fn empty&lt;T&gt;(x: T) -&gt; Empty&lt;T&gt; {
 }
 #}</code></pre></pre>
 <p>These wrapper structs exist to allow future backwards-compatible changes, and hide the implementation.</p>
-<a class="header" href="0771-std-iter-once.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Although a tiny amount of code, it still does come with a testing, maintainance, etc. cost.</p>
 <p>It's already possible to do this via <code>Some(x).into_iter()</code>, <code>std::iter::repeat(x).take(1)</code> (for <code>x: Clone</code>), <code>vec![x].into_iter()</code>, various contraptions involving <code>iterate</code>...</p>
 <p>The existence of the <code>Once</code> struct is not technically necessary.</p>
-<a class="header" href="0771-std-iter-once.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>There are already many, many alternatives to this- <code>Option::into_iter()</code>, <code>iterate</code>...</p>
 <p>The <code>Once</code> struct could be not used, with <code>std::option::IntoIter</code> used instead.</p>
-<a class="header" href="0771-std-iter-once.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Naturally, <code>once</code> is fairly bikesheddable. <code>one_time</code>? <code>repeat_once</code>?</p>
 <p>Are versions of <code>once</code> that return <code>&amp;T</code>/<code>&amp;mut T</code> desirable?</p>
 
@@ -222,9 +229,6 @@ pub fn empty&lt;T&gt;(x: T) -&gt; Empty&lt;T&gt; {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

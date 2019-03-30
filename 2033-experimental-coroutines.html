@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2033-experimental-coroutines - </title>
+        <title>2033-experimental-coroutines - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2033">rust-lang/rfcs#2033</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/43122">rust-lang/rust#43122</a></li>
 </ul>
-<a class="header" href="2033-experimental-coroutines.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This is an <strong>experimental RFC</strong> for adding a new feature to the language,
 coroutines (also commonly referred to as generators). This RFC is intended to be
 relatively lightweight and bikeshed free as it will be followed by a separate
@@ -147,7 +154,7 @@ RFC in the future for stabilization of this language feature. The intention here
 is to make sure everyone's on board with the <em>general idea</em> of
 coroutines/generators being added to the Rust compiler and available for use on
 the nightly channel.</p>
-<a class="header" href="2033-experimental-coroutines.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>One of Rust's 2017 roadmap goals is <a href="https://github.com/rust-lang/rfcs/blob/master/text/1774-roadmap-2017.md#rust-should-be-well-equipped-for-writing-robust-high-scale-servers">&quot;Rust should be well-equipped for writing
 robust, high-scale servers&quot;</a>. A <a href="https://users.rust-lang.org/t/what-does-rust-need-today-for-server-workloads/11114">recent survey</a> has shown that
 the biggest blocker to robust, high-scale servers is ergonomic usage of async
@@ -175,7 +182,7 @@ continuing to execute?</p>
 <p>The focus of this experimental RFC is predominately on the second, but before we
 dive into more motivation there it may be worth to review the expected syntax
 for async/await.</p>
-<a class="header" href="2033-experimental-coroutines.html#asyncawait-syntax" id="asyncawait-syntax"><h3>Async/await syntax</h3></a>
+<a class="header" href="#asyncawait-syntax" id="asyncawait-syntax"><h3>Async/await syntax</h3></a>
 <p>Currently it's intended that <strong>no new keywords are added to
 Rust yet</strong> to support async/await. This is done for a number of reasons, but
 one of the most important is flexibility. It allows us to stabilize features
@@ -233,7 +240,7 @@ minimal! You'll note that this RFC is an experimental RFC for coroutines and we
 haven't mentioned coroutines at all with the syntax! This is an intentional
 design decision to keep the implementation of <code>#[async]</code> and <code>await!</code> as
 flexible as possible.</p>
-<a class="header" href="2033-experimental-coroutines.html#suspending-in-asyncawait" id="suspending-in-asyncawait"><h3>Suspending in async/await</h3></a>
+<a class="header" href="#suspending-in-asyncawait" id="suspending-in-asyncawait"><h3>Suspending in async/await</h3></a>
 <p>With a rough syntax in mind the next question was how do we actually suspend
 these futures? The function above will desugar to:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -297,7 +304,7 @@ to translate our <code>#[async]</code> functions into futures. We've also ruled 
 traditional solutions like green threads due to their costs, so we just need a
 way to easily create the optimal state machine for a future that combinators
 would otherwise emulate.</p>
-<a class="header" href="2033-experimental-coroutines.html#state-machines-as-stackless-coroutines" id="state-machines-as-stackless-coroutines"><h3>State machines as &quot;stackless coroutines&quot;</h3></a>
+<a class="header" href="#state-machines-as-stackless-coroutines" id="state-machines-as-stackless-coroutines"><h3>State machines as &quot;stackless coroutines&quot;</h3></a>
 <p>Up to this point we haven't actually mentioned coroutines all that much which
 after all is the purpose of this RFC! The intention of the above motivation,
 however, is to provide a strong case for <em>why coroutines?</em> At this point,
@@ -391,7 +398,7 @@ Rust with futures.</li>
 </ul>
 <p>Put another way: if the compiler implements stackless coroutines as a feature,
 we have now achieved async/await syntax!</p>
-<a class="header" href="2033-experimental-coroutines.html#features-of-stackless-coroutines" id="features-of-stackless-coroutines"><h3>Features of stackless coroutines</h3></a>
+<a class="header" href="#features-of-stackless-coroutines" id="features-of-stackless-coroutines"><h3>Features of stackless coroutines</h3></a>
 <p>At this point we'll start to tone down the emphasis of servers and async I/O
 when talking about stackless coroutines. It's important to keep them in mind
 though as motivation for coroutines as they guide the design constraints of
@@ -412,7 +419,7 @@ definitions above. They purely operate with <code>Future</code> and simply work 
 with coroutines. This means that if we can all broadly agree on async/await
 there's no need to bikeshed and delay coroutines. Any implementation of
 coroutines should be easily adaptable to async/await syntax.</p>
-<a class="header" href="2033-experimental-coroutines.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Alright hopefully now we're all pumped to get coroutines into the compiler so we
 can start playing around with async/await on the nightly channel. This RFC,
 however, is explicitly an <strong>experimental RFC</strong> and is not intended to be a
@@ -464,7 +471,7 @@ suite to exist ahead of time. Along those lines this RFC proposes a list of
 tests accompanying any initial implementation of coroutines in the compiler,
 covering. Finally this RFC also proposes a list of unanswered questions related
 to coroutines which likely wish to be considered before stabilization</p>
-<a class="header" href="2033-experimental-coroutines.html#open-questions---coroutines" id="open-questions---coroutines"><h5>Open Questions - coroutines</h5></a>
+<a class="header" href="#open-questions---coroutines" id="open-questions---coroutines"><h5>Open Questions - coroutines</h5></a>
 <ul>
 <li>What is the precise syntax for coroutines?</li>
 <li>How are coroutines syntactically and functionally constructed?</li>
@@ -475,7 +482,7 @@ to coroutines which likely wish to be considered before stabilization</p>
 <code>Iterator</code> all interact? Does coherence require &quot;wrapper struct&quot; instances to
 exist?</li>
 </ul>
-<a class="header" href="2033-experimental-coroutines.html#open-questions---asyncawait" id="open-questions---asyncawait"><h5>Open Questions - async/await</h5></a>
+<a class="header" href="#open-questions---asyncawait" id="open-questions---asyncawait"><h5>Open Questions - async/await</h5></a>
 <ul>
 <li>Is using a syntax extension too much considered to be creating a
 &quot;sub-language&quot;? Does async/await usage feel natural in Rust?</li>
@@ -484,7 +491,7 @@ mention the future aspect?</li>
 <li>Can <code>Stream</code> implementations be created with similar syntax? Is async/await
 with coroutines too specific to futures?</li>
 </ul>
-<a class="header" href="2033-experimental-coroutines.html#tests---basic-usage" id="tests---basic-usage"><h5>Tests - Basic usage</h5></a>
+<a class="header" href="#tests---basic-usage" id="tests---basic-usage"><h5>Tests - Basic usage</h5></a>
 <ul>
 <li>Coroutines which don't yield at all and immediately return results</li>
 <li>Coroutines that yield once and then return a result</li>
@@ -495,32 +502,32 @@ with coroutines too specific to futures?</li>
 <li>Coroutines are <code>Send</code> and <code>Sync</code> like closures are wrt captured variables</li>
 <li>Create a coroutine on one thread, run it on another</li>
 </ul>
-<a class="header" href="2033-experimental-coroutines.html#tests---basic-compile-failures" id="tests---basic-compile-failures"><h5>Tests - Basic compile failures</h5></a>
+<a class="header" href="#tests---basic-compile-failures" id="tests---basic-compile-failures"><h5>Tests - Basic compile failures</h5></a>
 <ul>
 <li>Coroutines cannot close over data that is destroyed before the coroutine is
 itself destroyed.</li>
 <li>Coroutines closing over non-<code>Send</code> data are not <code>Send</code></li>
 </ul>
-<a class="header" href="2033-experimental-coroutines.html#test---interesting-control-flow" id="test---interesting-control-flow"><h5>Test - Interesting control flow</h5></a>
+<a class="header" href="#test---interesting-control-flow" id="test---interesting-control-flow"><h5>Test - Interesting control flow</h5></a>
 <ul>
 <li>Yield inside of a <code>for</code> loop a set number of times</li>
 <li>Yield on one branch of an <code>if</code> but not the other (take both branches here)</li>
 <li>Yield on one branch of an <code>if</code> inside of a <code>for</code> loop</li>
 <li>Yield inside of the condition expression of an <code>if</code></li>
 </ul>
-<a class="header" href="2033-experimental-coroutines.html#tests---panic-safety" id="tests---panic-safety"><h5>Tests - Panic safety</h5></a>
+<a class="header" href="#tests---panic-safety" id="tests---panic-safety"><h5>Tests - Panic safety</h5></a>
 <ul>
 <li>Panicking in a coroutine doesn't kill everything</li>
 <li>Resuming a panicked coroutine is memory safe</li>
 <li>Panicking drops local variables correctly</li>
 </ul>
-<a class="header" href="2033-experimental-coroutines.html#tests---debuginfo" id="tests---debuginfo"><h5>Tests - Debuginfo</h5></a>
+<a class="header" href="#tests---debuginfo" id="tests---debuginfo"><h5>Tests - Debuginfo</h5></a>
 <ul>
 <li>Inspecting variables before/after yield points works</li>
 <li>Breaking before/after yield points works</li>
 </ul>
 <p>Suggestions for more test are always welcome!</p>
-<a class="header" href="2033-experimental-coroutines.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>Coroutines are not, and will not become a stable language feature as a result of
 this RFC. They are primarily designed to be used through async/await notation
 and are otherwise transparent. As a result there are no specific plans at this
@@ -529,13 +536,13 @@ prior to stabilization.</p>
 <p>Nightly-only documentation will be available as part of the unstable book about
 basic usage of coroutines and their abilities, but it likely won't be exhaustive
 or the best learning for resource for coroutines yet.</p>
-<a class="header" href="2033-experimental-coroutines.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Coroutines are themselves a significant feature for the compiler. This in turns
 brings with it maintenance burden if the feature doesn't pan out and can
 otherwise be difficult to design around. It is thought, though, that coroutines
 are highly likely to pan out successfully with futures and async/await notation
 and are likely to be coalesced around as a stable compiler feature.</p>
-<a class="header" href="2033-experimental-coroutines.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The alternatives to list here, as this is an experimental RFC, are more targeted
 as alternatives to the motivation rather than the feature itself here. Along
 those lines, you could imagine quite a few alternatives to the goal of tackling
@@ -569,7 +576,7 @@ it's time to explore and experiment with an alternative to M:N threading with
 stackless coroutines, and continue to push on the 2017 roadmap goal.</p>
 <p>Some more background about this motivation for exploring async/await vs
 alternatives can also be found <a href="https://github.com/rust-lang/rfcs/pull/2033#issuecomment-309603972">in a comment on the RFC thread</a>.</p>
-<a class="header" href="2033-experimental-coroutines.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>The precise semantics, timing, and procedure of an experimental RFC are still
 somewhat up in the air. It may be unclear what questions need to be decided on
 as part of an experimental RFC vs a &quot;real RFC&quot;. We're hoping, though, that we
@@ -618,9 +625,6 @@ can smooth out this process as we go along!</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

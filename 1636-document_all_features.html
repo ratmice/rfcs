@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1636-document_all_features - </title>
+        <title>1636-document_all_features - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1636">rust-lang/rfcs#1636</a></li>
 <li>Rust Issue: https://github.com/rust-lang-nursery/reference/issues/9</li>
 </ul>
-<a class="header" href="1636-document_all_features.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>One of the major goals of Rust's development process is <em>stability without stagnation</em>. That means we add features regularly. However, it can be difficult to <em>use</em> those features if they are not publicly documented anywhere. Therefore, this RFC proposes requiring that all new language features and public standard library items must be documented before landing on the stable release branch (item documentation for the standard library; in the language reference for language features).</p>
-<a class="header" href="1636-document_all_features.html#outline" id="outline"><h2>Outline</h2></a>
+<a class="header" href="#outline" id="outline"><h2>Outline</h2></a>
 <ul>
 <li>Summary
 <ul>
@@ -179,7 +186,7 @@
 <li>Alternatives</li>
 <li>Unresolved questions</li>
 </ul>
-<a class="header" href="1636-document_all_features.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>At present, new language features are often documented <em>only</em> in the RFCs which propose them and the associated announcement blog posts. Moreover, as features change, the existing official language documentation (the Rust Book, Rust by Example, and the language reference) can increasingly grow outdated.</p>
 <p>Although the Rust Book and Rust by Example are kept relatively up to date, <a href="https://www.rust-lang.org/documentation.html">the reference is not</a>:</p>
 <blockquote>
@@ -189,7 +196,7 @@
 <p>For example, the change in Rust 1.9 to allow users to use the <code>#[deprecated]</code> attribute for their own libraries was, at the time of writing this RFC, <em>nowhere</em> reflected in official documentation. (Many other examples could be supplied; this one was chosen for its relative simplicity and recency.) The Book's <a href="https://doc.rust-lang.org/book/attributes.html">discussion of attributes</a> linked to the <a href="https://doc.rust-lang.org/reference.html#attributes">reference list of attributes</a>, but as of the time of writing the reference <a href="https://doc.rust-lang.org/reference.html#compiler-features">still specifies</a> that <code>deprecated</code> was a compiler-only feature. The two places where users might have become aware of the change are <a href="http://blog.rust-lang.org/2016/05/26/Rust-1.9.html#deprecation-warnings">the Rust 1.9 release blog post</a> and the <a href="https://github.com/rust-lang/rfcs/blob/master/text/1270-deprecation.md">RFC itself</a>. Neither (yet) ranked highly in search; users were likely to be misled.</p>
 <p>Changing this to require all language features to be documented before stabilization would mean Rust users can use the language documentation with high confidence that it will provide exhaustive coverage of all stable Rust features.</p>
 <p>Although the standard library is in excellent shape regarding documentation, including it in this policy will help guarantee that it remains so going forward.</p>
-<a class="header" href="1636-document_all_features.html#the-current-situation" id="the-current-situation"><h2>The Current Situation</h2></a>
+<a class="header" href="#the-current-situation" id="the-current-situation"><h2>The Current Situation</h2></a>
 <p>Today, the canonical source of information about new language features is the RFCs which define them. The Rust Reference is substantially out of date, and not all new features have made their way into <em>The Rust Programming Language</em>.</p>
 <p>There are several serious problems with the <em>status quo</em> of using RFCs as ad hoc documentation:</p>
 <ol>
@@ -211,7 +218,7 @@
 </ol>
 <p>In short, RFCs are a poor source of information about language features for the ordinary Rust user. Rust users should not need to be troubled with details of how the language is implemented works simply to learn how pieces of it work. Nor should they need to dig through tens (much less hundreds) of comments to determine what the final form of the feature is.</p>
 <p>However, there is currently no other documentation at all for many newer features. This is a significant barrier to adoption of the language, and equally of adoption of new features which will improve the ergonomics of the language.</p>
-<a class="header" href="1636-document_all_features.html#precedent" id="precedent"><h2>Precedent</h2></a>
+<a class="header" href="#precedent" id="precedent"><h2>Precedent</h2></a>
 <p>This exact idea has been adopted by the Ember community after their somewhat bumpy transitions at the end of their 1.x cycle and leading into their 2.x transition. As one commenter there <a href="https://github.com/emberjs/rfcs/pull/56#issuecomment-114635962">put it</a>:</p>
 <blockquote>
 <p>The fact that 1.13 was released without updated guides is really discouraging to me as an Ember adopter. It may be much faster, the features may be much cooler, but to me, they don't exist unless I can learn how to use them from documentation. Documentation IS feature work. (<a href="https://github.com/emberjs/rfcs/pull/56#issuecomment-114635962">@davidgoli</a>)</p>
@@ -225,7 +232,7 @@
 <p>Now if this documentation effort holds up the releases people are going to grumble. But so be it. The challenge will be to effectively parcel out the effort and relieve the core team to do what they do best. No single person should be a gate. But lack of good documentation should gate releases. That way a lot of eyes are forced to focus on the problem. We can't get the great new toys unless everybody can enjoy the toys. (<a href="https://github.com/emberjs/rfcs/pull/56#issuecomment-114389963">@eccegordo</a>)</p>
 </blockquote>
 <p>The basic decision has led to a substantial improvement in the currency of the documentation (which is now updated the same day as a new version is released). Moreover, it has spurred ongoing development of better tooling around documentation to manage these releases. Finally, at least in the RFC author's estimation, it has also led to a substantial increase in the overall quality of that documentation, possibly as a consequence of increasing the community involvement in the documentation process (including the formation of a documentation subteam).</p>
-<a class="header" href="1636-document_all_features.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The basic process of developing new language features will remain largely the same as today. The required changes are two additions:</p>
 <ul>
 <li>
@@ -235,17 +242,17 @@
 <p>a new requirement that the changes themselves be properly documented before being merged to stable</p>
 </li>
 </ul>
-<a class="header" href="1636-document_all_features.html#new-rfc-section-how-do-we-teach-this" id="new-rfc-section-how-do-we-teach-this"><h2>New RFC section: &quot;How do we teach this?&quot;</h2></a>
+<a class="header" href="#new-rfc-section-how-do-we-teach-this" id="new-rfc-section-how-do-we-teach-this"><h2>New RFC section: &quot;How do we teach this?&quot;</h2></a>
 <p>Following the example of Ember.js, we must add a new section to the RFC, just after <strong>Detailed design</strong>, titled <strong>How do we teach this?</strong> The section should explain what changes need to be made to documentation, and if the feature substantially changes what would be considered the &quot;best&quot; way to solve a problem or is a fairly mainstream issue, discuss how it might be incorporated into <em>The Rust Programming Language</em> and/or <em>Rust by Example</em>.</p>
 <p>Here is the Ember RFC section, with appropriate substitutions and modifications:</p>
 <blockquote>
-<a class="header" href="1636-document_all_features.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>What names and terminology work best for these concepts and why? How is this idea best presented? As a continuation of existing Rust patterns, or as a wholly new one?</p>
 <p>Would the acceptance of this proposal change how Rust is taught to new users at any level?  What additions or changes to the Rust Reference, <em>The Rust Programing Language</em>, and/or <em>Rust by Example</em> does it entail?</p>
 <p>How should this feature be introduced and taught to existing Rust users?</p>
 </blockquote>
 <p>For a great example of this in practice, see the (currently open) <a href="https://github.com/dgeb/rfcs/blob/module-unification/text/0000-module-unification.md#how-we-teach-this">Ember RFC: Module Unification</a>, which includes several sections discussing conventions, tooling, concepts, and impacts on testing.</p>
-<a class="header" href="1636-document_all_features.html#new-requirement-to-document-changes-before-stabilizing" id="new-requirement-to-document-changes-before-stabilizing"><h2>New requirement to document changes before stabilizing</h2></a>
+<a class="header" href="#new-requirement-to-document-changes-before-stabilizing" id="new-requirement-to-document-changes-before-stabilizing"><h2>New requirement to document changes before stabilizing</h2></a>
 <p>Prior to stabilizing a feature, the features will now be documented as follows:</p>
 <ul>
 <li>Language features:
@@ -264,16 +271,16 @@
 </li>
 </ul>
 <p>Stabilization of a feature must not proceed until the requirements outlined in the <strong>How We Teach This</strong> section of the originating RFC have been fulfilled.</p>
-<a class="header" href="1636-document_all_features.html#language-features" id="language-features"><h3>Language features</h3></a>
+<a class="header" href="#language-features" id="language-features"><h3>Language features</h3></a>
 <p>We will document <em>all</em> language features in the Rust Reference, as well as updating <em>The Rust Programming Language</em> and <em>Rust by Example</em> as appropriate. (Not all features or changes will require updates to the books.)</p>
-<a class="header" href="1636-document_all_features.html#reference" id="reference"><h4>Reference</h4></a>
+<a class="header" href="#reference" id="reference"><h4>Reference</h4></a>
 <p>This will necessarily be a manual process, involving updates to the <code>reference.md</code> file. (It may at some point be sensible to break up the Reference file for easier maintenance; that is left aside as orthogonal to this discussion.)</p>
 <p>Feature documentation does not need to be written by the feature author. In fact, this is one of the areas where the community may be most able to support the language/compiler developers even if not themselves programming language theorists or compiler hackers. This may free up the compiler developers' time. It will also help communicate the features in a way that is accessible to ordinary Rust users.</p>
 <p>New features do not need to be documented to be merged into <code>master</code>/nightly</p>
 <p>Instead, the documentation process should immediately precede the move to stabilize. Once the <em>feature</em> has been deemed ready for stabilization, either the author or a community volunteer should write the <em>reference material</em> for the feature, to be incorporated into the Rust Reference.</p>
 <p>The reference material need not be especially long, but it should be long enough for ordinary users to learn how to use the language feature <em>without reading the RFCs</em>.</p>
 <p>Discussion of stabilizing a feature in a given release will now include the status of the reference material.</p>
-<a class="header" href="1636-document_all_features.html#the-current-state-of-the-reference" id="the-current-state-of-the-reference"><h5>The current state of the reference</h5></a>
+<a class="header" href="#the-current-state-of-the-reference" id="the-current-state-of-the-reference"><h5>The current state of the reference</h5></a>
 <p>Since the reference is fairly out of date, we should create a &quot;strike team&quot; to update it. This can proceed in parallel with the documentation of new features.</p>
 <p>Updating the reference should proceed stepwise:</p>
 <ol>
@@ -281,12 +288,12 @@
 <li>As the reference material is written for each of those RFC features, remove it from that appendix.</li>
 </ol>
 <p>The current presentation of the reference is also in need of improvement: a single web page with <em>all</em> of this content is difficult to navigate, or to update. Therefore, the strike team may also take this opportunity to reorganize the reference and update its presentation.</p>
-<a class="header" href="1636-document_all_features.html#the-rust-programming-language" id="the-rust-programming-language"><h4><em>The Rust Programming Language</em></h4></a>
+<a class="header" href="#the-rust-programming-language" id="the-rust-programming-language"><h4><em>The Rust Programming Language</em></h4></a>
 <p>Most new language features should be added to <em>The Rust Programming Language</em>. However, since the book is planned to go to print, the main text of the book is expected to be fixed between major revisions. As such, new features should be documented in an online appendix to the book, which may be titled e.g. &quot;Newest Features.&quot;</p>
 <p>The published version of the book should note that changes and languages features made available after the book went to print will be documented in that online appendix.</p>
-<a class="header" href="1636-document_all_features.html#standard-library" id="standard-library"><h3>Standard library</h3></a>
+<a class="header" href="#standard-library" id="standard-library"><h3>Standard library</h3></a>
 <p>In the case of the standard library, this could conceivably be managed by setting the <code>#[forbid(missing_docs)]</code> attribute on the library roots. In lieu of that, manual code review and general discipline should continue to serve. However, if automated tools <em>can</em> be employed here, they should.</p>
-<a class="header" href="1636-document_all_features.html#how-do-we-teach-this" id="how-do-we-teach-this"><h1>How do we teach this?</h1></a>
+<a class="header" href="#how-do-we-teach-this" id="how-do-we-teach-this"><h1>How do we teach this?</h1></a>
 <p>Since this RFC promotes including this section, it includes it itself. (RFCs, unlike Rust <code>struct</code> or <code>enum</code> types, may be freely self-referential. No boxing required.)</p>
 <p>To be most effective, this will involve some changes both at a process and core-team level, and at a community level.</p>
 <ol>
@@ -304,7 +311,7 @@
 </li>
 </ol>
 <p>At a &quot;messaging&quot; level, we should continue to emphasize that <em>documentation is just as valuable as code</em>. For example (and there are many other similar opportunities): in addition to highlighting new language features in the release notes for each version, we might highlight any part of the documentation which saw substantial improvement in the release.</p>
-<a class="header" href="1636-document_all_features.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ol>
 <li>
 <p>The largest drawback at present is that the language reference is <em>already</em> quite out of date. It may take substantial work to get it up to date so that new changes can be landed appropriately. (Arguably, however, this should be done regardless, since the language reference is an important part of the language ecosystem.)</p>
@@ -323,7 +330,7 @@
 <p>If the forthcoming docs team is unable to provide significant support, and perhaps equally if the rest of the community does not also increase involvement, this will simply not work. No individual can manage all of these docs alone.</p>
 </li>
 </ol>
-<a class="header" href="1636-document_all_features.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p><strong>Just add the &quot;How do we teach this?&quot; section.</strong></p>
@@ -365,7 +372,7 @@ However, for all the reasons highlighted above in **Motivation: The Current Situ
 <p>The main downside, of course, is that this would leave very large swaths of the language basically without <em>any</em> documentation, and even more of it only documented in RFCs than is the case today.</p>
 </li>
 </ul>
-<a class="header" href="1636-document_all_features.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>How do we clearly distinguish between features on nightly, beta, and stable Rust—in the reference especially, but also in the book?</li>
 <li>For the standard library, once it migrates to a crates structure, should it simply include the <code>#[forbid(missing_docs)]</code> attribute on all crates to set this as a build error?</li>
@@ -414,9 +421,6 @@ However, for all the reasons highlighted above in **Motivation: The Current Situ
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0494-c_str-and-c_vec-stability - </title>
+        <title>0494-c_str-and-c_vec-stability - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/494">rust-lang/rfcs#494</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/20444">rust-lang/rust#20444</a></li>
 </ul>
-<a class="header" href="0494-c_str-and-c_vec-stability.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <ul>
 <li>Remove the <code>std::c_vec</code> module</li>
 <li>Move <code>std::c_str</code> under a new <code>std::ffi</code> module, not exporting the <code>c_str</code>
@@ -148,7 +155,7 @@ pile of bytes has no interior nuls but has a trailing nul.</li>
 <li>Provide convenience functions for translating <em>C-owned</em> types into slices in
 Rust.</li>
 </ul>
-<a class="header" href="0494-c_str-and-c_vec-stability.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The primary motivation for this RFC is to work out the stabilization of the
 <code>c_str</code> and <code>c_vec</code> modules. Both of these modules exist for interoperating with
 C types to ensure that values can cross the boundary of Rust and C relatively
@@ -171,7 +178,7 @@ conversion functions on the <code>Vec</code> and <code>String</code> types as we
 <p>In general all of this functionality needs to be reconciled with one another to
 provide a consistent and coherence interface when operating with types
 originating from C.</p>
-<a class="header" href="0494-c_str-and-c_vec-stability.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>In refactoring all usage could be categorized into one of three categories:</p>
 <ol>
 <li>A Rust type wants to be passed into C.</li>
@@ -181,7 +188,7 @@ originating from C.</p>
 <p>The current <code>CString</code> attempts to handle all three of these concerns all at
 once, somewhat conflating desires. Additionally, <code>CVec</code> provides a fairly
 different interface than <code>CString</code> while providing similar functionality.</p>
-<a class="header" href="0494-c_str-and-c_vec-stability.html#a-new-stdffi" id="a-new-stdffi"><h2>A new <code>std::ffi</code></h2></a>
+<a class="header" href="#a-new-stdffi" id="a-new-stdffi"><h2>A new <code>std::ffi</code></h2></a>
 <blockquote>
 <p><strong>Note</strong>: an old implementation of the design below can be found <a href="https://github.com/alexcrichton/rust/blob/cstr/src/librustrt/c_str.rs">in a branch
 of mine</a></p>
@@ -219,7 +226,7 @@ concrete <code>u8</code> type. The default of <code>libc::c_char</code> was chos
 <code>.as_ptr()</code> returns a pointer of the right value. Note that <code>CString</code> does not
 provide a <code>DerefMut</code> implementation to maintain the static guarantee that there
 are no interior nul bytes.</p>
-<a class="header" href="0494-c_str-and-c_vec-stability.html#constructing-a-cstring" id="constructing-a-cstring"><h3>Constructing a <code>CString</code></h3></a>
+<a class="header" href="#constructing-a-cstring" id="constructing-a-cstring"><h3>Constructing a <code>CString</code></h3></a>
 <p>One of the major departures from today's API is how a <code>CString</code> is constructed.
 Today this can be done through the <code>CString::new</code> function or the <code>ToCStr</code>
 trait. These two construction vectors serve two very different purposes, one for
@@ -237,7 +244,7 @@ still push a zero. Note that both of these constructors expose the fact that a
 <p>The <code>ToCStr</code> trait is removed entirely (including from the prelude) in favor of
 these construction functions. This could possibly be re-added in the future, but
 for now it will be removed from the module.</p>
-<a class="header" href="0494-c_str-and-c_vec-stability.html#working-with-const-libcc_char" id="working-with-const-libcc_char"><h3>Working with <code>*const libc::c_char</code></h3></a>
+<a class="header" href="#working-with-const-libcc_char" id="working-with-const-libcc_char"><h3>Working with <code>*const libc::c_char</code></h3></a>
 <p>Instead of using <code>CString</code> to look at a <code>*const libc::c_char</code>, the module now
 provides two conversion functions to go from a C string to a byte slice. The
 signature of this function is similar to the new <code>std::slice::from_raw_buf</code>
@@ -258,7 +265,7 @@ composed individually to perform the required checks. This would involve using
 <code>String::from_raw_buf</code> except that <code>slice::from_raw_buf</code> is used instead of
 <code>ffi</code>.</li>
 </ul>
-<a class="header" href="0494-c_str-and-c_vec-stability.html#removing-c_vec" id="removing-c_vec"><h2>Removing <code>c_vec</code></h2></a>
+<a class="header" href="#removing-c_vec" id="removing-c_vec"><h2>Removing <code>c_vec</code></h2></a>
 <p>The new <code>ffi</code> module serves as a solution to desires (1) and (2) above, but
 the third use case is left unsolved so far. This is what the current <code>c_vec</code>
 module is attempting to solve, but it does so in a somewhat ad-hoc fashion. The
@@ -276,12 +283,12 @@ removing the entire <code>c_vec</code> module with no replacement. It is expecte
 utility crate for interoperating with raw pointers in this fashion may manifest
 itself on crates.io, and inclusion into the standard library can be considered
 at that time.</p>
-<a class="header" href="0494-c_str-and-c_vec-stability.html#working-with-c-strings" id="working-with-c-strings"><h2>Working with C Strings</h2></a>
+<a class="header" href="#working-with-c-strings" id="working-with-c-strings"><h2>Working with C Strings</h2></a>
 <p>The design above has been implemented in <a href="https://github.com/alexcrichton/rust/tree/cstr">a branch</a> of mine where the
 fallout can be seen. The primary impact of this change is that the <code>to_c_str</code>
 and <code>with_c_str</code> methods are no longer in the prelude by default, and
 <code>CString::from_*</code> must be called in order to create a C string.</p>
-<a class="header" href="0494-c_str-and-c_vec-stability.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>Whenever Rust works with a C string, it's tough to avoid the cost associated
@@ -305,7 +312,7 @@ this design. The <code>CString::from_slice</code> method is somewhat long to cal
 to a slice.</p>
 </li>
 </ul>
-<a class="header" href="0494-c_str-and-c_vec-stability.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>There is an <a href="https://github.com/rust-lang/rfcs/pull/435">alternative RFC</a>
@@ -317,7 +324,7 @@ well as a refinement of its current types.</p>
 pushing a 0 at the end.</p>
 </li>
 </ul>
-<a class="header" href="0494-c_str-and-c_vec-stability.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>On some platforms, <code>libc::c_char</code> is not necessarily just one byte, which
@@ -372,9 +379,6 @@ this module as to how important these platforms are.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

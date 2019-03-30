@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2229-capture-disjoint-fields - </title>
+        <title>2229-capture-disjoint-fields - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2229">rust-lang/rfcs#2229</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/53488">rust-lang/rust#53488</a></li>
 </ul>
-<a class="header" href="2229-capture-disjoint-fields.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes that closure capturing should be minimal rather than maximal.
 Conceptually, existing rules regarding borrowing and moving disjoint fields
 should be applied to capturing. If implemented, the following code examples
@@ -163,7 +170,7 @@ somefunc(a);
 <li>rust-lang/rust#19004</li>
 <li><a href="https://internals.rust-lang.org/t/borrow-the-full-stable-name-in-closures-for-ergonomics/5387">Rust internals forum</a></li>
 </ul>
-<a class="header" href="2229-capture-disjoint-fields.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>In the rust language today, any variables named within a closure will be fully
 captured. This was simple to implement but is inconsistent with the rest of the
 language because rust normally allows simultaneous borrowing of disjoint
@@ -186,7 +193,7 @@ pub fn update(&amp;mut self) {
     self.list.retain(|i| self.filter.allowed(i));
 }
 #}</code></pre></pre>
-<a class="header" href="2229-capture-disjoint-fields.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>Rust understands structs sufficiently to know that it's possible
 to borrow disjoint fields of a struct simultaneously. Structs can also be
 destructed and moved piece-by-piece. This functionality should be available
@@ -231,7 +238,7 @@ impl FirstDuplicated {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2229-capture-disjoint-fields.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>This RFC does not propose any changes to the borrow checker. Instead, the MIR
 generation for closures should be altered to produce the minimal capture.
 Additionally, a hidden <code>repr</code> for closures might be added, which could reduce
@@ -283,7 +290,7 @@ fields that implement <code>Drop</code>. This would prevent the drop order of th
 from changing, but feels strange and non-orthogonal <em>(see unresolved)</em>.
 Encountering this case at all could trigger a warning, so that this extra rule
 could exist temporarily but be removed over the next epoc <em>(see unresolved)</em>.</p>
-<a class="header" href="2229-capture-disjoint-fields.html#reference-examples" id="reference-examples"><h2>Reference Examples</h2></a>
+<a class="header" href="#reference-examples" id="reference-examples"><h2>Reference Examples</h2></a>
 <p>Below are examples of various closures and their capture sets.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -417,18 +424,18 @@ somefunc(other);
 <ul>
 <li><code>&amp;mut foo.bar</code> (ownership <em>not</em> available, borrow can be split)</li>
 </ul>
-<a class="header" href="2229-capture-disjoint-fields.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This RFC does ruin the intuition that all variables named within a closure are
 <em>completely</em> captured. I argue that that intuition is not common or necessary
 enough to justify the extra glue code.</p>
-<a class="header" href="2229-capture-disjoint-fields.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>This proposal is purely ergonomic since there is a complete and common
 workaround. The existing rules could remain in place and rust users could
 continue to pre-borrow/move fields. However, this workaround results in
 significant useless glue code when borrowing many but not all of the fields in
 a struct. It also produces a larger closure than necessary which could make the
 difference when inlining.</p>
-<a class="header" href="2229-capture-disjoint-fields.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>How to optimize pointers. Can borrows that all reference parts of the same
@@ -491,9 +498,6 @@ problem? How should this be resolved?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

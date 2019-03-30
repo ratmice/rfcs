@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0560-integer-overflow - </title>
+        <title>0560-integer-overflow - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR #: https://github.com/rust-lang/rfcs/pull/560</li>
 <li>Rust Issue #: https://github.com/rust-lang/rust/issues/22020</li>
 </ul>
-<a class="header" href="0560-integer-overflow.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Change the semantics of the built-in fixed-size integer types from
 being defined as wrapping around on overflow to it being considered a
 program error (but <em>not</em> undefined behavior in the C
@@ -148,7 +155,7 @@ least check dynamically when <code>debug_assert!</code> assertions are
 enabled. Add a <code>WrappingOps</code> trait to the standard library with
 operations defined as wrapping on overflow for the limited number of
 cases where this is the desired semantics, such as hash functions.</p>
-<a class="header" href="0560-integer-overflow.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Numeric overflow prevents a difficult situation. On the one hand,
 overflow (and <a href="http://google-styleguide.googlecode.com/svn/trunk/cppguide.html#Integer_Types">underflow</a>) is known to be a common source of error in
 other languages. Rust, at least, does not have to worry about memory
@@ -191,7 +198,7 @@ command-line switch to enable overflow checking universally or within
 specific crates. Another option might be lexically scoped annotations
 to enable overflow (or perhaps disable) checking in specific
 blocks. Neither mechanism is detailed in this RFC at this time.</p>
-<a class="header" href="0560-integer-overflow.html#why-tie-overflow-checking-to-debug-assertions" id="why-tie-overflow-checking-to-debug-assertions"><h2>Why tie overflow checking to debug assertions</h2></a>
+<a class="header" href="#why-tie-overflow-checking-to-debug-assertions" id="why-tie-overflow-checking-to-debug-assertions"><h2>Why tie overflow checking to debug assertions</h2></a>
 <p>The reasoning behind connecting overflow checking and debug assertion
 is that it ensures that pervasive checking for overflow is performed
 <em>at some point</em> in the development cycle, even if it does not take
@@ -209,8 +216,8 @@ ensure that users will encounter overflow errors in practice, and thus
 become aware that overflow in Rust is not the norm. It will also help
 debug simple errors, like unsigned underflow leading to an infinite
 loop.</p>
-<a class="header" href="0560-integer-overflow.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0560-integer-overflow.html#arithmetic-operations-with-error-conditions" id="arithmetic-operations-with-error-conditions"><h2>Arithmetic operations with error conditions</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#arithmetic-operations-with-error-conditions" id="arithmetic-operations-with-error-conditions"><h2>Arithmetic operations with error conditions</h2></a>
 <p>There are various operations which can sometimes produce error
 conditions (detailed below). Typically these error conditions
 correspond to under/overflow but not exclusively. It is the
@@ -253,7 +260,7 @@ value &gt;= <code>N</code>. It is unclear what behaviour should result from this
 shift value is unconditionally masked to be modulo <code>N</code> to ensure that the
 argument is always in range.</li>
 </ul>
-<a class="header" href="0560-integer-overflow.html#enabling-overflow-checking" id="enabling-overflow-checking"><h2>Enabling overflow checking</h2></a>
+<a class="header" href="#enabling-overflow-checking" id="enabling-overflow-checking"><h2>Enabling overflow checking</h2></a>
 <p>Compilers should present a command-line option to enable overflow
 checking universally. Additionally, when building in a default &quot;debug&quot;
 configuration (i.e., whenever <code>debug_assert</code> would be enabled),
@@ -270,7 +277,7 @@ will not pay a performance penalty.</p>
 <p>In the future, we may add additional means to control when overflow is
 checked, such as scoped attributes or a global, independent
 compile-time switch.</p>
-<a class="header" href="0560-integer-overflow.html#delayed-panics" id="delayed-panics"><h2>Delayed panics</h2></a>
+<a class="header" href="#delayed-panics" id="delayed-panics"><h2>Delayed panics</h2></a>
 <p>If an error condition should occur and a thread panic should result,
 the compiler is not required to signal the panic at the precise point
 of overflow. It is free to coalesce checks from adjacent pure
@@ -282,7 +289,7 @@ overflow checks for adjacent numeric operations like <code>a+b-c</code> can be
 coallesced into a single check. Another useful example might be that,
 when summing a vector, the final overflow check could be deferred
 until the summation is complete.</p>
-<a class="header" href="0560-integer-overflow.html#methods-for-explicit-wrapping-arithmetic" id="methods-for-explicit-wrapping-arithmetic"><h2>Methods for explicit wrapping arithmetic</h2></a>
+<a class="header" href="#methods-for-explicit-wrapping-arithmetic" id="methods-for-explicit-wrapping-arithmetic"><h2>Methods for explicit wrapping arithmetic</h2></a>
 <p>For those use cases where explicit wraparound on overflow is required,
 such as hash functions, we must provide operations with such
 semantics. Accomplish this by providing the following methods defined
@@ -303,7 +310,7 @@ impl i32 { // and i8, i16, i64, isize, u8, u32, u64, usize
 #}</code></pre></pre>
 <p>These are implemented to preserve the pre-existing, wrapping semantics
 unconditionally.</p>
-<a class="header" href="0560-integer-overflow.html#wrappingt-type-for-convenience" id="wrappingt-type-for-convenience"><h3><code>Wrapping&lt;T&gt;</code> type for convenience</h3></a>
+<a class="header" href="#wrappingt-type-for-convenience" id="wrappingt-type-for-convenience"><h3><code>Wrapping&lt;T&gt;</code> type for convenience</h3></a>
 <p>For convenience, the <code>std::num</code> module also provides a <code>Wrapping&lt;T&gt;</code>
 newtype for which the operator overloads are implemented using the
 <code>WrappingOps</code> trait:</p>
@@ -319,7 +326,7 @@ impl&lt;T: WrappingOps&gt; Add&lt;Wrapping&lt;T&gt;, Wrapping&lt;T&gt;&gt; for W
 </code></pre>
 <p>Note that this is only for potential convenience. The type-based approach has the
 drawback that e.g. <code>Vec&lt;int&gt;</code> and <code>Vec&lt;Wrapping&lt;int&gt;&gt;</code> are incompatible types.</p>
-<a class="header" href="0560-integer-overflow.html#lint" id="lint"><h2>Lint</h2></a>
+<a class="header" href="#lint" id="lint"><h2>Lint</h2></a>
 <p>In general it seems inadvisable to use operations with error
 conditions (like a naked <code>+</code> or <code>-</code>) in unsafe code. It would be
 better to use explicit <code>checked</code> or <code>wrapped</code> operations as
@@ -327,7 +334,7 @@ appropriate. The same holds for destructors, since unwinding in
 destructors is inadvisable. Therefore, the RFC recommends a lint be
 added against such operations, defaulting to warn, though the details
 (such as the name of this lint) are not spelled out.</p>
-<a class="header" href="0560-integer-overflow.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p><strong>Making choices is hard.</strong> Having to think about whether wraparound
 arithmetic is appropriate may cause an increased cognitive
 burden. However, wraparound arithmetic is almost never the intended
@@ -390,8 +397,8 @@ will not be enabled. Certainly if we ever decided to change the
 default for overflow checking to <em>enabled</em> in optimized builds, we
 would want to measure carefully and likely include some means of
 disabling checks in particularly hot paths.</p>
-<a class="header" href="0560-integer-overflow.html#alternatives-and-possible-future-directions" id="alternatives-and-possible-future-directions"><h1>Alternatives and possible future directions</h1></a>
-<a class="header" href="0560-integer-overflow.html#do-nothing-for-now" id="do-nothing-for-now"><h2>Do nothing for now</h2></a>
+<a class="header" href="#alternatives-and-possible-future-directions" id="alternatives-and-possible-future-directions"><h1>Alternatives and possible future directions</h1></a>
+<a class="header" href="#do-nothing-for-now" id="do-nothing-for-now"><h2>Do nothing for now</h2></a>
 <p>Defer any action until later, as advocated by:</p>
 <ul>
 <li><a href="https://mail.mozilla.org/pipermail/rust-dev/2014-June/010494.html">Patrick Walton on June 22</a></li>
@@ -403,7 +410,7 @@ porting all code to use those types, whereas doing it now lets us avoid
 needlessly proliferating types. Given the paucity of circumstances where
 wraparound semantics is appropriate, having it be the default is defensible only
 if better options aren't available.</p>
-<a class="header" href="0560-integer-overflow.html#scoped-attributes-to-control-runtime-checking" id="scoped-attributes-to-control-runtime-checking"><h2>Scoped attributes to control runtime checking</h2></a>
+<a class="header" href="#scoped-attributes-to-control-runtime-checking" id="scoped-attributes-to-control-runtime-checking"><h2>Scoped attributes to control runtime checking</h2></a>
 <p>The <a href="https://github.com/rust-lang/rfcs/pull/146">original RFC</a> proposed a system of scoped attributes for
 enabling/disabling overflow checking. Nothing in the current RFC
 precludes us from going in this direction in the future. Rather, this
@@ -462,7 +469,7 @@ mod some_stuff {
 
 ...
 </code></pre>
-<a class="header" href="0560-integer-overflow.html#checks-off-means-wrapping-on" id="checks-off-means-wrapping-on"><h2>Checks off means wrapping on</h2></a>
+<a class="header" href="#checks-off-means-wrapping-on" id="checks-off-means-wrapping-on"><h2>Checks off means wrapping on</h2></a>
 <p>If we adopted a model of overflow checks, one could use an explicit
 request to turn overflow checks <em>off</em> as a signal that wrapping is
 desirted. This would allow us to do without the <code>WrappingOps</code> trait
@@ -475,7 +482,7 @@ based on the context. It should be possible to make the choice between turning
 checks <code>on</code> or <code>off</code> solely based on performance considerations. It should be
 possible to distinguish cases where checking was too expensive from where
 wraparound was desired. (Wraparound is not usually desired.)</p>
-<a class="header" href="0560-integer-overflow.html#different-operators" id="different-operators"><h2>Different operators</h2></a>
+<a class="header" href="#different-operators" id="different-operators"><h2>Different operators</h2></a>
 <p>Have the usual arithmetic operators check for overflow, and introduce a new set
 of operators with wraparound semantics, as done by Swift. Alternately, do the
 reverse: make the normal operators wrap around, and introduce new ones which
@@ -483,22 +490,22 @@ check.</p>
 <p>Reasons this was not pursued: New, strange operators would pose an entrance
 barrier to the language. The use cases for wraparound semantics are not common
 enough to warrant having a separate set of symbolic operators.</p>
-<a class="header" href="0560-integer-overflow.html#different-types" id="different-types"><h2>Different types</h2></a>
+<a class="header" href="#different-types" id="different-types"><h2>Different types</h2></a>
 <p>Have separate sets of fixed-size integer types which wrap around on overflow and
 which are checked for overflow (e.g. <code>u8</code>, <code>u8c</code>, <code>i8</code>, <code>i8c</code>, ...).</p>
 <p>Reasons this was not pursued: Programmers might be confused by having to choose
 among so many types. Using different types would introduce compatibility hazards
 to APIs. <code>Vec&lt;u8&gt;</code> and <code>Vec&lt;u8c&gt;</code> are incompatible. Wrapping arithmetic is not
 common enough to warrant a whole separate set of types.</p>
-<a class="header" href="0560-integer-overflow.html#just-use-checked" id="just-use-checked"><h2>Just use <code>Checked*</code></h2></a>
+<a class="header" href="#just-use-checked" id="just-use-checked"><h2>Just use <code>Checked*</code></h2></a>
 <p>Just use the existing <code>Checked</code> traits and a <code>Checked&lt;T&gt;</code> type after the same
 fashion as the <code>Wrapping&lt;T&gt;</code> in this proposal.</p>
 <p>Reasons this was not pursued: Wrong defaults. Doesn't enable distinguishing
 &quot;checking is slow&quot; from &quot;wrapping is desired&quot; from &quot;it was the default&quot;.</p>
-<a class="header" href="0560-integer-overflow.html#runtime-closed-range-types" id="runtime-closed-range-types"><h2>Runtime-closed range types</h2></a>
+<a class="header" href="#runtime-closed-range-types" id="runtime-closed-range-types"><h2>Runtime-closed range types</h2></a>
 <p><a href="https://github.com/bill-myers/rfcs/blob/no-integer-overflow/active/0000-no-integer-overflow.md">As proposed by Bill Myers.</a></p>
 <p>Reasons this was not pursued: My brain melted. :(</p>
-<a class="header" href="0560-integer-overflow.html#making-as-be-checked" id="making-as-be-checked"><h2>Making <code>as</code> be checked</h2></a>
+<a class="header" href="#making-as-be-checked" id="making-as-be-checked"><h2>Making <code>as</code> be checked</h2></a>
 <p>The RFC originally specified that using <code>as</code> to convert between types
 would cause checked semantics. However, we now use <code>as</code> as a primitive
 type operator. This decision was discussed on the
@@ -519,9 +526,9 @@ uses of <code>as</code>) can be ergonomically added as methods.  The precise
 form of this will be resolved in the future. <a href="https://github.com/rust-lang/rfcs/pull/911">const fn</a> can
 then allow these to be used in constant expressions.</li>
 </ol>
-<a class="header" href="0560-integer-overflow.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None today (see Updates section below).</p>
-<a class="header" href="0560-integer-overflow.html#future-work" id="future-work"><h1>Future work</h1></a>
+<a class="header" href="#future-work" id="future-work"><h1>Future work</h1></a>
 <ul>
 <li>
 <p>Look into adopting imprecise exceptions and a similar design to Ada's, and to
@@ -537,7 +544,7 @@ improve the performance of checked arithmetic. See also:</p>
 mathematical integers and naturals.</p>
 </li>
 </ul>
-<a class="header" href="0560-integer-overflow.html#updates-since-being-accepted" id="updates-since-being-accepted"><h1>Updates since being accepted</h1></a>
+<a class="header" href="#updates-since-being-accepted" id="updates-since-being-accepted"><h1>Updates since being accepted</h1></a>
 <p>Since it was accepted, the RFC has been updated as follows:</p>
 <ol>
 <li>The wrapping methods were moved to be inherent, since we gained the
@@ -551,7 +558,7 @@ order bit, a.k.a. sign-bit, as necessary, as a C cast would).</li>
 a clarification).</li>
 <li><code>INT_MIN / -1</code> and <code>INT_MIN % -1</code> panics.</li>
 </ol>
-<a class="header" href="0560-integer-overflow.html#acknowledgements-and-further-reading" id="acknowledgements-and-further-reading"><h1>Acknowledgements and further reading</h1></a>
+<a class="header" href="#acknowledgements-and-further-reading" id="acknowledgements-and-further-reading"><h1>Acknowledgements and further reading</h1></a>
 <p>This RFC was <a href="https://github.com/rust-lang/rfcs/pull/146">initially written by Gábor Lehel</a> and was since
 edited by Nicholas Matsakis into its current form. Although the text
 has changed significantly, the spirit of the original is preserved (at
@@ -636,9 +643,6 @@ proposal.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

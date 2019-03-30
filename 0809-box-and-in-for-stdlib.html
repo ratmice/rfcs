@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0809-box-and-in-for-stdlib - </title>
+        <title>0809-box-and-in-for-stdlib - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/809">rust-lang/rfcs#809</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/22181">rust-lang/rust#22181</a></li>
 </ul>
-<a class="header" href="0809-box-and-in-for-stdlib.html#this-rfc-has-been-unapproved" id="this-rfc-has-been-unapproved"><h1>This RFC has been <strong>unapproved</strong></h1></a>
+<a class="header" href="#this-rfc-has-been-unapproved" id="this-rfc-has-been-unapproved"><h1>This RFC has been <strong>unapproved</strong></h1></a>
 <p>For details see the <a href="https://github.com/rust-lang/rust/issues/27779#issuecomment-378416911">summary comment</a>.</p>
-<a class="header" href="0809-box-and-in-for-stdlib.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <ul>
 <li>
 <p>Change placement-new syntax from: <code>box (&lt;place-expr&gt;) &lt;expr&gt;</code> instead
@@ -169,7 +176,7 @@ revise the underlying protocol in the future post 1.0.</p>
 </code></pre>
 <p>This is the same sense in which the <code>block</code> nonterminal is used in the
 reference manual.)</p>
-<a class="header" href="0809-box-and-in-for-stdlib.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Goal 1: We want to support an operation analogous to C++'s placement
 new, as discussed previously in <a href="https://github.com/rust-lang/rfcs/pull/470">Placement Box RFC PR 470</a>.</p>
 <p>Goal 2: We also would like to overload our <code>box</code> syntax so that more
@@ -203,19 +210,19 @@ desired syntax, but do not provide stable support for end-user
 implementations of the operators. The only stable ways to use the
 overloaded <code>box &lt;expr&gt;</code> or <code>in &lt;place-expr&gt; { &lt;block&gt; }</code> operators will be in
 tandem with types provided by the stdlib, such as <code>Box&lt;T&gt;</code>.</p>
-<a class="header" href="0809-box-and-in-for-stdlib.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <ul>
 <li>
 <p>Add traits to <code>core::ops</code> for supporting the new operators.
 This RFC does not commit to any particular set of traits,
 since they are not currently meant to be implemented outside
 of the stdlib. (However, a demonstration of one working set
-of traits is given in <a href="0809-box-and-in-for-stdlib.html#appendix-a-sample-operator-traits">Appendix A</a>.)</p>
+of traits is given in <a href="#appendix-a-sample-operator-traits">Appendix A</a>.)</p>
 <p>Any protocol that we adopt for the operators needs to properly
 handle panics; i.e., <code>box &lt;expr&gt;</code> must properly cleanup any
 intermediate state if <code>&lt;expr&gt;</code> panics during its evaluation,
 and likewise for <code>in &lt;place-expr&gt; { &lt;block&gt; }</code></p>
-<p>(See <a href="https://github.com/rust-lang/rfcs/pull/470">Placement Box RFC PR 470</a> or <a href="0809-box-and-in-for-stdlib.html#appendix-a-sample-operator-traits">Appendix A</a> for discussion on
+<p>(See <a href="https://github.com/rust-lang/rfcs/pull/470">Placement Box RFC PR 470</a> or <a href="#appendix-a-sample-operator-traits">Appendix A</a> for discussion on
 ways to accomplish this.)</p>
 </li>
 <li>
@@ -264,7 +271,7 @@ for the <code>in &lt;place-expr&gt; { &lt;block&gt; }</code> operator. (An obvio
 method; but again, the choice of which such methods to add is a
 library design issue, beyond the scope of this RFC.)</p>
 <p>(A sample implementation illustrating how to support the operators
-on other types is given in <a href="0809-box-and-in-for-stdlib.html#appendix-a-sample-operator-traits">Appendix A</a>.)</p>
+on other types is given in <a href="#appendix-a-sample-operator-traits">Appendix A</a>.)</p>
 </li>
 <li>
 <p>Feature-gate the two syntaxes under separate feature identifiers, so that we
@@ -273,7 +280,7 @@ have the option of removing the gate for one syntax without the other.
 but we have nearly no experience with placement-<code>in</code> as described here).</p>
 </li>
 </ul>
-<a class="header" href="0809-box-and-in-for-stdlib.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>End-users might be annoyed that they cannot add implementations of
@@ -298,12 +305,12 @@ foo(box some_expr());
 with the return-type of <code>::protocol::Boxed::finalize(place)</code>.
 This may also be due to weakness in the compiler, but that is not
 immediately obvious.</p>
-<p><a href="0809-box-and-in-for-stdlib.html#appendix-b-examples-of-interaction-between-desugaring-type-inference-and-coercion">Appendix B</a> has a complete code snippet (using a desugaring much like
+<p><a href="#appendix-b-examples-of-interaction-between-desugaring-type-inference-and-coercion">Appendix B</a> has a complete code snippet (using a desugaring much like
 the one found in the other appendix) that illustrates two cases of
 interest where this weakness arises.</p>
 </li>
 </ul>
-<a class="header" href="0809-box-and-in-for-stdlib.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>We could keep the <code>box (&lt;place-expr&gt;) &lt;expr&gt;</code> syntax. It is hard
@@ -344,7 +351,7 @@ intermediate copies to be a source of inefficiency, and proper use
 of <code>box &lt;expr&gt;</code> and placement-<code>in</code> can help remove intermediate
 copies.</li>
 </ul>
-<a class="header" href="0809-box-and-in-for-stdlib.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>This RFC represents the current plan for <code>box</code>/<code>in</code>. However, in the
 <a href="https://github.com/rust-lang/rfcs/pull/809">RFC discussion</a> a number of questions arose, including possible
 design alternatives that might render the <code>in</code> keyword unnecessary.
@@ -359,7 +366,7 @@ supporting overloading?</p>
 <p>In particular, I am assuming here that some amount of current
 weakness cannot be blamed on any particular details of the
 sample desugaring.</p>
-<p>(See <a href="0809-box-and-in-for-stdlib.html#appendix-b-examples-of-interaction-between-desugaring-type-inference-and-coercion">Appendix B</a> for example code showing weaknesses in
+<p>(See <a href="#appendix-b-examples-of-interaction-between-desugaring-type-inference-and-coercion">Appendix B</a> for example code showing weaknesses in
 <code>rustc</code> of today.)</p>
 </li>
 <li>
@@ -377,8 +384,8 @@ sample desugaring.</p>
 </ul>
 </li>
 </ul>
-<a class="header" href="0809-box-and-in-for-stdlib.html#appendices" id="appendices"><h1>Appendices</h1></a>
-<a class="header" href="0809-box-and-in-for-stdlib.html#appendix-a-sample-operator-traits" id="appendix-a-sample-operator-traits"><h2>Appendix A: sample operator traits</h2></a>
+<a class="header" href="#appendices" id="appendices"><h1>Appendices</h1></a>
+<a class="header" href="#appendix-a-sample-operator-traits" id="appendix-a-sample-operator-traits"><h2>Appendix A: sample operator traits</h2></a>
 <p>The goal is to show that code like the following can be made to work
 in Rust today via appropriate desugarings and trait definitions.</p>
 <pre><pre class="playpen"><code class="language-rust">fn main() {
@@ -747,7 +754,7 @@ fn main() {
     println!(&quot;b6: {}&quot;, b6);
 }
 </code></pre></pre>
-<a class="header" href="0809-box-and-in-for-stdlib.html#appendix-b-examples-of-interaction-between-desugaring-type-inference-and-coercion" id="appendix-b-examples-of-interaction-between-desugaring-type-inference-and-coercion"><h2>Appendix B: examples of interaction between desugaring, type-inference, and coercion</h2></a>
+<a class="header" href="#appendix-b-examples-of-interaction-between-desugaring-type-inference-and-coercion" id="appendix-b-examples-of-interaction-between-desugaring-type-inference-and-coercion"><h2>Appendix B: examples of interaction between desugaring, type-inference, and coercion</h2></a>
 <p>The following code works with the current version of <code>box</code> syntax in Rust, but needs some sort
 of type annotation in Rust as it stands today for the desugaring of <code>box</code> to work out.</p>
 <p>(The following code uses <code>cfg</code> attributes to make it easy to switch between slight variations
@@ -911,9 +918,6 @@ currently interact with type-inference in the first place.)</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

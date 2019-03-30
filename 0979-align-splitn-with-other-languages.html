@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0979-align-splitn-with-other-languages - </title>
+        <title>0979-align-splitn-with-other-languages - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,17 +146,17 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/979">rust-lang/rfcs#979</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/23911">rust-lang/rust#23911</a></li>
 </ul>
-<a class="header" href="0979-align-splitn-with-other-languages.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Make the <code>count</code> parameter of <code>SliceExt::splitn</code>, <code>StrExt::splitn</code> and
 corresponding reverse variants mean the <em>maximum number of items
 returned</em>, instead of the <em>maximum number of times to match the
 separator</em>.</p>
-<a class="header" href="0979-align-splitn-with-other-languages.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The majority of other languages (see examples below) treat the <code>count</code>
 parameter as the maximum number of items to return. Rust already has
 many things newcomers need to learn, making other things similar can
 help adoption.</p>
-<a class="header" href="0979-align-splitn-with-other-languages.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Currently <code>splitn</code> uses the <code>count</code> parameter to decide how many times
 the separator should be matched:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -162,8 +169,8 @@ assert_eq!(v, [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]);
 constructor functions. If the count becomes zero, we mark the returned
 iterator as <code>finished</code>. See <strong>Unresolved questions</strong> for nicer
 transition paths.</p>
-<a class="header" href="0979-align-splitn-with-other-languages.html#example-usage" id="example-usage"><h2>Example usage</h2></a>
-<a class="header" href="0979-align-splitn-with-other-languages.html#strings" id="strings"><h3>Strings</h3></a>
+<a class="header" href="#example-usage" id="example-usage"><h2>Example usage</h2></a>
+<a class="header" href="#strings" id="strings"><h3>Strings</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -177,7 +184,7 @@ assert_eq!(v, [&quot;a,b,c&quot;]);
 let v: Vec&lt;_&gt; = input.splitn(0, ',').collect();
 assert_eq!(v, []);
 #}</code></pre></pre>
-<a class="header" href="0979-align-splitn-with-other-languages.html#slices" id="slices"><h3>Slices</h3></a>
+<a class="header" href="#slices" id="slices"><h3>Slices</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -191,47 +198,47 @@ assert_eq!(v, [[1, 0, 2, 0, 3]]);
 let v: Vec&lt;_&gt; = input.splitn(0, |&amp;x| x == 0).collect();
 assert_eq!(v, []);
 #}</code></pre></pre>
-<a class="header" href="0979-align-splitn-with-other-languages.html#languages-where-count-is-the-maximum-number-of-items-returned" id="languages-where-count-is-the-maximum-number-of-items-returned"><h2>Languages where <code>count</code> is the maximum number of items returned</h2></a>
-<a class="header" href="0979-align-splitn-with-other-languages.html#c" id="c"><h3>C#</h3></a>
+<a class="header" href="#languages-where-count-is-the-maximum-number-of-items-returned" id="languages-where-count-is-the-maximum-number-of-items-returned"><h2>Languages where <code>count</code> is the maximum number of items returned</h2></a>
+<a class="header" href="#c" id="c"><h3>C#</h3></a>
 <pre><code class="language-c#">&quot;a,b,c&quot;.Split(new char[] {','}, 2)
 // [&quot;a&quot;, &quot;b,c&quot;]
 </code></pre>
-<a class="header" href="0979-align-splitn-with-other-languages.html#clojure" id="clojure"><h3>Clojure</h3></a>
+<a class="header" href="#clojure" id="clojure"><h3>Clojure</h3></a>
 <pre><code class="language-clojure">(clojure.string/split &quot;a,b,c&quot; #&quot;,&quot; 2)
 ;; [&quot;a&quot; &quot;b,c&quot;]
 </code></pre>
-<a class="header" href="0979-align-splitn-with-other-languages.html#go" id="go"><h3>Go</h3></a>
+<a class="header" href="#go" id="go"><h3>Go</h3></a>
 <pre><code class="language-go">strings.SplitN(&quot;a,b,c&quot;, &quot;,&quot;, 2)
 // [a b,c]
 </code></pre>
-<a class="header" href="0979-align-splitn-with-other-languages.html#java" id="java"><h3>Java</h3></a>
+<a class="header" href="#java" id="java"><h3>Java</h3></a>
 <pre><code class="language-java">&quot;a,b,c&quot;.split(&quot;,&quot;, 2);
 // [&quot;a&quot;, &quot;b,c&quot;]
 </code></pre>
-<a class="header" href="0979-align-splitn-with-other-languages.html#ruby" id="ruby"><h3>Ruby</h3></a>
+<a class="header" href="#ruby" id="ruby"><h3>Ruby</h3></a>
 <pre><code class="language-ruby">&quot;a,b,c&quot;.split(',', 2)
 # [&quot;a&quot;, &quot;b,c&quot;]
 </code></pre>
-<a class="header" href="0979-align-splitn-with-other-languages.html#perl" id="perl"><h3>Perl</h3></a>
+<a class="header" href="#perl" id="perl"><h3>Perl</h3></a>
 <pre><code class="language-perl">split(&quot;,&quot;, &quot;a,b,c&quot;, 2)
 # ['a', 'b,c']
 </code></pre>
-<a class="header" href="0979-align-splitn-with-other-languages.html#languages-where-count-is-the-maximum-number-of-times-the-separator-will-be-matched" id="languages-where-count-is-the-maximum-number-of-times-the-separator-will-be-matched"><h2>Languages where <code>count</code> is the maximum number of times the separator will be matched</h2></a>
-<a class="header" href="0979-align-splitn-with-other-languages.html#python" id="python"><h3>Python</h3></a>
+<a class="header" href="#languages-where-count-is-the-maximum-number-of-times-the-separator-will-be-matched" id="languages-where-count-is-the-maximum-number-of-times-the-separator-will-be-matched"><h2>Languages where <code>count</code> is the maximum number of times the separator will be matched</h2></a>
+<a class="header" href="#python" id="python"><h3>Python</h3></a>
 <pre><code class="language-python">&quot;a,b,c&quot;.split(',', 2)
 # ['a', 'b', 'c']
 </code></pre>
-<a class="header" href="0979-align-splitn-with-other-languages.html#swift" id="swift"><h3>Swift</h3></a>
+<a class="header" href="#swift" id="swift"><h3>Swift</h3></a>
 <pre><code class="language-swift">split(&quot;a,b,c&quot;, { $0 == &quot;,&quot; }, maxSplit: 2)
 // [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]
 </code></pre>
-<a class="header" href="0979-align-splitn-with-other-languages.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Changing the <em>meaning</em> of the <code>count</code> parameter without changing the
 <em>type</em> is sure to cause subtle issues. See <strong>Unresolved questions</strong>.</p>
 <p>The iterator can only return 2^64 values; previously we could return
 2^64 + 1. This could also be considered an upside, as we can now
 return an empty iterator.</p>
-<a class="header" href="0979-align-splitn-with-other-languages.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ol>
 <li>
 <p>Keep the status quo. People migrating from many other languages
@@ -242,7 +249,7 @@ will continue to be surprised.</p>
 is the maximum number of items that can be returned.</p>
 </li>
 </ol>
-<a class="header" href="0979-align-splitn-with-other-languages.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Is there a nicer way to change the behavior of <code>count</code> such that users
 of <code>splitn</code> get compile-time errors when migrating?</p>
 <ol>
@@ -301,9 +308,6 @@ migrated to the new semantic.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2093-infer-outlives - </title>
+        <title>2093-infer-outlives - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2093">rust-lang/rfcs#2093</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44493">rust-lang/rust#44493</a></li>
 </ul>
-<a class="header" href="2093-infer-outlives.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Remove the need for explicit <code>T: 'x</code> annotations on structs. We will
 infer their presence based on the fields of the struct. In short, if
 the struct contains a reference, directly or indirectly, to <code>T</code> with
@@ -154,7 +161,7 @@ struct Foo&lt;'x, T&gt; {
 #}</code></pre></pre>
 <p>Explicit annotations remain as an option used to control trait object
 lifetime defaults, and simply for backwards compatibility.</p>
-<a class="header" href="2093-infer-outlives.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Today, when you write generic struct definitions that contain
 references, those structs require where-clauses of the form <code>T: 'a</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -202,7 +209,7 @@ fixed-point inference similar to <a href="https://github.com/rust-lang/rfcs/blob
 annotations are used today: trait object lifetime defaults
 (<a href="https://github.com/rust-lang/rfcs/blob/master/text/0599-default-object-bound.md">RFC 599</a>). The interaction there is discussed in the Guide-Level
 Explanation below.</p>
-<a class="header" href="2093-infer-outlives.html#background-outlives-requirements-today" id="background-outlives-requirements-today"><h3>Background: outlives requirements today</h3></a>
+<a class="header" href="#background-outlives-requirements-today" id="background-outlives-requirements-today"><h3>Background: outlives requirements today</h3></a>
 <p><a href="https://github.com/nikomatsakis/rfcs/blob/master/text/0034-bounded-type-parameters.md">RFC 34</a> established the current rules around &quot;outlives
 requirements&quot;. Specifically, in order for a reference type <code>&amp;'a T</code> to
 be &quot;well formed&quot; (valid), the compiler must know that the type <code>T</code>
@@ -255,7 +262,7 @@ well-formed, it can also deduce that <code>T: 'a</code> must hold, and hence we
 do not require where-clauses asserting this fact. (Currently, implied
 bounds are only used for lifetime requirements; pending <a href="https://github.com/rust-lang/rfcs/pull/2089">RFC 2089</a>
 proposes to extend this mechanism to other sorts of bounds.)</p>
-<a class="header" href="2093-infer-outlives.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>This RFC does not introduce any new concepts -- rather, it (mostly)
 removes the need to be actively aware of outlives requirements. In
 particular, the compiler will infer the <code>T: 'a</code> requirements on behalf
@@ -280,7 +287,7 @@ struct Indirect&lt;'a, T&gt; {
   r: SharedRef&lt;'a, T&gt;
 }
 #}</code></pre></pre>
-<a class="header" href="2093-infer-outlives.html#where-explicit-annotations-would-still-be-required" id="where-explicit-annotations-would-still-be-required"><h3>Where explicit annotations would still be required</h3></a>
+<a class="header" href="#where-explicit-annotations-would-still-be-required" id="where-explicit-annotations-would-still-be-required"><h3>Where explicit annotations would still be required</h3></a>
 <p>Explicit outlives annotations would primarily be required in cases
 where the lifetime and the type are combined within the value of an
 associated type, but not in one of the impl's input types. For
@@ -332,7 +339,7 @@ struct Foo&lt;'a, T&gt;
   r: &lt;T as Trait&lt;'a&gt;&gt;::Type // requires that `T: 'a` to be WF
 }
 #}</code></pre></pre>
-<a class="header" href="2093-infer-outlives.html#trait-object-lifetime-defaults" id="trait-object-lifetime-defaults"><h3>Trait object lifetime defaults</h3></a>
+<a class="header" href="#trait-object-lifetime-defaults" id="trait-object-lifetime-defaults"><h3>Trait object lifetime defaults</h3></a>
 <p><a href="https://github.com/rust-lang/rfcs/blob/master/text/0599-default-object-bound.md">RFC 599</a> (later amended by <a href="https://github.com/rust-lang/rfcs/blob/master/text/1156-adjust-default-object-bounds.md">RFC 1156</a>) specified the defaulting
 rules for trait object types. Typically, a trait object type that
 appears as a parameter to a struct is given the implicit bound
@@ -356,7 +363,7 @@ therefore requires an explicit <code>where T: 'a</code> declaration on the
 struct; in fact, such explicit declarations can be thought of as
 existing primarily for the purpose of informing trait object lifetime
 defaults, since they are typically not needed otherwise.</p>
-<a class="header" href="2093-infer-outlives.html#long-range-errors-and-why-they-are-considered-unlikely" id="long-range-errors-and-why-they-are-considered-unlikely"><h3>Long-range errors, and why they are considered unlikely</h3></a>
+<a class="header" href="#long-range-errors-and-why-they-are-considered-unlikely" id="long-range-errors-and-why-they-are-considered-unlikely"><h3>Long-range errors, and why they are considered unlikely</h3></a>
 <p>Initially, we avoided inferring the <code>T: 'a</code> annotations on struct
 types in part out of a fear of &quot;long-range&quot; error messages, where it
 becomes hard to see the origin of an outlives requirement.  Consider
@@ -420,7 +427,7 @@ path that led to the <code>T: 'a</code> requirement on the user's behalf:</p>
    = note: `Indirect&lt;'a, T&gt;` requires that `T: 'a` because it contains a field of type `Direct&lt;'a, T&gt;`
    = note: `Direct&lt;'a, T&gt;` requires that `T: 'a` because it contains a field of type `&amp;'a T`
 </code></pre>
-<a class="header" href="2093-infer-outlives.html#impact-on-semver" id="impact-on-semver"><h3>Impact on semver</h3></a>
+<a class="header" href="#impact-on-semver" id="impact-on-semver"><h3>Impact on semver</h3></a>
 <p>Due to the implied bounds rules, it is currently the case that
 removing <code>where T: 'a</code> annotations is potentially a breaking
 change. After this RFC, the rule is a bit more subtle: removing an
@@ -467,7 +474,7 @@ that references are always valid, we need to know where they appear,
 even if it is deeply nested within a struct hierarchy. Probably the
 best way to mitigate these sorts of subtle semver complications is to
 have a tool that detects and warns for incompatible changes.</p>
-<a class="header" href="2093-infer-outlives.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>The intention is that the outlives inference takes place at the same
 time in the compiler pipeline as variance inference. In particular,
 this is after the point where we have been able to construct
@@ -537,7 +544,7 @@ not other sorts of well-formedness rules (e.g., trait requirements
 like <code>T: Eq</code>). Therefore, after inference completes, we still check
 that each type is well-formed just as today, but with the inferred
 outlives requirements in scope.</p>
-<a class="header" href="2093-infer-outlives.html#example-1-a-reference" id="example-1-a-reference"><h3>Example 1: A reference</h3></a>
+<a class="header" href="#example-1-a-reference" id="example-1-a-reference"><h3>Example 1: A reference</h3></a>
 <p>The simplest example is one where we have a reference type directly
 contained in the struct:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -549,7 +556,7 @@ struct Foo&lt;'a, T&gt; {
 #}</code></pre></pre>
 <p>Here, the reference type requires that <code>[T]: 'a</code> which in turn is true
 if <code>T: 'a</code>. Hence we will create a single constraint, that <code>(T: 'a) in A[Foo]</code>.</p>
-<a class="header" href="2093-infer-outlives.html#example-2-projections" id="example-2-projections"><h3>Example 2: Projections</h3></a>
+<a class="header" href="#example-2-projections" id="example-2-projections"><h3>Example 2: Projections</h3></a>
 <p>In some cases, the outlives requirements are not of the form <code>T: 'a</code>,
 as in this example:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -560,7 +567,7 @@ struct Foo&lt;'a, T: Iterator&gt; {
 }
 #}</code></pre></pre>
 <p>Here, the requirement will be that <code>&lt;T as Iterator&gt;::Item: 'a</code>.</p>
-<a class="header" href="2093-infer-outlives.html#example-3-explicit-where-clauses" id="example-3-explicit-where-clauses"><h3>Example 3: Explicit where-clauses</h3></a>
+<a class="header" href="#example-3-explicit-where-clauses" id="example-3-explicit-where-clauses"><h3>Example 3: Explicit where-clauses</h3></a>
 <p>In some cases, we may have constraints that arise from explicit where-clauses
 and not from field types, as in the following example:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -586,7 +593,7 @@ satisfied, and hence as the rule that <code>('a =&gt; 'b, T =&gt; U) (A[Bar]) &l
 <p>This means that we would infer an implicit outlives requirements of
 <code>U: 'b</code> for <code>Foo</code>; for <code>Bar</code> we would infer <code>T: 'a</code> but that was
 explicitly declared.</p>
-<a class="header" href="2093-infer-outlives.html#example-4-normalization-or-lack-thereof" id="example-4-normalization-or-lack-thereof"><h3>Example 4: Normalization or lack thereof</h3></a>
+<a class="header" href="#example-4-normalization-or-lack-thereof" id="example-4-normalization-or-lack-thereof"><h3>Example 4: Normalization or lack thereof</h3></a>
 <p>Let us revisit the case where the where-clause is due
 to an impl:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -615,7 +622,7 @@ result in any outlives requirements as it contains no references.</p>
 get an error -- this is because, in that context, we will try to normalize
 the associated type reference, but we will fail in doing so because we do not
 have any where-clause stating that <code>T: 'a</code> (which the impl requires).</p>
-<a class="header" href="2093-infer-outlives.html#example-5-multiple-regions" id="example-5-multiple-regions"><h3>Example 5: Multiple regions</h3></a>
+<a class="header" href="#example-5-multiple-regions" id="example-5-multiple-regions"><h3>Example 5: Multiple regions</h3></a>
 <p>Sometimes the outlives relationship can be inferred between multiple
 regions, not only type parameters. Consider the following:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -630,7 +637,7 @@ struct Foo&lt;'a,'b,T&gt; {
 <li><code>'b: 'a</code> holds, because of the outer reference; and,</li>
 <li><code>T: 'b</code> holds, because of the inner reference.</li>
 </ul>
-<a class="header" href="2093-infer-outlives.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The primary drawbacks were covered in depth in the guide-level explanation,
 which also covers why they are not considered to be major problems:</p>
 <ul>
@@ -647,7 +654,7 @@ which also covers why they are not considered to be major problems:</p>
 </ul>
 </li>
 </ul>
-<a class="header" href="2093-infer-outlives.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
 <p>Naturally, we might choose to retain the status quo, and continue to
 require outlives annotations on structs. Assuming however that we wish
 to remove them, the primary alternative is to consider going <em>farther</em>
@@ -660,7 +667,7 @@ structs, we must be able to do associated type normalization and hence
 trait solving, but we would have to do before we know the full WF
 requirements for each struct. The current setup avoids this
 complication.</p>
-<a class="header" href="2093-infer-outlives.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -706,9 +713,6 @@ complication.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

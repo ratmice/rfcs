@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2535-or-patterns - </title>
+        <title>2535-or-patterns - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,14 +146,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2535">rust-lang/rfcs#2535</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/54883">rust-lang/rust#54883</a></li>
 </ul>
-<a class="header" href="2535-or-patterns.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Allow <code>|</code> to be arbitrarily nested within a pattern such
 that <code>Some(A(0) | B(1 | 2))</code> becomes a valid pattern.</p>
-<a class="header" href="2535-or-patterns.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Nothing this RFC proposes adds anything with respect to expressive power.
 Instead, the aim is to make the power we already have more easy to wield.
 For example, we wish to improve ergonomics, readability, and the mental model.</p>
-<a class="header" href="2535-or-patterns.html#dont-repeat-yourself" id="dont-repeat-yourself"><h2>Don't repeat yourself</h2></a>
+<a class="header" href="#dont-repeat-yourself" id="dont-repeat-yourself"><h2>Don't repeat yourself</h2></a>
 <p>Consider an example match arm such as (1):</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -164,7 +171,7 @@ Some(Enum::A | Enum::B | Enum::C | Enum::D) =&gt; ..
 we have to do scales linearly with the number of inner variants we mention.
 The ability to nest patterns in this way therefore results in improved
 writing ergonomics.</p>
-<a class="header" href="2535-or-patterns.html#mental-model" id="mental-model"><h2>Mental model</h2></a>
+<a class="header" href="#mental-model" id="mental-model"><h2>Mental model</h2></a>
 <p>However, as we know, code is read more than it is written. So are we trading
 readability for increased ergonomics? We believe this is not the case.
 Instead, this RFC aims to improve the readability of code by reducing the
@@ -192,7 +199,7 @@ formulated in <em>disjunctive normal form</em> (<a href="https://en.wikipedia.or
 it into CNF and then understand the implications of the pattern.</p>
 <p>By allowing users to encode their logic in the way they think instead of going
 through more indirect routes, we can improve the understandability of code.</p>
-<a class="header" href="2535-or-patterns.html#reducing-complexity-with-uniformity" id="reducing-complexity-with-uniformity"><h2>Reducing complexity with uniformity</h2></a>
+<a class="header" href="#reducing-complexity-with-uniformity" id="reducing-complexity-with-uniformity"><h2>Reducing complexity with uniformity</h2></a>
 <p>A principal way in which programming languages accumulate complexity is by
 adding more and more rules that a programmer needs to keep in their head to
 write or understand what a program does. A consequence of this is that often
@@ -214,7 +221,7 @@ In fact, there are already users that try this expecting it to work but
 then find out that it does not.</p>
 <p>Furthermore, allowing <code>pat | pat</code> in the pattern grammar also allows macros to
 produce disjunctions such as <code>$p | $q</code>.</p>
-<a class="header" href="2535-or-patterns.html#real-world-use-cases" id="real-world-use-cases"><h2>Real world use cases</h2></a>
+<a class="header" href="#real-world-use-cases" id="real-world-use-cases"><h2>Real world use cases</h2></a>
 <p>This RFC wouldn't be complete without concrete use cases which it would
 facilitate. While there are not an overabundance of cases where <code>pat | pat</code>
 would help, there are some where it would. Let's go through a few of them.</p>
@@ -478,7 +485,7 @@ BinOp(Minus | Star | Or | And) | OrOr =&gt; true,
 #}</code></pre></pre>
 </li>
 </ol>
-<a class="header" href="2535-or-patterns.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>Simply put, <code>$p | $q</code> where <code>$p</code> and <code>$q</code> are some patterns is now itself
 a legal pattern.</p>
 <p>This means that you may for example write:</p>
@@ -506,7 +513,7 @@ fn main() {
 <p>Note that the operator <code>|</code> has a low precedence. This means that if you
 want the same outcome as <code>foo @ 1 | foo @ 2 | foo @ 3</code>, you have to write
 <code>foo @ (1 | 2 | 3)</code> instead of writing <code>foo @ 1 | 2 | 3</code>.
-This is discussed in the <a href="2535-or-patterns.html#rationale-and-alternatives">rationale</a>.</p>
+This is discussed in the <a href="#rationale-and-alternatives">rationale</a>.</p>
 <p>You can also use <code>p | q</code> in:</p>
 <ol>
 <li>
@@ -575,8 +582,8 @@ foo!((Ok(x) | Err(x)));
 already legal in patterns.</p>
 </li>
 </ol>
-<a class="header" href="2535-or-patterns.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2535-or-patterns.html#grammar" id="grammar"><h2>Grammar</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#grammar" id="grammar"><h2>Grammar</h2></a>
 <p>We parameterize the <code>pat</code> grammar by the choice whether to allow top level
 <code>pat | pat</code>. We then change the pattern grammar to:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -655,7 +662,7 @@ inferrable_param : pat&lt;no_top_alt&gt; maybe_ty_ascription ;
 #}</code></pre></pre>
 <p>Finally, <code>pat</code> macro fragment specifiers will also match the <code>pat&lt;no_top_alt&gt;</code>
 production as opposed to <code>pat&lt;allow_top_alt&gt;</code>.</p>
-<a class="header" href="2535-or-patterns.html#error-messages" id="error-messages"><h3>Error messages</h3></a>
+<a class="header" href="#error-messages" id="error-messages"><h3>Error messages</h3></a>
 <p>As previously noted, the precedence of the operator <code>|</code> is lower than that of
 the operator <code>@</code>. This results in <code>i @ p | q</code> being interpreted as <code>(i @ p) | q</code>.
 In turn, this would result in an error because <code>i</code> is not defined in all
@@ -699,7 +706,7 @@ error[E0408]: variable `i` is not bound in all patterns
   |             ^^^^^
 #}</code></pre></pre>
 <p>The particular design of such an error message is left open to implementations.</p>
-<a class="header" href="2535-or-patterns.html#static-semantics" id="static-semantics"><h2>Static semantics</h2></a>
+<a class="header" href="#static-semantics" id="static-semantics"><h2>Static semantics</h2></a>
 <ol>
 <li>
 <p>Given a pattern <code>p | q</code> at some depth for some arbitrary patterns <code>p</code> and <code>q</code>,
@@ -733,7 +740,7 @@ This includes enum variants, tuple structs, structs with named fields,
 arrays, tuples, and slices.</p>
 </li>
 </ol>
-<a class="header" href="2535-or-patterns.html#dynamic-semantics" id="dynamic-semantics"><h2>Dynamic semantics</h2></a>
+<a class="header" href="#dynamic-semantics" id="dynamic-semantics"><h2>Dynamic semantics</h2></a>
 <ol>
 <li>The dynamic semantics of pattern matching a scrutinee expression <code>e_s</code>
 against a pattern <code>c(p | q, ..rest)</code> at depth <code>d</code> where <code>c</code> is some constructor,
@@ -741,7 +748,7 @@ against a pattern <code>c(p | q, ..rest)</code> at depth <code>d</code> where <c
 potential factors in <code>c</code>, is defined as being the same as that of
 <code>c(p, ..rest) | c(q, ..rest)</code>.</li>
 </ol>
-<a class="header" href="2535-or-patterns.html#implementation-notes" id="implementation-notes"><h2>Implementation notes</h2></a>
+<a class="header" href="#implementation-notes" id="implementation-notes"><h2>Implementation notes</h2></a>
 <p>With respect to both static and dynamic semantics,
 it is always valid to first desugar a pattern <code>c(p | q)</code>
 in CNF to its equivalent form in DNF, i.e. <code>c(p) | c(q)</code>.</p>
@@ -781,21 +788,21 @@ match expr {
 #}</code></pre></pre>
 <p>Instead, it is more likely that a one-step case analysis will be more efficient.</p>
 <p>Which implementation technique to use is left open to each Rust compiler.</p>
-<a class="header" href="2535-or-patterns.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ol>
 <li>Some parsers will have to be rewritten by a tiny bit;
 We do this with any syntactic change in the language so
 there should not be any problem.</li>
 </ol>
-<a class="header" href="2535-or-patterns.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>As for why the change as proposed in this RFC should be done,
-it is discussed in the <a href="2535-or-patterns.html#motivation">motivation</a>.</p>
-<a class="header" href="2535-or-patterns.html#syntax" id="syntax"><h2>Syntax</h2></a>
+it is discussed in the <a href="#motivation">motivation</a>.</p>
+<a class="header" href="#syntax" id="syntax"><h2>Syntax</h2></a>
 <p>Since we already use <code>|</code> for alternation at the top level, the only consistent
 operator syntax for alternations in nested patterns would be <code>|</code>.
 Therefore, there are not many design choices to make with respect to <em>how</em>
 this change should be done rather than <em>if</em>.</p>
-<a class="header" href="2535-or-patterns.html#precedence" id="precedence"><h2>Precedence</h2></a>
+<a class="header" href="#precedence" id="precedence"><h2>Precedence</h2></a>
 <p>With respect to the precedence of <code>|</code>, we cannot interpret <code>i @ p | q</code>
 as <code>i @ (p | q)</code> because it is already legal to write <code>i @ p | j @ q</code>
 at the top level of a pattern. Therefore, if we say that <code>|</code> binds more tightly,
@@ -809,7 +816,7 @@ disjunction in logic. In these fields, it is customary for multiplication and
 conjunction to bind more tightly. That is, we interpret <code>a * b + c</code> as
 <code>(a * b) + c</code> and not <code>a * (b + c)</code>. Similarly, we interpret <code>p ∧ q ∨ r</code>
 as <code>(p ∧ q) ∨ r</code> and not <code>p ∧ (q ∨ r)</code>.</p>
-<a class="header" href="2535-or-patterns.html#leading-" id="leading-"><h2>Leading <code>|</code></h2></a>
+<a class="header" href="#leading-" id="leading-"><h2>Leading <code>|</code></h2></a>
 <p>The only real choice that we do have to make is whether the new addition to the
 pattern grammar should be <code>pat : .. | pat &quot;|&quot; pat ;</code> or if it instead should be
 <code>pat : .. | &quot;|&quot;? pat &quot;|&quot; pat ;</code>. We have chosen the former for 4 reasons:</p>
@@ -819,7 +826,7 @@ pattern grammar should be <code>pat : .. | pat &quot;|&quot; pat ;</code> or if 
 This is thus the conservative choice.</p>
 </li>
 <li>
-<p>There is precedent for such a decision due to <a href="2535-or-patterns.html#ocaml">OCaml</a>.</p>
+<p>There is precedent for such a decision due to <a href="#ocaml">OCaml</a>.</p>
 </li>
 <li>
 <p>The benefit to macros is dubious as they don't have to produce leading
@@ -835,18 +842,18 @@ pattern:</p>
 <li>Libraries or tools such as <code>syn</code> will have <em>slightly</em> easier time parsing
 the grammar of Rust.</li>
 </ol>
-<a class="header" href="2535-or-patterns.html#fn-arguments" id="fn-arguments"><h2><code>fn</code> arguments</h2></a>
+<a class="header" href="#fn-arguments" id="fn-arguments"><h2><code>fn</code> arguments</h2></a>
 <p>In this RFC, we allow <code>p | q</code> inside patterns of <code>fn</code> arguments.
 The rationale for this is simply consistency with <code>let</code> which also permit
 these and did so before this RFC at the top level with <a href="https://github.com/rust-lang/rfcs/pull/2175">RFC 2175</a>.</p>
-<a class="header" href="2535-or-patterns.html#macros-and-closures" id="macros-and-closures"><h2>Macros and closures</h2></a>
-<p>See the section on <a href="2535-or-patterns.html#unresolved-questions">unresolved</a> questions for a brief discussion.</p>
-<a class="header" href="2535-or-patterns.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
-<a class="header" href="2535-or-patterns.html#css4-selectors" id="css4-selectors"><h2>CSS4 selectors</h2></a>
+<a class="header" href="#macros-and-closures" id="macros-and-closures"><h2>Macros and closures</h2></a>
+<p>See the section on <a href="#unresolved-questions">unresolved</a> questions for a brief discussion.</p>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#css4-selectors" id="css4-selectors"><h2>CSS4 selectors</h2></a>
 <p>In <a href="https://drafts.csswg.org/selectors/#matches">CSS4</a> (draft proposal), it is possible to write a selector
 <code>div &gt; *:matches(ul, ol)</code> which is equivalent to <code>div &gt; ul, div &gt; ol</code>.
 The moral equivalent of this in Rust would be: <code>Div(Ul | Ol)</code>.</p>
-<a class="header" href="2535-or-patterns.html#regular-expressions" id="regular-expressions"><h2>Regular expressions</h2></a>
+<a class="header" href="#regular-expressions" id="regular-expressions"><h2>Regular expressions</h2></a>
 <p>Most <a href="https://en.wikipedia.org/wiki/Regular_expression">regular expression</a> formalisms support at least the
 following operations (where <code>a</code>, <code>b</code>, and <code>c</code> are arbitrary regexes):</p>
 <ul>
@@ -882,7 +889,7 @@ a(b | c)
 #fn main() {
 ab | ac
 #}</code></pre></pre>
-<a class="header" href="2535-or-patterns.html#ocaml" id="ocaml"><h2>OCaml</h2></a>
+<a class="header" href="#ocaml" id="ocaml"><h2>OCaml</h2></a>
 <p><a href="https://caml.inria.fr/pub/docs/manual-ocaml/patterns.html#sec108">This is supported</a> in OCaml.
 An example from &quot;Real World OCaml&quot; is:</p>
 <pre><code class="language-ocaml">let is_ocaml_source s =
@@ -904,7 +911,7 @@ An example from &quot;Real World OCaml&quot; is:</p>
 </code></pre>
 <p>We have chosen to impose the same restriction as OCaml here with respect to
 not allowing leading <code>|</code> in nested pattern alternations.</p>
-<a class="header" href="2535-or-patterns.html#f" id="f"><h2>F#</h2></a>
+<a class="header" href="#f" id="f"><h2>F#</h2></a>
 <p>A language which is quite similar to OCaml is F#.
 With respect to <a href="https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/pattern-matching">pattern matching</a>, we may write:</p>
 <pre><code class="language-fsharp">let detectZeroOR point =
@@ -914,12 +921,12 @@ With respect to <a href="https://docs.microsoft.com/en-us/dotnet/fsharp/language
 </code></pre>
 <p>F# calls these &quot;OR pattern&quot;s and includes
 <code>pattern1 | pattern2</code> in the pattern grammar.</p>
-<a class="header" href="2535-or-patterns.html#haskell" id="haskell"><h2>Haskell</h2></a>
+<a class="header" href="#haskell" id="haskell"><h2>Haskell</h2></a>
 <p>The <a href="https://github.com/ghc-proposals/ghc-proposals/pull/43">equivalent proposal</a> is currently being discussed for
 inclusion in Haskell.</p>
-<a class="header" href="2535-or-patterns.html#lisp" id="lisp"><h2>Lisp</h2></a>
+<a class="header" href="#lisp" id="lisp"><h2>Lisp</h2></a>
 <p>There is support for or-patterns in <a href="https://stackoverflow.com/a/3798659/1063961">various lisp libraries</a>.</p>
-<a class="header" href="2535-or-patterns.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ol>
 <li>
 <p>Should we allow <code>top_pat</code> or <code>pat&lt;allow_top_alt&gt;</code> in <code>inferrable_param</code> such
@@ -989,9 +996,6 @@ breakage for macros.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

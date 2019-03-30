@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0550-macro-future-proofing - </title>
+        <title>0550-macro-future-proofing - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -143,11 +150,11 @@
 </ul>
 </li>
 </ul>
-<a class="header" href="0550-macro-future-proofing.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Future-proof the allowed forms that input to an MBE can take by requiring
 certain delimiters following NTs in a matcher. In the future, it will be
 possible to lift these restrictions backwards compatibly if desired.</p>
-<a class="header" href="0550-macro-future-proofing.html#key-terminology" id="key-terminology"><h1>Key Terminology</h1></a>
+<a class="header" href="#key-terminology" id="key-terminology"><h1>Key Terminology</h1></a>
 <ul>
 <li><code>macro</code>: anything invokable as <code>foo!(...)</code> in source code.</li>
 <li><code>MBE</code>: macro-by-example, a macro defined by <code>macro_rules</code>.</li>
@@ -190,7 +197,7 @@ have a dedicated separator token.</p>
 <p>(Note that Rust's parser ensures that delimited sequences always occur
 with proper nesting of token tree structure and correct matching of open-
 and close-delimiters.)</p>
-<a class="header" href="0550-macro-future-proofing.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>In current Rust (version 0.12; i.e. pre 1.0), the <code>macro_rules</code> parser is very liberal in what it accepts
 in a matcher. This can cause problems, because it is possible to write an
 MBE which corresponds to an ambiguous grammar. When an MBE is invoked, if the
@@ -252,7 +259,7 @@ fn main() {
 through at least 1.4)</p>
 </li>
 </ul>
-<a class="header" href="0550-macro-future-proofing.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>We will tend to use the variable &quot;M&quot; to stand for a matcher,
 variables &quot;t&quot; and &quot;u&quot; for arbitrary individual tokens,
 and the variables &quot;tt&quot; and &quot;uu&quot; for arbitrary token trees.
@@ -284,7 +291,7 @@ the definitions of this RFC, no simple NT matches
 the empty fragment, and likewise no token matches
 the empty fragment of Rust syntax. (Thus, the <em>only</em> NT that can match
 the empty fragment is a complex NT.)</p>
-<a class="header" href="0550-macro-future-proofing.html#the-matcher-invariant" id="the-matcher-invariant"><h2>The Matcher Invariant</h2></a>
+<a class="header" href="#the-matcher-invariant" id="the-matcher-invariant"><h2>The Matcher Invariant</h2></a>
 <p>This RFC establishes the following two-part invariant for valid matchers</p>
 <ol>
 <li>
@@ -312,7 +319,7 @@ of <code>tt ...</code>'s, even as new syntactic forms are added to the language.
 by the definition of FOLLOW below, of course.)</p>
 <p>The above invariant is only formally meaningful if one knows what
 FIRST and FOLLOW denote. We address this in the following sections.</p>
-<a class="header" href="0550-macro-future-proofing.html#first-and-follow-informally" id="first-and-follow-informally"><h2>FIRST and FOLLOW, informally</h2></a>
+<a class="header" href="#first-and-follow-informally" id="first-and-follow-informally"><h2>FIRST and FOLLOW, informally</h2></a>
 <p>FIRST and FOLLOW are defined as follows.</p>
 <p>A given matcher M maps to three sets: FIRST(M), LAST(M) and FOLLOW(M).</p>
 <p>Each of the three sets is made up of tokens. FIRST(M) and LAST(M) may
@@ -344,9 +351,9 @@ matched by M.</p>
 </ul>
 <p>(To review one's understanding of the above informal descriptions, the
 reader at this point may want to jump ahead to the
-<a href="0550-macro-future-proofing.html#examples-of-first-and-last">examples of FIRST/LAST</a> before reading
+<a href="#examples-of-first-and-last">examples of FIRST/LAST</a> before reading
 their formal definitions.)</p>
-<a class="header" href="0550-macro-future-proofing.html#first-last" id="first-last"><h2>FIRST, LAST</h2></a>
+<a class="header" href="#first-last" id="first-last"><h2>FIRST, LAST</h2></a>
 <p>Below are formal inductive definitions for FIRST and LAST.</p>
 <p>&quot;A ∪ B&quot; denotes set union, &quot;A ∩ B&quot; denotes set intersection, and
 &quot;A \ B&quot; denotes set difference (i.e. all elements of A that are not present
@@ -463,7 +470,7 @@ separating elements; i.e. that such NT's do not match fragments that
 <em>end with</em> the seperator token. If we choose to lift this restriction
 in the future, the above definition will need to be revised
 accordingly.</p>
-<a class="header" href="0550-macro-future-proofing.html#examples-of-first-and-last" id="examples-of-first-and-last"><h2>Examples of FIRST and LAST</h2></a>
+<a class="header" href="#examples-of-first-and-last" id="examples-of-first-and-last"><h2>Examples of FIRST and LAST</h2></a>
 <p>Below are some examples of FIRST and LAST.
 (Note in particular how the special ε element is introduced and
 eliminated based on the interation between the pieces of the input.)</p>
@@ -512,11 +519,11 @@ FIRST:                       { $d:ident, h, ;,  f }
 <ul>
 <li>LAST(<code>$( $d:ident $e:expr );* $(h)* $($( f ;)+ g)*</code>) = { <code>$e:expr</code>, ε, <code>h</code>, <code>g</code> }</li>
 </ul>
-<a class="header" href="0550-macro-future-proofing.html#followm" id="followm"><h2>FOLLOW(M)</h2></a>
+<a class="header" href="#followm" id="followm"><h2>FOLLOW(M)</h2></a>
 <p>Finally, the definition for <code>FOLLOW(M)</code> is built up incrementally atop
 more primitive functions.</p>
 <p>We first assume a primitive mapping, <code>FOLLOW(NT)</code> (defined
-<a href="0550-macro-future-proofing.html#follownt">below</a>) from a simple NT to the set of allowed tokens for
+<a href="#follownt">below</a>) from a simple NT to the set of allowed tokens for
 the fragment specifier for that NT.</p>
 <p>Second, we generalize FOLLOW to tokens: FOLLOW(t) = FOLLOW(NT) if t is (a simple) NT.
 Otherwise, t must be some other (non NT) token; in this case FOLLOW(t) = ANYTOKEN.</p>
@@ -532,7 +539,7 @@ incorporating details of FOLLOW(NT) in these examples):</p>
 <li>FOLLOW(<code>$( $d:ident $e:expr )* $(;)*</code>) = FOLLOW(<code>$e:expr</code>) ∩ ANYTOKEN = FOLLOW(<code>$e:expr</code>)</li>
 <li>FOLLOW(<code>$( $d:ident $e:expr )* $(;)* $( f |)+</code>) = ANYTOKEN</li>
 </ul>
-<a class="header" href="0550-macro-future-proofing.html#follownt" id="follownt"><h2>FOLLOW(NT)</h2></a>
+<a class="header" href="#follownt" id="follownt"><h2>FOLLOW(NT)</h2></a>
 <p>Here is the definition for FOLLOW(NT), which maps every simple NT to
 the set of tokens that are allowed to follow it, based on the fragment
 specifier for the NT.</p>
@@ -551,7 +558,7 @@ specifier for the NT.</p>
 <li><code>FOLLOW(meta)</code> = any token</li>
 </ul>
 <p>(Note that close delimiters are valid following any NT.)</p>
-<a class="header" href="0550-macro-future-proofing.html#examples-of-valid-and-invalid-matchers" id="examples-of-valid-and-invalid-matchers"><h2>Examples of valid and invalid matchers</h2></a>
+<a class="header" href="#examples-of-valid-and-invalid-matchers" id="examples-of-valid-and-invalid-matchers"><h2>Examples of valid and invalid matchers</h2></a>
 <p>With the above specification in hand, we can present arguments for
 why particular matchers are legal and others are not.</p>
 <ul>
@@ -577,10 +584,10 @@ why particular matchers are legal and others are not.</p>
 <p><code>($($ty:ty)-+)</code> : illegal, because separator <code>-</code> is not in FOLLOW(<code>ty</code>).</p>
 </li>
 </ul>
-<a class="header" href="0550-macro-future-proofing.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It does restrict the input to a MBE, but the choice of delimiters provides
 reasonable freedom and can be extended in the future.</p>
-<a class="header" href="0550-macro-future-proofing.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ol>
 <li>Fix the syntax that a fragment can parse. This would create a situation
 where a future MBE might not be able to accept certain inputs because the
@@ -598,7 +605,7 @@ same issue would come up.</li>
 <li>Do nothing. This is very dangerous, and has the potential to essentially
 freeze Rust's syntax for fear of accidentally breaking a macro.</li>
 </ol>
-<a class="header" href="0550-macro-future-proofing.html#edit-history" id="edit-history"><h1>Edit History</h1></a>
+<a class="header" href="#edit-history" id="edit-history"><h1>Edit History</h1></a>
 <ul>
 <li>
 <p>Updated by https://github.com/rust-lang/rfcs/pull/1209, which added
@@ -624,8 +631,8 @@ open square bracket into the follow set for types.</p>
 the follow set for types to include block nonterminals.</p>
 </li>
 </ul>
-<a class="header" href="0550-macro-future-proofing.html#appendices" id="appendices"><h1>Appendices</h1></a>
-<a class="header" href="0550-macro-future-proofing.html#appendix-a-algorithm-for-recognizing-valid-matchers" id="appendix-a-algorithm-for-recognizing-valid-matchers"><h2>Appendix A: Algorithm for recognizing valid matchers.</h2></a>
+<a class="header" href="#appendices" id="appendices"><h1>Appendices</h1></a>
+<a class="header" href="#appendix-a-algorithm-for-recognizing-valid-matchers" id="appendix-a-algorithm-for-recognizing-valid-matchers"><h2>Appendix A: Algorithm for recognizing valid matchers.</h2></a>
 <p>The detailed design above only sought to provide a <em>specification</em> for
 what a correct matcher is (by defining FIRST, LAST, and FOLLOW, and
 specifying the invariant relating FIRST and FOLLOW for all valid
@@ -653,7 +660,7 @@ are found to be producing inconsistent results.</p>
 <p>The algorithm for recognizing valid matchers <code>M</code> is named ValidMatcher.</p>
 <p>To define it, we will need a mapping from submatchers of M to the
 FIRST set for that submatcher; that is handled by <code>FirstSet</code>.</p>
-<a class="header" href="0550-macro-future-proofing.html#procedure-firstsetm" id="procedure-firstsetm"><h3>Procedure FirstSet(M)</h3></a>
+<a class="header" href="#procedure-firstsetm" id="procedure-firstsetm"><h3>Procedure FirstSet(M)</h3></a>
 <p><em>input</em>: a token tree <code>M</code> representing a matcher</p>
 <p><em>output</em>: <code>FIRST(M)</code></p>
 <pre><code>Let M = tts[1] tts[2] ... tts[n].
@@ -680,7 +687,7 @@ return curr_first
 </code></pre>
 <p>(Note: If we were precomputing a full table in this procedure, we would need
 a recursive invocation on (uu ...) in step 2 of the for-loop.)</p>
-<a class="header" href="0550-macro-future-proofing.html#predicate-validmatcherm" id="predicate-validmatcherm"><h3>Predicate ValidMatcher(M)</h3></a>
+<a class="header" href="#predicate-validmatcherm" id="predicate-validmatcherm"><h3>Predicate ValidMatcher(M)</h3></a>
 <p>To simplify the specification, we assume in this presentation that all
 simple NT's have a valid fragment specifier (i.e., one that has an
 entry in the FOLLOW(NT) table above.</p>
@@ -801,9 +808,6 @@ should be emitted and compilation should not complete.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

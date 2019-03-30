@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1135-raw-pointer-comparisons - </title>
+        <title>1135-raw-pointer-comparisons - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,16 +146,16 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1135">rust-lang/rfcs#1135</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/28236">rust-lang/rust#28235</a></li>
 </ul>
-<a class="header" href="1135-raw-pointer-comparisons.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Allow equality, but not order, comparisons between fat raw pointers
 of the same type.</p>
-<a class="header" href="1135-raw-pointer-comparisons.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, fat raw pointers can't be compared via either PartialEq or
 PartialOrd (currently this causes an ICE). It seems to me that a primitive
 type like a fat raw pointer should implement equality in some way.</p>
 <p>However, there doesn't seem to be a sensible way to order raw fat pointers
 unless we take vtable addresses into account, which is relatively weird.</p>
-<a class="header" href="1135-raw-pointer-comparisons.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Implement PartialEq/Eq for fat raw pointers, defined as comparing both the
 unsize-info and the address. This means that these are true:</p>
 <pre><code class="language-Rust">    &amp;s as &amp;fmt::Debug as *const _ == &amp;s as &amp;fmt::Debug as *const _ // of course
@@ -161,10 +168,10 @@ unsize-info and the address. This means that these are true:</p>
 <pre><code class="language-Rust">    &amp;s.first_field as &amp;fmt::Debug as *const _ as *const () ==
         &amp;s as &amp;fmt::Debug as *const _ as *const () // addresses are equal
 </code></pre>
-<a class="header" href="1135-raw-pointer-comparisons.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Order comparisons may be useful for putting fat raw pointers into
 ordering-based data structures (e.g. BinaryTree).</p>
-<a class="header" href="1135-raw-pointer-comparisons.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>@nrc suggested to implement heterogeneous comparisons between all thin
 raw pointers and all fat raw pointers. I don't like this because equality
 between fat raw pointers of different traits is false most of the
@@ -173,7 +180,7 @@ only difference is in free lifetimes), and anyway you can always compare
 by casting both pointers to a common type.</p>
 <p>It is also possible to implement ordering too, either in unsize -&gt; addr
 lexicographic order or addr -&gt; unsize lexicographic order.</p>
-<a class="header" href="1135-raw-pointer-comparisons.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>What form of ordering should be adopted, if any?</p>
 
                     </main>
@@ -219,9 +226,6 @@ lexicographic order or addr -&gt; unsize lexicographic order.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

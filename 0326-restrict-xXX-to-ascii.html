@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0326-restrict-xXX-to-ascii - </title>
+        <title>0326-restrict-xXX-to-ascii - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,21 +145,21 @@
 <li>RFC PR: 326</li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/18062">rust-lang/rust#18062</a></li>
 </ul>
-<a class="header" href="0326-restrict-xXX-to-ascii.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>In string literal contexts, restrict <code>\xXX</code> escape sequences to just
 the range of ASCII characters, <code>\x00</code> -- <code>\x7F</code>.  <code>\xXX</code> inputs in
 string literals with higher numbers are rejected (with an error
 message suggesting that one use an <code>\uNNNN</code> escape).</p>
-<a class="header" href="0326-restrict-xXX-to-ascii.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>In a string literal context, the current <code>\xXX</code> character escape
 sequence is potentially confusing when given inputs greater than
 <code>0x7F</code>, because it does not encode that byte literally, but instead
 encodes whatever the escape sequence <code>\u00XX</code> would produce.</p>
 <p>Thus, for inputs greater than <code>0x7F</code>, <code>\xXX</code> will encode multiple
 bytes into the generated string literal, as illustrated in the
-<a href="0326-restrict-xXX-to-ascii.html#rust-example">Rust example</a> appendix.</p>
+<a href="#rust-example">Rust example</a> appendix.</p>
 <p>This is different from what C/C++ programmers might expect (see
-<a href="0326-restrict-xXX-to-ascii.html#behavior-of-xxx-in-c">Behavior of xXX in C</a> appendix).</p>
+<a href="#behavior-of-xxx-in-c">Behavior of xXX in C</a> appendix).</p>
 <p>(It would not be legal to encode the single byte literally into the
 string literal, since then the string would not be well-formed UTF-8.)</p>
 <p>It has been suggested that the <code>\xXX</code> character escape should be
@@ -183,7 +190,7 @@ code unit in a byte-string literal, but in a string literal denotes a
 codepoint, does not seem elegant; it rather seems like a source of
 confusion.  (Caveat: While Felix does believe this assertion, this
 context-dependent interpretation of <code>\xXX</code> does have precedent
-in both Python and Racket; see <a href="0326-restrict-xXX-to-ascii.html#racket-example">Racket example</a> and <a href="0326-restrict-xXX-to-ascii.html#python-example">Python example</a>
+in both Python and Racket; see <a href="#racket-example">Racket example</a> and <a href="#python-example">Python example</a>
 appendices.)</p>
 <p>By restricting <code>\xXX</code> to the range <code>0x00</code>--<code>0x7F</code>, we side-step the
 question of &quot;is it a code unit or a code point?&quot; entirely (which was
@@ -195,7 +202,7 @@ would have been to switch to a &quot;<code>\xXX</code> is a code unit&quot; inte
 is, after all, our primary target audience for conversion), and any
 other language where <code>\xXX</code> never results in more than one byte.
 The error message will point them to the syntax they need to adopt.</p>
-<a class="header" href="0326-restrict-xXX-to-ascii.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>In string literal contexts, <code>\xXX</code> inputs with <code>XX &gt; 0x7F</code>  are
 rejected (with an error message that mentions either, or both, of
 <code>\uNNNN</code> escapes and the byte-string literal format <code>b&quot;..&quot;</code>).</p>
@@ -208,7 +215,7 @@ unchanged.</p>
 formatter) are updated so that string inputs that previously would
 previously have printed <code>\xXX</code> with <code>XX &gt; 0x7F</code> are updated to use
 <code>\uNNNN</code> escapes instead.</p>
-<a class="header" href="0326-restrict-xXX-to-ascii.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Some reasons not to do this:</p>
 <ul>
 <li>
@@ -234,7 +241,7 @@ side-stepping the distinction by limiting the input range for <code>\xXX</code>.
 <p>The third bullet is a strawman since we have not yet released 1.0, and
 thus everything is up for change.</p>
 <p>This RFC makes no comment on the validity of the fourth bullet.</p>
-<a class="header" href="0326-restrict-xXX-to-ascii.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>We could remove <code>\xXX</code> entirely from string literals.  This would
@@ -245,13 +252,13 @@ range <code>00</code>--<code>0x7F</code>, which seems annoying.</p>
 <p>We could switch <code>\xXX</code> from meaning code point to meaning code unit
 in both string literal and byte-string literal contexts.  This
 was previously considered and explicitly rejected in an earlier
-meeting, as discussed in the <a href="0326-restrict-xXX-to-ascii.html#motivation">Motivation</a> section.</p>
+meeting, as discussed in the <a href="#motivation">Motivation</a> section.</p>
 </li>
 </ul>
-<a class="header" href="0326-restrict-xXX-to-ascii.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
-<a class="header" href="0326-restrict-xXX-to-ascii.html#appendices" id="appendices"><h1>Appendices</h1></a>
-<a class="header" href="0326-restrict-xXX-to-ascii.html#behavior-of-xxx-in-c" id="behavior-of-xxx-in-c"><h2>Behavior of xXX in C</h2></a>
+<a class="header" href="#appendices" id="appendices"><h1>Appendices</h1></a>
+<a class="header" href="#behavior-of-xxx-in-c" id="behavior-of-xxx-in-c"><h2>Behavior of xXX in C</h2></a>
 <p>Here is a C program illustrating how <code>xXX</code> escape sequences are treated
 in string literals in that context:</p>
 <pre><code class="language-c">#include &lt;stdio.h&gt;
@@ -288,7 +295,7 @@ s[1]: 0
 s[0]: -128
 s[1]: 0
 </code></pre>
-<a class="header" href="0326-restrict-xXX-to-ascii.html#rust-example" id="rust-example"><h2>Rust example</h2></a>
+<a class="header" href="#rust-example" id="rust-example"><h2>Rust example</h2></a>
 <p>Here is a Rust program that explores the various ways <code>\xXX</code> sequences are
 treated in both string literal and byte-string literal contexts.</p>
 <pre><pre class="playpen"><code class="language-rust"> #![feature(macro_rules)]
@@ -385,12 +392,12 @@ rustc 0.12.0-pre (d52d0c836 2014-09-07 03:36:27 +0000)
 %
 </code></pre>
 <p>Note that the behavior of <code>\xXX</code> on byte-string literals matches the
-expectations established by the C program in <a href="0326-restrict-xXX-to-ascii.html#behavior-of-xxx-in-c">Behavior of xXX in C</a>;
+expectations established by the C program in <a href="#behavior-of-xxx-in-c">Behavior of xXX in C</a>;
 that is good.  The problem is the behavior of <code>\xXX</code> for <code>XX &gt; 0x7F</code>
 in string-literal contexts, namely in the fourth and fifth examples
 where the <code>.as_bytes()</code> invocations are showing that the underlying
 byte array has two elements instead of one.</p>
-<a class="header" href="0326-restrict-xXX-to-ascii.html#racket-example" id="racket-example"><h2>Racket example</h2></a>
+<a class="header" href="#racket-example" id="racket-example"><h2>Racket example</h2></a>
 <pre><code>% racket
 Welcome to Racket v5.93.
 &gt; (define a-string &quot;\xbb\n&quot;)
@@ -409,7 +416,7 @@ Welcome to Racket v5.93.
 <p>The above code illustrates that in Racket, the <code>\xXX</code> escape sequence
 denotes a code unit in byte-string context (<code>#&quot;..&quot;</code> in that language),
 while it denotes a code point in string context (<code>&quot;..&quot;</code>).</p>
-<a class="header" href="0326-restrict-xXX-to-ascii.html#python-example" id="python-example"><h2>Python example</h2></a>
+<a class="header" href="#python-example" id="python-example"><h2>Python example</h2></a>
 <pre><code>% python
 Python 2.7.5 (default, Mar  9 2014, 22:15:05)
 [GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
@@ -476,9 +483,6 @@ while it denotes a code point in <em>unicode</em> string context (<code>u&quot;.
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

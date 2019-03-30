@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0135-where - </title>
+        <title>0135-where - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR #: https://github.com/rust-lang/rfcs/pull/135</li>
 <li>Rust Issue #: https://github.com/rust-lang/rust/issues/17657</li>
 </ul>
-<a class="header" href="0135-where.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add <code>where</code> clauses, which provide a more expressive means of
 specifying trait parameter bounds. A <code>where</code> clause comes after a
 declaration of a generic item (e.g., an impl or struct definition) and
@@ -159,7 +166,7 @@ notation would remain as syntactic sugar for where clauses.</p>
 }
 </code></pre>
 <p>The full grammar can be found in the detailed design.</p>
-<a class="header" href="0135-where.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The high-level bit is that the current bounds syntax does not scale to
 complex cases. Introducing <code>where</code> clauses is a simple extension that
 gives us a lot more expressive power. In particular, it will allow us
@@ -190,11 +197,11 @@ format.</p>
 </li>
 </ul>
 <p>Let's examine each case in detail.</p>
-<a class="header" href="0135-where.html#bounds-are-insufficiently-expressive" id="bounds-are-insufficiently-expressive"><h3>Bounds are insufficiently expressive</h3></a>
+<a class="header" href="#bounds-are-insufficiently-expressive" id="bounds-are-insufficiently-expressive"><h3>Bounds are insufficiently expressive</h3></a>
 <p>Currently bounds can only be declared on type parameters. But there
 are situations where one wants to declare bounds not on the type
 parameter itself but rather a type that includes the type parameter.</p>
-<a class="header" href="0135-where.html#partially-generic-types" id="partially-generic-types"><h4>Partially generic types</h4></a>
+<a class="header" href="#partially-generic-types" id="partially-generic-types"><h4>Partially generic types</h4></a>
 <p>One situation where this is occurs is when you want to write functions
 where types are partially known and have those interact with other
 functions that are fully generic. To explain the situation, let's
@@ -225,7 +232,7 @@ declare <code>Option&lt;T&gt; : Value</code>, which we cannot do.</p>
 </code></pre>
 <p>But this is making my example function, already a bit complicated,
 become quite obscure.</p>
-<a class="header" href="0135-where.html#multidispatch-traits" id="multidispatch-traits"><h4>Multidispatch traits</h4></a>
+<a class="header" href="#multidispatch-traits" id="multidispatch-traits"><h4>Multidispatch traits</h4></a>
 <p>Another situation where a similar problem is encountered is
 <em>multidispatch traits</em> (aka, multiparameter type classes in Haskell).
 The idea of a multidispatch trait is to be able to choose the impl
@@ -340,7 +347,7 @@ limited.</p>
     1 + c
 }
 </code></pre>
-<a class="header" href="0135-where.html#associated-types" id="associated-types"><h3>Associated types</h3></a>
+<a class="header" href="#associated-types" id="associated-types"><h3>Associated types</h3></a>
 <p>It is unclear exactly what form associated types will have in Rust,
 but it is <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.110.122">well documented</a> that our current design, in
 which type parameters decorate traits, does not scale particularly
@@ -382,7 +389,7 @@ valid, since the trait <code>Iterator</code> doesn't have type parameters.</p>
 </code></pre>
 <p>We can also employ where clauses with object types via a syntax like
 <code>&amp;Iterator&lt;where E=int&gt;</code> (admittedly somewhat wordy)</p>
-<a class="header" href="0135-where.html#readability" id="readability"><h2>Readability</h2></a>
+<a class="header" href="#readability" id="readability"><h2>Readability</h2></a>
 <p>When writing very generic code, it is common to have a large number of
 parameters with a large number of bounds. Here is some example
 function extracted from <code>rustc</code>:</p>
@@ -420,8 +427,8 @@ moment, I personally find that when writing generic code it is helpful
 to focus on the types and signatures, and come to the bounds
 later. Where clauses help to separate these distinctions. Naturally,
 your mileage may vary. - nmatsakis</p>
-<a class="header" href="0135-where.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0135-where.html#where-can-where-clauses-appear" id="where-can-where-clauses-appear"><h3>Where can where clauses appear?</h3></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#where-can-where-clauses-appear" id="where-can-where-clauses-appear"><h3>Where can where clauses appear?</h3></a>
 <p>Where clauses can be added to anything that can be parameterized with
 type/lifetime parameters with the exception of trait method
 definitions: <code>impl</code> declarations, <code>fn</code> declarations, and <code>trait</code> and
@@ -453,21 +460,21 @@ trait Foo&lt;A,B&gt; : C
     where ...
 { }
 </code></pre>
-<a class="header" href="0135-where.html#where-clauses-cannot-yet-appear-on-trait-methods" id="where-clauses-cannot-yet-appear-on-trait-methods"><h4>Where clauses cannot (yet) appear on trait methods</h4></a>
+<a class="header" href="#where-clauses-cannot-yet-appear-on-trait-methods" id="where-clauses-cannot-yet-appear-on-trait-methods"><h4>Where clauses cannot (yet) appear on trait methods</h4></a>
 <p>Note that trait method definitions were specifically excluded from the
 list above. The reason is that including where clauses on a trait
 method raises interesting questions for what it means to implement the
 trait. Using where clauses it becomes possible to define methods that
 do not necessarily apply to all implementations. We intend to enable
 this feature but it merits a second RFC to delve into the details.</p>
-<a class="header" href="0135-where.html#where-clause-grammar" id="where-clause-grammar"><h3>Where clause grammar</h3></a>
+<a class="header" href="#where-clause-grammar" id="where-clause-grammar"><h3>Where clause grammar</h3></a>
 <p>The grammar for a <code>where</code> clause would be as follows (BNF):</p>
 <pre><code>WHERE = 'where' BOUND { ',' BOUND } [,]
 BOUND = TYPE ':' TRAIT { '+' TRAIT } [+]
 TRAIT = Id [ '&lt;' [ TYPE { ',' TYPE } [,] ] '&gt;' ]
 TYPE  = ... (same type grammar as today)
 </code></pre>
-<a class="header" href="0135-where.html#semantics" id="semantics"><h3>Semantics</h3></a>
+<a class="header" href="#semantics" id="semantics"><h3>Semantics</h3></a>
 <p>The meaning of a where clause is fairly straightforward. Each bound in
 the where clause must be proven by the caller after substitution of
 the parameter types.</p>
@@ -482,9 +489,9 @@ following:</p>
 particular meaning, since the callee knows all types involved. This is
 a conservative choice: if we find that we do desire a particular
 interpretation for them, we can always make them legal later.</p>
-<a class="header" href="0135-where.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This RFC introduces two ways to declare a bound.</p>
-<a class="header" href="0135-where.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p><strong>Remove the existing trait bounds.</strong> I decided against this both to
 avoid breaking lots of existing code and because the existing syntax
 is convenient much of the time.</p>
@@ -560,9 +567,6 @@ the use of <code>:</code> as a trait-bound separator:</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

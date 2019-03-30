@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1317-ide - </title>
+        <title>1317-ide - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,14 +146,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1317">rust-lang/rfcs#1317</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/31548">rust-lang/rust#31548</a></li>
 </ul>
-<a class="header" href="1317-ide.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC describes the Rust Language Server (RLS). This is a program designed to
 service IDEs and other tools. It offers a new access point to compilation and
 APIs for getting information about a program. The RLS can be thought of as an
 alternate compiler, but internally will use the existing compiler.</p>
 <p>Using the RLS offers very low latency compilation. This allows for an IDE to
 present information based on compilation to the user as quickly as possible.</p>
-<a class="header" href="1317-ide.html#requirements" id="requirements"><h2>Requirements</h2></a>
+<a class="header" href="#requirements" id="requirements"><h2>Requirements</h2></a>
 <p>To be concrete about the requirements for the RLS, it should enable the
 following actions:</p>
 <ul>
@@ -157,13 +164,13 @@ following actions:</p>
 <li>jump to definition.</li>
 </ul>
 <p>These requirements will be covered in more detail in later sections.</p>
-<a class="header" href="1317-ide.html#history-note" id="history-note"><h2>History note</h2></a>
+<a class="header" href="#history-note" id="history-note"><h2>History note</h2></a>
 <p>This RFC started as a more wide-ranging RFC. Some of the details have been
 scaled back to allow for more focused and incremental development.</p>
 <p>Parts of the RFC dealing with robust compilation have been removed - work here
 is ongoing and mostly doesn't require an RFC.</p>
 <p>The RLS was earlier referred to as the oracle.</p>
-<a class="header" href="1317-ide.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Modern IDEs are large and complex pieces of software; creating a new one from
 scratch for Rust would be impractical. Therefore we need to work with existing
 IDEs (such as Eclipse, IntelliJ, and Visual Studio) to provide functionality.
@@ -179,7 +186,7 @@ the IDE to quickly give parse errors as the user types. Editors are free to rely
 on the compiler's parsing if they prefer (the compiler will do its own parsing
 in any case). Further information (name resolution, type information, etc.) will
 be provided by the RLS.</p>
-<a class="header" href="1317-ide.html#requirements-1" id="requirements-1"><h2>Requirements</h2></a>
+<a class="header" href="#requirements-1" id="requirements-1"><h2>Requirements</h2></a>
 <p>We stated some requirements in the summary, here we'll cover more detail and the
 workflow between IDE and RLS.</p>
 <p>The RLS should be safe to use in the face of concurrent actions. For example,
@@ -190,10 +197,10 @@ reliable and consistent responses. However, it is not expected that clients are
 totally isolated, e.g., if client 1 updates the program, then client 2 requests
 information about the program, client 2's response will reflect the changes made
 by client 1, even if these are not otherwise known to client 2.</p>
-<a class="header" href="1317-ide.html#show-compilation-errors-and-warnings-updated-as-the-user-types" id="show-compilation-errors-and-warnings-updated-as-the-user-types"><h3>Show compilation errors and warnings, updated as the user types</h3></a>
+<a class="header" href="#show-compilation-errors-and-warnings-updated-as-the-user-types" id="show-compilation-errors-and-warnings-updated-as-the-user-types"><h3>Show compilation errors and warnings, updated as the user types</h3></a>
 <p>The IDE will request compilation of the in-memory program. The RLS will compile
 the program and asynchronously supply the IDE with errors and warnings.</p>
-<a class="header" href="1317-ide.html#code-completion-as-the-user-types" id="code-completion-as-the-user-types"><h3>Code completion as the user types</h3></a>
+<a class="header" href="#code-completion-as-the-user-types" id="code-completion-as-the-user-types"><h3>Code completion as the user types</h3></a>
 <p>The IDE will request compilation of the in-memory program and request code-
 completion options for the cursor position. The RLS will compile the program. As
 soon as it has enough information for code-completion it will return options to
@@ -208,18 +215,18 @@ filtering since it might want to perform spell checking, etc. Put another way,
 the RLS is not a code completion tool, but supplies the low-level data that a
 code completion tool uses to provide suggestions.</li>
 </ul>
-<a class="header" href="1317-ide.html#highlight-all-references-to-an-item" id="highlight-all-references-to-an-item"><h3>Highlight all references to an item</h3></a>
+<a class="header" href="#highlight-all-references-to-an-item" id="highlight-all-references-to-an-item"><h3>Highlight all references to an item</h3></a>
 <p>The IDE requests all references in the same file based on a position in the
 file. The RLS returns a list of spans.</p>
-<a class="header" href="1317-ide.html#find-all-references-to-an-item" id="find-all-references-to-an-item"><h3>Find all references to an item</h3></a>
+<a class="header" href="#find-all-references-to-an-item" id="find-all-references-to-an-item"><h3>Find all references to an item</h3></a>
 <p>The IDE requests all references based on a position in the file. The RLS returns
 a list of spans.</p>
-<a class="header" href="1317-ide.html#jump-to-definition" id="jump-to-definition"><h3>Jump to definition</h3></a>
+<a class="header" href="#jump-to-definition" id="jump-to-definition"><h3>Jump to definition</h3></a>
 <p>The IDE requests the definition of an item based on a position in a file. The RLS
 returns a list of spans (a list is necessary since, for example, a dynamically
 dispatched trait method could be defined in multiple places).</p>
-<a class="header" href="1317-ide.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1317-ide.html#architecture" id="architecture"><h2>Architecture</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#architecture" id="architecture"><h2>Architecture</h2></a>
 <p>The basic requirements for the architecture of the RLS are that it should be:</p>
 <ul>
 <li>reusable by different clients (IDEs, tools, ...),</li>
@@ -248,7 +255,7 @@ possible.</p>
 details). All queries are answered from the database. The database has data for
 the whole project, not just one crate. This also means we don't need to keep the
 compiler's data in memory.</p>
-<a class="header" href="1317-ide.html#compilation" id="compilation"><h2>Compilation</h2></a>
+<a class="header" href="#compilation" id="compilation"><h2>Compilation</h2></a>
 <p>The RLS is somewhat parametric in its compilation model. Theoretically, it could
 run a full compile on the requested crate, however this would be too slow in
 practice.</p>
@@ -265,7 +272,7 @@ should pass such changes to the RLS along with the compilation request.</p>
 <p>I see two ways to improve compilation times: lazy compilation and keeping the
 compiler in memory. We might also experiment with having the IDE specify which
 parts of the program have changed, rather than having the compiler compute this.</p>
-<a class="header" href="1317-ide.html#lazy-compilation" id="lazy-compilation"><h3>Lazy compilation</h3></a>
+<a class="header" href="#lazy-compilation" id="lazy-compilation"><h3>Lazy compilation</h3></a>
 <p>With lazy compilation the IDE requests that a specific item is compiled, rather
 than the whole program. The compiler compiles this function compiling other
 items only as necessary to compile the requested item.</p>
@@ -275,7 +282,7 @@ required <em>and</em> if it has changed.</p>
 the RLS schedules both a lazy and a full (but still incremental) compilation.
 The advantage of this approach is that many queries scheduled after compilation
 can be performed after the lazy compilation, but before the full compilation.</p>
-<a class="header" href="1317-ide.html#keeping-the-compiler-in-memory" id="keeping-the-compiler-in-memory"><h3>Keeping the compiler in memory</h3></a>
+<a class="header" href="#keeping-the-compiler-in-memory" id="keeping-the-compiler-in-memory"><h3>Keeping the compiler in memory</h3></a>
 <p>There are still overheads with the incremental compilation approach. We must
 startup the compiler initialising its data structures, we must parse the whole
 crate, and we must read the incremental compilation data and metadata from disk.</p>
@@ -288,7 +295,7 @@ finishes, since it will be wasted work. This is currently easy - the compilation
 process is killed and all data released. However, if we want to keep the
 compiler in memory we must invalidate some data and ensure the compiler is in a
 consistent state.</p>
-<a class="header" href="1317-ide.html#compilation-output" id="compilation-output"><h3>Compilation output</h3></a>
+<a class="header" href="#compilation-output" id="compilation-output"><h3>Compilation output</h3></a>
 <p>Once compilation is finished, the RLS's database must be updated. Errors and
 warnings produced by the compiler are stored in the database. Information from
 name resolution and type checking is stored in the database (exactly which
@@ -297,21 +304,21 @@ the save-analysis API.</p>
 <p>The compiler will also provide data on which (old) code has been invalidated.
 Any information (including errors) in the database concerning this code is
 removed before the new data is inserted.</p>
-<a class="header" href="1317-ide.html#multiple-crates" id="multiple-crates"><h3>Multiple crates</h3></a>
+<a class="header" href="#multiple-crates" id="multiple-crates"><h3>Multiple crates</h3></a>
 <p>The RLS does not track dependencies, nor much crate information. However, it
 will be asked to compile many crates and it will keep track of which crate data
 belongs to. It will also keep track of which crates belong to a single program
 and will not share data between programs, even if the same crate is shared. This
 helps avoid versioning issues.</p>
-<a class="header" href="1317-ide.html#versioning" id="versioning"><h2>Versioning</h2></a>
+<a class="header" href="#versioning" id="versioning"><h2>Versioning</h2></a>
 <p>The RLS will be released using the same train model as Rust. A version of the
 RLS is pinned to a specific version of Rust. If users want to operate with
 multiple versions, they will need multiple versions of the RLS (I hope we can
 extend multirust/rustup.rs to handle the RLS as well as Rust).</p>
-<a class="header" href="1317-ide.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It's a lot of work. But better we do it once than each IDE doing it themselves,
 or having sub-standard IDE support.</p>
-<a class="header" href="1317-ide.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The big design choice here is using a database rather than the compiler's data
 structures. The primary motivation for this is the 'find all references'
 requirement. References could be in multiple crates, so we would need to reload
@@ -345,7 +352,7 @@ that different clients will not benefit from each other's innovations.</p>
 <p>The RLS could do more - actually perform some of the processing tasks usually
 done by IDEs (such as editing source code) or other tools (refactoring,
 reformating, etc.).</p>
-<a class="header" href="1317-ide.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>A problem is that Visual Studio uses UTF16 while Rust uses UTF8, there is (I
 understand) no efficient way to convert between byte counts in these systems.
 I'm not sure how to address this. It might require the RLS to be able to operate
@@ -404,9 +411,6 @@ has been proven in similar situations.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

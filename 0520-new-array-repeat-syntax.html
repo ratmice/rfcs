@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0520-new-array-repeat-syntax - </title>
+        <title>0520-new-array-repeat-syntax - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,12 +145,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/520">520</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/19999">19999</a></li>
 </ul>
-<a class="header" href="0520-new-array-repeat-syntax.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Under this RFC, the syntax to specify the type of a fixed-length array
 containing <code>N</code> elements of type <code>T</code> would be changed to <code>[T; N]</code>. Similarly, the
 syntax to construct an array containing <code>N</code> duplicated elements of value <code>x</code>
 would be changed to <code>[x; N]</code>.</p>
-<a class="header" href="0520-new-array-repeat-syntax.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p><a href="https://github.com/rust-lang/rfcs/blob/master/text/0439-cmp-ops-reform.md">RFC 439</a>
 (cmp/ops reform) has resulted in an ambiguity that must be resolved. Previously,
 an expression with the form <code>[x, ..N]</code> would unambiguously refer to an array
@@ -154,7 +161,7 @@ an object of type <code>RangeTo&lt;T&gt;</code>, with <code>T</code> being the t
 for creating an array of repeated values, or the new range syntax. This RFC
 proposes the former, in order to preserve existing functionality while avoiding
 modifications that would make the range syntax less intuitive.</p>
-<a class="header" href="0520-new-array-repeat-syntax.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The syntax <code>[T, ..N]</code> for specifying array types will be replaced by the new
 syntax <code>[T; N]</code>.</p>
 <p>In the expression <code>[x, ..N]</code>, the <code>..N</code> will refer to an expression of type
@@ -176,12 +183,12 @@ let a: [uint, ..2] = [0u, ..2];
 #fn main() {
 let a: [uint; 2] = [0u; 2];
 #}</code></pre></pre>
-<a class="header" href="0520-new-array-repeat-syntax.html#match-patterns" id="match-patterns"><h2>Match patterns</h2></a>
+<a class="header" href="#match-patterns" id="match-patterns"><h2>Match patterns</h2></a>
 <p>In match patterns, <code>..</code> is always interpreted as a wildcard for constructor
 arguments (or for slice patterns under the <code>advanced_slice_patterns</code> feature
 gate). This RFC does not change that. In a match pattern, <code>..</code> will always be
 interpreted as a wildcard, and never as sugar for a range constructor.</p>
-<a class="header" href="0520-new-array-repeat-syntax.html#suggested-implementation" id="suggested-implementation"><h2>Suggested implementation</h2></a>
+<a class="header" href="#suggested-implementation" id="suggested-implementation"><h2>Suggested implementation</h2></a>
 <p>While not required by this RFC, one suggested transition plan is as follows:</p>
 <ul>
 <li>
@@ -196,14 +203,14 @@ easier identification of code that needs to be transitioned.</p>
 thus complete the implementation of this RFC.</p>
 </li>
 </ul>
-<a class="header" href="0520-new-array-repeat-syntax.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
-<a class="header" href="0520-new-array-repeat-syntax.html#backwards-incompatibility" id="backwards-incompatibility"><h2>Backwards incompatibility</h2></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#backwards-incompatibility" id="backwards-incompatibility"><h2>Backwards incompatibility</h2></a>
 <ul>
 <li>Changing the method for specifying an array size will impact a large amount of
 existing code. Code conversion can probably be readily automated, but will
 still require some labor.</li>
 </ul>
-<a class="header" href="0520-new-array-repeat-syntax.html#implementation-time" id="implementation-time"><h2>Implementation time</h2></a>
+<a class="header" href="#implementation-time" id="implementation-time"><h2>Implementation time</h2></a>
 <p>This proposal is submitted very close to the anticipated release of Rust
 1.0. Changing the array repeat syntax is likely to require more work than
 changing the range syntax specified in RFC 439, because the latter has not yet
@@ -212,11 +219,11 @@ been implemented.</p>
 a preference for implementing the RFC 439 slicing syntax as currently specified
 rather than preserving the existing array repeat syntax. This cannot be resolved
 in a backwards-compatible manner if the array repeat syntax is kept.</p>
-<a class="header" href="0520-new-array-repeat-syntax.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Inaction is not an alternative due to the ambiguity introduced by RFC 439. Some
 resolution must be chosen in order for the affected modules in <code>std</code> to be
 stabilized.</p>
-<a class="header" href="0520-new-array-repeat-syntax.html#retain-the-type-syntax-only" id="retain-the-type-syntax-only"><h2>Retain the type syntax only</h2></a>
+<a class="header" href="#retain-the-type-syntax-only" id="retain-the-type-syntax-only"><h2>Retain the type syntax only</h2></a>
 <p>In theory, it seems that the type syntax <code>[T, ..N]</code> could be retained, while
 getting rid of the expression syntax <code>[x, ..N]</code>. The problem with this is that,
 if this syntax was removed, there is currently no way to define a macro to
@@ -224,7 +231,7 @@ replace it.</p>
 <p>Retaining the current type syntax, but changing the expression syntax, would
 make the language somewhat more complex and inconsistent overall. There seem to
 be no advocates of this alternative so far.</p>
-<a class="header" href="0520-new-array-repeat-syntax.html#different-array-repeat-syntax" id="different-array-repeat-syntax"><h2>Different array repeat syntax</h2></a>
+<a class="header" href="#different-array-repeat-syntax" id="different-array-repeat-syntax"><h2>Different array repeat syntax</h2></a>
 <p>The comments in <a href="https://github.com/rust-lang/rfcs/pull/498">pull request #498</a>
 mentioned many candidates for new syntax other than the <code>[x; N]</code> form in this
 RFC. The comments on the pull request of this RFC mentioned many more.</p>
@@ -257,24 +264,24 @@ whether to expect a type or an expression after the opening bracket.</p>
 <p>Any of several more radical changes.</p>
 </li>
 </ul>
-<a class="header" href="0520-new-array-repeat-syntax.html#change-the-range-syntax" id="change-the-range-syntax"><h2>Change the range syntax</h2></a>
+<a class="header" href="#change-the-range-syntax" id="change-the-range-syntax"><h2>Change the range syntax</h2></a>
 <p>The main problem here is that there are no proposed candidates that seem as
 clear and ergonomic as <code>i..j</code>. The most common alternative for slicing in other
 languages is <code>i:j</code>, but in Rust this simply causes an ambiguity with a different
 feature, namely type ascription.</p>
-<a class="header" href="0520-new-array-repeat-syntax.html#limit-range-syntax-to-the-interior-of-an-index-use-ij-for-slicing-only" id="limit-range-syntax-to-the-interior-of-an-index-use-ij-for-slicing-only"><h2>Limit range syntax to the interior of an index (use <code>i..j</code> for slicing only)</h2></a>
+<a class="header" href="#limit-range-syntax-to-the-interior-of-an-index-use-ij-for-slicing-only" id="limit-range-syntax-to-the-interior-of-an-index-use-ij-for-slicing-only"><h2>Limit range syntax to the interior of an index (use <code>i..j</code> for slicing only)</h2></a>
 <p>This resolves the issue since indices can be distinguished from arrays. However,
 it removes some of the benefits of RFC 439. For instance, it removes the
 possibility of using <code>for i in 1..10</code> to loop.</p>
-<a class="header" href="0520-new-array-repeat-syntax.html#remove-rangeto-from-rfc-439" id="remove-rangeto-from-rfc-439"><h2>Remove <code>RangeTo</code> from RFC 439</h2></a>
+<a class="header" href="#remove-rangeto-from-rfc-439" id="remove-rangeto-from-rfc-439"><h2>Remove <code>RangeTo</code> from RFC 439</h2></a>
 <p>The proposal in pull request #498 is to remove the sugar for <code>RangeTo</code> (i.e.,
 <code>..j</code>) while retaining other features of RFC 439. This is the simplest
 resolution, but removes some convenience from the language. It is also
 counterintuitive, because <code>RangeFrom</code> (i.e. <code>i..</code>) is retained, and because <code>..</code>
 still has several different meanings in the language (ranges, repetition, and
 pattern wildcards).</p>
-<a class="header" href="0520-new-array-repeat-syntax.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="0520-new-array-repeat-syntax.html#match-patterns-1" id="match-patterns-1"><h2>Match patterns</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#match-patterns-1" id="match-patterns-1"><h2>Match patterns</h2></a>
 <p>There will still be two semantically distinct uses of <code>..</code>, for the RFC 439
 range syntax and for wildcards in patterns. This could be considered harmful
 enough to introduce further changes to separate the two. Or this could be
@@ -285,7 +292,7 @@ patterns.</p>
 <p>This RFC does not attempt to address any of these issues, because the current
 pattern syntax does not allow use of the repeated array syntax, and does not
 contain an ambiguity.</p>
-<a class="header" href="0520-new-array-repeat-syntax.html#behavior-of-for-in-array-expressions" id="behavior-of-for-in-array-expressions"><h2>Behavior of <code>for</code> in array expressions</h2></a>
+<a class="header" href="#behavior-of-for-in-array-expressions" id="behavior-of-for-in-array-expressions"><h2>Behavior of <code>for</code> in array expressions</h2></a>
 <p>It may be useful to allow <code>for</code> to take on a new meaning in array expressions.
 This RFC keeps this possibility open, but does not otherwise propose any
 concrete changes to move towards or away from this feature.</p>
@@ -333,9 +340,6 @@ concrete changes to move towards or away from this feature.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

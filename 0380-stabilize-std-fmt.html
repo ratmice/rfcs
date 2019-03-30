@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0380-stabilize-std-fmt - </title>
+        <title>0380-stabilize-std-fmt - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/380">rust-lang/rfcs#380</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/18904">rust-lang/rust#18904</a></li>
 </ul>
-<a class="header" href="0380-stabilize-std-fmt.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Stabilize the <code>std::fmt</code> module, in addition to the related macros and
 formatting language syntax. As a high-level summary:</p>
 <ul>
@@ -146,17 +153,17 @@ formatting language syntax. As a high-level summary:</p>
 <li>Remove a number of superfluous formatting traits (renaming a few in the
 process).</li>
 </ul>
-<a class="header" href="0380-stabilize-std-fmt.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This RFC is primarily motivated by the need to stabilize <code>std::fmt</code>. In the past
 stabilization has not required RFCs, but the changes envisioned for this module
 are far-reaching and modify some parts of the language (format syntax), leading
 to the conclusion that this stabilization effort required an RFC.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The <code>std::fmt</code> module encompasses more than just the actual
 structs/traits/functions/etc defined within it, but also a number of macros and
 the formatting language syntax for describing format strings. Each of these
 features of the module will be described in turn.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#formatting-language-syntax" id="formatting-language-syntax"><h2>Formatting Language Syntax</h2></a>
+<a class="header" href="#formatting-language-syntax" id="formatting-language-syntax"><h2>Formatting Language Syntax</h2></a>
 <p>The <a href="http://doc.rust-lang.org/std/fmt/#syntax">documented syntax</a> will not be
 changing as-written. All of these features will be accepted wholesale
 (considered stable):</p>
@@ -186,7 +193,7 @@ and &quot;the next&quot; runtime argument to the format string.</li>
 <li>Integer specifiers of what to format (<code>{0}</code>)</li>
 <li>Named arguments (<code>{foo}</code>)</li>
 </ul>
-<a class="header" href="0380-stabilize-std-fmt.html#using-format-specifiers" id="using-format-specifiers"><h3>Using Format Specifiers</h3></a>
+<a class="header" href="#using-format-specifiers" id="using-format-specifiers"><h3>Using Format Specifiers</h3></a>
 <p>While quite useful occasionally, there is no static guarantee that any
 implementation of a formatting trait actually respects the format specifiers
 passed in. For example, this code does not necessarily work as expected:</p>
@@ -213,7 +220,7 @@ cover these two use cases, the <code>Formatter</code> structure passed around ha
 methods to assist in formatting these situations. This is, however, quite rare
 to fall into one of these two buckets, so the specifiers are largely ignored
 (and the formatter is <code>write!</code>-n to directly).</p>
-<a class="header" href="0380-stabilize-std-fmt.html#named-arguments" id="named-arguments"><h3>Named Arguments</h3></a>
+<a class="header" href="#named-arguments" id="named-arguments"><h3>Named Arguments</h3></a>
 <p>Currently Rust does not support named arguments anywhere <em>except</em> for format
 strings. Format strings can get away with it because they're all part of a macro
 invocation (unlike the rest of Rust syntax).</p>
@@ -239,7 +246,7 @@ formatting macros will likely be considered a wart in the future.</li>
 formatting macros themselves. It will likely be possible to extend the macro in
 the future to support whatever named argument syntax is developed as well, and
 the old syntax could be accepted for some time.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#formatting-traits" id="formatting-traits"><h2>Formatting Traits</h2></a>
+<a class="header" href="#formatting-traits" id="formatting-traits"><h2>Formatting Traits</h2></a>
 <p>Today there are 16 formatting traits. Each trait represents a &quot;type&quot; of
 formatting, corresponding to the <code>[type]</code> production in the formatting syntax.
 As a bit of history, the original intent was for each trait to declare what
@@ -293,10 +300,10 @@ also quite often expected when coming from other format syntaxes such as
 C/Python/Ruby/etc.</p>
 <p>It would, of course, be possible to re-add any of these traits in a
 backwards-compatible fashion.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#format-type-for-binary" id="format-type-for-binary"><h3>Format type for <code>Binary</code></h3></a>
+<a class="header" href="#format-type-for-binary" id="format-type-for-binary"><h3>Format type for <code>Binary</code></h3></a>
 <p>With the removal of the <code>Bool</code> trait, this RFC recommends renaming the specifier
 for <code>Binary</code> to <code>b</code> instead of <code>t</code>.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#combining-all-traits" id="combining-all-traits"><h3>Combining all traits</h3></a>
+<a class="header" href="#combining-all-traits" id="combining-all-traits"><h3>Combining all traits</h3></a>
 <p>A possible alternative to having many traits is to instead have one trait, such
 as:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -330,7 +337,7 @@ it's no longer immediately clear which method should be overridden for what.</li
 <li>A hypothetical world with runtime format string construction could find a
 different system for taking arguments.</li>
 </ul>
-<a class="header" href="0380-stabilize-std-fmt.html#method-signature" id="method-signature"><h3>Method signature</h3></a>
+<a class="header" href="#method-signature" id="method-signature"><h3>Method signature</h3></a>
 <p>Currently, each formatting trait has a signature as follows:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -355,7 +362,7 @@ of the correct type.</li>
 <p>Overall, this signature seems to be appropriate in terms of &quot;give me a sink of
 bytes to write myself to, and let me return an error if one happens&quot;. Due to
 this, this RFC recommends that all formatting traits be marked <code>#[unstable]</code>.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#macros" id="macros"><h2>Macros</h2></a>
+<a class="header" href="#macros" id="macros"><h2>Macros</h2></a>
 <p>There are a number of prelude macros which interact with the format syntax:</p>
 <ul>
 <li><code>format_args</code></li>
@@ -371,12 +378,12 @@ this, this RFC recommends that all formatting traits be marked <code>#[unstable]
 </ul>
 <p>All of these are <code>macro_rules!</code>-defined macros, except for <code>format_args</code> and
 <code>format_args_method</code>.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#common-syntax" id="common-syntax"><h3>Common syntax</h3></a>
+<a class="header" href="#common-syntax" id="common-syntax"><h3>Common syntax</h3></a>
 <p>All of these macros take some form of prefix, while the trailing suffix is
 always some instantiation of the formatting syntax. The suffix portion is
 recommended to be considered <code>#[stable]</code>, and the sections below will discuss
 each macro in detail with respect to its prefix and semantics.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#format_args" id="format_args"><h3>format_args</h3></a>
+<a class="header" href="#format_args" id="format_args"><h3>format_args</h3></a>
 <p>The fundamental purpose of this macro is to generate a value of type
 <code>&amp;fmt::Arguments</code> which represents a pending format computation. This structure
 can then be passed at some point to the methods in <code>std::fmt</code> to actually
@@ -396,7 +403,7 @@ let hello_world = fmt::format(args);
 <p>Unfortunately, without an implementation of <a href="https://github.com/rust-lang/rfcs/blob/master/active/0031-better-temporary-lifetimes.md">RFC 31</a> this is not
 possible. As a result, this RFC proposes a <code>#[stable]</code> consideration of this
 macro and its syntax.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#format_args_method" id="format_args_method"><h3>format_args_method</h3></a>
+<a class="header" href="#format_args_method" id="format_args_method"><h3>format_args_method</h3></a>
 <p>The purpose of this macro is to solve the &quot;call this method&quot; case not covered
 with the <code>format_args</code> macro. This macro was introduced fairly late in the game
 to solve the problem that <code>&amp;*trait_object</code> was not allowed. This is currently
@@ -430,7 +437,7 @@ would be disallowed</p>
 #fn main() {
 write!(&amp;mut my_struct.writer, &quot;{}&quot;, my_struct.some_other_field);
 #}</code></pre></pre>
-<a class="header" href="0380-stabilize-std-fmt.html#writewriteln" id="writewriteln"><h3>write/writeln</h3></a>
+<a class="header" href="#writewriteln" id="writewriteln"><h3>write/writeln</h3></a>
 <p>These two macros take the prefix of &quot;some pointer to a writer&quot; as an argument,
 and then format data into the write (returning whatever <code>write_fmt</code> returns).
 These macros were originally designed to require a <code>&amp;mut T</code> as the first
@@ -439,28 +446,28 @@ argument, but today, due to the usage of <code>format_args_method</code>, they c
 <p>This RFC recommends marking these two macros <code>#[stable]</code> with the modification
 above (removing <code>format_args_method</code>). The <code>ln</code> suffix to <code>writeln</code> will be
 discussed shortly.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#printprintln" id="printprintln"><h3>print/println</h3></a>
+<a class="header" href="#printprintln" id="printprintln"><h3>print/println</h3></a>
 <p>These two macros take no prefix, and semantically print to a <em>task-local</em> stdout
 stream. The purpose of a task-local stream is provide some form of buffering to
 make stdout printing at all performant.</p>
 <p>This RFC recommends marking these two macros a <code>#[stable]</code>.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#the-ln-suffix" id="the-ln-suffix"><h4>The <code>ln</code> suffix</h4></a>
+<a class="header" href="#the-ln-suffix" id="the-ln-suffix"><h4>The <code>ln</code> suffix</h4></a>
 <p>The name <code>println</code> is one of the few locations in Rust where a short C-like
 abbreviation is accepted rather than the more verbose, but clear, <code>print_line</code>
 (for example). Due to the overwhelming precedent of other languages (even Java
 uses <code>println</code>!), this is seen as an acceptable special case to the rule.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#format" id="format"><h3>format</h3></a>
+<a class="header" href="#format" id="format"><h3>format</h3></a>
 <p>This macro takes no prefix and returns a <code>String</code>.</p>
 <p>In ancient rust this macro was called its shorter name, <code>fmt</code>. Additionally, the
 name <code>format</code> is somewhat inconsistent with the module name of <code>fmt</code>. Despite
 this, this RFC recommends considering this macro <code>#[stable]</code> due to its
 delegation to the <code>format</code> method in the <code>std::fmt</code> module, similar to how the
 <code>write!</code> macro delegates to the <code>fmt::write</code>.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#failassertdebug_assert" id="failassertdebug_assert"><h3>fail/assert/debug_assert</h3></a>
+<a class="header" href="#failassertdebug_assert" id="failassertdebug_assert"><h3>fail/assert/debug_assert</h3></a>
 <p>The format string portions of these macros are recommended to be considered as
 <code>#[stable]</code> as part of this RFC. The actual stability of the macros is not
 considered as part of this RFC.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#freestanding-functions" id="freestanding-functions"><h2>Freestanding Functions</h2></a>
+<a class="header" href="#freestanding-functions" id="freestanding-functions"><h2>Freestanding Functions</h2></a>
 <p>There are a number of <a href="http://doc.rust-lang.org/std/fmt/index.html#functions">freestanding
 functions</a> to consider in
 the <code>std::fmt</code> module for stabilization.</p>
@@ -501,7 +508,7 @@ per radix instead of a generic implementation.</p>
 location and naming are a bit questionable, but the functionality is desired.</p>
 </li>
 </ul>
-<a class="header" href="0380-stabilize-std-fmt.html#miscellaneous-items" id="miscellaneous-items"><h2>Miscellaneous items</h2></a>
+<a class="header" href="#miscellaneous-items" id="miscellaneous-items"><h2>Miscellaneous items</h2></a>
 <ul>
 <li>
 <p><code>trait FormatWriter</code></p>
@@ -552,13 +559,13 @@ generate an error if the underlying <code>Formatter</code> returns an error itse
 pieces of functionality.</p>
 </li>
 </ul>
-<a class="header" href="0380-stabilize-std-fmt.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Today's macro system necessitates exporting many implementation details of the
 formatting system, which is unfortunate.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>A number of alternatives were laid out in the detailed description for various
 aspects.</p>
-<a class="header" href="0380-stabilize-std-fmt.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>How feasible and/or important is it to construct a format string at runtime
 given the recommend stability levels in this RFC?</li>
@@ -607,9 +614,6 @@ given the recommend stability levels in this RFC?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

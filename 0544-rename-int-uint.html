@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0544-rename-int-uint - </title>
+        <title>0544-rename-int-uint - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,9 +145,9 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/544">rust-lang/rfcs#544</a></li>
 <li>Rust Issue #: <a href="https://github.com/rust-lang/rust/issues/20639">rust-lang/rust#20639</a></li>
 </ul>
-<a class="header" href="0544-rename-int-uint.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes that we rename the pointer-sized integer types <code>int/uint</code>, so as to avoid misconceptions and misuses. After extensive community discussions and several revisions of this RFC, the finally chosen names are <code>isize/usize</code>.</p>
-<a class="header" href="0544-rename-int-uint.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, Rust defines two <a href="http://doc.rust-lang.org/reference.html#machine-dependent-integer-types">machine-dependent integer types</a> <code>int/uint</code> that have the same number of bits as the target platform's pointer type. These two types are used for many purposes: indices, counts, sizes, offsets, etc.</p>
 <p>The problem is, <code>int/uint</code> <em>look</em> like default integer types, but pointer-sized integers are not good defaults, and it is desirable to discourage people from overusing them.</p>
 <p>And it is a quite popular opinion that, the best way to discourage their use is to rename them.</p>
@@ -170,7 +177,7 @@
 <p>Before the rejection of <a href="https://github.com/rust-lang/rfcs/pull/464">RFC PR 464</a>, the community largely settled on two pairs of candidates: <code>imem/umem</code> and <code>iptr/uptr</code>. As stated in previous discussions, the names have some drawbacks that may be unbearable. (Please refer to <a href="http://discuss.rust-lang.org/t/a-tale-of-twos-complement/1062">A tale of two's complement</a> and related discussions for details.)</p>
 <p>This RFC originally proposed a new pair of alternatives <code>intx/uintx</code>.</p>
 <p>However, given the discussions about the previous revisions of this RFC, and the discussions in <a href="http://discuss.rust-lang.org/t/restarting-the-int-uint-discussion/1131">Restarting the <code>int/uint</code> Discussion</a>, this RFC author (@CloudiDust) now believes that <code>intx/uintx</code> are not ideal. Instead, one of the other pairs of alternatives should be chosen. The finally chosen names are <code>isize/usize</code>.</p>
-<a class="header" href="0544-rename-int-uint.html#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
 <ul>
 <li>Rename <code>int/uint</code> to <code>isize/usize</code>, with them being their own literal suffixes.</li>
 <li>Update code and documentation to use pointer-sized integers more narrowly for their intended purposes. Provide a deprecation period to carry out these updates.</li>
@@ -182,34 +189,34 @@
 fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;usize, to: &amp;usize) -&gt; &amp;'b [T]
 #}</code></pre></pre>
 <p>There are different opinions about which literal suffixes to use. The following section would discuss the alternatives.</p>
-<a class="header" href="0544-rename-int-uint.html#choosing-literal-suffixes" id="choosing-literal-suffixes"><h2>Choosing literal suffixes:</h2></a>
-<a class="header" href="0544-rename-int-uint.html#isizeusize" id="isizeusize"><h3><code>isize/usize</code>:</h3></a>
+<a class="header" href="#choosing-literal-suffixes" id="choosing-literal-suffixes"><h2>Choosing literal suffixes:</h2></a>
+<a class="header" href="#isizeusize" id="isizeusize"><h3><code>isize/usize</code>:</h3></a>
 <ul>
 <li>Pros: They are the same as the type names, very consistent with the rest of the integer primitives.</li>
 <li>Cons: They are too long for some, and may stand out too much as suffixes. However, discouraging people from overusing <code>isize/usize</code> is the point of this RFC. And if they are not overused, then this will not be a problem in practice.</li>
 </ul>
-<a class="header" href="0544-rename-int-uint.html#isus" id="isus"><h3><code>is/us</code>:</h3></a>
+<a class="header" href="#isus" id="isus"><h3><code>is/us</code>:</h3></a>
 <ul>
 <li>Pros: They are succinct as suffixes.</li>
 <li>Cons: They are actual English words, with <code>is</code> being a keyword in many programming languages and <code>us</code> being an abbreviation of &quot;unsigned&quot; (losing information) or &quot;microsecond&quot; (misleading). Also, <code>is/us</code> may be <em>too</em> short (shorter than <code>i64/u64</code>) and <em>too</em> pleasant to use, which can be a problem.</li>
 </ul>
 <p>Note: No matter which suffixes get chosen, it can be beneficial to reserve <code>is</code> as a keyword, but this is outside the scope of this RFC.</p>
-<a class="header" href="0544-rename-int-uint.html#izuz" id="izuz"><h3><code>iz/uz</code>:</h3></a>
+<a class="header" href="#izuz" id="izuz"><h3><code>iz/uz</code>:</h3></a>
 <ul>
 <li>Pros and cons: Similar to those of <code>is/us</code>, except that <code>iz/uz</code> are not actual words, which is an additional advantage. However it may not be immediately clear that <code>iz/uz</code> are abbreviations of <code>isize/usize</code>.</li>
 </ul>
-<a class="header" href="0544-rename-int-uint.html#iu" id="iu"><h3><code>i/u</code>:</h3></a>
+<a class="header" href="#iu" id="iu"><h3><code>i/u</code>:</h3></a>
 <ul>
 <li>Pros: They are very succinct.</li>
 <li>Cons: They are <em>too</em> succinct and carry the &quot;default integer types&quot; connotation, which is undesirable.</li>
 </ul>
-<a class="header" href="0544-rename-int-uint.html#iszusz" id="iszusz"><h3><code>isz/usz</code>:</h3></a>
+<a class="header" href="#iszusz" id="iszusz"><h3><code>isz/usz</code>:</h3></a>
 <ul>
 <li>Pros: They are the middle grounds between <code>isize/usize</code> and <code>is/us</code>, neither too long nor too short. They are not actual English words and it's clear that they are short for <code>isize/usize</code>.</li>
 <li>Cons: Not everyone likes the appearances of <code>isz/usz</code>, but this can be said about all the candidates.</li>
 </ul>
 <p>After community discussions, it is deemed that using <code>isize/usize</code> directly as suffixes is a fine choice and there is no need to introduce other suffixes.</p>
-<a class="header" href="0544-rename-int-uint.html#advantages-of-isizeusize" id="advantages-of-isizeusize"><h2>Advantages of <code>isize/usize</code>:</h2></a>
+<a class="header" href="#advantages-of-isizeusize" id="advantages-of-isizeusize"><h2>Advantages of <code>isize/usize</code>:</h2></a>
 <ul>
 <li>The names indicate their common use cases (container sizes/indices/offsets), so people will know where to use them, instead of overusing them everywhere.</li>
 <li>The names follow the <code>i/u + {suffix}</code> pattern that is used by all the other primitive integer types like <code>i32/u32</code>.</li>
@@ -217,23 +224,23 @@ fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;usize, to: &amp;usize) -&gt;
 <li>The names are easy on the eyes.</li>
 </ul>
 <p>See <strong>Alternatives B to L</strong> for the alternatives to <code>isize/usize</code> that have been rejected.</p>
-<a class="header" href="0544-rename-int-uint.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
-<a class="header" href="0544-rename-int-uint.html#drawbacks-of-the-renaming-in-general" id="drawbacks-of-the-renaming-in-general"><h2>Drawbacks of the renaming in general:</h2></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks-of-the-renaming-in-general" id="drawbacks-of-the-renaming-in-general"><h2>Drawbacks of the renaming in general:</h2></a>
 <ul>
 <li>Renaming <code>int</code>/<code>uint</code> requires changing much existing code. On the other hand, this is an ideal opportunity to fix integer portability bugs.</li>
 </ul>
-<a class="header" href="0544-rename-int-uint.html#drawbacks-of-isizeusize" id="drawbacks-of-isizeusize"><h2>Drawbacks of <code>isize/usize</code>:</h2></a>
+<a class="header" href="#drawbacks-of-isizeusize" id="drawbacks-of-isizeusize"><h2>Drawbacks of <code>isize/usize</code>:</h2></a>
 <ul>
 <li>The names fail to indicate the precise semantics of the types - <em>pointer-sized integers</em>. (And they don't follow the <code>i32/u32</code> pattern as faithfully as possible, as <code>32</code> indicates the exact size of the types, but <code>size</code> in <code>isize/usize</code> is vague in this aspect.)</li>
 <li>The names favour some of the types' use cases over the others.</li>
 <li>The names remind people of C's <code>ssize_t/size_t</code>, but <code>isize/usize</code> don't share the exact same semantics with the C types.</li>
 </ul>
 <p>Familiarity is a double edged sword here. <code>isize/usize</code> are chosen not because they are perfect, but because they represent a good compromise between semantic accuracy, familiarity and code readability. Given good documentation, the drawbacks listed here may not matter much in practice, and the combined familiarity and readability advantage outweighs them all.</p>
-<a class="header" href="0544-rename-int-uint.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0544-rename-int-uint.html#a-keep-the-status-quo" id="a-keep-the-status-quo"><h2>A. Keep the status quo:</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#a-keep-the-status-quo" id="a-keep-the-status-quo"><h2>A. Keep the status quo:</h2></a>
 <p>Which may hurt in the long run, especially when there is at least one (would-be?) high-profile language (which is Rust-inspired) taking the opposite stance of Rust.</p>
 <p>The following alternatives make different trade-offs, and choosing one would be quite a subjective matter. But they are all better than the status quo.</p>
-<a class="header" href="0544-rename-int-uint.html#b-iptruptr" id="b-iptruptr"><h2>B. <code>iptr/uptr</code>:</h2></a>
+<a class="header" href="#b-iptruptr" id="b-iptruptr"><h2>B. <code>iptr/uptr</code>:</h2></a>
 <ul>
 <li>Pros: &quot;Pointer-sized integer&quot;, exactly what they are.</li>
 <li>Cons: C/C++ have <code>intptr_t/uintptr_t</code>, which are typically <em>only</em> used for storing casted pointer values. We don't want people to confuse the Rust types with the C/C++ ones, as the Rust ones have more typical use cases. Also, people may wonder why all data structures have &quot;pointers&quot; in their method signatures. Besides the &quot;funny-looking&quot; aspect, the names may have an incorrect &quot;pointer fiddling and unsafe staff&quot; connotation there, as <code>ptr</code> isn't usually seen in safe Rust code.</li>
@@ -245,7 +252,7 @@ fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;usize, to: &amp;usize) -&gt;
 fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;uptr, to: &amp;uptr) -&gt; &amp;'b [T]
 #}</code></pre></pre>
 <p>It feels like working with pointers, not integers.</p>
-<a class="header" href="0544-rename-int-uint.html#c-imemumem" id="c-imemumem"><h2>C. <code>imem/umem</code>:</h2></a>
+<a class="header" href="#c-imemumem" id="c-imemumem"><h2>C. <code>imem/umem</code>:</h2></a>
 <p>When originally proposed, <code>mem</code>/<code>m</code> are interpreted as &quot;memory numbers&quot; (See @1fish2's comment in <a href="https://github.com/rust-lang/rfcs/pull/464">RFC PR 464</a>):</p>
 <blockquote>
 <p><code>imem</code>/<code>umem</code> are &quot;memory numbers.&quot; They're good for indexes, counts, offsets, sizes, etc. As memory numbers, it makes sense that they're sized by the address space.</p>
@@ -262,7 +269,7 @@ fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;uptr, to: &amp;uptr) -&gt; &
 fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;umem, to: &amp;umem) -&gt; &amp;'b [T]
 #}</code></pre></pre>
 <p><code>umem</code> still feels like a pointer-like construct here (from &quot;some memory&quot; to &quot;some other memory&quot;), even though it doesn't have <code>ptr</code> in its name.</p>
-<a class="header" href="0544-rename-int-uint.html#d-intpuintp-and-intmuintm" id="d-intpuintp-and-intmuintm"><h2>D. <code>intp/uintp</code> and <code>intm/uintm</code>:</h2></a>
+<a class="header" href="#d-intpuintp-and-intmuintm" id="d-intpuintp-and-intmuintm"><h2>D. <code>intp/uintp</code> and <code>intm/uintm</code>:</h2></a>
 <p>Variants of Alternatives B and C. Instead of stressing the <code>ptr</code> or <code>mem</code> part, they stress the <code>int</code> or <code>uint</code> part.</p>
 <p>They are more integer-like than <code>iptr/uptr</code> or <code>imem/umem</code> if one knows where to split the words.</p>
 <p>The problem here is that they don't strictly follow the <code>i/u + {size}</code> pattern, are of different lengths, and the more frequently used type <code>uintp</code>(<code>uintm</code>) has a longer name. Granted, this problem already exists with <code>int/uint</code>, but those two are names that everyone is familiar with.</p>
@@ -273,13 +280,13 @@ fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;umem, to: &amp;umem) -&gt; &
 fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;uintm, to: &amp;uintm) -&gt; &amp;'b [T]
 fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;uintp, to: &amp;uintp) -&gt; &amp;'b [T]
 #}</code></pre></pre>
-<a class="header" href="0544-rename-int-uint.html#e-intxuintx" id="e-intxuintx"><h2>E. <code>intx/uintx</code>:</h2></a>
+<a class="header" href="#e-intxuintx" id="e-intxuintx"><h2>E. <code>intx/uintx</code>:</h2></a>
 <p>The original proposed names of this RFC, where <code>x</code> means &quot;unknown/variable/platform-dependent&quot;.</p>
 <p>They share the same problems with <code>intp/uintp</code> and <code>intm/uintm</code>, while <em>in addition</em> failing to be specific enough. There are other kinds of platform-dependent integer types after all (like register-sized ones), so which ones are <code>intx/uintx</code>?</p>
-<a class="header" href="0544-rename-int-uint.html#f-idiffusize" id="f-idiffusize"><h2>F. <code>idiff/usize</code>:</h2></a>
+<a class="header" href="#f-idiffusize" id="f-idiffusize"><h2>F. <code>idiff/usize</code>:</h2></a>
 <p>There is a problem with <code>isize</code>: it most likely will remind people of C/C++ <code>ssize_t</code>. But <code>ssize_t</code> is in the POSIX standard, not the C/C++ ones, and is <em>not for index offsets</em> according to POSIX. The correct type for index offsets in C99 is <code>ptrdiff_t</code>, so for a type representing offsets, <code>idiff</code> may be a better name.</p>
 <p>However, <code>isize/usize</code> have the advantage of being symmetrical, and ultimately, even with a name like <code>idiff</code>, some semantic mismatch between <code>idiff</code> and <code>ptrdiff_t</code> would still exist. Also, for fitting a casted pointer value, a type named <code>isize</code> is better than one named <code>idiff</code>. (Though both would lose to <code>iptr</code>.)</p>
-<a class="header" href="0544-rename-int-uint.html#g-iptruptr-and-idiffusize" id="g-iptruptr-and-idiffusize"><h2>G. <code>iptr/uptr</code> <em>and</em> <code>idiff/usize</code>:</h2></a>
+<a class="header" href="#g-iptruptr-and-idiffusize" id="g-iptruptr-and-idiffusize"><h2>G. <code>iptr/uptr</code> <em>and</em> <code>idiff/usize</code>:</h2></a>
 <p>Rename <code>int/uint</code> to <code>iptr/uptr</code>, with <code>idiff/usize</code> being aliases and used in container method signatures.</p>
 <p>This is for addressing the &quot;not enough use cases covered&quot; problem. Best of both worlds at the first glance.</p>
 <p><code>iptr/uptr</code> will be used for storing casted pointer values, while <code>idiff/usize</code> will be used for offsets and sizes/indices, respectively.</p>
@@ -287,7 +294,7 @@ fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;uintp, to: &amp;uintp) -&gt;
 <p>This will bring the Rust type names quite in line with the standard C99 type names, which may be a plus from the familiarity point of view.</p>
 <p>However, this setup brings two sets of types that share the same underlying representations. C distinguishes between <code>size_t</code>/<code>uintptr_t</code>/<code>intptr_t</code>/<code>ptrdiff_t</code> not only because they are used under different circumstances, but also because the four may have representations that are potentially different from <em>each other</em> on some architectures. Rust assumes a flat memory address space and its <code>int/uint</code> types don't exactly share semantics with any of the C types if the C standard is strictly followed.</p>
 <p>Thus, even introducing four names would not fix the &quot;failing to express the precise semantics of the types&quot; problem. Rust just doesn't need to, and <em>shouldn't</em> distinguish between <code>iptr/idiff</code> and <code>uptr/usize</code>, doing so would bring much confusion for very questionable gain.</p>
-<a class="header" href="0544-rename-int-uint.html#h-isizusiz" id="h-isizusiz"><h2>H. <code>isiz/usiz</code>:</h2></a>
+<a class="header" href="#h-isizusiz" id="h-isizusiz"><h2>H. <code>isiz/usiz</code>:</h2></a>
 <p>A pair of variants of <code>isize/usize</code>. This author believes that the missing <code>e</code> may be enough to warn people that these are not <code>ssize_t/size_t</code> with &quot;Rustfied&quot; names. But at the same time, <code>isiz/usiz</code> mostly retain the familiarity of <code>isize/usize</code>.</p>
 <p>However, <code>isiz/usiz</code> still hide the actual semantics of the types, and omitting but a single letter from a word does feel too hack-ish.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -295,21 +302,21 @@ fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;uintp, to: &amp;uintp) -&gt;
 #fn main() {
 fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;usiz, to: &amp;usiz) -&gt; &amp;'b [T]
 #}</code></pre></pre>
-<a class="header" href="0544-rename-int-uint.html#i-iptr_sizeuptr_size" id="i-iptr_sizeuptr_size"><h2>I. <code>iptr_size/uptr_size</code>:</h2></a>
+<a class="header" href="#i-iptr_sizeuptr_size" id="i-iptr_sizeuptr_size"><h2>I. <code>iptr_size/uptr_size</code>:</h2></a>
 <p>The names are very clear about the semantics, but are also irregular, too long and feel out of place.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
 fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;uptr_size, to: &amp;uptr_size) -&gt; &amp;'b [T]
 #}</code></pre></pre>
-<a class="header" href="0544-rename-int-uint.html#j-iptrszuptrsz" id="j-iptrszuptrsz"><h2>J. <code>iptrsz/uptrsz</code>:</h2></a>
+<a class="header" href="#j-iptrszuptrsz" id="j-iptrszuptrsz"><h2>J. <code>iptrsz/uptrsz</code>:</h2></a>
 <p>Clear semantics, but still a bit too long (though better than <code>iptr_size/uptr_size</code>), and the <code>ptr</code> parts are still a bit concerning (though to a much less extent than <code>iptr/uptr</code>). On the other hand, being &quot;a bit too long&quot; may not be a disadvantage here.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
 fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;uptrsz, to: &amp;uptrsz) -&gt; &amp;'b [T]
 #}</code></pre></pre>
-<a class="header" href="0544-rename-int-uint.html#k-ipszupsz" id="k-ipszupsz"><h2>K. <code>ipsz/upsz</code>:</h2></a>
+<a class="header" href="#k-ipszupsz" id="k-ipszupsz"><h2>K. <code>ipsz/upsz</code>:</h2></a>
 <p>Now (and only now, which is the problem) it is clear where this pair of alternatives comes from.</p>
 <p>By shortening <code>ptr</code> to <code>p</code>, <code>ipsz/upsz</code> no longer stress the &quot;pointer&quot; parts in anyway. Instead, the <code>sz</code> or &quot;size&quot; parts are (comparatively) stressed. Interestingly, <code>ipsz/upsz</code> look similar to <code>isiz/usiz</code>.</p>
 <p>So this pair of names actually reflects both the precise semantics of &quot;pointer-sized integers&quot; and the fact that they are commonly used for &quot;sizes&quot;. However,</p>
@@ -319,11 +326,11 @@ fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;uptrsz, to: &amp;uptrsz) -&g
 fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;upsz, to: &amp;upsz) -&gt; &amp;'b [T]
 #}</code></pre></pre>
 <p><code>ipsz/upsz</code> have gone too far. They are completely incomprehensible without the documentation. Many rightfully do not like letter soup. The only advantage here is that, no one would be very likely to think he/she is dealing with pointers. <code>iptrsz/uptrsz</code> are better in the comprehensibility aspect.</p>
-<a class="header" href="0544-rename-int-uint.html#l-others" id="l-others"><h2>L. Others:</h2></a>
+<a class="header" href="#l-others" id="l-others"><h2>L. Others:</h2></a>
 <p>There are other alternatives not covered in this RFC. Please refer to this RFC's comments and <a href="https://github.com/rust-lang/rfcs/pull/464">RFC PR 464</a> for more.</p>
-<a class="header" href="0544-rename-int-uint.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None. Necessary decisions about Rust's general integer type policies have been made in <a href="http://discuss.rust-lang.org/t/restarting-the-int-uint-discussion/1131">Restarting the <code>int/uint</code> Discussion</a>.</p>
-<a class="header" href="0544-rename-int-uint.html#history" id="history"><h1>History</h1></a>
+<a class="header" href="#history" id="history"><h1>History</h1></a>
 <p>Amended by <a href="https://github.com/rust-lang/rfcs/pull/573">RFC 573</a> to change the suffixes from <code>is</code> and <code>us</code> to
 <code>isize</code> and <code>usize</code>. Tracking issue for this amendment is
 <a href="https://github.com/rust-lang/rust/issues/22496">rust-lang/rust#22496</a>.</p>
@@ -371,9 +378,6 @@ fn slice_or_fail&lt;'b&gt;(&amp;'b self, from: &amp;upsz, to: &amp;upsz) -&gt; &
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

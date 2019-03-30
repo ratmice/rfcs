@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0199-ownership-variants - </title>
+        <title>0199-ownership-variants - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,11 +145,11 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/199">rust-lang/rfcs#199</a></li>
 <li>Rust Issue #: <a href="https://github.com/rust-lang/rust/issues/16810">rust-lang/rust#16810</a></li>
 </ul>
-<a class="header" href="0199-ownership-variants.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This is a <em>conventions RFC</em> for settling naming conventions when there
 are by value, by reference, and by mutable reference variants of an
 operation.</p>
-<a class="header" href="0199-ownership-variants.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently the libraries are not terribly consistent about how to
 signal mut variants of functions; sometimes it is by a <code>mut_</code> prefix,
 sometimes a <code>_mut</code> suffix, and occasionally with <code>_mut_</code> appearing in
@@ -150,7 +157,7 @@ the middle. These inconsistencies make APIs difficult to remember.</p>
 <p>While there are arguments in favor of each of the positions, we stand
 to gain a lot by standardizing, and to some degree we just need to
 make a choice.</p>
-<a class="header" href="0199-ownership-variants.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Functions often come in multiple variants: immutably borrowed, mutably
 borrowed, and owned.</p>
 <p>The canonical example is iterator methods:</p>
@@ -163,8 +170,8 @@ borrowed, and owned.</p>
 In other cases, the default is owned.</p>
 <p>The proposed rules depend on which variant is the default, but use
 <em>suffixes</em> to mark variants in all cases.</p>
-<a class="header" href="0199-ownership-variants.html#the-rules" id="the-rules"><h2>The rules</h2></a>
-<a class="header" href="0199-ownership-variants.html#immutably-borrowed-by-default" id="immutably-borrowed-by-default"><h3>Immutably borrowed by default</h3></a>
+<a class="header" href="#the-rules" id="the-rules"><h2>The rules</h2></a>
+<a class="header" href="#immutably-borrowed-by-default" id="immutably-borrowed-by-default"><h3>Immutably borrowed by default</h3></a>
 <p>If <code>foo</code> uses/produces an immutable borrow by default, use:</p>
 <ul>
 <li>The <code>_mut</code> suffix (e.g. <code>foo_mut</code>) for the mutably borrowed variant.</li>
@@ -177,26 +184,26 @@ reads arguably better than <code>for x in v.iter_move()</code>, so the conventio
 <p><strong>NOTE</strong>: This convention covers only the <em>method</em> names for
 iterators, not the names of the iterator types. That will be the
 subject of a follow up RFC.</p>
-<a class="header" href="0199-ownership-variants.html#owned-by-default" id="owned-by-default"><h3>Owned by default</h3></a>
+<a class="header" href="#owned-by-default" id="owned-by-default"><h3>Owned by default</h3></a>
 <p>If <code>foo</code> uses/produces owned data by default, use:</p>
 <ul>
 <li>The <code>_ref</code> suffix (e.g. <code>foo_ref</code>) for the immutably borrowed variant.</li>
 <li>The <code>_mut</code> suffix (e.g. <code>foo_mut</code>) for the mutably borrowed variant.</li>
 </ul>
-<a class="header" href="0199-ownership-variants.html#exceptions" id="exceptions"><h3>Exceptions</h3></a>
+<a class="header" href="#exceptions" id="exceptions"><h3>Exceptions</h3></a>
 <p>For mutably borrowed variants, if the <code>mut</code> qualifier is part of a
 type name (e.g. <code>as_mut_slice</code>), it should appear as it would appear
 in the type.</p>
-<a class="header" href="0199-ownership-variants.html#references-to-type-names" id="references-to-type-names"><h3>References to type names</h3></a>
+<a class="header" href="#references-to-type-names" id="references-to-type-names"><h3>References to type names</h3></a>
 <p>Some places in the current libraries, we say things like <code>as_ref</code> and
 <code>as_mut</code>, and others we say <code>get_ref</code> and <code>get_mut_ref</code>.</p>
 <p>Proposal: generally standardize on <code>mut</code> as a shortening of <code>mut_ref</code>.</p>
-<a class="header" href="0199-ownership-variants.html#the-rationale" id="the-rationale"><h2>The rationale</h2></a>
-<a class="header" href="0199-ownership-variants.html#why-suffixes" id="why-suffixes"><h3>Why suffixes?</h3></a>
+<a class="header" href="#the-rationale" id="the-rationale"><h2>The rationale</h2></a>
+<a class="header" href="#why-suffixes" id="why-suffixes"><h3>Why suffixes?</h3></a>
 <p>Using a suffix makes it easier to visually group variants together,
 especially when sorted alphabetically. It puts the emphasis on the
 functionality, rather than the qualifier.</p>
-<a class="header" href="0199-ownership-variants.html#why-move" id="why-move"><h3>Why <code>move</code>?</h3></a>
+<a class="header" href="#why-move" id="why-move"><h3>Why <code>move</code>?</h3></a>
 <p>Historically, Rust has used <code>move</code> as a way to signal ownership
 transfer and to connect to C++ terminology. The main disadvantage is
 that it does not emphasize ownership, which is our current narrative.
@@ -206,11 +213,11 @@ qualifier is a bit strange.</p>
 transfer. The proposed mental model is that with <code>Copy</code> data you are
 &quot;moving a copy&quot;.</p>
 <p>See Alternatives for more discussion.</p>
-<a class="header" href="0199-ownership-variants.html#why-mut-rather-then-mut_ref" id="why-mut-rather-then-mut_ref"><h3>Why <code>mut</code> rather then <code>mut_ref</code>?</h3></a>
+<a class="header" href="#why-mut-rather-then-mut_ref" id="why-mut-rather-then-mut_ref"><h3>Why <code>mut</code> rather then <code>mut_ref</code>?</h3></a>
 <p>It's shorter, and pairs like <code>as_ref</code> and <code>as_mut</code> have a pleasant harmony
 that doesn't place emphasis on one kind of reference over the other.</p>
-<a class="header" href="0199-ownership-variants.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0199-ownership-variants.html#prefix-or-mixed-qualifiers" id="prefix-or-mixed-qualifiers"><h2>Prefix or mixed qualifiers</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#prefix-or-mixed-qualifiers" id="prefix-or-mixed-qualifiers"><h2>Prefix or mixed qualifiers</h2></a>
 <p>Using prefixes for variants is another possibility, but there seems to
 be little upside.</p>
 <p>It's possible to rationalize our current mix of prefixes and suffixes
@@ -218,7 +225,7 @@ via
 <a href="https://github.com/rust-lang/rust/issues/13660#issuecomment-43576378">grammatical distinctions</a>,
 but this seems overly subtle and complex, and requires a strong
 command of English grammar to work well.</p>
-<a class="header" href="0199-ownership-variants.html#no-suffix-exception" id="no-suffix-exception"><h2>No suffix exception</h2></a>
+<a class="header" href="#no-suffix-exception" id="no-suffix-exception"><h2>No suffix exception</h2></a>
 <p>The rules here make an exception when <code>mut</code> is part of a type name, as
 in <code>as_mut_slice</code>, but we could instead <em>always</em> place the qualifier
 as a suffix: <code>as_slice_mut</code>. This would make APIs more consistent in
@@ -227,7 +234,7 @@ consistently use a transcription of their type name.</p>
 <p>This is perhaps not so bad, though, because as it is we often
 abbreviate type names. In any case, we need a convention (separate
 RFC) for how to refer to type names in methods.</p>
-<a class="header" href="0199-ownership-variants.html#owned-instead-of-move" id="owned-instead-of-move"><h2><code>owned</code> instead of <code>move</code></h2></a>
+<a class="header" href="#owned-instead-of-move" id="owned-instead-of-move"><h2><code>owned</code> instead of <code>move</code></h2></a>
 <p>The overall narrative about Rust has been evolving to focus on
 <em>ownership</em> as the essential concept, with borrowing giving various
 lesser forms of ownership, so <code>_owned</code> would be a reasonable
@@ -235,7 +242,7 @@ alternative to <code>_move</code>.</p>
 <p>On the other hand, the <code>ref</code> variants do not say &quot;borrowed&quot;, so in
 some sense this choice is inconsistent. In addition, the terminology
 is less familiar to those coming from C++.</p>
-<a class="header" href="0199-ownership-variants.html#val-instead-of-owned" id="val-instead-of-owned"><h2><code>val</code> instead of <code>owned</code></h2></a>
+<a class="header" href="#val-instead-of-owned" id="val-instead-of-owned"><h2><code>val</code> instead of <code>owned</code></h2></a>
 <p>Another option would be <code>val</code> or <code>value</code> instead of <code>owned</code>. This
 suggestion plays into the &quot;by reference&quot; and &quot;by value&quot; distinction,
 and so is even more congruent with <code>ref</code> than <code>move</code> is. On the other
@@ -284,9 +291,6 @@ hand, it's less clear/evocative than either <code>move</code> or <code>owned</co
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

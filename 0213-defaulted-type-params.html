@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0213-defaulted-type-params - </title>
+        <title>0213-defaulted-type-params - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/213">rust-lang/rfcs#213</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27336">rust-lang/rust#27336</a></li>
 </ul>
-<a class="header" href="0213-defaulted-type-params.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Rust currently includes feature-gated support for type parameters that
 specify a default value. This feature is not well-specified. The aim
 of this RFC is to fully specify the behavior of defaulted type
@@ -161,8 +168,8 @@ omitted, and the specified default is then used.</li>
 <p>Points 2 and 4 extend the current behavior of type parameter defaults,
 aiming to address some shortcomings of the current implementation.</p>
 <p>This RFC would remove the feature gate on defaulted type parameters.</p>
-<a class="header" href="0213-defaulted-type-params.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="0213-defaulted-type-params.html#why-defaulted-type-parameters" id="why-defaulted-type-parameters"><h2>Why defaulted type parameters</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#why-defaulted-type-parameters" id="why-defaulted-type-parameters"><h2>Why defaulted type parameters</h2></a>
 <p>Defaulted type parameters are very useful in two main scenarios:</p>
 <ol>
 <li>Extended a type without breaking existing clients.</li>
@@ -212,7 +219,7 @@ default (<code>uint</code>, for example):</p>
 <p>Using this definition, a call like <code>range(0, 10)</code> is perfectly legal.
 If it turns out that the type argument is not other constraint, <code>uint</code>
 will be used instead.</p>
-<a class="header" href="0213-defaulted-type-params.html#extending-types-without-breaking-clients" id="extending-types-without-breaking-clients"><h2>Extending types without breaking clients.</h2></a>
+<a class="header" href="#extending-types-without-breaking-clients" id="extending-types-without-breaking-clients"><h2>Extending types without breaking clients.</h2></a>
 <p>Without defaults, once a library is released to &quot;the wild&quot;, it is not
 possible to add type parameters to a type without breaking all
 existing clients. However, it frequently happens that one wants to
@@ -223,10 +230,10 @@ to do this while having older clients transparently fallback to the
 older behavior.</p>
 <p><em>Historical example:</em> Extending HashMap to support various hash
 algorithms.</p>
-<a class="header" href="0213-defaulted-type-params.html#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
-<a class="header" href="0213-defaulted-type-params.html#remove-feature-gate" id="remove-feature-gate"><h2>Remove feature gate</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
+<a class="header" href="#remove-feature-gate" id="remove-feature-gate"><h2>Remove feature gate</h2></a>
 <p>This RFC would remove the feature gate on defaulted type parameters.</p>
-<a class="header" href="0213-defaulted-type-params.html#type-parameters-with-defaults" id="type-parameters-with-defaults"><h2>Type parameters with defaults</h2></a>
+<a class="header" href="#type-parameters-with-defaults" id="type-parameters-with-defaults"><h2>Type parameters with defaults</h2></a>
 <p>Defaults can be placed on any type parameter, whether it is declared
 on a type definition (<code>struct</code>, <code>enum</code>), type alias (<code>type</code>), trait
 definition (<code>trait</code>), trait implementation (<code>impl</code>), or a function or
@@ -253,7 +260,7 @@ fn foo&lt;A,B=uint,C=B&gt;() { .. }
 // `B` in the list of parameters.
 fn foo&lt;A,B=C,C=uint&gt;() { .. }
 </code></pre>
-<a class="header" href="0213-defaulted-type-params.html#instantiating-defaults" id="instantiating-defaults"><h2>Instantiating defaults</h2></a>
+<a class="header" href="#instantiating-defaults" id="instantiating-defaults"><h2>Instantiating defaults</h2></a>
 <p>This section specifies how to interpret a reference to a generic
 type. Rather than writing out a rather tedious (and hard to
 understand) description of the algorithm, the rules are instead
@@ -274,7 +281,7 @@ process outside of <code>fn</code> bodies.</li>
 </ul>
 </li>
 </ul>
-<a class="header" href="0213-defaulted-type-params.html#references-to-generic-types" id="references-to-generic-types"><h3>References to generic types</h3></a>
+<a class="header" href="#references-to-generic-types" id="references-to-generic-types"><h3>References to generic types</h3></a>
 <p>We begin with examples of references to the generic type <code>Foo</code>:</p>
 <pre><code>struct Foo&lt;A,B,C=DefaultHasher,D=C&gt; { ... }
 </code></pre>
@@ -333,7 +340,7 @@ information). Here are some examples:</p>
     let x: Foo&lt;int,uint,_,char&gt; = ...;
 }
 </code></pre>
-<a class="header" href="0213-defaulted-type-params.html#references-to-generic-traits" id="references-to-generic-traits"><h3>References to generic traits</h3></a>
+<a class="header" href="#references-to-generic-traits" id="references-to-generic-traits"><h3>References to generic traits</h3></a>
 <p>The rules for traits are the same as the rules for types.  Consider a
 trait <code>Foo</code>:</p>
 <pre><code>trait Foo&lt;A,B,C=uint,D=C&gt; { ... }
@@ -348,19 +355,19 @@ fn foo&lt;T:Foo&lt;i8,u8,_,_&gt;&gt;() { ... }
 // Equivalent to Foo&lt;i8,u8,char,char&gt;:
 fn foo&lt;T:Foo&lt;i8,u8,char,_&gt;&gt;() { ... }
 </code></pre>
-<a class="header" href="0213-defaulted-type-params.html#references-to-generic-functions" id="references-to-generic-functions"><h3>References to generic functions</h3></a>
+<a class="header" href="#references-to-generic-functions" id="references-to-generic-functions"><h3>References to generic functions</h3></a>
 <p>The rules for referencing generic functions are the same as for types,
 except that it is legal to omit values for all type parameters if
 desired. In that case, the behavior is the same as it would be if <code>_</code>
 were used as the value for every type parameter. Note that functions
 can only be referenced from within a fn body.</p>
-<a class="header" href="0213-defaulted-type-params.html#references-to-generic-impls" id="references-to-generic-impls"><h3>References to generic impls</h3></a>
+<a class="header" href="#references-to-generic-impls" id="references-to-generic-impls"><h3>References to generic impls</h3></a>
 <p>Users never explicitly &quot;reference&quot; an impl. Rather, the trait matching
 system implicitly instantaites impls as part of trait matching. This
 implies that all type parameters are always instantiated with type
 variables. These type variables are assigned fallbacks according to
 the defaults given.</p>
-<a class="header" href="0213-defaulted-type-params.html#type-variables-with-fallbacks" id="type-variables-with-fallbacks"><h2>Type variables with fallbacks</h2></a>
+<a class="header" href="#type-variables-with-fallbacks" id="type-variables-with-fallbacks"><h2>Type variables with fallbacks</h2></a>
 <p>We extend the inference system so that when a type variable is
 created, it can optionally have a <em>fallback value</em>, which is another
 type.</p>
@@ -404,7 +411,7 @@ has no default. Therefore <code>$1</code> has no fallback.</li>
 have the fallback value of <code>$1</code>, which was the value of <code>A</code>
 within the expression where <code>$2</code> was created.</li>
 </ul>
-<a class="header" href="0213-defaulted-type-params.html#trait-resolution-fallbacking-and-inference" id="trait-resolution-fallbacking-and-inference"><h2>Trait resolution, fallbacking, and inference</h2></a>
+<a class="header" href="#trait-resolution-fallbacking-and-inference" id="trait-resolution-fallbacking-and-inference"><h2>Trait resolution, fallbacking, and inference</h2></a>
 <p>Prior to this RFC, type-checking a function body proceeds roughly as
 follows:</p>
 <ol>
@@ -595,7 +602,7 @@ matchable (because unbound variables become bound). But the actual
 need to iteration through the loop is still caused by trait matching
 generating recursive obligations, which have an associated depth
 limit.</p>
-<a class="header" href="0213-defaulted-type-params.html#compatibility-analysis" id="compatibility-analysis"><h2>Compatibility analysis</h2></a>
+<a class="header" href="#compatibility-analysis" id="compatibility-analysis"><h2>Compatibility analysis</h2></a>
 <p>One of the major design goals of defaulted type parameters is to
 permit new parameters to be added to existing types or methods in a
 backwards compatible way. This remains possible under the current
@@ -605,8 +612,8 @@ lead to type errors in clients. This can occur if clients were already
 relying on an inference fallback from some other source and there is
 now an ambiguity. Naturally clients can always fix this error by
 specifying the value of the type parameter in question manually.</p>
-<a class="header" href="0213-defaulted-type-params.html#downsides-and-alternatives" id="downsides-and-alternatives"><h1>Downsides and alternatives</h1></a>
-<a class="header" href="0213-defaulted-type-params.html#avoid-inference" id="avoid-inference"><h2>Avoid inference</h2></a>
+<a class="header" href="#downsides-and-alternatives" id="downsides-and-alternatives"><h1>Downsides and alternatives</h1></a>
+<a class="header" href="#avoid-inference" id="avoid-inference"><h2>Avoid inference</h2></a>
 <p>Rather than adding the notion of <em>fallbacks</em> to type variables,
 defaults could be mechanically added, even within fn bodies, as they
 are today. But this is disappointing because it means that examples
@@ -614,7 +621,7 @@ like <code>range(0,10)</code>, where defaults could inform inference, still
 require explicit annotation. Without the notion of fallbacks, it is
 also difficult to say what defaulted type parameters in methods or
 impls should mean.</p>
-<a class="header" href="0213-defaulted-type-params.html#more-advanced-interaction-between-integer-literal-inference" id="more-advanced-interaction-between-integer-literal-inference"><h2>More advanced interaction between integer literal inference</h2></a>
+<a class="header" href="#more-advanced-interaction-between-integer-literal-inference" id="more-advanced-interaction-between-integer-literal-inference"><h2>More advanced interaction between integer literal inference</h2></a>
 <p>There were some other proposals to have a more advanced interaction
 between custom fallbacks and literal inference. For example, it is
 possible to imagine that we allow literal inference to take precedence
@@ -625,7 +632,7 @@ inference in the future (in other words, if integer literals may be
 mapped to more than just the built-in integral types). Furthermore,
 these rules would create strictly fewer errors, and hence can be added
 in the future if desired.</p>
-<a class="header" href="0213-defaulted-type-params.html#notation" id="notation"><h2>Notation</h2></a>
+<a class="header" href="#notation" id="notation"><h2>Notation</h2></a>
 <p>Allowing <code>_</code> notation outside of fn body means that it's meaning
 changes somewhat depending on context. However, this is consistent
 with the meaning of omitted lifetimes, which also change in the same
@@ -641,7 +648,7 @@ value of a defaulted type parameter unless values are given for all
 previous defaulted typed parameters. But this is clearly annoying in
 those cases where defaulted type parameters represent distinct axes of
 customization.</p>
-<a class="header" href="0213-defaulted-type-params.html#hat-tip" id="hat-tip"><h1>Hat Tip</h1></a>
+<a class="header" href="#hat-tip" id="hat-tip"><h1>Hat Tip</h1></a>
 <p>eddyb introduced defaulted type parameters and also opened the first
 pull request that used them to inform inference.</p>
 
@@ -688,9 +695,6 @@ pull request that used them to inform inference.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

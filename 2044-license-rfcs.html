@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2044-license-rfcs - </title>
+        <title>2044-license-rfcs - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +146,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2044">rust-lang/rfcs#2044</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/43461">rust-lang/rust#43461</a></li>
 </ul>
-<a class="header" href="2044-license-rfcs.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce a move to dual-MIT/Apache2 licensing terms to the Rust RFCs repo, by
 requiring them for all new contributions, and asking previous contributors to
 agree on the new license.</p>
-<a class="header" href="2044-license-rfcs.html#disclaimer" id="disclaimer"><h1>Disclaimer</h1></a>
+<a class="header" href="#disclaimer" id="disclaimer"><h1>Disclaimer</h1></a>
 <p>This RFC is not authored by a lawyer, so its reasoning may be wrong.</p>
-<a class="header" href="2044-license-rfcs.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, the Rust RFCs repo is in a state where no clear open source license
 is specified.</p>
 <p>The current legal base of the the RFCs repo is the &quot;License Grant to Other
@@ -168,7 +175,7 @@ Possibly, the authors of such a document may want to include text from RFCs.</p>
 <p>Fourth, the spirit of the Rust project is to be open source, and the current
 terms don't fulfill any popular open source definition.</p>
 <p><code>*</code>: The Github ToS is licensed under the <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution license</a></p>
-<a class="header" href="2044-license-rfcs.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>After this RFC has been merged, all new RFCs will be required to be
 dual-licensed under the MIT/Apache2. This includes RFCs currently being
 <a href="https://github.com/rust-lang/rfcs/pulls">considered for merging</a>.</p>
@@ -183,7 +190,7 @@ as well, not just the RFCs themselves. Therefore, contributors should be asked
 to license <em>all</em> their contributions to this repo, not just to the RFC files,
 and <em>all</em> new contributions to this repo should be required to be licensed
 under the new terms.</p>
-<a class="header" href="2044-license-rfcs.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>The issue created should @-mention all Github users who have contributed,
 generating a notification for each past contributor.</p>
 <p>Also, after this RFC got merged, all RFCs in the queue will get a comment in
@@ -191,9 +198,9 @@ their Github PR and be asked to include the copyright section at the top of
 their RFC file.</p>
 <p>The note in README.md should should inform new PR authors of the terms
 they put their contribution under.</p>
-<a class="header" href="2044-license-rfcs.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This is additional churn and pings a bunch of people, which they may not like.</p>
-<a class="header" href="2044-license-rfcs.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Other licenses more suited for text may have been chosen, like the CC-BY
 license. However, RFCs regularly include code snippets, which may be used in
 the rust-lang/rust, and similarly, RFCs may want to include code snippets from
@@ -206,13 +213,13 @@ precedent on non technical RFCs with RFC 1636. Also, this issue has been known
 for years and no action has been done on this yet. If this RFC gets closed as
 too trivial or offtopic, and the issue is being acted upon, its author
 considers it a successful endeavor.</p>
-<a class="header" href="2044-license-rfcs.html#links-to-previous-discussion" id="links-to-previous-discussion"><h1>Links to previous discussion</h1></a>
+<a class="header" href="#links-to-previous-discussion" id="links-to-previous-discussion"><h1>Links to previous discussion</h1></a>
 <ul>
 <li>https://github.com/rust-lang/rfcs/issues/1259</li>
 <li>https://github.com/rust-lang/rust/issues/25664</li>
 <li>https://internals.rust-lang.org/t/license-the-rfcs-repo-under-the-cc-by-4-0-license/3870</li>
 </ul>
-<a class="header" href="2044-license-rfcs.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Should trivial contributions that don't fall under copyright be special cased?
 This is probably best decided on a case by case basis, and only after a
 contributor has been unresponsive or has disagreed with the new licensing
@@ -261,9 +268,6 @@ terms.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

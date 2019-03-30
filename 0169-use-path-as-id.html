@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0169-use-path-as-id - </title>
+        <title>0169-use-path-as-id - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,12 +145,12 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/169">#169</a></li>
 <li>Rust Issue #: https://github.com/rust-lang/rust/issues/16461</li>
 </ul>
-<a class="header" href="0169-use-path-as-id.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Change the rebinding syntax from <code>use ID = PATH</code> to <code>use PATH as ID</code>,
 so that paths all line up on the left side, and imported identifers
 are all on the right side.  Also modify <code>extern crate</code> syntax
 analogously, for consistency.</p>
-<a class="header" href="0169-use-path-as-id.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, the view items at the start of a module look something like
 this:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -186,7 +193,7 @@ which makes the <em>actual</em> differences between the different paths
 more visually apparent.</p>
 </li>
 </ul>
-<a class="header" href="0169-use-path-as-id.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Currently, the grammar for use statements is something like:</p>
 <pre><code>  use_decl : &quot;pub&quot; ? &quot;use&quot; [ ident '=' path
                             | path_glob ] ;
@@ -212,7 +219,7 @@ and that continues to be the case under <code>path as ident</code>.</p>
 and
 <code>&quot;extern&quot; &quot;crate&quot; ident '=' string_lit</code>
 are removed (or at least deprecated).</p>
-<a class="header" href="0169-use-path-as-id.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p><code>pub use export = import_path</code> may be preferred over <code>pub use import_path as export</code> since people are used to seeing the name
@@ -226,12 +233,12 @@ Adopting this RFC would change that precedent.
 (See &quot;Change the signaling token&quot; below.)</p>
 </li>
 </ul>
-<a class="header" href="0169-use-path-as-id.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0169-use-path-as-id.html#keep-things-as-they-are" id="keep-things-as-they-are"><h2>Keep things as they are</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#keep-things-as-they-are" id="keep-things-as-they-are"><h2>Keep things as they are</h2></a>
 <p>This just has the drawbacks outlined in the motivation: the left-hand
 side of the view items are less regular, and one needs to scan both
 the left- and right-hand sides to see all the imported identifiers.</p>
-<a class="header" href="0169-use-path-as-id.html#change-the-signaling-token" id="change-the-signaling-token"><h2>Change the signaling token</h2></a>
+<a class="header" href="#change-the-signaling-token" id="change-the-signaling-token"><h2>Change the signaling token</h2></a>
 <p>Go ahead with switch, so imported identifier is on the left-hand side,
 but use a different token than <code>as</code> to signal a rebinding.</p>
 <p>For example, we could use <code>@</code>, as an analogy with its use as a binding
@@ -274,7 +281,7 @@ mod new_code {
 #}</code></pre></pre>
 <p>(I cannot figure out if this is genius or madness.  Probably madness,
 especially if one is allowed to omit the whitespace around the <code>:</code>)</p>
-<a class="header" href="0169-use-path-as-id.html#have-distinct-rebinding-syntaxes-for-use-and-pub-use" id="have-distinct-rebinding-syntaxes-for-use-and-pub-use"><h2>Have distinct rebinding syntaxes for <code>use</code> and <code>pub use</code></h2></a>
+<a class="header" href="#have-distinct-rebinding-syntaxes-for-use-and-pub-use" id="have-distinct-rebinding-syntaxes-for-use-and-pub-use"><h2>Have distinct rebinding syntaxes for <code>use</code> and <code>pub use</code></h2></a>
 <p>If people really like having <code>ident = path</code> for <code>pub use</code>, by the
 reasoning presented above that people are used to seeing the name
 exported by a <code>pub</code> item on the left-hand side of an <code>=</code> sign, then we
@@ -286,7 +293,7 @@ just be visible as an <em>export</em>), and then one could rebind for export
 and import simultaneously, like so:
 <code>pub use exported_bar = foo::bar as imported_bar;</code></p>
 <p>But really, is <code>pub use foo::bar as a</code> all that bad?</p>
-<a class="header" href="0169-use-path-as-id.html#allow-extern-crate-ident-as-ident" id="allow-extern-crate-ident-as-ident"><h2>Allow <code>extern crate ident as ident</code></h2></a>
+<a class="header" href="#allow-extern-crate-ident-as-ident" id="allow-extern-crate-ident-as-ident"><h2>Allow <code>extern crate ident as ident</code></h2></a>
 <p>As written, this RFC allows for two variants of <code>extern_crate_decl</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -306,7 +313,7 @@ extern crate old_name as new_name;
 this choice is orthgonal to the goals of this RFC (since, if this is a
 good idea, it could just as well be implemented with the <code>=</code> syntax).
 Perhaps it should just be filed as a separate RFC on its own.</p>
-<a class="header" href="0169-use-path-as-id.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>In the revised <code>extern crate</code> form, is it best to put the
 <code>link_attrs</code> after the identifier, as written above?  Or would it be
@@ -357,9 +364,6 @@ better for them to come after the <code>string_literal</code> when using the
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

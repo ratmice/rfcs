@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2025-nested-method-calls - </title>
+        <title>2025-nested-method-calls - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2025">rust-lang/rfcs#2025</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44100">rust-lang/rust#44100</a></li>
 </ul>
-<a class="header" href="2025-nested-method-calls.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Enable &quot;nested method calls&quot; where the outer call is an <code>&amp;mut self</code>
 borrow, such as <code>vec.push(vec.len())</code> (where <code>vec: Vec&lt;usize&gt;</code>). This
 is done by extending MIR with the concept of a <strong>two-phase borrow</strong>;
@@ -154,7 +161,7 @@ calls; this is intended as a conservative step. In the future, if
 desired, the scheme could be extended to other syntactic forms, or
 else subsumed as part of non-lexical lifetimes or some other
 generalization of the lifetime system.</p>
-<a class="header" href="2025-nested-method-calls.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The overriding goal here is that we want to accept nested method calls
 where the outer call is an <code>&amp;mut self</code> method, like
 <code>vec.push(vec.len())</code>. This is a common limitation that beginners
@@ -170,7 +177,7 @@ that will be accepted, and instead focuses precisely on the
 method-call form. It is compatible with the various alternatives, and
 tries to leave room for future expansion in a variety of
 directions. See the Alternatives section for more details.</p>
-<a class="header" href="2025-nested-method-calls.html#why-do-we-get-an-error-in-the-first-place" id="why-do-we-get-an-error-in-the-first-place"><h2>Why do we get an error in the first place?</h2></a>
+<a class="header" href="#why-do-we-get-an-error-in-the-first-place" id="why-do-we-get-an-error-in-the-first-place"><h2>Why do we get an error in the first place?</h2></a>
 <p>You may wonder why this code isn't accepted in the first place. To see
 why, consider what the (somewhat simplified) resulting MIR looks like:</p>
 <div class="footnote-definition" id="simp"><sup class="footnote-definition-label">1</sup>
@@ -241,7 +248,7 @@ should still be an error of course.</p>
 artificial, but keep in mind that most of the time when this occurs in
 practice, the argument is a method or fn call, and that could in
 principle have arbitrary side-effects.)</p>
-<a class="header" href="2025-nested-method-calls.html#introducing-reservations" id="introducing-reservations"><h3>Introducing reservations</h3></a>
+<a class="header" href="#introducing-reservations" id="introducing-reservations"><h3>Introducing reservations</h3></a>
 <p>This RFC proposes extending MIR with the concept of a <strong>two-phase
 borrow</strong>. These borrows are a variant of mutable borrows where the
 value starts out as <strong>reserved</strong> and only becomes mutably borrowed
@@ -312,8 +319,8 @@ v[0].push_str(&amp;format!(&quot;{}&quot;, v.len()));
 borrow of <code>v</code> is &quot;activated&quot; by the indexing, and hence <code>v</code> is
 considered mutably borrowed when <code>v.len()</code> is called, not reserved,
 which results in an error.</p>
-<a class="header" href="2025-nested-method-calls.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="2025-nested-method-calls.html#new-mir-form-for-two-phase-borrows" id="new-mir-form-for-two-phase-borrows"><h3>New MIR form for two-phase borrows</h3></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#new-mir-form-for-two-phase-borrows" id="new-mir-form-for-two-phase-borrows"><h3>New MIR form for two-phase borrows</h3></a>
 <p>Currently, the MIR rvalue for borrows has one of three forms (these
 are internal syntax only, naturally, since MIR doesn't have a defined
 written representation)</p>
@@ -333,15 +340,15 @@ and would not have a direct user representation for the time
 being. For most purposes, an <code>&amp;mut2</code> borrow would act precisely the
 same as an <code>&amp;mut</code> borrow; the borrow checker however would treat it
 differently, as described below.</p>
-<a class="header" href="2025-nested-method-calls.html#when-are-two-phase-borrows-used" id="when-are-two-phase-borrows-used"><h3>When are two-phase borrows used</h3></a>
+<a class="header" href="#when-are-two-phase-borrows-used" id="when-are-two-phase-borrows-used"><h3>When are two-phase borrows used</h3></a>
 <p>Two-phase borrows would be used in the specific case of desugaring a
 call to an <code>&amp;mut self</code> method. Currently, in the initially generated
 MIR, calls to such methods <em>always</em> have a &quot;auto-mut-ref&quot; inserted
 (this is because <code>vec.push()</code>, where <code>vec: &amp;mut Vec&lt;i32&gt;</code>, is
 considered a <em>borrow</em> of <code>vec</code>, not a move). This &quot;auto-mut-ref&quot; will
 be changed from an <code>&amp;mut</code> to an <code>&amp;mut2</code>.</p>
-<a class="header" href="2025-nested-method-calls.html#integrating-reserved-borrows-into-the-borrow-checker" id="integrating-reserved-borrows-into-the-borrow-checker"><h3>Integrating reserved borrows into the borrow checker</h3></a>
-<a class="header" href="2025-nested-method-calls.html#existing-mir-borrowck-algorithm" id="existing-mir-borrowck-algorithm"><h4>Existing MIR borrowck algorithm</h4></a>
+<a class="header" href="#integrating-reserved-borrows-into-the-borrow-checker" id="integrating-reserved-borrows-into-the-borrow-checker"><h3>Integrating reserved borrows into the borrow checker</h3></a>
+<a class="header" href="#existing-mir-borrowck-algorithm" id="existing-mir-borrowck-algorithm"><h4>Existing MIR borrowck algorithm</h4></a>
 <p>The proposed fix for this problem is described in terms of a MIR-based
 borrowck (which is coming soon). The basic structure of the existing
 borrow checker, transposed onto MIR, is as follows:</p>
@@ -382,7 +389,7 @@ where <code>lv_b</code> may overlap <code>lv_r</code></li>
 </ul>
 </li>
 </ul>
-<a class="header" href="2025-nested-method-calls.html#proposed-change" id="proposed-change"><h4>Proposed change</h4></a>
+<a class="header" href="#proposed-change" id="proposed-change"><h4>Proposed change</h4></a>
 <p>When the borrow checker encounters a <code>mut2</code> borrow, it will handle it
 in a slightly different way. Because of the limited places where <code>mut2</code> borrows
 are generated, we know that they will only ever be encountered in a statement
@@ -430,7 +437,7 @@ activation point. In particular, at the time that the shared borrow
 later, but still within the scope of the shared borrow. (In today's
 borrow checker, this cannot happen, so we only check at the start of a
 borrow whether other borrows are in scope.)</p>
-<a class="header" href="2025-nested-method-calls.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>For the most part, because this change is so targeted, it seems that
 discussion of how it works is out of scope for introductory texts such
 as The Rust Programming Language or Rust By Example. In particular,
@@ -470,7 +477,7 @@ as part of detailed general coverage on how MIR desugaring and the
 borrow checker work. At the moment, no such coverage exists, but this
 would be a logical part of it. In that context, explaining it in a
 similar fashion to how the RFC presents the change seems appropriate.</p>
-<a class="header" href="2025-nested-method-calls.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The obvious downside of this proposal is that it is narrowly targeted
 at the method call form. This means that &quot;manual desugarings&quot; of
 method calls will not necessarily work, particularly if the user
@@ -494,13 +501,13 @@ not a big deal.</li>
 language and the underlying &quot;desugared&quot; view that MIR takes, and in
 general that is to be avoided. The Alternatives section discuses some
 possible future extensions that could be used to remove that gap.</p>
-<a class="header" href="2025-nested-method-calls.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>As discussed earlier, a number of major alternative designs have been
 put forward to address nested method calls. This proposal is intended
 to be forwards compatible with all of them, but to adopt none of them
 in particular. We cover now each alternative and explain why we did
 not want to adopt it in this RFC.</p>
-<a class="header" href="2025-nested-method-calls.html#modifying-the-desugaring-to-evaluate-receiver-after-arguments" id="modifying-the-desugaring-to-evaluate-receiver-after-arguments"><h3>Modifying the desugaring to evaluate receiver after arguments</h3></a>
+<a class="header" href="#modifying-the-desugaring-to-evaluate-receiver-after-arguments" id="modifying-the-desugaring-to-evaluate-receiver-after-arguments"><h3>Modifying the desugaring to evaluate receiver after arguments</h3></a>
 <p>One option is to modify the desugaring for method calls. Currently,
 a call like <code>a.foo(b..z)</code> is always desugared into something like:</p>
 <ul>
@@ -579,7 +586,7 @@ we changed the method to <code>&amp;mut self</code>, we can suddenly see the
 side-effects of evaluating the argument.</p>
 <p>On balance, it seems better to this author to have the borrow checker
 analysis be more complex than the desugaring and execution order.</p>
-<a class="header" href="2025-nested-method-calls.html#permit-more-things-during-the-restricted-period" id="permit-more-things-during-the-restricted-period"><h3>Permit more things during the &quot;restricted&quot; period</h3></a>
+<a class="header" href="#permit-more-things-during-the-restricted-period" id="permit-more-things-during-the-restricted-period"><h3>Permit more things during the &quot;restricted&quot; period</h3></a>
 <p>The current notion of a 'restricted' borrow is identical to a shared
 borrow. However, we could in principle permit <em>more</em> things during the
 restricted period -- basically we could permit anything that does not
@@ -634,7 +641,7 @@ two calls apart, so that their relative side-effects are clearly
 visible.</li>
 </ul>
 <p>Of course, it would be possible to loosen the rules in the future.</p>
-<a class="header" href="2025-nested-method-calls.html#a-broader-user-of-two-phase-borrows" id="a-broader-user-of-two-phase-borrows"><h3>A broader user of two-phase borrows</h3></a>
+<a class="header" href="#a-broader-user-of-two-phase-borrows" id="a-broader-user-of-two-phase-borrows"><h3>A broader user of two-phase borrows</h3></a>
 <p>The initial proposal for two-phased borrows (made in
 [this blog post][]) was more expansive. In particular, it aimed to
 convert <strong>all mutable borrows</strong> into two-phase borrows at the MIR
@@ -684,7 +691,7 @@ whether a borrow is activated is affected by &quot;no-ops&quot; like <code>let x
 desugaring form doesn't feel like the right approach. (But, if they
 are limited to method-call desugaring, as ths RFC proposes, then they
 are a simple and effective mechanism without broader impact.)</p>
-<a class="header" href="2025-nested-method-calls.html#borrowing-for-the-future" id="borrowing-for-the-future"><h3>Borrowing for the future</h3></a>
+<a class="header" href="#borrowing-for-the-future" id="borrowing-for-the-future"><h3>Borrowing for the future</h3></a>
 <p>One of the initial proposals for how to think about nested method
 calls was in terms of &quot;borrowing for the future&quot;. Currently, whenever
 you have a borrow, the resulting reference is &quot;immediately
@@ -733,7 +740,7 @@ present a more cohesive model that we could teach to users (in short,
 when you make a reference, the span of the code where the reference is
 in active use is restricted, and the code leading up to that span
 treats the value as having been shared).</p>
-<a class="header" href="2025-nested-method-calls.html#ref2" id="ref2"><h3>Ref2</h3></a>
+<a class="header" href="#ref2" id="ref2"><h3>Ref2</h3></a>
 <p>In the internals thread, arielb1 had [an interesting proposal][ref2]
 that they called &quot;two-phase lifetimes&quot;. The goal was precisely to take
 the &quot;two-phase&quot; concept but incorporate it into lifetime inference,
@@ -761,7 +768,7 @@ regions of every other borrow (and from shared borrows).</p>
 <p>This proposal has a lot of potential applications, but each of them
 introduces some complications, and would require singificant further
 thought. Let's cover them in more detail.</p>
-<a class="header" href="2025-nested-method-calls.html#discontinuous-borrows" id="discontinuous-borrows"><h4>Discontinuous borrows</h4></a>
+<a class="header" href="#discontinuous-borrows" id="discontinuous-borrows"><h4>Discontinuous borrows</h4></a>
 <p>This proposal accepts more programs than the one I outlined. In
 particular, it accepts the example with interleaved reads and writes
 that we saw earlier. Let me give that example again, but annotation
@@ -826,7 +833,7 @@ make the system feel more mysterious, since the underlying rules are
 indeed more complex and thus harder to &quot;intuit&quot; on your own. Getting
 these details right is a significant design challenge outside the
 scope of this RFC.</p>
-<a class="header" href="2025-nested-method-calls.html#downgrading-mutable-to-shared" id="downgrading-mutable-to-shared"><h4>Downgrading mutable to shared</h4></a>
+<a class="header" href="#downgrading-mutable-to-shared" id="downgrading-mutable-to-shared"><h4>Downgrading mutable to shared</h4></a>
 <p>Another goal of the proposal was to (perhaps someday) support the
 &quot;downgrade-mut-to-shared&quot; pattern, in which a function takes in a
 mutable reference but returns a shared reference:</p>
@@ -861,7 +868,7 @@ of the <code>Ref2</code> type would have to be exposed to end-users, or other
 annotations are needed. Just as with discontinuous borrows, designing
 such a system is a significant design challenge outside the scope of
 this RFC.</p>
-<a class="header" href="2025-nested-method-calls.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None as yet..
 R</p>
 
@@ -908,9 +915,6 @@ R</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

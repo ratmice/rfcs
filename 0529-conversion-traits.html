@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0529-conversion-traits - </title>
+        <title>0529-conversion-traits - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/529">rust-lang/rfcs#529</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/23567">rust-lang/rust#23567</a></li>
 </ul>
-<a class="header" href="0529-conversion-traits.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes several new <em>generic conversion</em> traits. The
 motivation is to remove the need for ad hoc conversion traits (like
 <code>FromStr</code>, <code>AsSlice</code>, <code>ToSocketAddr</code>, <code>FromError</code>) whose <em>sole role</em>
@@ -148,7 +155,7 @@ proliferation, centralizing these traits also helps the ecosystem
 avoid incompatible ad hoc conversion traits defined downstream from
 the types they convert to or from. It also future-proofs against
 eventual language features for ergonomic conversion-based overloading.</p>
-<a class="header" href="0529-conversion-traits.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The idea of generic conversion traits has come up from
 <a href="https://github.com/rust-lang/rust/issues/7080">time</a>
 <a href="http://discuss.rust-lang.org/t/pre-rfc-add-a-coerce-trait-to-get-rid-of-the-as-slice-calls/415">to</a>
@@ -158,7 +165,7 @@ reasonably well. They are worth considering due to the problems they
 solve (given below), and considering <em>now</em> because they would obsolete
 several ad hoc conversion traits (and several more that are in the
 pipeline) for <code>std</code>.</p>
-<a class="header" href="0529-conversion-traits.html#problem-1-overloading-over-conversions" id="problem-1-overloading-over-conversions"><h2>Problem 1: overloading over conversions</h2></a>
+<a class="header" href="#problem-1-overloading-over-conversions" id="problem-1-overloading-over-conversions"><h2>Problem 1: overloading over conversions</h2></a>
 <p>Rust does not currently support arbitrary, implicit conversions -- and
 for some good reasons. However, it is sometimes important
 ergonomically to allow a single function to be <em>explicitly</em> overloaded
@@ -193,7 +200,7 @@ let new_path = my_path.join(Path::new(&quot;fixed_subdir_name&quot;));
 <p>It's a shame to have to introduce new ad hoc traits every time such an
 overloading is desired. And because the traits are ad hoc, it's also
 not possible to program generically over conversions themselves.</p>
-<a class="header" href="0529-conversion-traits.html#problem-2-duplicate-incompatible-conversion-traits" id="problem-2-duplicate-incompatible-conversion-traits"><h2>Problem 2: duplicate, incompatible conversion traits</h2></a>
+<a class="header" href="#problem-2-duplicate-incompatible-conversion-traits" id="problem-2-duplicate-incompatible-conversion-traits"><h2>Problem 2: duplicate, incompatible conversion traits</h2></a>
 <p>There's a somewhat more subtle problem compounding the above: if the
 author of the path API neglects to include traits like <code>AsPath</code> for
 its core types, but downstream crates want to overload on those
@@ -202,7 +209,7 @@ conversion traits, which will not be compatible with one another.</p>
 <p>Having standard, generic conversion traits cuts down on the total
 number of traits, and also ensures that all Rust libraries have an
 agreed-upon way to talk about conversions.</p>
-<a class="header" href="0529-conversion-traits.html#non-goals" id="non-goals"><h2>Non-goals</h2></a>
+<a class="header" href="#non-goals" id="non-goals"><h2>Non-goals</h2></a>
 <p>When considering the design of generic conversion traits, it's
 tempting to try to do away will <em>all</em> ad hoc conversion methods.  That
 is, to replace methods like <code>to_string</code> and <code>to_vec</code> with a single
@@ -229,8 +236,8 @@ the side -- especially given the trait complexity mentioned above.</p>
 </ul>
 <p>Nevertheless, this is a serious alternative that will be laid out in
 more detail below, and merits community discussion.</p>
-<a class="header" href="0529-conversion-traits.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0529-conversion-traits.html#basic-design" id="basic-design"><h2>Basic design</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#basic-design" id="basic-design"><h2>Basic design</h2></a>
 <p>The design is fairly simple, although perhaps not as simple as one
 might expect: we introduce a total of <em>four</em> traits:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -311,7 +318,7 @@ allows extensibility in some cases that <code>Into</code> does not.</p>
 constructors (in particular, replacing many <code>from</code> constructors).</p>
 </li>
 </ul>
-<a class="header" href="0529-conversion-traits.html#blanket-impls" id="blanket-impls"><h2>Blanket <code>impl</code>s</h2></a>
+<a class="header" href="#blanket-impls" id="blanket-impls"><h2>Blanket <code>impl</code>s</h2></a>
 <p>Given the above trait design, there are a few straightforward blanket
 <code>impl</code>s as one would expect:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -329,7 +336,7 @@ impl&lt;T, U&gt; From&lt;T&gt; for U where T: Into&lt;U&gt; {
     fn from(t: T) -&gt; U { t.into() }
 }
 #}</code></pre></pre>
-<a class="header" href="0529-conversion-traits.html#an-example" id="an-example"><h2>An example</h2></a>
+<a class="header" href="#an-example" id="an-example"><h2>An example</h2></a>
 <p>Using all of the above, here are some example <code>impl</code>s and their use:</p>
 <pre><pre class="playpen"><code class="language-rust">impl AsRef&lt;str&gt; for String {
     fn as_ref(&amp;self) -&gt; &amp;str {
@@ -371,7 +378,7 @@ that. The main reason to do so is to avoid code bloat: given that the
 generic bound is used only for a conversion that can be done up front,
 there is no reason to monomorphize the entire function body for each
 input type.</p>
-<a class="header" href="0529-conversion-traits.html#an-aside-codifying-the-generics-pattern-in-the-language" id="an-aside-codifying-the-generics-pattern-in-the-language"><h3>An aside: codifying the generics pattern in the language</h3></a>
+<a class="header" href="#an-aside-codifying-the-generics-pattern-in-the-language" id="an-aside-codifying-the-generics-pattern-in-the-language"><h3>An aside: codifying the generics pattern in the language</h3></a>
 <p>This pattern is so common that we probably want to consider sugar for
 it, e.g. something like:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -387,7 +394,7 @@ impl Path {
 was restricted to <code>AsRef</code> conversions). Such a feature is out of scope
 for this RFC, but it's a natural and highly ergonomic extension of the
 traits being proposed here.</p>
-<a class="header" href="0529-conversion-traits.html#preliminary-conventions" id="preliminary-conventions"><h2>Preliminary conventions</h2></a>
+<a class="header" href="#preliminary-conventions" id="preliminary-conventions"><h2>Preliminary conventions</h2></a>
 <p>Would <em>all</em> conversion traits be replaced by the proposed ones?
 Probably not, due to the combination of two factors (using the example
 of <code>To</code>, despite its being deferred for now):</p>
@@ -447,7 +454,7 @@ clients to take advantage of the various blanket generic conversion
 bloat.</p>
 </li>
 </ul>
-<a class="header" href="0529-conversion-traits.html#prelude-changes" id="prelude-changes"><h2>Prelude changes</h2></a>
+<a class="header" href="#prelude-changes" id="prelude-changes"><h2>Prelude changes</h2></a>
 <p><em>All</em> of the conversion traits are added to the prelude. There are two
 reasons for doing so:</p>
 <ul>
@@ -461,7 +468,7 @@ ubiquitously as bounds.</p>
 <code>from</code> constructor is expected to be rather widespread.</p>
 </li>
 </ul>
-<a class="header" href="0529-conversion-traits.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There are a few drawbacks to the design as proposed:</p>
 <ul>
 <li>
@@ -480,7 +487,7 @@ than wholly implicit. If we do go in this direction, we can consider
 language extensions that make it ergonomic <em>and</em> avoid code bloat.</p>
 </li>
 </ul>
-<a class="header" href="0529-conversion-traits.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The original form of this RFC used the names <code>As.convert_as</code>,
 <code>AsMut.convert_as_mut</code>, <code>To.convert_to</code> and <code>Into.convert_into</code> (though
 still <code>From.from</code>). After discussion <code>As</code> was changed to <code>AsRef</code>,
@@ -624,7 +631,7 @@ fn main() {
     let b = s.shift_view::&lt;[u8]&gt;();
 }
 </code></pre></pre>
-<a class="header" href="0529-conversion-traits.html#possible-further-work" id="possible-further-work"><h2>Possible further work</h2></a>
+<a class="header" href="#possible-further-work" id="possible-further-work"><h2>Possible further work</h2></a>
 <p>We could add a <code>To</code> trait.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -695,9 +702,6 @@ impl&lt;'a, T, U&gt; Into&lt;U&gt; for &amp;'a T where T: To&lt;U&gt; {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

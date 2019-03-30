@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2133-all-the-clones - </title>
+        <title>2133-all-the-clones - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,14 +146,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2133">rust-lang/rfcs#2133</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44496">rust-lang/rust#44496</a></li>
 </ul>
-<a class="header" href="2133-all-the-clones.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add compiler-generated <code>Clone</code> implementations for tuples and arrays with <code>Clone</code> elements of all lengths.</p>
-<a class="header" href="2133-all-the-clones.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, the <code>Clone</code> trait for arrays and tuples is implemented using a <a href="https://github.com/rust-lang/rust/blob/f3d6973f41a7d1fb83029c9c0ceaf0f5d4fd7208/src/libcore/tuple.rs#L25">macro</a> in libcore, for tuples of size 11 or less and for <code>Copy</code> arrays of size 32 or less. This breaks the uniformity of the language and annoys users.</p>
 <p>Also, the compiler already implements <code>Copy</code> for all arrays and tuples with all elements <code>Copy</code>, which forces the compiler to provide an implementation for <code>Copy</code>'s supertrait <code>Clone</code>. There is no reason the compiler couldn't provide <code>Clone</code> impls for all arrays and tuples.</p>
-<a class="header" href="2133-all-the-clones.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>Arrays and tuples of <code>Clone</code> arrays are <code>Clone</code> themselves. Cloning them clones all of their elements.</p>
-<a class="header" href="2133-all-the-clones.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>Make <code>clone</code> a lang-item, add the following trait rules to the compiler:</p>
 <pre><code>n number
 T type
@@ -192,13 +199,13 @@ char: Clone
 !: Clone
 </code></pre>
 <p>This was considered a bug-fix (these types are all <code>Copy</code>, so it's easy to witness that they are <code>Clone</code>).</p>
-<a class="header" href="2133-all-the-clones.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The MIR shims add complexity to the compiler. Along with the <code>derive(Clone)</code> implementation in <code>libsyntax</code>, we have 2 separate sets of implementations of <code>Clone</code>.</p>
 <p>Having <code>Copy</code> and <code>Clone</code> impls for all arrays and tuples, but not <code>PartialEq</code> etc. impls, could be confusing to users.</p>
-<a class="header" href="2133-all-the-clones.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
 <p>Even with all proposed expansions to Rust's type-system, for consistency, the compiler needs to have at least <em>some</em> built-in <code>Clone</code> implementations: the type <code>for&lt;'a&gt; fn(Foo&lt;'a&gt;)</code> is <code>Copy</code> for all user-defined types <code>Foo</code>, but there is no way to implement <code>Clone</code>, which is a supertrait of <code>Copy</code>, for it (an <code>impl&lt;T&gt; Clone for fn(T)</code> won't match against the higher-ranked type).</p>
 <p>The MIR shims for <code>Clone</code> of arrays and tuples are actually pretty simple and don't add much complexity after we have <code>drop_in_place</code> and shims for <code>Copy</code> types.</p>
-<a class="header" href="2133-all-the-clones.html#the-array-situation" id="the-array-situation"><h2>The array situation</h2></a>
+<a class="header" href="#the-array-situation" id="the-array-situation"><h2>The array situation</h2></a>
 <p>In Rust 1.19, arrays are <code>Clone</code> only if they are <code>Copy</code>. This code does not compile:</p>
 <pre><code class="language-Rust">fn main() {
     let x = [Box::new(0)].clone(); //~ ERROR
@@ -219,12 +226,12 @@ char: Clone
 }
 </code></pre>
 <p>OTOH, this means that making non-<code>Copy</code> arrays <code>Clone</code> is less of a bugfix and more of a new feature. It's however a nice feature - <code>[Box&lt;u32&gt;; 1]</code> not being <code>Clone</code> is an annoying and seemingly-pointless edge case.</p>
-<a class="header" href="2133-all-the-clones.html#implement-clone-only-for-copy-types" id="implement-clone-only-for-copy-types"><h2>Implement <code>Clone</code> only for <code>Copy</code> types</h2></a>
+<a class="header" href="#implement-clone-only-for-copy-types" id="implement-clone-only-for-copy-types"><h2>Implement <code>Clone</code> only for <code>Copy</code> types</h2></a>
 <p>As of Rust 1.19, the compiler <em>does not</em> have the <code>Clone</code> implementations, which causes ICEs such as <a href="https://github.com/rust-lang/rust/issues/25733">rust-lang/rust#25733</a> because <code>Clone</code> is a supertrait of <code>Copy</code>.</p>
 <p>One alternative, which would solve ICEs while being conservative, would be to have compiler implementations for <code>Clone</code> only for <em><code>Copy</code></em> tuples of size 12+ and arrays, and maintain the <code>libcore</code> macros for <code>Clone</code> of tuples (in Rust 1.19, arrays are only <code>Clone</code> if they are <code>Copy</code>).</p>
 <p>This would make the shims <em>trivial</em> (a <code>Clone</code> implementation for a <code>Copy</code> type is just a memcpy), and would not implement any features that are not needed.</p>
 <p>When we get variadic generics, we could make all tuples with <code>Clone</code> elements <code>Clone</code>. When we get const generics, we could make all arrays with <code>Clone</code> elements <code>Clone</code>.</p>
-<a class="header" href="2133-all-the-clones.html#use-a-mir-implementation-of-clone-for-all-derived-impls" id="use-a-mir-implementation-of-clone-for-all-derived-impls"><h2>Use a MIR implementation of <code>Clone</code> for all derived impls</h2></a>
+<a class="header" href="#use-a-mir-implementation-of-clone-for-all-derived-impls" id="use-a-mir-implementation-of-clone-for-all-derived-impls"><h2>Use a MIR implementation of <code>Clone</code> for all derived impls</h2></a>
 <p>The implementation on the other end of the conservative-radical end would be to use the MIR shims for <em>all</em> <code>#[derive(Clone)]</code> implementations. This would increase uniformity by getting rid of the separate <code>libsyntax</code> derived implementation. However:</p>
 <ol>
 <li>
@@ -237,9 +244,9 @@ char: Clone
 <p>A MIR shim implementation would also have to deal with edge cases such as <code>#[repr(packed)]</code>, which normal type-checking would handle for ordinary <code>derive</code>. I think drop glue already encounters all of these edge cases so we have to deal with them anyway.</p>
 </li>
 </ol>
-<a class="header" href="2133-all-the-clones.html#copy-and-clone-for-closures" id="copy-and-clone-for-closures"><h2><code>Copy</code> and <code>Clone</code> for closures</h2></a>
+<a class="header" href="#copy-and-clone-for-closures" id="copy-and-clone-for-closures"><h2><code>Copy</code> and <code>Clone</code> for closures</h2></a>
 <p>We could also add implementations of <code>Copy</code> and <code>Clone</code> to closures. That is <a href="https://github.com/rust-lang/rfcs/pull/2132">RFC #2132</a> and should be discussed there.</p>
-<a class="header" href="2133-all-the-clones.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>See Alternatives.</p>
 
                     </main>
@@ -285,9 +292,6 @@ char: Clone
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

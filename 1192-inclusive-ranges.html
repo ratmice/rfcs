@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1192-inclusive-ranges - </title>
+        <title>1192-inclusive-ranges - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1192">rust-lang/rfcs#1192</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/28237">rust-lang/rust#28237</a></li>
 </ul>
-<a class="header" href="1192-inclusive-ranges.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Allow a <code>x...y</code> expression to create an inclusive range.</p>
-<a class="header" href="1192-inclusive-ranges.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>There are several use-cases for inclusive ranges, that semantically
 include both end-points. For example, iterating from <code>0_u8</code> up to and
 including some number <code>n</code> can be done via <code>for _ in 0..n + 1</code> at the
@@ -152,7 +159,7 @@ there's absolutely no reason that <code>{</code> is after <code>z</code> other t
 of the representation.</p>
 <p>The <code>...</code> syntax mirrors the current <code>..</code> used for exclusive ranges:
 more dots means more elements.</p>
-<a class="header" href="1192-inclusive-ranges.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p><code>std::ops</code> defines</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -208,7 +215,7 @@ as <code>Range</code> does, since it doesn't to need to worry about overflow.  E
 primitives, it could be advantageous to choose a different implementation,
 perhaps using <code>.overflowing_add(1)</code> and swapping on overflow, or <code>a...a</code>
 could become <code>(a+1)...a</code> where possible and <code>a...(a-1)</code> otherwise.</p>
-<a class="header" href="1192-inclusive-ranges.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There's a mismatch between pattern-<code>...</code> and expression-<code>...</code>, in that
 the former doesn't undergo the same desugaring as the
 latter. (Although they represent essentially the same thing
@@ -217,7 +224,7 @@ semantically.)</p>
 <p>This proposal makes the post-iteration values of the <code>start</code> and <code>end</code> fields
 constant, and thus useless.  Some of the alternatives would expose the
 last value returned from the iteration, through a more complex interface.</p>
-<a class="header" href="1192-inclusive-ranges.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>An alternate syntax could be used, like
 <code>..=</code>. <a href="https://internals.rust-lang.org/t/vs-for-inclusive-ranges/1539">There has been discussion</a>, but there wasn't a clear
 winner.</p>
@@ -250,9 +257,9 @@ used reasonably often, in the author's experience)</li>
 its different (inclusive) semantics from the <code>end</code> (exclusive) field on
 the other ranges.</li>
 </ul>
-<a class="header" href="1192-inclusive-ranges.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None so far.</p>
-<a class="header" href="1192-inclusive-ranges.html#amendments" id="amendments"><h1>Amendments</h1></a>
+<a class="header" href="#amendments" id="amendments"><h1>Amendments</h1></a>
 <ul>
 <li>In rust-lang/rfcs#1320, this RFC was amended to change the <code>RangeInclusive</code>
 type from a struct with a <code>finished</code> field to an enum.</li>
@@ -303,9 +310,6 @@ type from an enum to a struct with just <code>start</code> and <code>end</code> 
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1184-stabilize-no_std - </title>
+        <title>1184-stabilize-no_std - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1184">rust-lang/rfcs#1184</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27394">rust-lang/rust#27394</a></li>
 </ul>
-<a class="header" href="1184-stabilize-no_std.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Tweak the <code>#![no_std]</code> attribute, add a new <code>#![no_core]</code> attribute, and
 pave the way for stabilizing the libcore library.</p>
-<a class="header" href="1184-stabilize-no_std.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently all stable Rust programs must link to the standard library (libstd),
 and it is impossible to opt out of this. The standard library is not appropriate
 for use cases such as kernels, embedded development, or some various niche cases
@@ -168,14 +175,14 @@ defined when libstd is not used. These language items are:</p>
 </ul>
 <p>To be able to usefully leverage <code>#![no_std]</code> in stable Rust these lang items
 must be available in a stable fashion.</p>
-<a class="header" href="1184-stabilize-no_std.html#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
 <p>This RFC proposes a nuber of changes:</p>
 <ul>
 <li>Tweak the <code>#![no_std]</code> attribute slightly.</li>
 <li>Introduce a <code>#![no_core]</code> attribute.</li>
 <li>Pave the way to stabilize the <code>core</code> module.</li>
 </ul>
-<a class="header" href="1184-stabilize-no_std.html#no_std" id="no_std"><h2><code>no_std</code></h2></a>
+<a class="header" href="#no_std" id="no_std"><h2><code>no_std</code></h2></a>
 <p>The <code>#![no_std]</code> attribute currently provides two pieces of functionality:</p>
 <ul>
 <li>The compiler no longer injects <code>extern crate std</code> at the top of a crate.</li>
@@ -189,7 +196,7 @@ every module.</li>
 </ul>
 <p>Most uses of <code>#![no_std]</code> already want behavior along these lines as they want
 to use libcore, just not the standard library.</p>
-<a class="header" href="1184-stabilize-no_std.html#no_core" id="no_core"><h2><code>no_core</code></h2></a>
+<a class="header" href="#no_core" id="no_core"><h2><code>no_core</code></h2></a>
 <p>A new attribute will be added to the compiler, <code>#![no_core]</code>, which serves two
 purposes:</p>
 <ul>
@@ -199,12 +206,12 @@ injection).</li>
 </ul>
 <p>Users of <code>#![no_std]</code> today who do <em>not</em> use libcore would migrate to moving
 this attribute instead of <code>#![no_std]</code>.</p>
-<a class="header" href="1184-stabilize-no_std.html#stabilization-of-libcore" id="stabilization-of-libcore"><h2>Stabilization of libcore</h2></a>
+<a class="header" href="#stabilization-of-libcore" id="stabilization-of-libcore"><h2>Stabilization of libcore</h2></a>
 <p>This RFC does not yet propose a stabilization path for the contents of libcore,
 but it proposes readying to stabilize the name <code>core</code> for libcore, paving the
 way for the rest of the library to be stabilized. The exact method of
 stabilizing its contents will be determined with a future RFC or pull requests.</p>
-<a class="header" href="1184-stabilize-no_std.html#stabilizing-lang-items" id="stabilizing-lang-items"><h2>Stabilizing lang items</h2></a>
+<a class="header" href="#stabilizing-lang-items" id="stabilizing-lang-items"><h2>Stabilizing lang items</h2></a>
 <p>As mentioned above, there are three separate lang items which are required by
 the libcore library to link correctly. These items are:</p>
 <ul>
@@ -224,7 +231,7 @@ how they should be implemented.</li>
 </ul>
 <p>Stabilization of these lang items (in any form) will be considered in a future
 RFC.</p>
-<a class="header" href="1184-stabilize-no_std.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The current distribution provides precisely one library, the standard library,
 for general consumption of Rust programs. Adding a new one (libcore) is adding
 more surface area to the distribution (in addition to adding a new <code>#![no_core]</code>
@@ -248,7 +255,7 @@ crates should also interoperate with the rest of the ecosystem using <code>std</
 Unfortunately, however, there are known cases where this is not possible. For
 example if a macro is exported from a <code>#![no_std]</code> crate which references items
 from <code>core</code> it won't work by default with a <code>std</code> library.</p>
-<a class="header" href="1184-stabilize-no_std.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Most of the strategies taken in this RFC have some minor variations on what can
 happen:</p>
 <ul>
@@ -262,7 +269,7 @@ definitions of these lang items which are all wired to abort. This has the
 downside of selecting a name for this crate, however, and also inflating the
 crates in our distribution again.</li>
 </ul>
-<a class="header" href="1184-stabilize-no_std.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
 <ul>
 <li>How important/common are <code>#![no_std]</code> executables? Should this RFC attempt to
 stabilize that as well?</li>
@@ -317,9 +324,6 @@ somewhere in the compilation.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

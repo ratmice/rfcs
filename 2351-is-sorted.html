@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2351-is-sorted - </title>
+        <title>2351-is-sorted - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2351">rust-lang/rfcs#2351</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/53485">rust-lang/rust#53485</a></li>
 </ul>
-<a class="header" href="2351-is-sorted.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add the methods <code>is_sorted</code>, <code>is_sorted_by</code> and <code>is_sorted_by_key</code> to <code>[T]</code>;
 add the methods <code>is_sorted</code> and <code>is_sorted_by</code> to <code>Iterator</code>.</p>
-<a class="header" href="2351-is-sorted.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>In quite a few situations, one needs to check whether a sequence of elements
 is sorted. The most important use cases are probably <strong>unit tests</strong> and
 <strong>pre-/post-condition checks</strong>.</p>
@@ -173,13 +180,13 @@ like Ruby, Javascript, Java, Haskell and Python – seem to lack such a function
 in <a href="https://stackoverflow.com/posts/51272639/revisions">this StackOverflow answer</a>
 and in many more places. Thus, avoiding this common bug is another good
 reason to add <code>is_sorted()</code>.</p>
-<a class="header" href="2351-is-sorted.html#fast-implementation-via-simd" id="fast-implementation-via-simd"><h2>Fast Implementation via SIMD</h2></a>
+<a class="header" href="#fast-implementation-via-simd" id="fast-implementation-via-simd"><h2>Fast Implementation via SIMD</h2></a>
 <p>Lastly, it is possible to implement <code>is_sorted</code> for many common types with SIMD
 instructions which improves speed significantly. It is unlikely that many
 programmers will take the time to write SIMD code themselves, thus everyone
 would benefit if this rather difficult implementation work is done in the
 standard library.</p>
-<a class="header" href="2351-is-sorted.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>Possible documentation of the two new methods of <code>Iterator</code> as well as
 <code>[T]::is_sorted_by_key</code>:</p>
 <blockquote>
@@ -197,7 +204,7 @@ is returned.</p>
 <p>Note that if <code>Self::Item</code> is only <code>PartialOrd</code>, but not <code>Ord</code>, the above
 definition implies that this function returns <code>false</code> if any two
 consecutive items are not comparable.</p>
-<a class="header" href="2351-is-sorted.html#example" id="example"><h2>Example</h2></a>
+<a class="header" href="#example" id="example"><h2>Example</h2></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -237,7 +244,7 @@ key extraction function.</p>
 compares the keys of the elements, as determined by <code>f</code>. Apart from
 that, it's equivalent to <code>is_sorted</code>; see its documentation for more
 information.</p>
-<a class="header" href="2351-is-sorted.html#example-1" id="example-1"><h2>Example</h2></a>
+<a class="header" href="#example-1" id="example-1"><h2>Example</h2></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -247,7 +254,7 @@ assert!(![-2i32, -1, 0, 3].is_sorted_by_key(|n| n.abs()));
 </blockquote>
 <p>The methods <code>[T]::is_sorted</code> and <code>[T]::is_sorted_by</code> will have analogous
 documentations to the ones shown above.</p>
-<a class="header" href="2351-is-sorted.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>This RFC proposes to add the following methods to <code>[T]</code> (slices) and
 <code>Iterator</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -294,10 +301,10 @@ the function returns <code>false</code> if any two consecutive elements are not
 comparable (this is an implication of the <code>a &lt;= b</code> condition from above).</p>
 <p>A sample implementation can be found
 <a href="https://play.rust-lang.org/?gist=431ff42fe8ba5980fcf9250c8bc4492b&amp;version=stable">here</a>.</p>
-<a class="header" href="2351-is-sorted.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It increases the size of the standard library by a tiny bit.</p>
-<a class="header" href="2351-is-sorted.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
-<a class="header" href="2351-is-sorted.html#only-add-the-methods-to-iterator-but-not-to-t" id="only-add-the-methods-to-iterator-but-not-to-t"><h3>Only add the methods to <code>Iterator</code>, but not to <code>[T]</code></h3></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#only-add-the-methods-to-iterator-but-not-to-t" id="only-add-the-methods-to-iterator-but-not-to-t"><h3>Only add the methods to <code>Iterator</code>, but not to <code>[T]</code></h3></a>
 <p>Without <code>is_sorted()</code> defined for slices directly, one can still fairly easily
 test if a slice is sorted by obtaining an iterator via <code>iter()</code>. So instead of
 <code>v.is_sorted()</code>, one would need to write <code>v.iter().is_sorted()</code>.</p>
@@ -312,14 +319,14 @@ favourable for many programmers (especially given the popularity of slice-like
 data structures, like <code>Vec&lt;T&gt;</code>). Additionally, the <code>sort</code> method and friends
 are defined for slices, thus one might expect the <code>is_sorted()</code> method there,
 too.</p>
-<a class="header" href="2351-is-sorted.html#add-the-three-methods-to-additional-data-structures-like-linkedlist-as-well" id="add-the-three-methods-to-additional-data-structures-like-linkedlist-as-well"><h3>Add the three methods to additional data structures (like <code>LinkedList</code>) as well</h3></a>
+<a class="header" href="#add-the-three-methods-to-additional-data-structures-like-linkedlist-as-well" id="add-the-three-methods-to-additional-data-structures-like-linkedlist-as-well"><h3>Add the three methods to additional data structures (like <code>LinkedList</code>) as well</h3></a>
 <p>Adding these methods to every data structure in the standard libary is a lot of
 duplicate code. Optimally, we would have a trait that represents sequential
 data structures and would only add <code>is_sorted</code> and friends to said trait. We
 don't have such a trait as of now; so <code>Iterator</code> is the next best thing. Slices
 deserve special treatment due to the reasons mentioned above (popularity and
 <code>sort()</code>).</p>
-<a class="header" href="2351-is-sorted.html#iteratorwhile_sorted-is_sorted_until-sorted_prefix-num_sorted-" id="iteratorwhile_sorted-is_sorted_until-sorted_prefix-num_sorted-"><h3><code>Iterator::while_sorted</code>, <code>is_sorted_until</code>, <code>sorted_prefix</code>, <code>num_sorted</code>, ...</h3></a>
+<a class="header" href="#iteratorwhile_sorted-is_sorted_until-sorted_prefix-num_sorted-" id="iteratorwhile_sorted-is_sorted_until-sorted_prefix-num_sorted-"><h3><code>Iterator::while_sorted</code>, <code>is_sorted_until</code>, <code>sorted_prefix</code>, <code>num_sorted</code>, ...</h3></a>
 <p><a href="https://github.com/rust-lang/rust/issues/44370">In the issue on the main repository</a>,
 concerns about completely consuming the iterator were raised. Some alternatives,
 such as <a href="https://github.com/rust-lang/rust/issues/44370#issuecomment-327873139"><code>while_sorted</code></a>,
@@ -342,8 +349,8 @@ O(n) for already sorted arrays.</p>
 <p>Suggestions like <code>is_sorted_until</code> are not really useful either: one can easily
 get a subslice or a part of an iterator (via <code>.take()</code>) and call <code>is_sorted()</code>
 on that part.</p>
-<a class="header" href="2351-is-sorted.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="2351-is-sorted.html#should-iteratoris_sorted_by_key-be-added-as-well" id="should-iteratoris_sorted_by_key-be-added-as-well"><h3>Should <code>Iterator::is_sorted_by_key</code> be added as well?</h3></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#should-iteratoris_sorted_by_key-be-added-as-well" id="should-iteratoris_sorted_by_key-be-added-as-well"><h3>Should <code>Iterator::is_sorted_by_key</code> be added as well?</h3></a>
 <p>This RFC proposes to add <code>is_sorted_by_key</code> only to <code>[T]</code> but not to
 <code>Iterator</code>. The latter addition wouldn't be too useful since once could easily
 achieve the same effect as <code>.is_sorted_by_key(...)</code> by calling
@@ -352,7 +359,7 @@ for consistency and ease of use. The standard library already hosts a number of
 sorting-related functions all of which come in three flavours: <em>raw</em>, <code>_by</code> and
 <code>_by_key</code>. By now, programmers could expect there to be an <code>is_sorted_by_key</code>
 as well.</p>
-<a class="header" href="2351-is-sorted.html#add-stdcmpis_sorted-instead" id="add-stdcmpis_sorted-instead"><h3>Add <code>std::cmp::is_sorted</code> instead</h3></a>
+<a class="header" href="#add-stdcmpis_sorted-instead" id="add-stdcmpis_sorted-instead"><h3>Add <code>std::cmp::is_sorted</code> instead</h3></a>
 <p>As suggested <a href="https://github.com/rust-lang/rust/issues/44370#issuecomment-345495831">here</a>,
 one could also add this free function (plus the <code>_by</code> and <code>_by_key</code> versions)
 to <code>std::cmp</code>:</p>
@@ -368,7 +375,7 @@ where
 structure should get <code>is_sorted</code> methods. However, it might have the
 disadvantage of being less discoverable and also less convenient (long path or
 import).</p>
-<a class="header" href="2351-is-sorted.html#require-ord-instead-of-only-partialord" id="require-ord-instead-of-only-partialord"><h3>Require <code>Ord</code> instead of only <code>PartialOrd</code></h3></a>
+<a class="header" href="#require-ord-instead-of-only-partialord" id="require-ord-instead-of-only-partialord"><h3>Require <code>Ord</code> instead of only <code>PartialOrd</code></h3></a>
 <p>As proposed in this RFC, <code>is_sorted</code> only requires its elements to be
 <code>PartialOrd</code>. If two non-comparable elements are encountered, <code>false</code> is
 returned. This is probably the only useful way to define the function for
@@ -432,9 +439,6 @@ bit more complicated than necessary for most cases.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

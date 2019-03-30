@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2027-object_safe_for_dispatch - </title>
+        <title>2027-object_safe_for_dispatch - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2027">rust-lang/rfcs#2027</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/43561">rust-lang/rust#43561</a></li>
 </ul>
-<a class="header" href="2027-object_safe_for_dispatch.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Tweak the object safety rules to allow using trait object types for static
 dispatch, even when the trait would not be safe to instantiate as an object.</p>
-<a class="header" href="2027-object_safe_for_dispatch.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Because Rust features a very expressive type system, users often use the type
 system to express high level constraints which can be resolved at compile time,
 even when the types involved are never actually instantiated with values.</p>
@@ -176,7 +183,7 @@ safety only matters when you actually create a dynamically dispatched trait
 object at runtime.</p>
 <p>This RFC proposes to lift that restriction, allowing trait object types to be
 used for static dispatch even when the trait is not object safe.</p>
-<a class="header" href="2027-object_safe_for_dispatch.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Today, the rules for object safey work like this:</p>
 <ul>
 <li>If the trait (e.g. <code>Foo</code>) <strong>is</strong> object safe:
@@ -209,14 +216,14 @@ the self-trait bound, and it cannot be instantiated in safe Rust.</li>
 </ul>
 <p>This change to the rules will allow trait object types to be used for static
 dispatch.</p>
-<a class="header" href="2027-object_safe_for_dispatch.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>This is just a slight tweak to how object safety is implemented. We will need
 to make sure the the official documentation is accurate to the rules,
 especially the reference.</p>
 <p>However, this does not need to be <strong>highlighted</strong> to users per se in the
 explanation of object safety. This tweak will only impact advanced uses of the
 trait system.</p>
-<a class="header" href="2027-object_safe_for_dispatch.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This is a change to an existing system, its always possible it could cause
 regressions, though the RFC authors are unaware of any.</p>
 <p>Arguably, the rules become more nuanced (though they also become a more direct
@@ -225,7 +232,7 @@ mirror).</p>
 unsafe code, by transmuting from <code>std::raw::TraitObject</code>. This would be
 extremely unsafe and users almost certainly should not do this. In the status
 quo, they just can't.</p>
-<a class="header" href="2027-object_safe_for_dispatch.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could instead make it possible for every trait to be object safe, by
 allowing <code>where Self: Sized</code> bounds on every single item. For example:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -243,7 +250,7 @@ trait Foo {
 <p>However, this puts the burden on users to add all of these additional bounds.</p>
 <p>Possibly we should add bounds like this in addition to this RFC, since they
 are already valid on functions, just not types and consts.</p>
-<a class="header" href="2027-object_safe_for_dispatch.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>How does this impact the implementation in rustc?</p>
 
                     </main>
@@ -289,9 +296,6 @@ are already valid on functions, just not types and consts.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

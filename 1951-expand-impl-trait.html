@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1951-expand-impl-trait - </title>
+        <title>1951-expand-impl-trait - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1951">rust-lang/rfcs#1951</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/42183">rust-lang/rust#42183</a></li>
 </ul>
-<a class="header" href="1951-expand-impl-trait.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes several steps forward for <code>impl Trait</code>:</p>
 <ul>
 <li>
@@ -156,7 +163,7 @@ in scope for an <code>impl Trait</code>.</p>
 </ul>
 <p>The first two proposals, in particular, put us into a position to stabilize the
 current version of the feature in the near future.</p>
-<a class="header" href="1951-expand-impl-trait.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>To recap, the current <code>impl Trait</code> feature allows functions to write a return
 type like <code>impl Iterator&lt;Item = u64&gt;</code> or <code>impl Fn(u64) -&gt; bool</code>, which says that
 the function's return type satisfies the given trait bounds, but nothing more
@@ -188,11 +195,11 @@ the hidden, concrete type that will be returned? Can you customize this set?</p>
 <p>This RFC is aimed squarely at resolving these questions. However, by resolving
 some of them, it also unlocks the door to an expansion of the feature to new
 locations (arguments, traits, trait impls), as we'll see.</p>
-<a class="header" href="1951-expand-impl-trait.html#motivation-for-expanding-to-argument-position" id="motivation-for-expanding-to-argument-position"><h2>Motivation for expanding to argument position</h2></a>
+<a class="header" href="#motivation-for-expanding-to-argument-position" id="motivation-for-expanding-to-argument-position"><h2>Motivation for expanding to argument position</h2></a>
 <p>This RFC proposes to allow <code>impl Trait</code> to be used in argument position, with
 &quot;universal&quot; (aka generics-style) semantics. There are three lines of argument in
 favor of doing so, given here along with rebuttals from the lang team.</p>
-<a class="header" href="1951-expand-impl-trait.html#argument-from-learnability" id="argument-from-learnability"><h3>Argument from learnability</h3></a>
+<a class="header" href="#argument-from-learnability" id="argument-from-learnability"><h3>Argument from learnability</h3></a>
 <p>There's been a lot of discussion around universals vs. existentials (in today's
 Rust, generics vs <code>impl Trait</code>). The RFC makes a few assumptions:</p>
 <ul>
@@ -250,7 +257,7 @@ terms of that syntax. And then you can go back to mostly operating intuitively
 with <code>impl Trait</code>, reaching for the fine distinctions only when you need them
 (<a href="https://terrytao.wordpress.com/career-advice/there%E2%80%99s-more-to-mathematics-than-rigour-and-proofs/">the &quot;post-rigorous&quot; stage of learning</a>).</p>
 <p><a href="https://github.com/rust-lang/rfcs/pull/1951#issuecomment-287493061">@solson did a great job of laying this kind of argument out.</a></p>
-<a class="header" href="1951-expand-impl-trait.html#argument-from-ergonomics" id="argument-from-ergonomics"><h3>Argument from ergonomics</h3></a>
+<a class="header" href="#argument-from-ergonomics" id="argument-from-ergonomics"><h3>Argument from ergonomics</h3></a>
 <p><a href="https://blog.rust-lang.org/2017/03/02/lang-ergonomics.html">Ergonomics is rarely about raw character count</a>,
 and the argument here isn't about shaving off a few characters. Rather, it's
 about how much you have to hold in your head.</p>
@@ -282,7 +289,7 @@ fn map&lt;U&gt;(self, f: FnOnce(T) -&gt; U) -&gt; Option&lt;U&gt;
 syntax in argument and return position -- and it almost always has the meaning
 you want -- means less pausing to think &quot;hm, am I dealing with an existential
 here?&quot;</p>
-<a class="header" href="1951-expand-impl-trait.html#argument-from-familiarity" id="argument-from-familiarity"><h3>Argument from familiarity</h3></a>
+<a class="header" href="#argument-from-familiarity" id="argument-from-familiarity"><h3>Argument from familiarity</h3></a>
 <p>Finally, there's an argument from familiarity, which was given eloquently by @withoutboats:</p>
 <blockquote>
 <p>The proposal is (syntactically) more like Java. In Java, non-static methods
@@ -305,7 +312,7 @@ very unified way. In Rust, this is just a syntactic easement into a unitary
 polymorphism system which is fundamentally one idea: parametric polymorphism
 with trait constraints.</p>
 </blockquote>
-<a class="header" href="1951-expand-impl-trait.html#critique-from-the-lang-team" id="critique-from-the-lang-team"><h3>Critique from the lang team</h3></a>
+<a class="header" href="#critique-from-the-lang-team" id="critique-from-the-lang-team"><h3>Critique from the lang team</h3></a>
 <p>@nrc argued that there's also a learnability downside, because Rust programmers
 now have one additional syntax for generic arguments to learn.</p>
 <p><strong>Rebuttal</strong>: I agree that there's an additional syntax to learn, but a key here
@@ -365,8 +372,8 @@ fn foo&lt;T: Trait&gt;(t: T) -&gt; T { t }
 #}</code></pre></pre>
 <p>In both of these functions, if you pass in an argument that is <code>Send</code>, you will
 be able to rely on <code>Send</code> in the return value.</p>
-<a class="header" href="1951-expand-impl-trait.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1951-expand-impl-trait.html#the-proposal-in-a-nutshell" id="the-proposal-in-a-nutshell"><h2>The proposal in a nutshell</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#the-proposal-in-a-nutshell" id="the-proposal-in-a-nutshell"><h2>The proposal in a nutshell</h2></a>
 <ul>
 <li>
 <p>Expand <code>impl Trait</code> to allow use in arguments, where it behaves like an
@@ -387,10 +394,10 @@ scope. However, type parameters may mention lifetimes which are hence
 <em>indirectly</em> in scope.</p>
 </li>
 </ul>
-<a class="header" href="1951-expand-impl-trait.html#background" id="background"><h2>Background</h2></a>
+<a class="header" href="#background" id="background"><h2>Background</h2></a>
 <p>Before diving more deeply into the design, let's recap some of the background
 that's emerged over time for this corner of the language.</p>
-<a class="header" href="1951-expand-impl-trait.html#universals-any-versus-existentials-some" id="universals-any-versus-existentials-some"><h3>Universals (<code>any</code>) versus existentials (<code>some</code>)</h3></a>
+<a class="header" href="#universals-any-versus-existentials-some" id="universals-any-versus-existentials-some"><h3>Universals (<code>any</code>) versus existentials (<code>some</code>)</h3></a>
 <p>There are basically two ways to talk about an &quot;unknown type&quot; in something like a
 function signature:</p>
 <ul>
@@ -438,11 +445,11 @@ fn foo() -&gt; some Iterator
 fn foo&lt;T: Default&gt;() -&gt; T
 fn foo() -&gt; any Default
 #}</code></pre></pre>
-<a class="header" href="1951-expand-impl-trait.html#scoping-for-lifetime-and-type-parameters" id="scoping-for-lifetime-and-type-parameters"><h3>Scoping for lifetime and type parameters</h3></a>
+<a class="header" href="#scoping-for-lifetime-and-type-parameters" id="scoping-for-lifetime-and-type-parameters"><h3>Scoping for lifetime and type parameters</h3></a>
 <p>There's a subtle issue for the semantics of <code>impl Trait</code>: what lifetime and type
 parameters are considered &quot;in scope&quot; for the underlying concrete type that
 implements <code>Trait</code>?</p>
-<a class="header" href="1951-expand-impl-trait.html#type-parameters-and-type-equalities" id="type-parameters-and-type-equalities"><h4>Type parameters and type equalities</h4></a>
+<a class="header" href="#type-parameters-and-type-equalities" id="type-parameters-and-type-equalities"><h4>Type parameters and type equalities</h4></a>
 <p>It's easiest to understand this issue through examples where it matters. Suppose
 we have the following function:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -468,7 +475,7 @@ to place into a single vector. That's because, although we don't know the
 identity of the return type, everything it could depend on is the same in both
 cases: <code>T</code> is instantiated with <code>u8</code>. (Note: there are &quot;generative&quot; variants of
 existentials for which this is not the case; see
-<a href="1951-expand-impl-trait.html#unresolved-questions">Unresolved questions</a>);</p>
+<a href="#unresolved-questions">Unresolved questions</a>);</p>
 <p>But what about the following:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -493,7 +500,7 @@ fn buffer&lt;T: Write&gt;(t: T) -&gt; impl Write {
 <p>But there are also cases where there isn't a dependency, and tracking that
 information may be important for type equalities like the vectors above. And
 this applies equally to lifetime parameters as well.</p>
-<a class="header" href="1951-expand-impl-trait.html#lifetime-parameters" id="lifetime-parameters"><h4>Lifetime parameters</h4></a>
+<a class="header" href="#lifetime-parameters" id="lifetime-parameters"><h4>Lifetime parameters</h4></a>
 <p>It's vital to know what lifetime parameters might be used in the concrete type
 underlying an <code>impl Trait</code>, because that information will affect lifetime
 inference.</p>
@@ -540,10 +547,10 @@ impl&lt;T&gt; [T] {
 <p>This is again a question of <em>what lifetime parameters are in scope</em> for the
 actual return type. It's a question that needs a clear answer (and some
 flexibility) for the <code>impl Trait</code> design.</p>
-<a class="header" href="1951-expand-impl-trait.html#core-assumptions" id="core-assumptions"><h2>Core assumptions</h2></a>
+<a class="header" href="#core-assumptions" id="core-assumptions"><h2>Core assumptions</h2></a>
 <p>The design in this RFC is guided by several assumptions which are worth laying
 out explicitly.</p>
-<a class="header" href="1951-expand-impl-trait.html#assumption-1-we-will-eventually-have-a-fully-expressive-and-explicit-syntax-for-existentials" id="assumption-1-we-will-eventually-have-a-fully-expressive-and-explicit-syntax-for-existentials"><h3>Assumption 1: we will eventually have a fully expressive and explicit syntax for existentials</h3></a>
+<a class="header" href="#assumption-1-we-will-eventually-have-a-fully-expressive-and-explicit-syntax-for-existentials" id="assumption-1-we-will-eventually-have-a-fully-expressive-and-explicit-syntax-for-existentials"><h3>Assumption 1: we will eventually have a fully expressive and explicit syntax for existentials</h3></a>
 <p>The <code>impl Trait</code> syntax can be considered an &quot;implicit&quot; or &quot;sugary&quot; syntax in
 that it (1) does not introduce a name for the existential type and (2) does not
 allow you to control the scope in which the underlying concrete type is known.</p>
@@ -552,7 +559,7 @@ limitations on the power of the feature for the sake of simplicity.</p>
 <p>This is done under the assumption that we will eventually introduce a fully
 expressive, explicit syntax for existentials. Such a syntax is sketched in an
 appendix to this RFC.</p>
-<a class="header" href="1951-expand-impl-trait.html#assumption-2-treating-all-type-variables-as-in-scope-for-impl-trait-suffices-for-the-vast-majority-of-cases" id="assumption-2-treating-all-type-variables-as-in-scope-for-impl-trait-suffices-for-the-vast-majority-of-cases"><h3>Assumption 2: treating all <em>type</em> variables as in scope for <code>impl Trait</code> suffices for the vast majority of cases</h3></a>
+<a class="header" href="#assumption-2-treating-all-type-variables-as-in-scope-for-impl-trait-suffices-for-the-vast-majority-of-cases" id="assumption-2-treating-all-type-variables-as-in-scope-for-impl-trait-suffices-for-the-vast-majority-of-cases"><h3>Assumption 2: treating all <em>type</em> variables as in scope for <code>impl Trait</code> suffices for the vast majority of cases</h3></a>
 <p>The background section discussed scoping issues for <code>impl Trait</code>, and the main
 implication for <em>type</em> parameters (as opposed to lifetimes) is what type
 equalities you get for an <code>impl Trait</code> return type. We're making two assumptions about that:</p>
@@ -562,7 +569,7 @@ equalities you get for an <code>impl Trait</code> return type. We're making two 
 </ul>
 <p>This latter point means, for example, that it's relatively unusual to do things
 like construct the vectors described in the background section.</p>
-<a class="header" href="1951-expand-impl-trait.html#assumption-3-there-should-be-an-explicit-marker-when-a-lifetime-could-be-embedded-in-a-return-type" id="assumption-3-there-should-be-an-explicit-marker-when-a-lifetime-could-be-embedded-in-a-return-type"><h3>Assumption 3: there should be an explicit marker when a lifetime could be embedded in a return type</h3></a>
+<a class="header" href="#assumption-3-there-should-be-an-explicit-marker-when-a-lifetime-could-be-embedded-in-a-return-type" id="assumption-3-there-should-be-an-explicit-marker-when-a-lifetime-could-be-embedded-in-a-return-type"><h3>Assumption 3: there should be an explicit marker when a lifetime could be embedded in a return type</h3></a>
 <p>As mentioned in a
 <a href="https://blog.rust-lang.org/2017/03/02/lang-ergonomics.html">recent blog post</a>,
 one regret we have around lifetime elision is the fact that it applies when
@@ -591,12 +598,12 @@ impl&lt;T&gt; SomeType&lt;T&gt; {
 #}</code></pre></pre>
 <p>In any case, to avoid compounding the mistake around elision, there should be
 <em>some</em> marker when using <code>impl Trait</code> that a lifetime is being captured.</p>
-<a class="header" href="1951-expand-impl-trait.html#assumption-4-existentials-are-vastly-more-common-in-return-position-and-universals-in-argument-position" id="assumption-4-existentials-are-vastly-more-common-in-return-position-and-universals-in-argument-position"><h3>Assumption 4: existentials are vastly more common in return position, and universals in argument position</h3></a>
+<a class="header" href="#assumption-4-existentials-are-vastly-more-common-in-return-position-and-universals-in-argument-position" id="assumption-4-existentials-are-vastly-more-common-in-return-position-and-universals-in-argument-position"><h3>Assumption 4: existentials are vastly more common in return position, and universals in argument position</h3></a>
 <p>As discussed in the background section, it's possible to make sense of <code>some Trait</code> and <code>any Trait</code> in arbitrary positions in a function signature. But
 experience with the language strongly suggests that <code>some Trait</code> semantics is
 virtually never wanted in argument position, and <code>any Trait</code> semantics is rarely
 used in return position.</p>
-<a class="header" href="1951-expand-impl-trait.html#assumption-5-we-may-be-interested-in-eventually-pursuing-a-bare-fn-foo---trait-syntax-rather-than-fn-foo---impl-trait" id="assumption-5-we-may-be-interested-in-eventually-pursuing-a-bare-fn-foo---trait-syntax-rather-than-fn-foo---impl-trait"><h3>Assumption 5: we may be interested in eventually pursuing a bare <code>fn foo() -&gt; Trait</code> syntax rather than <code>fn foo() -&gt; impl Trait</code></h3></a>
+<a class="header" href="#assumption-5-we-may-be-interested-in-eventually-pursuing-a-bare-fn-foo---trait-syntax-rather-than-fn-foo---impl-trait" id="assumption-5-we-may-be-interested-in-eventually-pursuing-a-bare-fn-foo---trait-syntax-rather-than-fn-foo---impl-trait"><h3>Assumption 5: we may be interested in eventually pursuing a bare <code>fn foo() -&gt; Trait</code> syntax rather than <code>fn foo() -&gt; impl Trait</code></h3></a>
 <p>Today, traits can be used directly as (unsized) types, so that you can write
 things like <code>Box&lt;MyTrait&gt;</code> to designate a trait object. However, with the advent
 of <code>impl Trait</code>, there's been a desire to repurpose that syntax, and
@@ -612,7 +619,7 @@ fn map&lt;U&gt;(self, f: FnOnce(T) -&gt; U) -&gt; Option&lt;U&gt;
 RFC. However, it's taken as an assumption that we want to keep the door open to
 such a syntax, and so shouldn't stabilize any variant of <code>impl Trait</code> that lacks
 a good story for evolving into a bare <code>Trait</code> syntax later on.</p>
-<a class="header" href="1951-expand-impl-trait.html#sticking-with-the-impl-trait-syntax" id="sticking-with-the-impl-trait-syntax"><h2>Sticking with the <code>impl Trait</code> syntax</h2></a>
+<a class="header" href="#sticking-with-the-impl-trait-syntax" id="sticking-with-the-impl-trait-syntax"><h2>Sticking with the <code>impl Trait</code> syntax</h2></a>
 <p>This RFC proposes to stabilize the <code>impl Trait</code> feature with its current syntax,
 while also expanding it to encompass argument position. That means, in
 particular, <em>not</em> introducing an explicit <code>some</code>/<code>any</code> distinction.</p>
@@ -636,7 +643,7 @@ means
 <a href="https://blog.rust-lang.org/2017/03/02/lang-ergonomics.html">not just what you type, but also what you have to remember</a>. Having
 <code>impl Trait</code> &quot;just do the right thing&quot; seems pretty clearly to be the right
 choice ergonomically.</p>
-<a class="header" href="1951-expand-impl-trait.html#expansion-to-arguments" id="expansion-to-arguments"><h2>Expansion to arguments</h2></a>
+<a class="header" href="#expansion-to-arguments" id="expansion-to-arguments"><h2>Expansion to arguments</h2></a>
 <p>This RFC proposes to allow <code>impl Trait</code> in function arguments, in addition to
 return position, with the <code>any Trait</code> semantics (as per assumption 4). In other
 words:</p>
@@ -659,7 +666,7 @@ fn bar() -&gt; (impl Fn(impl SomeTrait) -&gt; impl OtherTrait)
 introduce nested universal quantifications (i.e., higher-ranked bounds) in at
 least some cases; we don't yet have the ability to do so. We can revisit this
 question later on, once higher-ranked bounds have gained full expressiveness.</p>
-<a class="header" href="1951-expand-impl-trait.html#explicit-instantiation" id="explicit-instantiation"><h3>Explicit instantiation</h3></a>
+<a class="header" href="#explicit-instantiation" id="explicit-instantiation"><h3>Explicit instantiation</h3></a>
 <p>This RFC does <em>not</em> propose any means of explicitly instantiating an <code>impl Trait</code> in argument position. In other words:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -672,7 +679,7 @@ bar::&lt;u32&gt;(0) // this is not
 #}</code></pre></pre>
 <p>Thus, while <code>impl Trait</code> in argument position in some sense &quot;desugars&quot; to a
 generic parameter, the parameter is treated fully anonymously.</p>
-<a class="header" href="1951-expand-impl-trait.html#scoping-for-type-and-lifetime-parameters" id="scoping-for-type-and-lifetime-parameters"><h2>Scoping for type and lifetime parameters</h2></a>
+<a class="header" href="#scoping-for-type-and-lifetime-parameters" id="scoping-for-type-and-lifetime-parameters"><h2>Scoping for type and lifetime parameters</h2></a>
 <p>In argument position, the type fulfilling an <code>impl Trait</code> is free to reference
 any types or lifetimes whatsoever. So in a signature like:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -714,7 +721,7 @@ fn foo&lt;T&gt;(v: Vec&lt;T&gt;) -&gt; vec::IntoIter&lt;T&gt;
 <p>In this example, the return type can of course reference any lifetimes that <code>T</code>
 does, but this is apparent from the signature. Likewise with <code>impl Trait</code>, where
 you should assume that <em>all</em> type parameters could appear in the return type.</p>
-<a class="header" href="1951-expand-impl-trait.html#relationship-to-trait-objects" id="relationship-to-trait-objects"><h3>Relationship to trait objects</h3></a>
+<a class="header" href="#relationship-to-trait-objects" id="relationship-to-trait-objects"><h3>Relationship to trait objects</h3></a>
 <p>It's worth noting that this treatment of lifetimes is related but not identical
 to the way they're handled for trait objects.</p>
 <p>In particular, <code>Box&lt;SomeTrait&gt;</code> imposes a <code>'static</code> requirement on the
@@ -739,7 +746,7 @@ fn foo&lt;T&gt;(t: T) -&gt; Box&lt;SomeTrait&gt;;
 generics and trait objects in general -- which is precisely that with generics,
 the actual types are <em>not</em> erased, and hence auto traits like <code>Send</code> work
 transparently, as do lifetime constraints.</p>
-<a class="header" href="1951-expand-impl-trait.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>Generics and traits are a fundamental aspect of Rust, so the pedagogical
 approach here is really important. We'll outline the basic contours below, but
 in practice it's going to take some trial and error to find the best approach.</p>
@@ -794,12 +801,12 @@ often) and in particular prior to learning trait objects. As mentioned above,
 trait objects can then be taught using intuitions from <code>impl Trait</code>.</p>
 <p>There's also some ways in which <code>impl Trait</code> can introduce confusion, which
 we'll cover in the drawbacks section below.</p>
-<a class="header" href="1951-expand-impl-trait.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It's widely recognized that we need <em>some</em> form of static existentials for
 return position, both to be able to return closures (which have un-nameable
 types) and to ergonomically return things like iterator chains.</p>
 <p>However, there are two broad classes of drawbacks to the approach taken in this RFC.</p>
-<a class="header" href="1951-expand-impl-trait.html#relatively-inexpressive-sugary-syntax" id="relatively-inexpressive-sugary-syntax"><h2>Relatively inexpressive sugary syntax</h2></a>
+<a class="header" href="#relatively-inexpressive-sugary-syntax" id="relatively-inexpressive-sugary-syntax"><h2>Relatively inexpressive sugary syntax</h2></a>
 <p>This RFC is built on the idea that we'll eventually have a fully expressive
 explicit syntax, and so we should tailor the &quot;sugary&quot; <code>impl Trait</code> syntax to
 the most common use cases and intuitions.</p>
@@ -807,7 +814,7 @@ the most common use cases and intuitions.</p>
 but still sugary syntax like <code>some Trait</code> and <code>any Trait</code>---we certainly don't
 want all three.</p>
 <p>That syntax is further discussed in Alternatives below.</p>
-<a class="header" href="1951-expand-impl-trait.html#potential-for-confusion" id="potential-for-confusion"><h2>Potential for confusion</h2></a>
+<a class="header" href="#potential-for-confusion" id="potential-for-confusion"><h2>Potential for confusion</h2></a>
 <p>There are two main avenues for confusion around <code>impl Trait</code>:</p>
 <ul>
 <li>
@@ -834,7 +841,7 @@ errors, or eventually provide a syntax like <code>&lt;out T&gt;</code> for named
 bounded generic argument (in addition to <code>&lt;T: Trait&gt;</code> and <code>&lt;T&gt; where T: Trait</code>). However, these ways of writing a signature are not <em>semantically</em>
 distinct ways; they're just <em>stylistically</em> different. It's feasible that
 rustfmt could even make the choice automatically.</p>
-<a class="header" href="1951-expand-impl-trait.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>There's been a <em>lot</em> of discussion about the <code>impl Trait</code> feature and various
 alternatives. Let's look at some of the most prominent of them.</p>
 <ul>
@@ -874,7 +881,7 @@ including only the listed set, which is a bit counterintuitive.</p>
 </ul>
 </li>
 </ul>
-<a class="header" href="1951-expand-impl-trait.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p><strong>Full evidence for core assumptions</strong>. The assumptions in this RFC are stated
 with anecdotal and intuitive evidence, but the argument would be stronger with
 more empirical evidence. It's not entirely clear how best to gather that,
@@ -908,7 +915,7 @@ generative existentials would provide a much more natural mechanism.</p>
 <p>We may want to consider adding some form of generative existentials in the
 future, but would almost certainly want to do so via the fully
 expressive/explicit syntax, rather than through <code>impl Trait</code>.</p>
-<a class="header" href="1951-expand-impl-trait.html#appendix-a-sketch-of-a-fully-explicit-syntax" id="appendix-a-sketch-of-a-fully-explicit-syntax"><h1>Appendix: a sketch of a fully-explicit syntax</h1></a>
+<a class="header" href="#appendix-a-sketch-of-a-fully-explicit-syntax" id="appendix-a-sketch-of-a-fully-explicit-syntax"><h1>Appendix: a sketch of a fully-explicit syntax</h1></a>
 <p>This section contains a <strong>brief sketch</strong> of a fully-explicit syntax for
 existentials. It's a strawman proposal based on many previously-discussed ideas,
 and should not be bikeshedded as part of this RFC. The goal is just to give a
@@ -1061,9 +1068,6 @@ there's a plausible direction to take here and (2) give a sense for how <code>im
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0198-slice-notation - </title>
+        <title>0198-slice-notation - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/198">rust-lang/rfcs#198</a></li>
 <li>Rust Issue #: <a href="https://github.com/rust-lang/rust/issues/17177">rust-lang/rust#17177</a></li>
 </ul>
-<a class="header" href="0198-slice-notation.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC adds <em>overloaded slice notation</em>:</p>
 <ul>
 <li><code>foo[]</code> for <code>foo.as_slice()</code></li>
@@ -150,9 +157,9 @@
 <p>via two new traits, <code>Slice</code> and <code>SliceMut</code>.</p>
 <p>It also changes the notation for range <code>match</code> patterns to <code>...</code>, to
 signify that they are inclusive whereas <code>..</code> in slices are exclusive.</p>
-<a class="header" href="0198-slice-notation.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>There are two primary motivations for introducing this feature.</p>
-<a class="header" href="0198-slice-notation.html#ergonomics" id="ergonomics"><h3>Ergonomics</h3></a>
+<a class="header" href="#ergonomics" id="ergonomics"><h3>Ergonomics</h3></a>
 <p>Slicing operations, especially <code>as_slice</code>, are a very common and basic thing to
 do with vectors, and potentially many other kinds of containers.  We already
 have notation for indexing via the <code>Index</code> trait, and this RFC is essentially a
@@ -164,13 +171,13 @@ common, and are one of the
 problems with the language. There are a few other approaches to address this
 particular problem, but these alternatives have downsides that are discussed
 below (see &quot;Alternatives&quot;).</p>
-<a class="header" href="0198-slice-notation.html#error-handling-conventions" id="error-handling-conventions"><h3>Error handling conventions</h3></a>
+<a class="header" href="#error-handling-conventions" id="error-handling-conventions"><h3>Error handling conventions</h3></a>
 <p>We are gradually moving toward a Python-like world where notation like <code>foo[n]</code>
 calls <code>fail!</code> when <code>n</code> is out of bounds, while corresponding methods like <code>get</code>
 return <code>Option</code> values rather than failing. By providing similar notation for
 slicing, we open the door to following the same convention throughout
 vector-like APIs.</p>
-<a class="header" href="0198-slice-notation.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The design is a straightforward continuation of the <code>Index</code> trait design. We
 introduce two new traits, for immutable and mutable slicing:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -216,7 +223,7 @@ reflect the distinction. The reason to change the notation, rather
 than the interpretation, is that the exclusive (respectively
 inclusive) interpretation is the right default for slicing
 (respectively matching).</p>
-<a class="header" href="0198-slice-notation.html#rationale-for-the-notation" id="rationale-for-the-notation"><h2>Rationale for the notation</h2></a>
+<a class="header" href="#rationale-for-the-notation" id="rationale-for-the-notation"><h2>Rationale for the notation</h2></a>
 <p>The choice of square brackets for slicing is straightforward: it matches our
 indexing notation, and slicing and indexing are closely related.</p>
 <p>Some other languages (like Python and Go -- and Fortran) use <code>:</code> rather than
@@ -225,7 +232,7 @@ elsewhere in Rust, for example for fixed-length array types <code>[T, ..n]</code
 for slicing has precedent in Perl and D.</p>
 <p>See <a href="http://en.wikipedia.org/wiki/Array_slicing">Wikipedia</a> for more on the
 history of slice notation in programming languages.</p>
-<a class="header" href="0198-slice-notation.html#the-mut-qualifier" id="the-mut-qualifier"><h3>The <code>mut</code> qualifier</h3></a>
+<a class="header" href="#the-mut-qualifier" id="the-mut-qualifier"><h3>The <code>mut</code> qualifier</h3></a>
 <p>It may be surprising that <code>mut</code> is used as a qualifier in the proposed
 slice notation, but not for the indexing notation. The reason is that
 indexing includes an implicit dereference. If <code>v: Vec&lt;Foo&gt;</code> then
@@ -241,11 +248,11 @@ slicing is meant to give you a fat pointer indicating the size of the
 slice, which we don't want to immediately deref. But the consequence
 is that we need to know the mutability of the slice up front, when we
 take it, since it determines the type of the expression.</p>
-<a class="header" href="0198-slice-notation.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The main drawback is the increase in complexity of the language syntax. This
 seems minor, especially since the notation here is essentially &quot;finishing&quot; what
 was started with the <code>Index</code> trait.</p>
-<a class="header" href="0198-slice-notation.html#limitations-in-the-design" id="limitations-in-the-design"><h2>Limitations in the design</h2></a>
+<a class="header" href="#limitations-in-the-design" id="limitations-in-the-design"><h2>Limitations in the design</h2></a>
 <p>Like the <code>Index</code> trait, this forces the result to be a reference via
 <code>&amp;</code>, which may rule out some generalizations of slicing.</p>
 <p>One way of solving this problem is for the slice methods to take
@@ -263,9 +270,9 @@ with <code>S&lt;'a&gt;</code>. It should be possible to transition from the curr
 without breaking backwards compatibility by using blanket
 implementations of the new traits (say, <code>IndexHKT</code>) for types that
 implement the old ones.</p>
-<a class="header" href="0198-slice-notation.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>For improving the ergonomics of <code>as_slice</code>, there are two main alternatives.</p>
-<a class="header" href="0198-slice-notation.html#coercions-auto-slicing" id="coercions-auto-slicing"><h2>Coercions: auto-slicing</h2></a>
+<a class="header" href="#coercions-auto-slicing" id="coercions-auto-slicing"><h2>Coercions: auto-slicing</h2></a>
 <p>One possibility would be re-introducing some kind of coercion that automatically
 slices.
 We used to have a coercion from (in today's terms) <code>Vec&lt;T&gt;</code> to
@@ -298,7 +305,7 @@ downside when reasoning about code, so we should pursue more conservative
 solutions first.</p>
 </li>
 </ul>
-<a class="header" href="0198-slice-notation.html#deref" id="deref"><h2>Deref</h2></a>
+<a class="header" href="#deref" id="deref"><h2>Deref</h2></a>
 <p>Another possibility would be to make <code>String</code> implement <code>Deref&lt;str&gt;</code> and
 <code>Vec&lt;T&gt;</code> implement <code>Deref&lt;[T]&gt;</code>, once DST lands. Doing so would allow explicit
 coercions like:</p>
@@ -376,9 +383,6 @@ the better.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

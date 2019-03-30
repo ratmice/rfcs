@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1733-trait-alias - </title>
+        <title>1733-trait-alias - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1733">rust-lang/rfcs#1733</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/41517">rust-lang/rust#41517</a></li>
 </ul>
-<a class="header" href="1733-trait-alias.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Traits can be aliased with the <code>trait TraitAlias = …;</code> construct. Currently, the right hand side is
 a bound – a single trait, a combination with <code>+</code> traits and lifetimes. Type parameters and
 lifetimes can be added to the <em>trait alias</em> if needed.</p>
-<a class="header" href="1733-trait-alias.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="1733-trait-alias.html#first-motivation-impl" id="first-motivation-impl"><h2>First motivation: <code>impl</code></h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#first-motivation-impl" id="first-motivation-impl"><h2>First motivation: <code>impl</code></h2></a>
 <p>Sometimes, some traits are defined with parameters. For instance:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -192,7 +199,7 @@ expecting a <code>FooBackend</code>. However, what about impl blocks? What happe
 the <code>trait bound</code> level between <code>Foo&lt;Backend&gt;</code> and <code>FooBackend</code>, there’s none at the <code>impl</code> level,
 so all we’re left with is implementing <code>Foo&lt;Backend&gt;</code> – that will also provide an implementation for
 <code>FooBackend</code> because of the universal implementation just above.</p>
-<a class="header" href="1733-trait-alias.html#second-example-ergonomic-collections-and-scrapping-boilerplate" id="second-example-ergonomic-collections-and-scrapping-boilerplate"><h2>Second example: ergonomic collections and scrapping boilerplate</h2></a>
+<a class="header" href="#second-example-ergonomic-collections-and-scrapping-boilerplate" id="second-example-ergonomic-collections-and-scrapping-boilerplate"><h2>Second example: ergonomic collections and scrapping boilerplate</h2></a>
 <p>Another example is associated types. Take the following <a href="https://docs.rs/tokio-service/0.1.0/tokio_service/trait.Service.html">trait from tokio</a>:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -216,9 +223,9 @@ Service&lt;Request = http::Request, Response = http::Response, Error = http::Err
 implemented. Such an alias would be very appealing because it would remove copying the whole
 <code>Service</code> trait into use sites – trait bounds, or even trait impls. Scrapping such an annoying
 boilerplate is a definitive plus to the language and might be one of the most interesting use case.</p>
-<a class="header" href="1733-trait-alias.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1733-trait-alias.html#syntax" id="syntax"><h2>Syntax</h2></a>
-<a class="header" href="1733-trait-alias.html#declaration" id="declaration"><h3>Declaration</h3></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#syntax" id="syntax"><h2>Syntax</h2></a>
+<a class="header" href="#declaration" id="declaration"><h3>Declaration</h3></a>
 <p>The syntax chosen to declare a <em>trait alias</em> is:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -273,7 +280,7 @@ current syntax for bounds on a type parameter, and <code>PREDICATES</code> is a 
 more predicates, just like any other <code>where</code> clause.
 <code>GENERIC_PARAMS</code> is a comma-separated list of zero or more lifetime and type parameters,
 with optional bounds, just like other generic definitions.</p>
-<a class="header" href="1733-trait-alias.html#use-semantics" id="use-semantics"><h2>Use semantics</h2></a>
+<a class="header" href="#use-semantics" id="use-semantics"><h2>Use semantics</h2></a>
 <p>You cannot directly <code>impl</code> a trait alias, but you can have them as <em>bounds</em>, <em>trait objects</em> and
 <em>impl Trait</em>.</p>
 <hr />
@@ -318,7 +325,7 @@ fn bar4(x: Box&lt;IntIterator + Sink + 'static&gt;) { ... } // ok (*)
 #}</code></pre></pre>
 <p>The lines marked with <code>(*)</code> assume that <a href="https://github.com/rust-lang/rust/issues/24010">#24010</a> is
 fixed.</p>
-<a class="header" href="1733-trait-alias.html#ambiguous-constraints" id="ambiguous-constraints"><h3>Ambiguous constraints</h3></a>
+<a class="header" href="#ambiguous-constraints" id="ambiguous-constraints"><h3>Ambiguous constraints</h3></a>
 <p>If there are multiple associated types with the same name in a trait alias,
 then it is a static error (&quot;ambiguous associated type&quot;) to attempt to
 constrain that associated type via the trait alias. For example:</p>
@@ -339,7 +346,7 @@ fn badness&lt;T: FooBar2&lt;Assoc = String&gt;&gt;() { } // ERROR: ambiguous ass
 fn better1&lt;T: FooBar2 + Foo&lt;Assoc = String&gt;&gt;() { } // (leaves Bar::Assoc unconstrained)
 fn better2&lt;T: FooBar2 + Foo&lt;Assoc = String&gt; + Bar&lt;Assoc = i32&gt;&gt;() { } // constrains both
 #}</code></pre></pre>
-<a class="header" href="1733-trait-alias.html#teaching" id="teaching"><h1>Teaching</h1></a>
+<a class="header" href="#teaching" id="teaching"><h1>Teaching</h1></a>
 <p><a href="https://doc.rust-lang.org/book/traits.html">Traits</a> are obviously a huge prerequisite. Traits
 aliases could be introduced at the end of that chapter.</p>
 <p>Conceptually, a <em>trait alias</em> is a syntax shortcut used to reason about one or more trait(s).
@@ -348,11 +355,11 @@ Inherently, the <em>trait alias</em> is usable in a limited set of places:</p>
 <li>as a <em>bound</em>: exactly like a <em>trait</em>, a <em>trait alias</em> can be used to constraint a type (type
 parameters list, where-clause)</li>
 <li>as a <em>trait object</em>: same thing as with a <em>trait</em>, a <em>trait alias</em> can be used as a <em>trait object</em>
-if it fits object safety restrictions (see above in the <a href="1733-trait-alias.html#semantics">semantics</a> section)</li>
+if it fits object safety restrictions (see above in the <a href="#semantics">semantics</a> section)</li>
 <li>in an <a href="https://github.com/rust-lang/rfcs/blob/master/text/1522-conservative-impl-trait.md"><code>impl Trait</code></a></li>
 </ul>
 <p>Examples should be showed for all of the three cases above:</p>
-<a class="header" href="1733-trait-alias.html#as-a-bound" id="as-a-bound"><h4>As a bound</h4></a>
+<a class="header" href="#as-a-bound" id="as-a-bound"><h4>As a bound</h4></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -360,13 +367,13 @@ trait StringIterator = Iterator&lt;Item=String&gt;;
 
 fn iterate&lt;SI&gt;(si: SI) where SI: StringIterator {} // used as bound
 #}</code></pre></pre>
-<a class="header" href="1733-trait-alias.html#as-a-trait-object" id="as-a-trait-object"><h4>As a trait object</h4></a>
+<a class="header" href="#as-a-trait-object" id="as-a-trait-object"><h4>As a trait object</h4></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
 fn iterate_object(si: &amp;StringIterator) {} // used as trait object
 #}</code></pre></pre>
-<a class="header" href="1733-trait-alias.html#in-an-impl-trait" id="in-an-impl-trait"><h4>In an <code>impl Trait</code></h4></a>
+<a class="header" href="#in-an-impl-trait" id="in-an-impl-trait"><h4>In an <code>impl Trait</code></h4></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -374,7 +381,7 @@ fn string_iterator_debug() -&gt; impl Debug + StringIterator {} // used in an im
 #}</code></pre></pre>
 <p>As shown above, a <em>trait alias</em> can substitute associated types. It doesn’t have to substitute them
 all. In that case, the <em>trait alias</em> is left incomplete and you have to pass it the associated types
-that are left. Example with the <a href="1733-trait-alias.html#second-example-ergonomic-collections-and-scrapping-boilerplate">tokio case</a>:</p>
+that are left. Example with the <a href="#second-example-ergonomic-collections-and-scrapping-boilerplate">tokio case</a>:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -390,7 +397,7 @@ trait HttpService = Service&lt;Request = http::Request, Response = http::Respons
 
 trait MyHttpService = HttpService&lt;Future = MyFuture&gt;; // assume MyFuture exists and fulfills the rules to be used in here
 #}</code></pre></pre>
-<a class="header" href="1733-trait-alias.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>Adds another construct to the language.</p>
@@ -400,8 +407,8 @@ trait MyHttpService = HttpService&lt;Future = MyFuture&gt;; // assume MyFuture e
 from a trait alias.</p>
 </li>
 </ul>
-<a class="header" href="1733-trait-alias.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1733-trait-alias.html#should-we-use-type-as-the-keyword-instead-of-trait" id="should-we-use-type-as-the-keyword-instead-of-trait"><h2>Should we use <code>type</code> as the keyword instead of <code>trait</code>?</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#should-we-use-type-as-the-keyword-instead-of-trait" id="should-we-use-type-as-the-keyword-instead-of-trait"><h2>Should we use <code>type</code> as the keyword instead of <code>trait</code>?</h2></a>
 <p><code>type Foo = Bar;</code> already creates an alias <code>Foo</code> that can be used as a trait object.</p>
 <p>If we used <code>type</code> for the keyword, this would imply that <code>Foo</code> could also be used as a bound as
 well. If we use <code>trait</code> as proposed in the body of the RFC, then <code>type Foo = Bar;</code> and
@@ -409,7 +416,7 @@ well. If we use <code>trait</code> as proposed in the body of the RFC, then <cod
 that can be used as a bound, which is a confusing bit of redundancy.</p>
 <p>However, this mixes the concepts of types and traits, which are different, and allows nonsense like
 <code>type Foo = Rc&lt;i32&gt; + f32;</code> to parse.</p>
-<a class="header" href="1733-trait-alias.html#supertraits--universal-impl" id="supertraits--universal-impl"><h2>Supertraits &amp; universal <code>impl</code></h2></a>
+<a class="header" href="#supertraits--universal-impl" id="supertraits--universal-impl"><h2>Supertraits &amp; universal <code>impl</code></h2></a>
 <p>It’s possible to create a new trait that derives the trait to alias, and provide a universal <code>impl</code></p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -424,12 +431,12 @@ impl&lt;T&gt; Foo for T where T: FooFakeAlias {}
 because you need to implement <code>Foo</code> first – hence, you don’t really need <code>FooFakeAlias</code> if you can
 implement <code>Foo</code>.</p>
 <p>There’s currently no alternative to the impl problem described here.</p>
-<a class="header" href="1733-trait-alias.html#constraintkinds" id="constraintkinds"><h2><code>ConstraintKinds</code></h2></a>
+<a class="header" href="#constraintkinds" id="constraintkinds"><h2><code>ConstraintKinds</code></h2></a>
 <p>Similar to GHC’s <code>ContraintKinds</code>, we could declare an entire predicate as a reified list of
 constraints, instead of creating an alias for a set of supertraits and predicates. Syntax would be
 something like <code>constraint Foo&lt;T&gt; = T: Bar, Vec&lt;T&gt;: Baz;</code>, used as <code>fn quux&lt;T&gt;(...) where Foo&lt;T&gt; { ... }</code>
 (i.e. direct substitution). Trait object usage is unclear.</p>
-<a class="header" href="1733-trait-alias.html#syntax-for-sole-where-clause" id="syntax-for-sole-where-clause"><h2>Syntax for sole <code>where</code> clause.</h2></a>
+<a class="header" href="#syntax-for-sole-where-clause" id="syntax-for-sole-where-clause"><h2>Syntax for sole <code>where</code> clause.</h2></a>
 <p>The current RFC specifies that it is possible to use only the <code>where</code> clause by leaving the list of traits empty:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -442,8 +449,8 @@ trait DebugDefault = where Self: Debug + Default;
 <li><code>trait DebugDefault = _ where Self: Debug + Default;</code> (which was <a href="https://github.com/rust-lang/rfcs/pull/1733/commits/88d3074957276c7201147fc625f18e0ebcecc1b9#diff-ae27a1a8d977f731e67823349151bed5L116">considered and then removed</a> because it is <a href="https://github.com/rust-lang/rfcs/pull/1733#issuecomment-284252196">technically unnecessary</a>)</li>
 <li><code>trait DebugDefault = Self where Self: Debug + Default;</code> (analogous to previous case but not formally discussed)</li>
 </ul>
-<a class="header" href="1733-trait-alias.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="1733-trait-alias.html#trait-alias-containing-only-lifetimes" id="trait-alias-containing-only-lifetimes"><h2>Trait alias containing only lifetimes</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#trait-alias-containing-only-lifetimes" id="trait-alias-containing-only-lifetimes"><h2>Trait alias containing only lifetimes</h2></a>
 <p>This is annoying. Consider:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -457,11 +464,11 @@ using the <code>trait</code> keyword to define alias on <em>lifetimes</em> seems
 very consistent.</p>
 <p>If we chose another keyword, like <code>constraint</code>, I feel less concerned and it would open further
 opportunies – see the <code>ConstraintKinds</code> alternative discussion above.</p>
-<a class="header" href="1733-trait-alias.html#which-bounds-need-to-be-repeated-when-using-a-trait-alias" id="which-bounds-need-to-be-repeated-when-using-a-trait-alias"><h2>Which bounds need to be repeated when using a trait alias?</h2></a>
+<a class="header" href="#which-bounds-need-to-be-repeated-when-using-a-trait-alias" id="which-bounds-need-to-be-repeated-when-using-a-trait-alias"><h2>Which bounds need to be repeated when using a trait alias?</h2></a>
 <p><a href="https://github.com/rust-lang/rfcs/pull/1927">RFC 1927</a> intends to change the rules here for traits,
 and we likely want to have the rules for trait aliases be the same to avoid confusion.</p>
 <p>The <code>constraint</code> alternative sidesteps this issue.</p>
-<a class="header" href="1733-trait-alias.html#what-about-bounds-on-type-variable-declaration-in-the-trait-alias" id="what-about-bounds-on-type-variable-declaration-in-the-trait-alias"><h2>What about bounds on type variable declaration in the trait alias?</h2></a>
+<a class="header" href="#what-about-bounds-on-type-variable-declaration-in-the-trait-alias" id="what-about-bounds-on-type-variable-declaration-in-the-trait-alias"><h2>What about bounds on type variable declaration in the trait alias?</h2></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -571,9 +578,6 @@ fn foo&lt;A, T&gt;() where A: BarBoth&lt;T&gt;, T: Bar {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

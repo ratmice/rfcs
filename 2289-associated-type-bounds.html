@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2289-associated-type-bounds - </title>
+        <title>2289-associated-type-bounds - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,14 +146,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2289">rust-lang/rfcs#2289</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/52662">rust-lang/rust#52662</a></li>
 </ul>
-<a class="header" href="2289-associated-type-bounds.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce the bound form <code>MyTrait&lt;AssociatedType: Bounds&gt;</code>, permitted anywhere
 a bound of the form <code>MyTrait&lt;AssociatedType = T&gt;</code> would be allowed. The bound
 <code>T: Trait&lt;AssociatedType: Bounds&gt;</code> desugars to the bounds <code>T: Trait</code> and
 <code>&lt;T as Trait&gt;::AssociatedType: Bounds</code>.
-See the <a href="2289-associated-type-bounds.html#reference-level-explanation">reference</a> and <a href="2289-associated-type-bounds.html#rationale-and-alternatives">rationale</a>
+See the <a href="#reference-level-explanation">reference</a> and <a href="#rationale-and-alternatives">rationale</a>
 for exact details.</p>
-<a class="header" href="2289-associated-type-bounds.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, when specifying a bound using a trait that has an associated
 type, the developer can specify the precise type via the syntax
 <code>MyTrait&lt;AssociatedType = T&gt;</code>. With the introduction of the <code>impl Trait</code>
@@ -158,7 +165,7 @@ match the developer's intuition and mental model as well as it could. In
 particular, given the ability to write bounds on a type variable as <code>T: Bounds</code>,
 it makes sense to permit writing bounds on an associated type directly.
 This results in the simpler syntax <code>MyTrait&lt;AssociatedType: Bounds&gt;</code>.</p>
-<a class="header" href="2289-associated-type-bounds.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>Instead of specifying a concrete type for an associated type, we can
 specify a bound on the associated type, to ensure that it implements
 specific traits, as seen in the example below:</p>
@@ -171,7 +178,7 @@ fn print_all&lt;T: Iterator&lt;Item: Display&gt;&gt;(printables: T) {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2289-associated-type-bounds.html#in-anonymous-existential-types" id="in-anonymous-existential-types"><h2>In anonymous existential types</h2></a>
+<a class="header" href="#in-anonymous-existential-types" id="in-anonymous-existential-types"><h2>In anonymous existential types</h2></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -179,7 +186,7 @@ fn printables() -&gt; impl Iterator&lt;Item: Display&gt; {
     // ..
 }
 #}</code></pre></pre>
-<a class="header" href="2289-associated-type-bounds.html#further-examples" id="further-examples"><h2>Further examples</h2></a>
+<a class="header" href="#further-examples" id="further-examples"><h2>Further examples</h2></a>
 <p>Instead of writing:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -211,7 +218,7 @@ impl&lt;I: Clone + Iterator&lt;Item: Clone&gt;&gt; Clone for Peekable&lt;I&gt; {
     // ..
 }
 #}</code></pre></pre>
-<a class="header" href="2289-associated-type-bounds.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>The surface syntax <code>T: Trait&lt;AssociatedType: Bounds&gt;</code> should desugar to a pair
 of bounds: <code>T: Trait</code> and <code>&lt;T as Trait&gt;::AssociatedType: Bounds</code>.
 Rust currently allows both of those bounds anywhere a bound can currently appear;
@@ -223,7 +230,7 @@ with the usual bound <code>T: Trait</code> along with the added bound
 <p>Meanwhile, the surface syntax <code>dyn Trait&lt;AssociatedType: Bounds&gt;</code> desugars into
 <code>dyn Trait&lt;AssociatedType = T&gt;</code> where <code>T</code> is a named type variable <code>T</code> with the
 bound <code>T: Bounds</code>.</p>
-<a class="header" href="2289-associated-type-bounds.html#the-desugaring-for-associated-types" id="the-desugaring-for-associated-types"><h2>The desugaring for associated types</h2></a>
+<a class="header" href="#the-desugaring-for-associated-types" id="the-desugaring-for-associated-types"><h2>The desugaring for associated types</h2></a>
 <p>In the case of an associated type having a bound of the form:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -241,7 +248,7 @@ trait TraitA {
     type AssocA_0: TraitC; // Associated type is Unnamed!
 }
 #}</code></pre></pre>
-<a class="header" href="2289-associated-type-bounds.html#notes-on-the-meaning-of-impl-traitassoc-bound" id="notes-on-the-meaning-of-impl-traitassoc-bound"><h2>Notes on the meaning of <code>impl Trait&lt;Assoc: Bound&gt;</code></h2></a>
+<a class="header" href="#notes-on-the-meaning-of-impl-traitassoc-bound" id="notes-on-the-meaning-of-impl-traitassoc-bound"><h2>Notes on the meaning of <code>impl Trait&lt;Assoc: Bound&gt;</code></h2></a>
 <p>Note that in the context <code>-&gt; impl Trait&lt;Assoc: Bound&gt;</code>, since the Trait is
 existentially quantified, the <code>Assoc</code> is as well. Semantically speaking,
 <code>fn printables..</code> is equivalent to:</p>
@@ -252,7 +259,7 @@ fn printables() -&gt; impl Iterator&lt;Item = impl Display&gt; { .. }
 #}</code></pre></pre>
 <p>For <code>arg: impl Trait&lt;Assoc: Bound&gt;</code>, it is semantically equivalent to:
 <code>arg: impl Trait&lt;Assoc = impl Bound&gt;</code>.</p>
-<a class="header" href="2289-associated-type-bounds.html#meaning-of-existential-type-foo-traitassoc-bound" id="meaning-of-existential-type-foo-traitassoc-bound"><h2>Meaning of <code>existential type Foo: Trait&lt;Assoc: Bound&gt;</code></h2></a>
+<a class="header" href="#meaning-of-existential-type-foo-traitassoc-bound" id="meaning-of-existential-type-foo-traitassoc-bound"><h2>Meaning of <code>existential type Foo: Trait&lt;Assoc: Bound&gt;</code></h2></a>
 <p>Given:</p>
 <pre><code>existential type Foo: Trait&lt;Assoc: Bound&gt;;
 </code></pre>
@@ -265,20 +272,20 @@ existential type _0: Bound;
 #}</code></pre></pre>
 <p>This syntax is specified in <a href="https://github.com/rust-lang/rfcs/blob/master/text/2071-impl-trait-type-alias.md">RFC 2071</a>. As in that RFC, this documentation
 uses the non-final syntax for existential type aliases.</p>
-<a class="header" href="2289-associated-type-bounds.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Rust code can already express this using the desugared form. This proposal
 just introduces a simpler surface syntax that parallels other uses of bounds.
 As always, when introducing new syntactic forms, an increased burden is put on
 developers to know about and understand those forms, and this proposal is no
 different. However, we believe that the parallel to the use of bounds elsewhere
 makes this new syntax immediately recognizable and understandable.</p>
-<a class="header" href="2289-associated-type-bounds.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>As with any new surface syntax, one alternative is simply not introducing
 the syntax at all. That would still leave developers with the
 <code>MyTrait&lt;AssociatedType = impl Bounds&gt;</code> form. However, allowing the more
 direct bounds syntax provides a better parallel to the use of bounds elsewhere.
 The introduced form in this RFC is comparatively both shorter and clearer.</p>
-<a class="header" href="2289-associated-type-bounds.html#an-alternative-desugaring-of-bounds-on-associated-types" id="an-alternative-desugaring-of-bounds-on-associated-types"><h3>An alternative desugaring of bounds on associated types</h3></a>
+<a class="header" href="#an-alternative-desugaring-of-bounds-on-associated-types" id="an-alternative-desugaring-of-bounds-on-associated-types"><h3>An alternative desugaring of bounds on associated types</h3></a>
 <p>An alternative desugaring of the following definition:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -332,7 +339,7 @@ of usability.</p>
 <code>where</code> clause. This entails that both desugarings become equivalent from the
 point of view of a user. The desugaring with <code>where</code> therefore becomes viable
 in the presence of <a href="https://github.com/rust-lang/rfcs/blob/master/text/2089-implied-bounds.md">RFC 2089</a>.</p>
-<a class="header" href="2289-associated-type-bounds.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Does allowing this for <code>dyn</code> trait objects introduce any unforeseen issues?
@@ -388,9 +395,6 @@ This is also the case with other desugarings in this RFC.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

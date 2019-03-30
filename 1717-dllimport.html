@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1717-dllimport - </title>
+        <title>1717-dllimport - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1717">rust-lang/rfcs#1717</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/37403">rust-lang/rust#37403</a></li>
 </ul>
-<a class="header" href="1717-dllimport.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Make compiler aware of the association between library names adorning <code>extern</code> blocks
 and symbols defined within the block.  Add attributes and command line switches that leverage
 this association.</p>
-<a class="header" href="1717-dllimport.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Most of the time a linkage directive is only needed to inform the linker about
 what native libraries need to be linked into a program. On some platforms,
 however, the compiler needs more detailed knowledge about what's being linked
@@ -152,16 +159,16 @@ from where in order to ensure that symbols are wired up correctly.</p>
 this symbol must be generated differently than for symbols imported from a static library.</p>
 <p>Currently the compiler is not aware of associations between the libraries and symbols
 imported from them, so it cannot alter code generation based on library kind.</p>
-<a class="header" href="1717-dllimport.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1717-dllimport.html#library---symbol-association" id="library---symbol-association"><h3>Library &lt;-&gt; symbol association</h3></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#library---symbol-association" id="library---symbol-association"><h3>Library &lt;-&gt; symbol association</h3></a>
 <p>The compiler shall assume that symbols defined within extern block
 are imported from the library mentioned in the <code>#[link]</code> attribute adorning the block.</p>
-<a class="header" href="1717-dllimport.html#changes-to-code-generation" id="changes-to-code-generation"><h3>Changes to code generation</h3></a>
+<a class="header" href="#changes-to-code-generation" id="changes-to-code-generation"><h3>Changes to code generation</h3></a>
 <p>On platforms other than Windows the above association will have no effect.
 On Windows, however, <code>#[link(..., kind=&quot;dylib&quot;)</code> shall be presumed to mean linking to a dll,
 whereas <code>#[link(..., kind=&quot;static&quot;)</code> shall mean static linking.  In the former case, all symbols
 associated with that library will be marked with LLVM <a href="http://llvm.org/docs/LangRef.html#dll-storage-classes">dllimport</a> storage class.</p>
-<a class="header" href="1717-dllimport.html#library-name-and-kind-variance" id="library-name-and-kind-variance"><h3>Library name and kind variance</h3></a>
+<a class="header" href="#library-name-and-kind-variance" id="library-name-and-kind-variance"><h3>Library name and kind variance</h3></a>
 <p>Many native libraries are linked via the command line via <code>-l</code> which is passed
 in through Cargo build scripts instead of being written in the source code
 itself. As a recap, a native library may change names across platforms or
@@ -200,13 +207,13 @@ extern {
 rustc mylib.rs -l foo:newfoo # link newfoo instead of foo, keeping foo's kind as &quot;dylib&quot;
 rustc mylib.rs -l dylib=bar # change bar's kind to &quot;dylib&quot;, dllimport will be applied
 </code></pre>
-<a class="header" href="1717-dllimport.html#unbundled-static-libs-optional" id="unbundled-static-libs-optional"><h3>Unbundled static libs (optional)</h3></a>
+<a class="header" href="#unbundled-static-libs-optional" id="unbundled-static-libs-optional"><h3>Unbundled static libs (optional)</h3></a>
 <p>It had been pointed out that sometimes one may wish to link to a static system library
 (i.e. one that is always available to the linker) without bundling it into .lib's and .rlib's.
 For this use case we'll introduce another library &quot;kind&quot;, &quot;static-nobundle&quot;.
 Such libraries would be treated in the same way as &quot;static&quot;, except they will not be bundled into
 the target .lib/.rlib.</p>
-<a class="header" href="1717-dllimport.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>For libraries to work robustly on MSVC, the correct <code>#[link]</code> annotation will
 be required. Most cases will &quot;just work&quot; on MSVC due to the compiler strongly
 favoring static linkage, but any symbols imported from a dynamic library or
@@ -214,7 +221,7 @@ exported as a Rust dynamic library will need to be tagged appropriately to
 ensure that they work in all situations. Worse still, the <code>#[link]</code> annotations
 on an <code>extern</code> block are not required on any other platform to work correctly,
 meaning that it will be common that these attributes are left off by accident.</p>
-<a class="header" href="1717-dllimport.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>Instead of enhancing <code>#[link]</code>, a <code>#[linked_from = &quot;foo&quot;]</code> annotation could be added.
@@ -264,7 +271,7 @@ This overloading the <code>-l</code> flag for this purpose may be confusinfg to 
 A new codegen flag might be a better fit for this, for example <code>-C libkind=KIND=LIB</code>.</p>
 </li>
 </ul>
-<a class="header" href="1717-dllimport.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Should we allow dropping a library specified in the source from linking via <code>-l lib:</code> (i.e. &quot;rename to empty&quot;)?</li>
 </ul>
@@ -312,9 +319,6 @@ A new codegen flag might be a better fit for this, for example <code>-C libkind=
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

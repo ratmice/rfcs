@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2294-if-let-guard - </title>
+        <title>2294-if-let-guard - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2294">rust-lang/rfcs#2294</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/51114">rust-lang/rust#51114</a></li>
 </ul>
-<a class="header" href="2294-if-let-guard.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Allow <code>if let</code> guards in <code>match</code> expressions.</p>
-<a class="header" href="2294-if-let-guard.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This feature would greatly simplify some logic where we must match a pattern iff some value computed from the <code>match</code>-bound values has a certain form, where said value may be costly or impossible (due to affine semantics) to recompute in the match arm.</p>
 <p>For further motivation, see the example in the guide-level explanation. Absent this feature, we might rather write the following:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -204,7 +211,7 @@ fn csi_dispatch(&amp;mut self, parms: &amp;[i64], ims: &amp;[u8], ignore: bool, 
 }
 #}</code></pre></pre>
 <p>These examples are both clearer with <code>if let</code> guards as follows. Particularly in the latter example, in the author's opinion, the control flow is easier to follow.</p>
-<a class="header" href="2294-if-let-guard.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p><em>(Adapted from Rust book)</em></p>
 <p>A <em>match guard</em> is an <code>if let</code> condition specified after the pattern in a <code>match</code> arm that also must match if the pattern matches in order for that arm to be chosen. Match guards are useful for expressing more complex ideas than a pattern alone allows.</p>
 <p>The condition can use variables created in the pattern, and the match arm can use any variables bound in the <code>if let</code> pattern (as well as any bound in the <code>match</code> pattern, unless the <code>if let</code> expression moves out of them).</p>
@@ -263,20 +270,20 @@ fn erasure(x: char, parms: &amp;[i64]) -&gt; Option&lt;Erasure&gt; {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2294-if-let-guard.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>This proposal would introduce syntax for a match arm: <code>pat if let guard_pat = guard_expr =&gt; body_expr</code> with semantics so the arm is chosen iff the argument of <code>match</code> matches <code>pat</code> and <code>guard_expr</code> matches <code>guard_pat</code>. The variables of <code>pat</code> are bound in <code>guard_expr</code>, and the variables of <code>pat</code> and <code>guard_pat</code> are bound in <code>body_expr</code>. The syntax is otherwise the same as for <code>if</code> guards. (Indeed, <code>if</code> guards become effectively syntactic sugar for <code>if let</code> guards.)</p>
 <p>An arm may not have both an <code>if</code> and an <code>if let</code> guard.</p>
-<a class="header" href="2294-if-let-guard.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>It further complicates the grammar.</li>
 <li>It is ultimately syntactic sugar, but the transformation to present Rust is potentially non-obvious.</li>
 </ul>
-<a class="header" href="2294-if-let-guard.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <ul>
 <li>The chief alternatives are to rewrite the guard as an <code>if</code> guard and a bind in the match arm, or in some cases into the argument of <code>match</code>; or to write the <code>if let</code> in the match arm and copy the rest of the <code>match</code> into the <code>else</code> branch — what can be done with this syntax can already be done in Rust (to the author's knowledge); this proposal is purely ergonomic, but in the author's opinion, the ergonomic win is significant.</li>
 <li>The proposed syntax feels natural by analogy to the <code>if</code> guard syntax we already have, as between <code>if</code> and <code>if let</code> expressions. No alternative syntaxes were considered.</li>
 </ul>
-<a class="header" href="2294-if-let-guard.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Questions in scope of this proposal: none yet known</p>
 <p>Questions out of scope:</p>
 <ul>
@@ -327,9 +334,6 @@ fn erasure(x: char, parms: &amp;[i64]) -&gt; Option&lt;Erasure&gt; {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

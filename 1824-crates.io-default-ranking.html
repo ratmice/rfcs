@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1824-crates.io-default-ranking - </title>
+        <title>1824-crates.io-default-ranking - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1824">rust-lang/rfcs#1824</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/41616">rust-lang/rust#41616</a></li>
 </ul>
-<a class="header" href="1824-crates.io-default-ranking.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Crates.io has many useful libraries for a variety of purposes, but it's
 difficult to find which crates are meant for a particular purpose and then to
 decide among the available crates which one is most suitable in a particular
@@ -149,7 +156,7 @@ help communicate attributes of crates.</p>
 <p><strong>This RFC aims to create a default ranking of crates within a list of crates
 that have a category or keyword in order to make a recommendation to crate users
 about which crates are likely to deserve further manual evaluation.</strong></p>
-<a class="header" href="1824-crates.io-default-ranking.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Finding and evaluating crates can be time consuming. People already familiar
 with the Rust ecosystem often know which crates are best for which puproses, but
 we want to share that knowledge with everyone. For example, someone looking for
@@ -160,10 +167,10 @@ should be significant and should help make the decision between the crates in
 this category easier.</p>
 <p>This helps address the goal of &quot;Rust should provide easy access to high quality
 crates&quot; as stated in the <a href="https://github.com/rust-lang/rfcs/pull/1774">Rust 2017 Roadmap</a>.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<p>Please see the <a href="1824-crates.io-default-ranking.html#appendix-comparative-research">Appendix: Comparative Research</a> section
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<p>Please see the <a href="#appendix-comparative-research">Appendix: Comparative Research</a> section
 for ways that other package manager websites have solved this problem, and the
-<a href="1824-crates.io-default-ranking.html#appendix-user-research">Appendix: User Research</a> section for results of a user research
+<a href="#appendix-user-research">Appendix: User Research</a> section for results of a user research
 survey we did on how people evaluate crates by hand today.</p>
 <p>A few assumptions we made:</p>
 <ul>
@@ -188,7 +195,7 @@ done without impacting the performance of either publishing or browsing
 crates noticeably. If this does not turn out to be the case, we will have to
 adjust the formula.</li>
 </ul>
-<a class="header" href="1824-crates.io-default-ranking.html#order-by-recent-downloads" id="order-by-recent-downloads"><h2>Order by recent downloads</h2></a>
+<a class="header" href="#order-by-recent-downloads" id="order-by-recent-downloads"><h2>Order by recent downloads</h2></a>
 <p>Through the iterations of this RFC, there was no consensus around a way to order
 crates that would be useful, understandable, resistent to being gamed, and not
 require work of curators, reviewers, or moderators. Furthermore, different
@@ -218,7 +225,7 @@ the last 90 days</li>
 </ul>
 <p>&quot;All-time Downloads&quot; could become another sort option in the menu, alongside
 &quot;Alphabetical&quot;.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#add-more-badges-filters-and-sorting-options" id="add-more-badges-filters-and-sorting-options"><h2>Add more badges, filters, and sorting options</h2></a>
+<a class="header" href="#add-more-badges-filters-and-sorting-options" id="add-more-badges-filters-and-sorting-options"><h2>Add more badges, filters, and sorting options</h2></a>
 <p>Crates.io now has badges for master branch CI status, and <a href="https://github.com/rust-lang/crates.io/pull/540">will soon have a
 badge indicating the version(s) of Rust a particular version builds
 successfully on</a>.</p>
@@ -228,7 +235,7 @@ influence crate ordering</strong>.</p>
 <p>Some badges may require use of third-party services such as GitHub. We recognize
 that not everyone uses these services, but note a specific badge is only one
 factor that people can consider out of many.</p>
-<p>Through <a href="1824-crates.io-default-ranking.html#appendix-user-research">the survey we conducted</a>, we found that when people
+<p>Through <a href="#appendix-user-research">the survey we conducted</a>, we found that when people
 evaluate crates, they are primarily looking for signals of:</p>
 <ul>
 <li>Ease of use</li>
@@ -240,18 +247,18 @@ evaluate crates, they are primarily looking for signals of:</p>
 <li>Popularity (covered by the default ordering by recent downloads)</li>
 <li>Credibility</li>
 </ul>
-<a class="header" href="1824-crates.io-default-ranking.html#ease-of-use" id="ease-of-use"><h3>Ease of use</h3></a>
+<a class="header" href="#ease-of-use" id="ease-of-use"><h3>Ease of use</h3></a>
 <p>By far, the most common attribute people said they considered in the survey was
 whether a crate had good documentation. Frequently mentioned when discussing
 documentation was the desire to quickly find an example of how to use the crate.</p>
 <p>This would be addressed in two ways.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#render-readme-on-a-crates-page" id="render-readme-on-a-crates-page"><h4>Render README on a crate's page</h4></a>
+<a class="header" href="#render-readme-on-a-crates-page" id="render-readme-on-a-crates-page"><h4>Render README on a crate's page</h4></a>
 <p><a href="https://github.com/rust-lang/crates.io/issues/81">Render README files on a crate's page on crates.io</a> so that
 people can quickly see for themselves the information that a crate author
 chooses to make available in their README. We can nudge towards having an
 example in the README by adding a template README that includes an Examples
 section <a href="https://github.com/rust-lang/cargo/issues/3506">in what <code>cargo new</code> generates</a>.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#well-documented-badge" id="well-documented-badge"><h4>&quot;Well Documented&quot; badge</h4></a>
+<a class="header" href="#well-documented-badge" id="well-documented-badge"><h4>&quot;Well Documented&quot; badge</h4></a>
 <p>For each crate published, in a background job, unpack the crate files and
 calculate the ratio of lines of documentation to lines of code as follows:</p>
 <ul>
@@ -325,11 +332,11 @@ potential gaming of the system.</p>
 </ul>
 <p>If we assume these are all the crates on crates.io for this example, then
 combine is the top 20% and would get a badge.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#maintenance" id="maintenance"><h3>Maintenance</h3></a>
+<a class="header" href="#maintenance" id="maintenance"><h3>Maintenance</h3></a>
 <p>We will add a way for maintainers to communicate their intended level of
 maintenance and support. We will add indicators of issues resolved from the
 various code hosting services.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#self-reported-maintenance-intention" id="self-reported-maintenance-intention"><h4>Self-reported maintenance intention</h4></a>
+<a class="header" href="#self-reported-maintenance-intention" id="self-reported-maintenance-intention"><h4>Self-reported maintenance intention</h4></a>
 <p>We will add an optional attribute to Cargo.toml that crate authors could use to
 self-report their maintenance intentions. The valid values would be along the
 lines of the following, and would influence the ranking in the order they're
@@ -381,7 +388,7 @@ may get out of sync with the reality of the crate's maintenance over time.</p>
 <li>peg: actively developed</li>
 <li>peresil: passively maintained</li>
 </ul>
-<a class="header" href="1824-crates.io-default-ranking.html#github-issue-badges" id="github-issue-badges"><h4>GitHub issue badges</h4></a>
+<a class="header" href="#github-issue-badges" id="github-issue-badges"><h4>GitHub issue badges</h4></a>
 <p><a href="http://isitmaintained.com/">isitmaintained.com</a> provides badges indicating the time to resolution of GitHub issues and percentage of GitHub issues that are open.</p>
 <p>We will enable maintainers to add these badges to their crate.</p>
 <table><thead><tr><th> Crate </th><th> Issue Resolution </th><th> Open Issues </th></tr></thead><tbody>
@@ -391,7 +398,7 @@ may get out of sync with the reality of the crate's maintenance over time.</p>
 <tr><td> peg </td><td> <a href="http://isitmaintained.com/project/kevinmehall/rust-peg" title="Average time to resolve an issue"><img src="http://isitmaintained.com/badge/resolution/kevinmehall/rust-peg.svg" alt="Average time to resolve an issue" /></a> </td><td> <a href="http://isitmaintained.com/project/kevinmehall/rust-peg" title="Percentage of issues still open"><img src="http://isitmaintained.com/badge/open/kevinmehall/rust-peg.svg" alt="Percentage of issues still open" /></a> </td></tr>
 <tr><td> peresil </td><td> <a href="http://isitmaintained.com/project/shepmaster/peresil" title="Average time to resolve an issue"><img src="http://isitmaintained.com/badge/resolution/shepmaster/peresil.svg" alt="Average time to resolve an issue" /></a> </td><td> <a href="http://isitmaintained.com/project/shepmaster/peresil" title="Percentage of issues still open"><img src="http://isitmaintained.com/badge/open/shepmaster/peresil.svg" alt="Percentage of issues still open" /></a> </td></tr>
 </tbody></table>
-<a class="header" href="1824-crates.io-default-ranking.html#quality" id="quality"><h3>Quality</h3></a>
+<a class="header" href="#quality" id="quality"><h3>Quality</h3></a>
 <p>We will enable maintainers to add <a href="https://coveralls.io">Coveralls</a> badges to indicate the
 crate's test coverage. If there are other services offering test coverage
 reporting and badges, we will add support for those as well, but this is the
@@ -401,17 +408,17 @@ works with Rust projects.</p>
 repositories hosted on GitHub or BitBucket that use CI on Travis, CircleCI,
 Jenkins, Semaphore, or Codeship.</p>
 <p>nom has coveralls.io configured: <a href="https://coveralls.io/r/Geal/nom?branch=master"><img src="https://coveralls.io/repos/Geal/nom/badge.svg?branch=master" alt="Coverage Status" /></a></p>
-<a class="header" href="1824-crates.io-default-ranking.html#credibility" id="credibility"><h3>Credibility</h3></a>
+<a class="header" href="#credibility" id="credibility"><h3>Credibility</h3></a>
 <p>We have <a href="https://github.com/rust-lang/crates.io/issues/494">an idea for a &quot;favorite authors&quot; list</a> that we
 think would help indicate credibility. With this proposed feature, each person
 can define &quot;credibility&quot; for themselves, which makes this measure less gameable
 and less of a popularity contest.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#out-of-scope" id="out-of-scope"><h2>Out of scope</h2></a>
+<a class="header" href="#out-of-scope" id="out-of-scope"><h2>Out of scope</h2></a>
 <p>This proposal is not advocating to change the default order of <strong>search
 results</strong>; those should still be ordered by relevancy to the query based on the
 indexed content. We will add the ability to sort search results by recent
 downloads.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#evaluation" id="evaluation"><h1>Evaluation</h1></a>
+<a class="header" href="#evaluation" id="evaluation"><h1>Evaluation</h1></a>
 <p>If ordering by number of recent downloads and providing more indicators is not
 helpful, we expect to get bug reports from the community and feedback on the
 users forum, reddit, IRC, etc.</p>
@@ -421,14 +428,14 @@ about people's satisfaction with the information that crates.io provides.</p>
 tweaks need to be made, the process will be managed through crates.io's issues.
 We will consult with the tools team and core team to determine whether a change
 is significant enough to warrant a new RFC.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#how-do-we-teach-this" id="how-do-we-teach-this"><h1>How do we teach this?</h1></a>
+<a class="header" href="#how-do-we-teach-this" id="how-do-we-teach-this"><h1>How do we teach this?</h1></a>
 <p>We will change the label on the default ordering button to read &quot;Recent
 Downloads&quot; rather than &quot;Downloads&quot;.</p>
 <p>Badges will have tooltips on hover that provide additional information.</p>
 <p>We will also add a page to doc.crates.io that details all possible indicators
 and their values, and explains to crate authors how to configure or earn the
 different badges.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>We might create a system that incentivizes attributes that are not useful, or
 worse, actively harmful to the Rust ecosystem. For example, the documentation
 percentage could be gamed by having one line of uninformative documentation for
@@ -438,8 +445,8 @@ these attributes are valuable to approach in good faith, and that trying to
 game the badges will be easily discoverable. We could have a reporting
 mechanism for crates that are attempting to gain badges artificially, and
 implement a way for administrators to remove badges from those crates.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1824-crates.io-default-ranking.html#manual-curation" id="manual-curation"><h2>Manual curation</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#manual-curation" id="manual-curation"><h2>Manual curation</h2></a>
 <ol>
 <li>We could keep the default ranking as number of downloads, and leave further
 curation to sites like <a href="https://github.com/kud1ing/awesome-rust">Awesome Rust</a>.</li>
@@ -457,7 +464,7 @@ ratings. This could have the usual problems that come with online rating
 systems, such as spam, paid reviews, ratings influenced by personal
 disagreements, etc.</li>
 </ol>
-<a class="header" href="1824-crates.io-default-ranking.html#more-sorting-and-filtering-options" id="more-sorting-and-filtering-options"><h2>More sorting and filtering options</h2></a>
+<a class="header" href="#more-sorting-and-filtering-options" id="more-sorting-and-filtering-options"><h2>More sorting and filtering options</h2></a>
 <p>There are even more options for interacting with the metadata that crates.io
 has than we are proposing in this RFC at this time. For example:</p>
 <ol>
@@ -475,18 +482,18 @@ recent version release date.</p>
 <p>We would probably want to implement saved search configurations per user, so
 that people wouldn't have to re-enter their criteria every time they wanted to
 do a similar search.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>All questions have now been resolved.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#appendix-comparative-research" id="appendix-comparative-research"><h1>Appendix: Comparative Research</h1></a>
+<a class="header" href="#appendix-comparative-research" id="appendix-comparative-research"><h1>Appendix: Comparative Research</h1></a>
 <p>This is how other package hosting websites handle default sorting within
 categories.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#django-packages" id="django-packages"><h2>Django Packages</h2></a>
+<a class="header" href="#django-packages" id="django-packages"><h2>Django Packages</h2></a>
 <p><a href="https://djangopackages.org/">Django Packages</a> has the concept of <a href="https://djangopackages.org/grids/">grids</a>, which are large tables
 of packages in a particular category. Each package is a column, and each row is
 some attribute of packages. The default ordering from left to right appears to
 be GitHub stars.</p>
 <p><img src="http://i.imgur.com/YAp9WYf.png" alt="Example of a Django Packages grid" width="800" /></p>
-<a class="header" href="1824-crates.io-default-ranking.html#libhunt" id="libhunt"><h2>Libhunt</h2></a>
+<a class="header" href="#libhunt" id="libhunt"><h2>Libhunt</h2></a>
 <p><a href="https://rust.libhunt.com/">Libhunt</a> pulls libraries and categories from <a href="https://github.com/kud1ing/awesome-rust">Awesome Rust</a>, then
 adds some metadata and navigation.</p>
 <p>The default ranking is relative popularity, measured by GitHub stars and scaled
@@ -497,11 +504,11 @@ commits.</p>
 <p><img src="http://i.imgur.com/Yv6diFU.png" alt="Example of a Libhunt category" width="800" /></p>
 <p>You can also choose to compare two libraries on a number of attributes:</p>
 <p><img src="http://i.imgur.com/HBtCH2E.png" alt="Example of comparing two crates on Libhunt" width="800" /></p>
-<a class="header" href="1824-crates.io-default-ranking.html#maven-repository" id="maven-repository"><h2>Maven Repository</h2></a>
+<a class="header" href="#maven-repository" id="maven-repository"><h2>Maven Repository</h2></a>
 <p><a href="http://mvnrepository.com">Maven Repository</a> appears to order by the number of reverse dependencies
 (&quot;# usages&quot;):</p>
 <p><img src="http://i.imgur.com/nZEQdAr.png" alt="Example of a maven repository category" width="800" /></p>
-<a class="header" href="1824-crates.io-default-ranking.html#pypi" id="pypi"><h2>Pypi</h2></a>
+<a class="header" href="#pypi" id="pypi"><h2>Pypi</h2></a>
 <p><a href="https://pypi.python.org/pypi?%3Aaction=browse">Pypi</a> lets you choose multiple categories, which are not only based on
 topic but also other attributes like library stability and operating system:</p>
 <p><img src="http://i.imgur.com/Y3llc5m.png" alt="Example of filtering by Pypi categories" width="800" /></p>
@@ -510,12 +517,12 @@ categories link, the packages are in alphabetical order... but the alphabet
 starts over multiple times... it's unclear from the interface why this is the
 case.</p>
 <p><img src="http://i.imgur.com/xEKGTsQ.jpg" alt="Example of Pypi ordering" width="800" /></p>
-<a class="header" href="1824-crates.io-default-ranking.html#github-showcases" id="github-showcases"><h2>GitHub Showcases</h2></a>
+<a class="header" href="#github-showcases" id="github-showcases"><h2>GitHub Showcases</h2></a>
 <p>To get incredibly meta, GitHub has the concept of <a href="https://github.com/showcases">showcases</a> for a variety
 of topics, and they have <a href="https://github.com/showcases/package-managers">a showcase of package managers</a>. The
 default ranking is by GitHub stars (cargo is 17/27 currently).</p>
 <p><img src="http://i.imgur.com/SCvKQi2.png" alt="Example of a GitHub showcase" width="800" /></p>
-<a class="header" href="1824-crates.io-default-ranking.html#ruby-toolbox" id="ruby-toolbox"><h2>Ruby toolbox</h2></a>
+<a class="header" href="#ruby-toolbox" id="ruby-toolbox"><h2>Ruby toolbox</h2></a>
 <p><a href="https://www.ruby-toolbox.com">Ruby toolbox</a> sorts by a relative popularity score, which is calculated
 from a combination of GitHub stars/watchers and number of downloads:</p>
 <p><img src="http://i.imgur.com/5Qt03n3.png" alt="How Ruby Toolbox's popularity ranking is calculated" width="800" /></p>
@@ -528,7 +535,7 @@ HTML parser:</p>
 magnifying glass icon that, on hover or tap, reveals more information without a
 page load/reload:</p>
 <p><img src="http://i.imgur.com/0NPi6ct.png" alt="Expanded Ruby Toolbox info" width="800" /></p>
-<a class="header" href="1824-crates.io-default-ranking.html#npms" id="npms"><h2>npms</h2></a>
+<a class="header" href="#npms" id="npms"><h2>npms</h2></a>
 <p>While <a href="https://npms.io">npms</a> doesn't have categories, its search appears to do some exact
 matching of the query and then rank the rest of the results <a href="https://api-docs.npms.io/">weighted</a> by
 three different scores:</p>
@@ -547,7 +554,7 @@ package score, defaults to 2.05</li>
 to be added in the future. Implementation details are available in the
 <a href="https://github.com/npms-io/npms-analyzer/blob/master/docs/architecture.md">architecture documentation</a>.</p>
 <p><img src="http://i.imgur.com/0i897ts.png" alt="Explanation of the data analyzed by npms" width="800" /></p>
-<a class="header" href="1824-crates.io-default-ranking.html#package-control-sublime" id="package-control-sublime"><h2>Package Control (Sublime)</h2></a>
+<a class="header" href="#package-control-sublime" id="package-control-sublime"><h2>Package Control (Sublime)</h2></a>
 <p><a href="https://packagecontrol.io/">Package Control</a> is for Sublime Text packages. It has Labels that are
 roughly equivalent to categories:</p>
 <p><img src="http://i.imgur.com/81PGbFM.png" alt="Package Control homepage showing Labels like language syntax, snippets" width="800" /></p>
@@ -555,8 +562,8 @@ roughly equivalent to categories:</p>
 the number of downloads plus badges for Sublime Text version compatibility, OS
 compatibility, Top 25/100, and new/trending:</p>
 <p><img src="http://i.imgur.com/KtWcOXV.png" alt="Sample Package Control list of packages within a label, sorted alphabetically" width="800" /></p>
-<a class="header" href="1824-crates.io-default-ranking.html#appendix-user-research" id="appendix-user-research"><h1>Appendix: User Research</h1></a>
-<a class="header" href="1824-crates.io-default-ranking.html#demographics" id="demographics"><h2>Demographics</h2></a>
+<a class="header" href="#appendix-user-research" id="appendix-user-research"><h1>Appendix: User Research</h1></a>
+<a class="header" href="#demographics" id="demographics"><h2>Demographics</h2></a>
 <p>We ran a survey for 1 week and got 134 responses. The responses we got seem to
 be representative of the current Rust community: skewing heavily towards more
 experienced programmers and just about evenly distributed between Rust
@@ -569,7 +576,7 @@ responded to the survey.</p>
 this survey is representative. Given the bias towards more experience
 programming, we think the answers are worthy of using to inform recommendations
 crates.io will be making to programmers of all experience levels.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#crate-ranking-agreement" id="crate-ranking-agreement"><h2>Crate ranking agreement</h2></a>
+<a class="header" href="#crate-ranking-agreement" id="crate-ranking-agreement"><h2>Crate ranking agreement</h2></a>
 <p>The community ranking of the 5 crates presented in the survey for which order
 people would try them out for parsing comes out to be:</p>
 <p>1.) nom</p>
@@ -587,7 +594,7 @@ community ordering. Also, not everyone will agree with the crates.io ranking,
 so we should display other information and provide alternate filtering and
 sorting mechanisms so that people who prioritize different attributes than the
 majority of the community will be able to find what they are looking for.</p>
-<a class="header" href="1824-crates.io-default-ranking.html#factors-considered-when-ranking-crates" id="factors-considered-when-ranking-crates"><h2>Factors considered when ranking crates</h2></a>
+<a class="header" href="#factors-considered-when-ranking-crates" id="factors-considered-when-ranking-crates"><h2>Factors considered when ranking crates</h2></a>
 <p>The following table shows the top 25 mentioned factors for the two free answer
 sections. We asked both &quot;Please explain what information you used to evaluate
 the crates and how that information influenced your ranking.&quot; and &quot;Was there
@@ -625,8 +632,8 @@ evaluate which crates to try.</p>
 <tr><td> 24 </td><td> CI results                                                                     </td><td> 15                   </td><td> 2                                  </td><td> 17                        </td><td> Depends on CI service </td></tr>
 <tr><td> 25 </td><td> Whether the crate works on nightly, stable, particular stable versions         </td><td> 8                    </td><td> 8                                  </td><td> 16                        </td><td>                       </td></tr>
 </tbody></table>
-<a class="header" href="1824-crates.io-default-ranking.html#relevant-quotes-motivating-our-choice-of-factors" id="relevant-quotes-motivating-our-choice-of-factors"><h2>Relevant quotes motivating our choice of factors</h2></a>
-<a class="header" href="1824-crates.io-default-ranking.html#easy-to-use" id="easy-to-use"><h3>Easy to use</h3></a>
+<a class="header" href="#relevant-quotes-motivating-our-choice-of-factors" id="relevant-quotes-motivating-our-choice-of-factors"><h2>Relevant quotes motivating our choice of factors</h2></a>
+<a class="header" href="#easy-to-use" id="easy-to-use"><h3>Easy to use</h3></a>
 <blockquote>
 <ol>
 <li>Documentation linked from crates.io  2) Documentation contains decent
@@ -690,7 +697,7 @@ documented, this would help with choosing well done package.</p>
 to each crate with the proportion of public items with at least some docs
 would be a great starting point.</p>
 </blockquote>
-<a class="header" href="1824-crates.io-default-ranking.html#maintenance-1" id="maintenance-1"><h3>Maintenance</h3></a>
+<a class="header" href="#maintenance-1" id="maintenance-1"><h3>Maintenance</h3></a>
 <blockquote>
 <p>On nom's crates.io page I checked the version (2.0.0) and when the latest
 version came out (less than a month ago). I know that versioning is
@@ -715,7 +722,7 @@ not very much used except by its author. All other things equal, I tend to
 prefer active projects.);</li>
 </ul>
 </blockquote>
-<a class="header" href="1824-crates.io-default-ranking.html#quality-1" id="quality-1"><h3>Quality</h3></a>
+<a class="header" href="#quality-1" id="quality-1"><h3>Quality</h3></a>
 <blockquote>
 <p>Tests:</p>
 <ul>
@@ -727,7 +734,7 @@ prefer active projects.);</li>
 <li>Is master green?</li>
 </ul>
 </blockquote>
-<a class="header" href="1824-crates.io-default-ranking.html#popularitycredibility" id="popularitycredibility"><h3>Popularity/credibility</h3></a>
+<a class="header" href="#popularitycredibility" id="popularitycredibility"><h3>Popularity/credibility</h3></a>
 <blockquote>
 <ol start="2">
 <li>I look  at the number of download. If it is too small (~ &lt;1000), I assume
@@ -748,7 +755,7 @@ the best</li>
 when one is more popular or well supported than another when all other
 factors are close.</p>
 </blockquote>
-<a class="header" href="1824-crates.io-default-ranking.html#overall" id="overall"><h3>Overall</h3></a>
+<a class="header" href="#overall" id="overall"><h3>Overall</h3></a>
 <blockquote>
 <p>I can't pick a most important trait because certain ones outweigh others when
 combined, etc. I.e. number of downloads is OK, but may only suggest that it's
@@ -758,7 +765,7 @@ large user base (# dependent crates + downloads + stars), is post 1.0, is
 active (i.e. a release within the past 6 months?), and it helps when it's a
 prominent author (but that I feel is an unfair metric).</p>
 </blockquote>
-<a class="header" href="1824-crates.io-default-ranking.html#relevant-bugs-capturing-other-feedback" id="relevant-bugs-capturing-other-feedback"><h2>Relevant bugs capturing other feedback</h2></a>
+<a class="header" href="#relevant-bugs-capturing-other-feedback" id="relevant-bugs-capturing-other-feedback"><h2>Relevant bugs capturing other feedback</h2></a>
 <p>There was a wealth of good ideas and feedback in the survey answers, but not
 all of it pertained to crate ranking directly. Commonly mentioned improvements
 that could greatly help the usability and usefulness of crates.io included:</p>
@@ -816,9 +823,6 @@ that could greatly help the usability and usefulness of crates.io included:</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

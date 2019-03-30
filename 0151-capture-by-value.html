@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0151-capture-by-value - </title>
+        <title>0151-capture-by-value - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,20 +145,20 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/151">rust-lang/rfcs#151</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/12831">rust-lang/rust#12831</a></li>
 </ul>
-<a class="header" href="0151-capture-by-value.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Closures should capture their upvars by value unless the <code>ref</code> keyword is used.</p>
-<a class="header" href="0151-capture-by-value.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>For unboxed closures, we will need to syntactically distinguish between captures by value and captures by reference.</p>
-<a class="header" href="0151-capture-by-value.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>This is a small part of #114, split off to separate it from the rest of the discussion going on in that RFC.</p>
 <p>Closures should capture their upvars (closed-over variables) by value unless the <code>ref</code> keyword precedes the opening <code>|</code> of the argument list. Thus <code>|x| x + 2</code> will capture <code>x</code> by value (and thus, if <code>x</code> is not <code>Copy</code>, it will move <code>x</code> into the closure), but <code>ref |x| x + 2</code> will capture <code>x</code> by reference.</p>
 <p>In an unboxed-closures world, the immutability/mutability of the borrow (as the case may be) is inferred from the type of the closure: <code>Fn</code> captures by immutable reference, while <code>FnMut</code> captures by mutable reference. In a boxed-closures world, the borrows are always mutable.</p>
-<a class="header" href="0151-capture-by-value.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It may be that <code>ref</code> is unwanted complexity; it only changes the semantics of 10%-20% of closures, after all. This does not add any core functionality to the language, as a reference can always be made explicitly and then captured. However, there are a <em>lot</em> of closures, and the workaround to capture a reference by value is painful.</p>
-<a class="header" href="0151-capture-by-value.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>As above, the impact of not doing this is that reference semantics would have to be achieved. However, the diff against current Rust was thousands of lines of pretty ugly code.</p>
 <p>Another alternative would be to annotate each individual upvar with its capture semantics, like capture clauses in C++11. This proposal does not preclude adding that functionality should it be deemed useful in the future. Note that C++11 provides a syntax for capturing all upvars by reference, exactly as this proposal does.</p>
-<a class="header" href="0151-capture-by-value.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -197,9 +204,6 @@
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

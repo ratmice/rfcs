@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1361-cargo-cfg-dependencies - </title>
+        <title>1361-cargo-cfg-dependencies - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1361">rust-lang/rfcs#1361</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1361-cargo-cfg-dependencies.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Improve the target-specific dependency experience in Cargo by leveraging the
 same <code>#[cfg]</code> syntax that Rust has.</p>
-<a class="header" href="1361-cargo-cfg-dependencies.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently in Cargo it's <a href="https://github.com/rust-lang/cargo/issues/1007">relatively painful</a> to list target-specific
 dependencies. This can only be done by listing out the entire target string as
 opposed to using the more-convenient <code>#[cfg]</code> annotations that Rust source code
@@ -156,7 +163,7 @@ downloads, excessive compilations, and overall &quot;unclean methods&quot; to ha
 platform specific dependency.</p>
 <p>This RFC proposes leveraging the same familiar syntax used in Rust itself to
 define these dependencies.</p>
-<a class="header" href="1361-cargo-cfg-dependencies.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The target-specific dependency syntax in Cargo will be expanded to include
 not only full target strings but also <code>#[cfg]</code> expressions:</p>
 <pre><code class="language-toml">[target.&quot;cfg(windows)&quot;.dependencies]
@@ -202,7 +209,7 @@ printed on its own line to allow external parsing. Cargo will use this to call
 the compiler once (or twice if an explicit target is requested) when resolution
 starts, and it will use these key/value pairs to execute the <code>cfg</code> queries in
 the dependency graph being constructed.</p>
-<a class="header" href="1361-cargo-cfg-dependencies.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This is not a forwards-compatible extension to Cargo, so this will break
 compatibility with older Cargo versions. If a crate is published with a Cargo
 that supports this <code>cfg</code> syntax, it will not be buildable by a Cargo that does
@@ -228,7 +235,7 @@ a crates.io dependency.</li>
 <p>For ease of implementation this RFC would recommend strategy (1) to help ease
 this into the ecosystem without too much pain in terms of compatibility or
 implementation.</p>
-<a class="header" href="1361-cargo-cfg-dependencies.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Instead of using Rust's <code>#[cfg]</code> syntax, Cargo could support other options such
 as patterns over the target string. For example it could accept something along
 the lines of:</p>
@@ -250,7 +257,7 @@ forward into the future.</li>
 such as <code>windows</code> and <code>unix</code> as well as the above pattern matching, but this
 eventually just moves into the territory of what <code>#[cfg]</code> already provides but
 may not always quite get there.</p>
-<a class="header" href="1361-cargo-cfg-dependencies.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>This is not the only change that's known to Cargo which is known to not be
 forwards-compatible, so it may be best to lump them all together into one
@@ -301,9 +308,6 @@ on those ideas? (note they have not been formed into an RFC yet)</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

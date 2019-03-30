@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0528-string-patterns - </title>
+        <title>0528-string-patterns - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,10 +145,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/528">rust-lang/rfcs#528</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/22477">rust-lang/rust#22477</a></li>
 </ul>
-<a class="header" href="0528-string-patterns.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Stabilize all string functions working with search patterns around a new
 generic API that provides a unified way to define and use those patterns.</p>
-<a class="header" href="0528-string-patterns.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Right now, string slices define a couple of methods for string
 manipulation that work with user provided values that act as
 search patterns. For example, <code>split()</code> takes an type implementing <code>CharEq</code>
@@ -199,8 +206,8 @@ search implementations.</p>
 <p>As an additional design goal, the new abstractions should also not pose a problem
 for optimization - like for iterators, a concrete instance should produce similar
 machine code to a hardcoded optimized loop written in C.</p>
-<a class="header" href="0528-string-patterns.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0528-string-patterns.html#new-traits" id="new-traits"><h2>New traits</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#new-traits" id="new-traits"><h2>New traits</h2></a>
 <p>First, new traits will be added to the <code>str</code> module in the std library:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -305,13 +312,13 @@ and all unsafe code needed for such optimizations is contained inside a single s
 <p>Given that most implementations of these traits will likely
 live in the std library anyway, and are thoroughly tested, marking these traits <code>unsafe</code>
 doesn't seem like a huge burden to bear for good, optimizable performance.</p>
-<a class="header" href="0528-string-patterns.html#the-role-of-the-additional-default-methods" id="the-role-of-the-additional-default-methods"><h3>The role of the additional default methods</h3></a>
+<a class="header" href="#the-role-of-the-additional-default-methods" id="the-role-of-the-additional-default-methods"><h3>The role of the additional default methods</h3></a>
 <p><code>Pattern</code>, <code>Searcher</code> and <code>ReverseSearcher</code> each offer a few additional
 default methods that give better optimization opportunities.</p>
 <p>Most consumers of the pattern API will use them to more narrowly constraint
 how they are looking for a pattern, which given an optimized implementantion,
 should lead to mostly optimal code being generated.</p>
-<a class="header" href="0528-string-patterns.html#example-for-the-issue-with-double-ended-searching" id="example-for-the-issue-with-double-ended-searching"><h3>Example for the issue with double-ended searching</h3></a>
+<a class="header" href="#example-for-the-issue-with-double-ended-searching" id="example-for-the-issue-with-double-ended-searching"><h3>Example for the issue with double-ended searching</h3></a>
 <p>Let the haystack be the string <code>&quot;fooaaaaabar&quot;</code>, and let the pattern be the string <code>&quot;aa&quot;</code>.</p>
 <p>Then a efficient, lazy implementation of the matcher searching from the left
 would find these matches:</p>
@@ -321,7 +328,7 @@ would find these matches:</p>
 <p>This discrepancy can not be avoided without additional overhead or even
 allocations for caching in the reverse matcher, and thus &quot;matching from the front&quot; needs to
 be considered a different operation than &quot;matching from the back&quot;.</p>
-<a class="header" href="0528-string-patterns.html#why-uint-uint-instead-of-str" id="why-uint-uint-instead-of-str"><h3>Why <code>(uint, uint)</code> instead of <code>&amp;str</code></h3></a>
+<a class="header" href="#why-uint-uint-instead-of-str" id="why-uint-uint-instead-of-str"><h3>Why <code>(uint, uint)</code> instead of <code>&amp;str</code></h3></a>
 <blockquote>
 <p>Note: This section is a bit outdated now</p>
 </blockquote>
@@ -351,7 +358,7 @@ unsafe again, negating much of the benefit.</li>
 </ul>
 <p>In both cases, the API does not really improve significantly, so <code>uint</code> indices have been chosen
 as the &quot;simple&quot; default design.</p>
-<a class="header" href="0528-string-patterns.html#new-methods-on-strext" id="new-methods-on-strext"><h2>New methods on <code>StrExt</code></h2></a>
+<a class="header" href="#new-methods-on-strext" id="new-methods-on-strext"><h2>New methods on <code>StrExt</code></h2></a>
 <p>With the <code>Pattern</code> and <code>Searcher</code> traits defined and implemented, the actual <code>str</code>
 methods will be changed to make use of them:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -407,7 +414,7 @@ to behave like a double ended queues where you just pop elements from both sides
 </ul>
 <p><em>However</em>, all iterators will still implement <code>DoubleEndedIterator</code> if the underlying
 matcher implements <code>DoubleEndedSearcher</code>, to keep the ability to do things like <code>foo.split('a').rev()</code>.</p>
-<a class="header" href="0528-string-patterns.html#transition-and-deprecation-plans" id="transition-and-deprecation-plans"><h2>Transition and deprecation plans</h2></a>
+<a class="header" href="#transition-and-deprecation-plans" id="transition-and-deprecation-plans"><h2>Transition and deprecation plans</h2></a>
 <p>Most changes in this RFC can be made in such a way that code using the old hardcoded or <code>CharEq</code>-using
 methods will still compile, or give deprecation warning.</p>
 <p>It would even be possible to generically implement <code>Pattern</code> for all <code>CharEq</code> types,
@@ -460,13 +467,13 @@ the old ones need to not be defined in a way that makes them &quot;final&quot;.
 That is, they should be defined in their own submodule, like <code>str::pattern</code> that can grow
 a sister module like <code>str::newpattern</code>, and not be exported in a global place like <code>str</code> or even
 the <code>prelude</code> (which would be unneeded anyway).</p>
-<a class="header" href="0528-string-patterns.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>It complicates the whole machinery and API behind the implementation of matching on string patterns.</li>
 <li>The no-HKT-lifetime-workaround wart might be to confusing for something as commonplace as the string API.</li>
 <li>This add a few layers of generics, so compilation times and micro optimizations might suffer.</li>
 </ul>
-<a class="header" href="0528-string-patterns.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <blockquote>
 <p>Note: This section is not updated to the new naming scheme</p>
 </blockquote>
@@ -518,7 +525,7 @@ to explicitly check every match on validity in regard to utf8 boundaries.</li>
 <li>Allow to opt-in the <code>unsafe</code> traits by providing parallel safe and unsafe <code>Matcher</code> traits or methods,
 with the one per default implemented in terms of the other.</li>
 </ul>
-<a class="header" href="0528-string-patterns.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Concrete performance is untested compared to the current situation.</li>
 <li>Should the API split in regard to forward-reverse matching be as symmetrical as possible,
@@ -528,7 +535,7 @@ In the first case, iterators like <code>Matches</code> and <code>RMatches</code>
 minimum to support reverse operation.
 A ruling in favor of symmetry would also speak for the <code>ReversePattern</code> alternative.</li>
 </ul>
-<a class="header" href="0528-string-patterns.html#additional-extensions" id="additional-extensions"><h1>Additional extensions</h1></a>
+<a class="header" href="#additional-extensions" id="additional-extensions"><h1>Additional extensions</h1></a>
 <p>A similar abstraction system could be implemented for <code>String</code> APIs, so that for example <code>string.push(&quot;foo&quot;)</code>,
 <code>string.push('f')</code>, <code>string.push('f'.to_ascii())</code> all work by using something like a <code>StringSource</code> trait.</p>
 <p>This would allow operations like <code>s.replace(&amp;regex!(...), &quot;foo&quot;)</code>,
@@ -582,9 +589,6 @@ fn replace&lt;P, S&gt;(&amp;mut self, pat: P, with: S) where P: Pattern, S: Stri
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

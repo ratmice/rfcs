@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2318-custom-test-frameworks - </title>
+        <title>2318-custom-test-frameworks - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2318">rust-lang/rfcs#2318</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/50297">rust-lang/rust#50297</a></li>
 </ul>
-<a class="header" href="2318-custom-test-frameworks.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This is an <em>experimental RFC</em> for adding the ability to integrate custom test/bench/etc frameworks (&quot;test frameworks&quot;) in Rust.</p>
-<a class="header" href="2318-custom-test-frameworks.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, Rust lets you write unit tests with a <code>#[test]</code> attribute. We also have an unstable <code>#[bench]</code> attribute which lets one write benchmarks.</p>
 <p>In general it's not easy to use your own testing strategy. Implementing something that can work
 within a <code>#[test]</code> attribute is fine (<code>quickcheck</code> does this with a macro), but changing the overall
@@ -176,19 +183,19 @@ introspection into the target crate.</li>
 are at the same level of integration as <code>test</code> or <code>bench</code> as
 far as build processes are concerned.</li>
 </ul>
-<a class="header" href="2318-custom-test-frameworks.html#detailed-proposal" id="detailed-proposal"><h1>Detailed proposal</h1></a>
+<a class="header" href="#detailed-proposal" id="detailed-proposal"><h1>Detailed proposal</h1></a>
 <p>(As an eRFC I'm merging the &quot;guide-level/reference-level&quot; split for now; when we have more concrete
 ideas we can figure out how to frame it and then the split will make more sense)</p>
 <p>The basic idea is that crates can define test frameworks, which specify
 how to transform collected test functions and construct a <code>main()</code> function,
 and then crates using these can declare them in their Cargo.toml, which will let
 crate developers invoke various test-like steps using the framework.</p>
-<a class="header" href="2318-custom-test-frameworks.html#procedural-macro-for-a-new-test-framework" id="procedural-macro-for-a-new-test-framework"><h2>Procedural macro for a new test framework</h2></a>
+<a class="header" href="#procedural-macro-for-a-new-test-framework" id="procedural-macro-for-a-new-test-framework"><h2>Procedural macro for a new test framework</h2></a>
 <p>A test framework is like a procedural macro that is evaluated after all other macros in the target
 crate have been evaluated. The exact mechanism is left up to the experimentation phase, however we
 have some proposals at the end of this RFC.</p>
 <p>A crate may only define a single framework.</p>
-<a class="header" href="2318-custom-test-frameworks.html#cargo-integration" id="cargo-integration"><h2>Cargo integration</h2></a>
+<a class="header" href="#cargo-integration" id="cargo-integration"><h2>Cargo integration</h2></a>
 <p>Alternative frameworks need to integrate with cargo.
 In particular, when crate <code>a</code> uses a crate <code>b</code> which provides an
 framework, <code>a</code> needs to be able to specify when <code>b</code>'s framework
@@ -226,12 +233,12 @@ more than one test or bench framework.</p>
 <p>To invoke a particular framework, a user invokes <code>cargo test</code> or <code>cargo bench</code>. Any additional
 arguments are passed to the testing binary. By convention, the first position argument should allow
 filtering which targets (tests/benchmarks/etc.) are run.</p>
-<a class="header" href="2318-custom-test-frameworks.html#to-be-designed" id="to-be-designed"><h2>To be designed</h2></a>
+<a class="header" href="#to-be-designed" id="to-be-designed"><h2>To be designed</h2></a>
 <p>This contains things which we should attempt to solve in the course of this experiment, for which this eRFC
 does not currently provide a concrete proposal.</p>
-<a class="header" href="2318-custom-test-frameworks.html#procedural-macro-design" id="procedural-macro-design"><h2>Procedural macro design</h2></a>
+<a class="header" href="#procedural-macro-design" id="procedural-macro-design"><h2>Procedural macro design</h2></a>
 <p>We have a bunch of concrete proposals here, but haven't yet chosen one.</p>
-<a class="header" href="2318-custom-test-frameworks.html#main-function-generation-with-test-collector" id="main-function-generation-with-test-collector"><h3>main() function generation with test collector</h3></a>
+<a class="header" href="#main-function-generation-with-test-collector" id="main-function-generation-with-test-collector"><h3>main() function generation with test collector</h3></a>
 <p>One possible design is to have a proc macro that simply generates <code>main()</code></p>
 <p>It is passed the <code>TokenStream</code> for every element in the
 target crate that has a set of attributes the test framework has
@@ -302,7 +309,7 @@ mod bar {
 <p>The compiler will make marked items <code>pub(crate)</code> (i.e. by making
 all their parent modules public). <code>#[test]</code> and <code>#[bench]</code> items will only exist
 with <code>--cfg test</code> (or bench), which is automatically set when running tests.</p>
-<a class="header" href="2318-custom-test-frameworks.html#whole-crate-procedural-macro" id="whole-crate-procedural-macro"><h3>Whole-crate procedural macro</h3></a>
+<a class="header" href="#whole-crate-procedural-macro" id="whole-crate-procedural-macro"><h3>Whole-crate procedural macro</h3></a>
 <p>An alternative proposal was to expose an extremely general whole-crate proc macro:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -333,7 +340,7 @@ other antics.</p>
 these tools usually operate at a different layer of abstraction so it might not be necessary.</p>
 <p>A major drawback of this proposal is that it is very general, and perhaps too powerful. We're currently using the
 more focused API in the eRFC, and may switch to this during experimentation if a pressing need crops up.</p>
-<a class="header" href="2318-custom-test-frameworks.html#alternative-procedural-macro-with-minimal-compiler-changes" id="alternative-procedural-macro-with-minimal-compiler-changes"><h3>Alternative procedural macro with minimal compiler changes</h3></a>
+<a class="header" href="#alternative-procedural-macro-with-minimal-compiler-changes" id="alternative-procedural-macro-with-minimal-compiler-changes"><h3>Alternative procedural macro with minimal compiler changes</h3></a>
 <p>The above proposal can be made even more general, minimizing the impact on the compiler.</p>
 <p>This assumes that <code>#![foo]</code> (&quot;inner attribute&quot;) macros work on modules and on crates.</p>
 <p>The idea is that the compiler defines no new proc macro surface, and instead simply exposes
@@ -351,12 +358,12 @@ pub fn harness(crate: TokenStream) -&gt; TokenStream {
 #}</code></pre></pre>
 <p>The cargo functionality will basically compile the file with the right dependencies
 and <code>--attribute=your_crate::harness</code>.</p>
-<a class="header" href="2318-custom-test-frameworks.html#standardizing-the-output" id="standardizing-the-output"><h3>Standardizing the output</h3></a>
+<a class="header" href="#standardizing-the-output" id="standardizing-the-output"><h3>Standardizing the output</h3></a>
 <p>We should probably provide a crate with useful output formatters and stuff so that if test harnesses desire, they can
 use the same output formatting as a regular test. This also provides a centralized location to standardize things
 like json output and whatnot.</p>
 <p>@killercup is working on a proposal for this which I will try to work in.</p>
-<a class="header" href="2318-custom-test-frameworks.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>This adds more sections to <code>Cargo.toml</code>.</li>
 <li>This complicates the execution path for cargo, in that it now needs
@@ -365,17 +372,17 @@ to know about testing frameworks.</li>
 between testing frameworks, which may confuse users as they move
 between crates.</li>
 </ul>
-<a class="header" href="2318-custom-test-frameworks.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>We could stabilize <code>#[bench]</code> and extend libtest with setup/teardown and
 other requested features. This would complicate the in-tree libtest,
 introduce a barrier for community contributions, and discourage other
 forms of testing or benchmarking.</p>
-<a class="header" href="2318-custom-test-frameworks.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>These are mostly intended to be resolved during the experimental
 feature. Many of these have strawman proposals -- unlike the rest of this RFC,
 these proposals have not been discussed as thoroughly. If folks feel like
 there's consensus on some of these we can move them into the main RFC.</p>
-<a class="header" href="2318-custom-test-frameworks.html#integration-with-doctests" id="integration-with-doctests"><h2>Integration with doctests</h2></a>
+<a class="header" href="#integration-with-doctests" id="integration-with-doctests"><h2>Integration with doctests</h2></a>
 <p>Documentation tests are somewhat special, in that they cannot easily be
 expressed as <code>TokenStream</code> manipulations. In the first instance, the
 right thing to do is probably to have an implicitly defined framework
@@ -385,18 +392,18 @@ called <code>doctest</code> which is included in the testing set
 demonstrate code that the user of a library would write. They're there
 to document <em>how</em> something should be used, and it then makes somewhat
 less sense to have different &quot;ways&quot; of running them.</p>
-<a class="header" href="2318-custom-test-frameworks.html#standardizing-the-output-1" id="standardizing-the-output-1"><h2>Standardizing the output</h2></a>
+<a class="header" href="#standardizing-the-output-1" id="standardizing-the-output-1"><h2>Standardizing the output</h2></a>
 <p>We should probably provide a crate with useful output formatters and
 stuff so that if test harnesses desire, they can use the same output
 formatting as a regular test. This also provides a centralized location
 to standardize things like json output and whatnot.</p>
-<a class="header" href="2318-custom-test-frameworks.html#namespacing" id="namespacing"><h2>Namespacing</h2></a>
+<a class="header" href="#namespacing" id="namespacing"><h2>Namespacing</h2></a>
 <p>Currently, two frameworks can both declare interest in the same
 attributes. How do we deal with collisions (e.g., most test crates will
 want the attribute <code>#[test]</code>). Do we namespace the attributes by the
 framework name (e.g., <code>#[mytest::test]</code>)? Do we require them to be behind
 <code>#[cfg(mytest)]</code>?</p>
-<a class="header" href="2318-custom-test-frameworks.html#runtime-dependencies-and-flags" id="runtime-dependencies-and-flags"><h2>Runtime dependencies and flags</h2></a>
+<a class="header" href="#runtime-dependencies-and-flags" id="runtime-dependencies-and-flags"><h2>Runtime dependencies and flags</h2></a>
 <p>The code generated by the framework may itself have dependencies.
 Currently there's no way for the framework to specify this. One
 proposal is for the crate to specify  <em>runtime</em> dependencies of the
@@ -409,7 +416,7 @@ dev-dependencies will be semver-merged with the frameworks's
 <code>framework.dependencies</code>. However, this may not be strictly necessary.
 Custom derives have a similar problem and they solve it by just asking
 users to import the correct crate.</p>
-<a class="header" href="2318-custom-test-frameworks.html#naming" id="naming"><h2>Naming</h2></a>
+<a class="header" href="#naming" id="naming"><h2>Naming</h2></a>
 <p>The general syntax and toml stuff should be approximately settled on before this eRFC merges, but
 iterated on later. Naming the feature is hard, some candidates are:</p>
 <ul>
@@ -419,13 +426,13 @@ iterated on later. Naming the feature is hard, some candidates are:</p>
 <li>execution context</li>
 </ul>
 <p>None of these are particularly great, ideas would be nice.</p>
-<a class="header" href="2318-custom-test-frameworks.html#bencher" id="bencher"><h2>Bencher</h2></a>
+<a class="header" href="#bencher" id="bencher"><h2>Bencher</h2></a>
 <p>Should we be shipping a bencher by default at all (i.e., in libtest)? Could we instead default
 <code>cargo bench</code> to a <code>rust-lang-nursery</code> <code>bench</code> crate?</p>
 <p>If this RFC lands and <a href="https://github.com/rust-lang/rfcs/pull/2287">RFC 2287</a> is rejected, we should probably try to stabilize
 <code>test::black_box</code> in some form (maybe <code>mem::black_box</code> and <code>mem::clobber</code> as detailed
 in <a href="https://github.com/Manishearth/rfcs/pull/1">this amendment</a>).</p>
-<a class="header" href="2318-custom-test-frameworks.html#cargo-integration-1" id="cargo-integration-1"><h2>Cargo integration</h2></a>
+<a class="header" href="#cargo-integration-1" id="cargo-integration-1"><h2>Cargo integration</h2></a>
 <p>A previous iteration of this RFC allowed for test frameworks to declare new attributes
 and folders, so you would have <code>cargo test --kind quickcheck</code> look for tests in the
 <code>quickcheck/</code> folder that were annotated with <code>#[quickcheck]</code>.</p>
@@ -474,9 +481,6 @@ and folders, so you would have <code>cargo test --kind quickcheck</code> look fo
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

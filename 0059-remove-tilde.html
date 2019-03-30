@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0059-remove-tilde - </title>
+        <title>0059-remove-tilde - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,9 +145,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/59">rust-lang/rfcs#59</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/13885">rust-lang/rust#13885</a></li>
 </ul>
-<a class="header" href="0059-remove-tilde.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>The tilde (<code>~</code>) operator and type construction do not support allocators and therefore should be removed in favor of the <code>box</code> keyword and a language item for the type.</p>
-<a class="header" href="0059-remove-tilde.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <ul>
 <li>
 <p>There will be a unique pointer type in the standard library, <code>Box&lt;T,A&gt;</code> where <code>A</code> is an allocator. The <code>~T</code> type syntax does not allow for custom allocators. Therefore, in order to keep <code>~T</code> around while still supporting allocators, we would need to make it an alias for <code>Box&lt;T,Heap&gt;</code>. In the spirit of having one way to do things, it seems better to remove <code>~</code> entirely as a type notation.</p>
@@ -155,9 +162,9 @@
 <p><code>~</code> can encourage people to blindly add sigils attempting to get their code to compile instead of consulting the library documentation.</p>
 </li>
 </ul>
-<a class="header" href="0059-remove-tilde.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p><code>~T</code> may be seen as convenient sugar for a common pattern in some situations.</p>
-<a class="header" href="0059-remove-tilde.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The <code>~EXPR</code> production is removed from the language, and all such uses are converted into <code>box</code>.</p>
 <p>Add a lang item, <code>box</code>. That lang item will be defined in <code>liballoc</code> (NB: not <code>libmetal</code>/<code>libmini</code>, for bare-metal programming) as follows:</p>
 <pre><code>#[lang=&quot;box&quot;]
@@ -168,9 +175,9 @@ pub struct Box&lt;T,A=Heap&gt;(*T);
 <pre><code>let box(x) = box(10);
 println!(&quot;{}&quot;, x); // prints 10
 </code></pre>
-<a class="header" href="0059-remove-tilde.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The other possible design here is to keep <code>~T</code> as sugar. The impact of doing this would be that a common pattern would be terser, but I would like to not do this for the reasons stated in &quot;Motivation&quot; above.</p>
-<a class="header" href="0059-remove-tilde.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>The allocator design is not yet fully worked out.</p>
 <p>It may be possible that unforeseen interactions will appear between the struct nature of <code>Box&lt;T&gt;</code> and the built-in nature of <code>~T</code> when merged.</p>
 
@@ -217,9 +224,6 @@ println!(&quot;{}&quot;, x); // prints 10
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

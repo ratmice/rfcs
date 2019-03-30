@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0580-rename-collections - </title>
+        <title>0580-rename-collections - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,9 +145,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/580">rust-lang/rfcs#580</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/22479">rust-lang/rust#22479</a></li>
 </ul>
-<a class="header" href="0580-rename-collections.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Rename (maybe one of) the standard collections, so as to make the names more consistent. Currently, among all the alternatives, renaming <code>BinaryHeap</code> to <code>BinHeap</code> is the slightly preferred solution.</p>
-<a class="header" href="0580-rename-collections.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>In <a href="http://www.reddit.com/r/programming/comments/2rvoha/announcing_rust_100_alpha/cnk31hf">this comment</a> in the Rust 1.0.0-alpha announcement thread in /r/programming, it was pointed out that Rust's std collections had inconsistent names. Particularly, the abbreviation rules of the names seemed unclear.</p>
 <p>The current collection names (and their longer versions) are:</p>
 <ul>
@@ -158,7 +165,7 @@
 </ul>
 <p>The abbreviation rules do seem unclear. Sometimes the first word is abbreviated, sometimes the last. However there are also cases where the names are not abbreviated. <code>Bitv</code>, <code>BitvSet</code> and <code>DList</code> seem strange on first glance. Such inconsistencies are undesirable, as Rust should not give an impression as &quot;the promising language that has strangely inconsistent naming conventions for its standard collections&quot;.</p>
 <p>Also, it should be noted that traditionally <em>ring buffers</em> have fixed sizes, but Rust's <code>RingBuf</code> does not. So it is preferable to rename it to something clearer, in order to avoid incorrect assumptions and surprises.</p>
-<a class="header" href="0580-rename-collections.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>First some general naming rules should be established.</p>
 <ol>
 <li>At least maintain module level consistency when abbreviations are concerned.</li>
@@ -185,11 +192,11 @@
 <li>Rename <code>Bitv</code>, <code>BitvSet</code>, <code>DList</code> and <code>RingBuf</code>. Change affected codes accordingly.</li>
 <li>If necessary, redefine the original names as aliases of the new names, and mark them as deprecated. After a transition period, remove the original names completely.</li>
 </ul>
-<a class="header" href="0580-rename-collections.html#why-prefer-full-names-when-in-doubt" id="why-prefer-full-names-when-in-doubt"><h2>Why prefer full names when in doubt?</h2></a>
+<a class="header" href="#why-prefer-full-names-when-in-doubt" id="why-prefer-full-names-when-in-doubt"><h2>Why prefer full names when in doubt?</h2></a>
 <p>The naming rules should apply not only to standard collections, but also to other codes. It is (comparatively) easier to maintain a higher level of naming consistency by preferring full names to abbreviated ones <em>when in doubt</em>. Because given a full name, there are possibly many abbreviated forms to choose from. Which one should be chosen and why? It is hard to write down guidelines for that.</p>
 <p>For example, the name <code>BinaryBuffer</code> has at least three convincing abbreviated forms: <code>BinBuffer</code>/<code>BinaryBuf</code>/<code>BinBuf</code>. Which one would be the most preferred? Hard to say. But it is clear that the full name <code>BinaryBuffer</code> is not a bad name.</p>
 <p>However, if there <em>is</em> a convincing reason, one should not hesitate using abbreviated names. A series of names like <code>BinBuffer/OctBuffer/HexBuffer</code> is very natural. Also, few would think that <code>AtomicallyReferenceCounted</code>, the full name of <code>Arc</code>, is a good type name.</p>
-<a class="header" href="0580-rename-collections.html#advantages-of-the-new-names" id="advantages-of-the-new-names"><h2>Advantages of the new names:</h2></a>
+<a class="header" href="#advantages-of-the-new-names" id="advantages-of-the-new-names"><h2>Advantages of the new names:</h2></a>
 <ul>
 <li><code>Vec</code>: The name of the most frequently used Rust collection is left unchanged (and by extension <code>VecMap</code>), so the scope of the changes are greatly reduced. <code>Vec</code> is an exception to the &quot;prefer full names&quot; rule because it is <em>the</em> collection in Rust.</li>
 <li><code>BitVec</code>: <code>Bitv</code> is a very unusual abbreviation of <code>BitVector</code>, but <code>BitVec</code> is a good one given <code>Vector</code> is shortened to <code>Vec</code>.</li>
@@ -197,23 +204,23 @@
 <li><code>LinkedList</code>: <code>DList</code> doesn't say much about what it actually is. <code>LinkedList</code> is not too long (like <code>DoublyLinkedList</code>) and it being a doubly-linked list follows Java/C#'s traditions.</li>
 <li><code>VecDeque</code>: This name exposes some implementation details and signifies its &quot;interface&quot; just like <code>HashSet</code>, and it doesn't have the &quot;fixed-size&quot; connotation that <code>RingBuf</code> has. Also, <code>Deque</code> is commonly preferred to <code>DoubleEndedQueue</code>, it is clear that the former should be chosen.</li>
 </ul>
-<a class="header" href="0580-rename-collections.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>There will be breaking changes to standard collections that are already marked <code>stable</code>.</li>
 </ul>
-<a class="header" href="0580-rename-collections.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0580-rename-collections.html#a-keep-the-status-quo" id="a-keep-the-status-quo"><h2>A. Keep the status quo:</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#a-keep-the-status-quo" id="a-keep-the-status-quo"><h2>A. Keep the status quo:</h2></a>
 <p>And Rust's standard collections will have some strange names and no consistent naming rules.</p>
-<a class="header" href="0580-rename-collections.html#b-also-rename-vec-to-vector" id="b-also-rename-vec-to-vector"><h2>B. Also rename <code>Vec</code> to <code>Vector</code>:</h2></a>
+<a class="header" href="#b-also-rename-vec-to-vector" id="b-also-rename-vec-to-vector"><h2>B. Also rename <code>Vec</code> to <code>Vector</code>:</h2></a>
 <p>And by extension, <code>Bitv</code> to <code>BitVector</code> and <code>VecMap</code> to <code>VectorMap</code>.</p>
 <p>This means breaking changes at a larger scale. Given that <code>Vec</code> is <em>the</em> collection of Rust, we can have an exception here.</p>
-<a class="header" href="0580-rename-collections.html#c-rename-dlist-to-dlinkedlist-not-linkedlist" id="c-rename-dlist-to-dlinkedlist-not-linkedlist"><h2>C. Rename <code>DList</code> to <code>DLinkedList</code>, not <code>LinkedList</code>:</h2></a>
+<a class="header" href="#c-rename-dlist-to-dlinkedlist-not-linkedlist" id="c-rename-dlist-to-dlinkedlist-not-linkedlist"><h2>C. Rename <code>DList</code> to <code>DLinkedList</code>, not <code>LinkedList</code>:</h2></a>
 <p>It is clearer, but also inconsistent with the other names by having a single-lettered abbreviation of <code>Doubly</code>. As Java/C# also have doubly-linked <code>LinkedList</code>, it is not necessary to use the additional <code>D</code>.</p>
-<a class="header" href="0580-rename-collections.html#d-also-rename-binaryheap-to-binheap" id="d-also-rename-binaryheap-to-binheap"><h2>D. Also rename <code>BinaryHeap</code> to <code>BinHeap</code>.</h2></a>
+<a class="header" href="#d-also-rename-binaryheap-to-binheap" id="d-also-rename-binaryheap-to-binheap"><h2>D. Also rename <code>BinaryHeap</code> to <code>BinHeap</code>.</h2></a>
 <p><code>BinHeap</code> can also mean <code>BinomialHeap</code>, so <code>BinaryHeap</code> is the better name here.</p>
-<a class="header" href="0580-rename-collections.html#e-rename-ringbuf-to-ringbuffer-or-do-not-rename-ringbuf-at-all" id="e-rename-ringbuf-to-ringbuffer-or-do-not-rename-ringbuf-at-all"><h2>E. Rename <code>RingBuf</code> to <code>RingBuffer</code>, or do not rename <code>RingBuf</code> at all.</h2></a>
+<a class="header" href="#e-rename-ringbuf-to-ringbuffer-or-do-not-rename-ringbuf-at-all" id="e-rename-ringbuf-to-ringbuffer-or-do-not-rename-ringbuf-at-all"><h2>E. Rename <code>RingBuf</code> to <code>RingBuffer</code>, or do not rename <code>RingBuf</code> at all.</h2></a>
 <p>Doing so would fail to stop people from making the incorrect assumption that Rust's <code>RingBuf</code>s have fixed sizes.</p>
-<a class="header" href="0580-rename-collections.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -259,9 +266,6 @@
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

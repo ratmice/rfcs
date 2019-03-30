@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0823-hash-simplification - </title>
+        <title>0823-hash-simplification - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,15 +146,15 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/823">rust-lang/rfcs#823</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/22467">rust-lang/rust#22467</a></li>
 </ul>
-<a class="header" href="0823-hash-simplification.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Pare back the <code>std::hash</code> module's API to improve ergonomics of usage and
 definitions. While an alternative scheme more in line with what Java and C++
 have is considered, the current <code>std::hash</code> module will remain largely as-is
 with modifications to its core traits.</p>
-<a class="header" href="0823-hash-simplification.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>There are a number of motivations for this RFC, and each will be explained in
 term.</p>
-<a class="header" href="0823-hash-simplification.html#api-ergonomics" id="api-ergonomics"><h2>API ergonomics</h2></a>
+<a class="header" href="#api-ergonomics" id="api-ergonomics"><h2>API ergonomics</h2></a>
 <p>Today the API of the <code>std::hash</code> module is sometimes considered overly
 complicated and it may not be pulling its weight. As a recap, the API looks
 like:</p>
@@ -202,7 +209,7 @@ especially if the hashing algorithm isn't known in advance.</p>
 <p>Overall the <code>std::hash</code> API is generic enough that its usage is somewhat verbose
 and becomes tiresome over time to work with. This RFC strives to make this API
 easier to work with.</p>
-<a class="header" href="0823-hash-simplification.html#forcing-byte-stream-oriented-hashing" id="forcing-byte-stream-oriented-hashing"><h2>Forcing byte-stream oriented hashing</h2></a>
+<a class="header" href="#forcing-byte-stream-oriented-hashing" id="forcing-byte-stream-oriented-hashing"><h2>Forcing byte-stream oriented hashing</h2></a>
 <p>Much of the <code>std::hash</code> API today is oriented around hashing a stream of bytes
 (blocks of <code>&amp;[u8]</code>). This is not a hard requirement by the API (discussed
 above), but in practice this is essentially what happens everywhere. This form
@@ -238,7 +245,7 @@ impl Hasher for Slot {
 #}</code></pre></pre>
 <p>This form of hashing (which is useful for performance sometimes) is difficult to
 work with primarily because of the frequent bounds on <code>Writer</code> for hashing.</p>
-<a class="header" href="0823-hash-simplification.html#non-applicability-for-well-known-hashing-algorithms" id="non-applicability-for-well-known-hashing-algorithms"><h2>Non-applicability for well-known hashing algorithms</h2></a>
+<a class="header" href="#non-applicability-for-well-known-hashing-algorithms" id="non-applicability-for-well-known-hashing-algorithms"><h2>Non-applicability for well-known hashing algorithms</h2></a>
 <p>One of the current aspirations for the <code>std::hash</code> module was to be appropriate
 for hashing algorithms such as MD5, SHA*, etc. The current API has proven
 inadequate, however, for the primary reason of hashing being so generic. For
@@ -263,13 +270,13 @@ hashes to be verified elsewhere will explicitly not be considered in the design
 for <code>std::hash</code>. It is expected that an external crate may wish to provide a
 trait for these hashing algorithms and it would not be bounded by
 <code>std::hash::Hash</code>, but instead perhaps a &quot;byte container&quot; of some form.</p>
-<a class="header" href="0823-hash-simplification.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>This RFC considers two possible designs as a replacement of today's <code>std::hash</code>
 API. One is a &quot;minor refactoring&quot; of the current API while the
 other is a much more radical change towards being conservative. This section
 will propose the minor refactoring change and the other may be found in the
-<a href="0823-hash-simplification.html#alternatives">Alternatives</a> section.</p>
-<a class="header" href="0823-hash-simplification.html#api" id="api"><h2>API</h2></a>
+<a href="#alternatives">Alternatives</a> section.</p>
+<a class="header" href="#api" id="api"><h2>API</h2></a>
 <p>The new API of <code>std::hash</code> would be:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -346,7 +353,7 @@ impl Hasher for u64 {
     // and so on...
 }
 #}</code></pre></pre>
-<a class="header" href="0823-hash-simplification.html#hashmap-and-hashstate" id="hashmap-and-hashstate"><h2><code>HashMap</code> and <code>HashState</code></h2></a>
+<a class="header" href="#hashmap-and-hashstate" id="hashmap-and-hashstate"><h2><code>HashMap</code> and <code>HashState</code></h2></a>
 <p>For both this recommendation as well as the alternative below, this RFC proposes
 removing the <code>HashState</code> trait and <code>Hasher</code> structure (as well as the
 <code>hash_state</code> module) in favor of the following API:</p>
@@ -377,7 +384,7 @@ impl&lt;K: Hash&gt; Fn(&amp;K) -&gt; u64 for DefaultHasher {
 <p>The precise details will be affected based on which design in this RFC is
 chosen, but the general idea is to move from a custom trait to the standard <code>Fn</code>
 trait for calculating hashes.</p>
-<a class="header" href="0823-hash-simplification.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>This design is a departure from the precedent set by many other languages. In
@@ -403,11 +410,11 @@ types. It would be unfortunate if the <code>Hasher</code> trait approached a ful
 <code>Encoder</code> trait (as <code>rustc-serialize</code> has).</p>
 </li>
 </ul>
-<a class="header" href="0823-hash-simplification.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>As alluded to in the &quot;Detailed design&quot; section the primary alternative to this
 RFC, which still improves ergonomics, is to remove the generic-ness over the
 hashing algorithm.</p>
-<a class="header" href="0823-hash-simplification.html#api-1" id="api-1"><h2>API</h2></a>
+<a class="header" href="#api-1" id="api-1"><h2>API</h2></a>
 <p>The new API of <code>std::hash</code> would be:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -428,7 +435,7 @@ to quite ergonomically work with hash values as well as hashable objects.</p>
 choice</a> here as well, but it is quite easy to use one instead of
 the other.</p>
 </blockquote>
-<a class="header" href="0823-hash-simplification.html#hashing-algorithm" id="hashing-algorithm"><h2>Hashing algorithm</h2></a>
+<a class="header" href="#hashing-algorithm" id="hashing-algorithm"><h2>Hashing algorithm</h2></a>
 <p>With this definition of <code>Hash</code>, each type must pre-ordain a particular hash
 algorithm that it implements. Using an alternate algorithm would require a
 separate newtype wrapper.</p>
@@ -448,7 +455,7 @@ impl Hash for MyType {
 #}</code></pre></pre>
 <p>A possible implementation of combine can be found <a href="https://github.com/boostorg/functional/blob/master/include/boost/functional/hash/hash.hpp#L209-L213">in the boost source
 code</a>.</p>
-<a class="header" href="0823-hash-simplification.html#hashmap-and-dos-protection" id="hashmap-and-dos-protection"><h2><code>HashMap</code> and DoS protection</h2></a>
+<a class="header" href="#hashmap-and-dos-protection" id="hashmap-and-dos-protection"><h2><code>HashMap</code> and DoS protection</h2></a>
 <p>Currently one of the features of the standard library's <code>HashMap</code> implementation
 is that it by default provides DoS protection through two measures:</p>
 <ol>
@@ -484,7 +491,7 @@ function passes a safe buffer of uninitialized data to implementations of
 against a hash map is such a common and well known exploit, however, that this
 RFC considers it critical to consider the design of <code>Hash</code> and its relationship
 with <code>HashMap</code>.</p>
-<a class="header" href="0823-hash-simplification.html#mitigation-of-dos-attacks" id="mitigation-of-dos-attacks"><h2>Mitigation of DoS attacks</h2></a>
+<a class="header" href="#mitigation-of-dos-attacks" id="mitigation-of-dos-attacks"><h2>Mitigation of DoS attacks</h2></a>
 <p>Other languages have mitigated DoS attacks via a few measures:</p>
 <ul>
 <li><a href="http://en.cppreference.com/w/cpp/utility/hash">C++ specifies</a> that the return value of <code>hash</code> is not guaranteed to
@@ -513,7 +520,7 @@ other languages, however, it is not clear that this will provide the same level
 of DoS protection that is available today. For example <a href="https://github.com/rust-lang/rfcs/pull/823#issuecomment-74013800">@DaGenix explains
 well</a> that we
 may not be able to provide any form of DoS protection guarantee at all.</p>
-<a class="header" href="0823-hash-simplification.html#alternative-drawbacks" id="alternative-drawbacks"><h2>Alternative Drawbacks</h2></a>
+<a class="header" href="#alternative-drawbacks" id="alternative-drawbacks"><h2>Alternative Drawbacks</h2></a>
 <ul>
 <li>
 <p>One of the primary drawbacks to the proposed <code>Hash</code> trait is that it is now
@@ -537,7 +544,7 @@ and is not guaranteed to provide the guarantees we want. This departure from
 the may have unknown consequences.</p>
 </li>
 </ul>
-<a class="header" href="0823-hash-simplification.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>To what degree should <code>HashMap</code> attempt to prevent DoS attacks? Is it the
 responsibility of the standard library to do so or should this be provided as
@@ -587,9 +594,6 @@ an external crate on crates.io?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

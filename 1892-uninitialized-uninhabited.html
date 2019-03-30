@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1892-uninitialized-uninhabited - </title>
+        <title>1892-uninitialized-uninhabited - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1892">rust-lang/rfcs#1892</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/53491">rust-lang/rust#53491</a></li>
 </ul>
-<a class="header" href="1892-uninitialized-uninhabited.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Deprecate <code>mem::uninitialized::&lt;T&gt;</code> and <code>mem::zeroed::&lt;T&gt;</code> and replace them with
 a <code>MaybeUninit&lt;T&gt;</code> type for safer and more principled handling of uninitialized
 data.</p>
-<a class="header" href="1892-uninitialized-uninhabited.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The problems with <code>uninitialized</code> centre around its usage with uninhabited
 types, and its interaction with Rust's type layout invariants. The concept of
 &quot;uninitialized data&quot; is extremely problematic when it comes into contact with
@@ -191,7 +198,7 @@ enum layout. So, <code>mem::uninitialized::&lt;bool&gt;()</code> is instantaneou
 behavior just like <code>mem::uninitialized::&lt;!&gt;()</code>. This also affects <code>mem::zeroed</code>
 when considering types where the all-<code>0</code> bit pattern is not valid, like
 references: <code>mem::zeroed::&lt;&amp;'static i32&gt;()</code> is instantaneous undefined behavior.</p>
-<a class="header" href="1892-uninitialized-uninhabited.html#tracking-uninitializedness-in-the-type" id="tracking-uninitializedness-in-the-type"><h2>Tracking uninitializedness in the type</h2></a>
+<a class="header" href="#tracking-uninitializedness-in-the-type" id="tracking-uninitializedness-in-the-type"><h2>Tracking uninitializedness in the type</h2></a>
 <p>An alternative way of representing uninitialized data is through a union type:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -274,7 +281,7 @@ to the <code>unsafe</code> block and try to read the non-existant value.</p>
 and given that there's a better alternative, this RFC proposes deprecating
 <code>uninitialized</code> and introducing the <code>MaybeUninit</code> type into the standard
 library as a replacement.</p>
-<a class="header" href="1892-uninitialized-uninhabited.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Add the aforementioned <code>MaybeUninit</code> type to the standard library:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -369,17 +376,17 @@ impl&lt;T&gt; MaybeUninit&lt;T&gt; {
 <p>Deprecate <code>uninitialized</code> with a deprecation messages that points people to the
 <code>MaybeUninit</code> type. Make calling <code>uninitialized</code> on an empty type trigger a
 runtime panic which also prints the deprecation message.</p>
-<a class="header" href="1892-uninitialized-uninhabited.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>Correct handling of uninitialized data is an advanced topic and should probably
 be left to The Rustonomicon. There should be a paragraph somewhere therein
 introducing the <code>MaybeUninit</code> type.</p>
 <p>The documentation for <code>uninitialized</code> should explain the motivation for these
 changes and direct people to the <code>MaybeUninit</code> type.</p>
-<a class="header" href="1892-uninitialized-uninhabited.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This will be a rather large breaking change as a lot of people are using
 <code>uninitialized</code>. However, much of this code already likely contains subtle
 bugs.</p>
-<a class="header" href="1892-uninitialized-uninhabited.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>Not do this.</li>
 <li>Just make <code>uninitialized::&lt;!&gt;</code> panic instead (making <code>!</code>'s behaviour
@@ -390,9 +397,9 @@ to the type argument of <code>uninitialized</code>.</li>
 like <code>transmute</code> does today - by having restrictions on its type arguments
 which are enforced outside the trait system.</li>
 </ul>
-<a class="header" href="1892-uninitialized-uninhabited.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None known.</p>
-<a class="header" href="1892-uninitialized-uninhabited.html#future-directions" id="future-directions"><h1>Future directions</h1></a>
+<a class="header" href="#future-directions" id="future-directions"><h1>Future directions</h1></a>
 <p>Ideally, Rust's type system should have a way of talking about initializedness
 statically. In the past there have been proposals for new pointer types which
 could safely handle uninitialized data. We should seriously consider pursuing
@@ -441,9 +448,6 @@ one of these proposals.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

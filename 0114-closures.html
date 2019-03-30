@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0114-closures - </title>
+        <title>0114-closures - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/114">rust-lang/rfcs#114</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/16095">rust-lang/rust#16095</a></li>
 </ul>
-<a class="header" href="0114-closures.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <ul>
 <li>Convert function call <code>a(b, ..., z)</code> into an overloadable operator
 via the traits <code>Fn&lt;A,R&gt;</code>, <code>FnShare&lt;A,R&gt;</code>, and <code>FnOnce&lt;A,R&gt;</code>, where <code>A</code>
@@ -187,7 +194,7 @@ must permit trait references to be universally quantified over regions
 as closures are today. A description of this change is described below
 under <em>Unresolved questions</em> and the details will come in a
 forthcoming RFC.</p>
-<a class="header" href="0114-closures.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Over time we have observed a very large number of possible use cases
 for closures. The goal of this RFC is to create a unified closure
 model that encompasses all of these use cases.</p>
@@ -201,7 +208,7 @@ corresponding to <code>self</code>, <code>&amp;self</code>, and <code>&amp;mut s
 <p>As a side benefit, though not a direct goal, the RFC reduces the
 size/complexity of the language's core type system by unifying
 closures and traits.</p>
-<a class="header" href="0114-closures.html#the-core-idea-unifying-closures-and-traits" id="the-core-idea-unifying-closures-and-traits"><h2>The core idea: unifying closures and traits</h2></a>
+<a class="header" href="#the-core-idea-unifying-closures-and-traits" id="the-core-idea-unifying-closures-and-traits"><h2>The core idea: unifying closures and traits</h2></a>
 <p>The core idea of the RFC is to unify closures, procs, and
 traits. There are a number of reasons to do this. First, it simplifies
 the language, because closures, procs, and traits already served
@@ -253,7 +260,7 @@ rust-lang/rfcs#105):</p>
 <p>Basically, in this design there is nothing special about a closure.
 Closure expressions are simply a convenient way to generate a struct
 that implements a suitable <code>Fn</code> trait.</p>
-<a class="header" href="0114-closures.html#bind-by-reference-vs-bind-by-value" id="bind-by-reference-vs-bind-by-value"><h2>Bind by reference vs bind by value</h2></a>
+<a class="header" href="#bind-by-reference-vs-bind-by-value" id="bind-by-reference-vs-bind-by-value"><h2>Bind by reference vs bind by value</h2></a>
 <p>When creating a closure, it is now possible to specify whether the
 closure should capture variables from its environment (&quot;upvars&quot;) by
 reference or by value. The distinction is indicated using the leading
@@ -262,12 +269,12 @@ keyword <code>ref</code>:</p>
 
 ref || foo(a, b)  // captures `a` and `b` by reference, as today
 </code></pre>
-<a class="header" href="0114-closures.html#reasons-to-bind-by-value" id="reasons-to-bind-by-value"><h3>Reasons to bind by value</h3></a>
+<a class="header" href="#reasons-to-bind-by-value" id="reasons-to-bind-by-value"><h3>Reasons to bind by value</h3></a>
 <p>Bind by value is useful when creating closures that will escape from
 the stack frame that created them, such as task bodies (<code>spawn(|| ...)</code>) or combinators. It is also useful for moving values out of a
 closure, though it should be possible to enable that with bind by
 reference as well in the future.</p>
-<a class="header" href="0114-closures.html#reasons-to-bind-by-reference" id="reasons-to-bind-by-reference"><h3>Reasons to bind by reference</h3></a>
+<a class="header" href="#reasons-to-bind-by-reference" id="reasons-to-bind-by-reference"><h3>Reasons to bind by reference</h3></a>
 <p>Bind by reference is useful for any case where the closure is known
 not to escape the creating stack frame. This frequently occurs
 when using closures to encapsulate common control-flow patterns:</p>
@@ -288,8 +295,8 @@ to &quot;move out&quot; from an upvar (where we commonly use the so-called
 reference&quot; closures, but we will have to extend the inference to
 selectively identify those variables that must be moved and take those
 &quot;by value&quot;.</p>
-<a class="header" href="0114-closures.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0114-closures.html#closure-expression-syntax" id="closure-expression-syntax"><h2>Closure expression syntax</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#closure-expression-syntax" id="closure-expression-syntax"><h2>Closure expression syntax</h2></a>
 <p>Closure expressions will have the following form (using EBNF notation,
 where <code>[]</code> denotes optional things and <code>{}</code> denotes a comma-separated
 list):</p>
@@ -305,7 +312,7 @@ the same as the types of the corresponding upvars (modulo <code>&amp;mut</code>
 reborrows, see below). In a by-reference closure, the types of these
 fields will be a suitable reference (<code>&amp;</code>, <code>&amp;mut</code>, etc) to the
 variables being borrowed.</p>
-<a class="header" href="0114-closures.html#by-value-closures" id="by-value-closures"><h3>By-value closures</h3></a>
+<a class="header" href="#by-value-closures" id="by-value-closures"><h3>By-value closures</h3></a>
 <p>The default form for a closure is by-value. This implies that all
 upvars which are referenced are copied/moved into the closure as
 appropriate. There is one special case: if the type of the value to be
@@ -315,7 +322,7 @@ value which is actually captured will have type <code>&amp;'b mut T</code> where
 which is to aggressively reborrow wherever possible; moreover, this
 rule cannot introduce additional compilation errors, it can only make
 more programs successfully typecheck.</p>
-<a class="header" href="0114-closures.html#by-reference-closures" id="by-reference-closures"><h3>By-reference closures</h3></a>
+<a class="header" href="#by-reference-closures" id="by-reference-closures"><h3>By-reference closures</h3></a>
 <p>A <em>by-reference</em> closure is a convenience form in which values used in
 the closure are converted into references before being captured.
 By-reference closures are always rewritable into by-value closures if
@@ -377,7 +384,7 @@ the closure to have the form <code>{let v = &amp;context.variable_map; || use(v)
 that rather than borrowing <code>context</code> to create the closure, we would
 borrow <code>context.variable_map</code> directly.</li>
 </ul>
-<a class="header" href="0114-closures.html#closure-sugar-in-trait-references" id="closure-sugar-in-trait-references"><h2>Closure sugar in trait references</h2></a>
+<a class="header" href="#closure-sugar-in-trait-references" id="closure-sugar-in-trait-references"><h2>Closure sugar in trait references</h2></a>
 <p>The current type for closures, <code>|T1, T2| -&gt; R</code>, will be repurposed as
 syntactic sugar for a reference to the appropriate <code>Fn</code> trait. This
 shorthand be used any place that a trait reference is appropriate. The
@@ -396,10 +403,10 @@ references, respectively:</p>
 </code></pre>
 <p>Note that the bound lifetimes <code>'a...'z</code> are not in scope for the bound
 <code>K</code>.</p>
-<a class="header" href="0114-closures.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This model is more complex than the existing model in some respects
 (but the existing model does not serve the full set of desired use cases).</p>
-<a class="header" href="0114-closures.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>There is one aspect of the design that is still under active
 discussion:</p>
 <p><strong>Introduce a more generic sugar.</strong> It was proposed that we could
@@ -455,9 +462,9 @@ question of what to do for a type like <code>|int| -&gt; uint</code>, where
 inference is not possible.</p>
 <p><strong>Default to something other than <code>&amp;mut self</code>.</strong> It is our belief that
 this is the most common use case for closures.</p>
-<a class="header" href="0114-closures.html#transition-plan" id="transition-plan"><h1>Transition plan</h1></a>
+<a class="header" href="#transition-plan" id="transition-plan"><h1>Transition plan</h1></a>
 <p>TBD. pcwalton is working furiously as we speak.</p>
-<a class="header" href="0114-closures.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p><strong>What relationship should there be between the closure
 traits?</strong> On the one hand, there is clearly a relationship between the
 traits.  For example, given a <code>FnShare</code>, one can easily implement
@@ -508,7 +515,7 @@ function. This slightly improves the performance of invoking the
 function as one need not indirect through the vtable. The actual
 implications of this on performance are unclear, but it might be a
 reason to keep the closure traits to a single method.</p>
-<a class="header" href="0114-closures.html#closures-that-are-quantified-over-lifetimes" id="closures-that-are-quantified-over-lifetimes"><h2>Closures that are quantified over lifetimes</h2></a>
+<a class="header" href="#closures-that-are-quantified-over-lifetimes" id="closures-that-are-quantified-over-lifetimes"><h2>Closures that are quantified over lifetimes</h2></a>
 <p>A separate RFC is needed to describe bound lifetimes in trait
 references. For example, today one can write a type like <code>&lt;'a&gt; |&amp;'a A| -&gt; &amp;'a B</code>, which indicates a closure that takes and returns a
 reference with the same lifetime specified by the caller at each
@@ -564,9 +571,6 @@ specified each time a method or other member of the trait is accessed.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

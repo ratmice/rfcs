@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2103-tool-attributes - </title>
+        <title>2103-tool-attributes - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2103">rust-lang/rfcs#2103</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44690">rust-lang/rust#44690</a></li>
 </ul>
-<a class="header" href="2103-tool-attributes.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes a temporary solution to the problem of letting tools use
 attributes. We outline a (partial) long-term solution and propose a step towards
 that solution for tools which are part of the Rust distribution.</p>
@@ -162,7 +169,7 @@ the tool).</p>
 <p>This RFC proposes a second mechanism for scoping lints for tools. Similar to
 attributes, we propose a subset of a hypothetical long-term solution.</p>
 <p>This RFC supersedes #1755.</p>
-<a class="header" href="2103-tool-attributes.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Attributes are a useful, general-purpose mechanism for annotating code with
 metadata. They are used in the language (e.g., <code>repr</code>), for macros (e.g.,
 <code>derive</code>, and for user-supplied attribute- like macros), and by tools
@@ -193,8 +200,8 @@ today.</p>
 <p>Similarly, tools (e.g., Clippy) may want to use their own lints without the
 compiler warning about unused lints. E.g., we want a user to be able to write
 <code>#![allow(clippy::some_lint)]</code> in their crate without warning.</p>
-<a class="header" href="2103-tool-attributes.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
-<a class="header" href="2103-tool-attributes.html#attributes" id="attributes"><h3>Attributes</h3></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#attributes" id="attributes"><h3>Attributes</h3></a>
 <p>This section assumes that attributes (e.g., <code>#[test]</code>) have already been taught.</p>
 <p>You can use attibutes in your crate to pass information to tools. For now, this
 facility is limited to the tools we include with the Rust distribution.</p>
@@ -214,7 +221,7 @@ mod baz {
     // Rustfmt will skip this whole module.
 }
 </code></pre>
-<a class="header" href="2103-tool-attributes.html#lints" id="lints"><h3>Lints</h3></a>
+<a class="header" href="#lints" id="lints"><h3>Lints</h3></a>
 <p>This section assumes lints have already been taught.</p>
 <p>Lints can be defined hierarchically as a path, as well as just a single name.
 For example, <code>nonstandard_style::non_snake_case_functions</code> and
@@ -224,8 +231,8 @@ names cannot be imported using <code>use</code>.</p>
 <p>Lints can be enforced by tools other than the compiler. For example, Clippy
 provides a large suite of lints to catch common mistakes and improve your Rust
 code. Lints for tools are prefixed with the tool name, e.g., <code>clippy::box_vec</code>.</p>
-<a class="header" href="2103-tool-attributes.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2103-tool-attributes.html#long-term-solution" id="long-term-solution"><h2>Long-term solution</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#long-term-solution" id="long-term-solution"><h2>Long-term solution</h2></a>
 <p>There will be some opt-in mechanism for crates to declare that they want to
 allow use of a tool's attributes. This might be in the source text (an attribute
 as in #1755 or new syntax, e.g., <code>extern attribute foo;</code>) or passed to rustc as
@@ -246,7 +253,7 @@ The compiler then checks if the attribute matches any of the declared or built-
 in attributes. If this fails, then it reports a macro not found error. The
 compiler <em>may</em> suggest mis-typed attributes (declared or built-in).</p>
 <p>A similar opt-in mechanism will exist for lints.</p>
-<a class="header" href="2103-tool-attributes.html#proposed-for-immediate-implementation" id="proposed-for-immediate-implementation"><h2>Proposed for immediate implementation</h2></a>
+<a class="header" href="#proposed-for-immediate-implementation" id="proposed-for-immediate-implementation"><h2>Proposed for immediate implementation</h2></a>
 <p>There is an attribute path white list of the names of tools shipped with the Rust
 distribution. Any crate can use an attibute path starting with those names and
 the attribute will not trigger the custom attribute lint or require a macro
@@ -270,7 +277,7 @@ possible through compilation. This allows tools which plug into the compiler
 <p>Likewise, white-listed tools may be used as a prefix for lints. So for example,
 <code>rustfmt::foo</code> and <code>clippy::bar</code> are both valid lint names, from the compiler's
 perspective.</p>
-<a class="header" href="2103-tool-attributes.html#activation-and-unused-attibuteslints" id="activation-and-unused-attibuteslints"><h3>Activation and unused attibutes/lints</h3></a>
+<a class="header" href="#activation-and-unused-attibuteslints" id="activation-and-unused-attibuteslints"><h3>Activation and unused attibutes/lints</h3></a>
 <p>For each name on the whitelist, it is indicated if the name is active for
 attributes or lints. A name is only activated if required. So for example,
 <code>rustdoc</code> will not be activated at all until it takes advantage of this feature.
@@ -284,7 +291,7 @@ their code.</p>
 attributes/lints in any circumstance and we can move to having the compiler
 check for unused attributes/lints as part of a possible long-term solution
 without introducing new warnings or errors.</p>
-<a class="header" href="2103-tool-attributes.html#forward-and-backward-compatability" id="forward-and-backward-compatability"><h3>Forward and backward compatability</h3></a>
+<a class="header" href="#forward-and-backward-compatability" id="forward-and-backward-compatability"><h3>Forward and backward compatability</h3></a>
 <p>Since custom attributes are feature gated and scoped attributes are part of the
 unstable macros 2.0 work, there is no backwards compatability issue.</p>
 <p>For tools who want to move to these newly stable attributes (e.g., from
@@ -297,7 +304,7 @@ confident that this proposal is forward-compatible in its syntax, etc.</p>
 term solution? One could imagine either leaving them implicit (similar to the
 libraries prelude) or using warning cycles or an epoch to move them to explicit
 opt-in.</p>
-<a class="header" href="2103-tool-attributes.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The proposed scheme does not allow tools or macros to use custom top-level
 attributes (I consider this a feature, not a bug, but others may differ).</p>
 <p>Some tools are clearly given special treatment.</p>
@@ -308,12 +315,12 @@ should warn or error on such attributes.</p>
 seems fine for now, I imagine a long-term solution should include some library
 or API for this.</p>
 <p>No interaction with imports or other parts of the module system.</p>
-<a class="header" href="2103-tool-attributes.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could continue to force tools to rely on <code>cfg_attr</code> - this is very
 unergonomic, e.g., <code>#[cfg_attr(rustfmt, rustfmt_skip)]</code>.</p>
 <p>We could allow all scoped attributes without checks. This feels like it
 introduces too much scope for error.</p>
-<a class="header" href="2103-tool-attributes.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Are there other tools that should be included on the whitelist (<code>#[test]</code> perhaps)?</p>
 <p>Should we try and move some top-level attributes that are compiler-specific
 (rather than language-specific) to use <code>#[rustc::]</code>? (E.g., <code>crate_type</code>).</p>
@@ -365,9 +372,6 @@ be adjusted accordingly.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

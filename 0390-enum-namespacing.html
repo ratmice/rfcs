@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0390-enum-namespacing - </title>
+        <title>0390-enum-namespacing - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,17 +145,17 @@
 <li>RFC PR #: https://github.com/rust-lang/rfcs/pull/390</li>
 <li>Rust Issue #: https://github.com/rust-lang/rust/issues/18478</li>
 </ul>
-<a class="header" href="0390-enum-namespacing.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>The variants of an enum are currently defined in the same namespace as the enum
 itself. This RFC proposes to define variants under the enum's namespace.</p>
-<a class="header" href="0390-enum-namespacing.html#note" id="note"><h2>Note</h2></a>
+<a class="header" href="#note" id="note"><h2>Note</h2></a>
 <p>In the rest of this RFC, <em>flat enums</em> will be used to refer to the current enum
 behavior, and <em>namespaced enums</em> will be used to refer to the proposed enum
 behavior.</p>
-<a class="header" href="0390-enum-namespacing.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Simply put, flat enums are the wrong behavior. They're inconsistent with the
 rest of the language and harder to work with.</p>
-<a class="header" href="0390-enum-namespacing.html#practicality" id="practicality"><h2>Practicality</h2></a>
+<a class="header" href="#practicality" id="practicality"><h2>Practicality</h2></a>
 <p>Some people prefer flat enums while others prefer namespaced enums. It is
 trivial to emulate flat enums with namespaced enums:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -208,7 +215,7 @@ inconsistently mangled, as in the case of <code>IoErrorKind</code>. All variants
 un-mangled (e.g, <code>EndOfFile</code> or <code>ConnectionRefused</code>) except for one,
 <code>OtherIoError</code>. Presumably, <code>Other</code> would be too confusing in isolation. One
 also runs the risk of running into collisions as the library grows.</p>
-<a class="header" href="0390-enum-namespacing.html#consistency" id="consistency"><h2>Consistency</h2></a>
+<a class="header" href="#consistency" id="consistency"><h2>Consistency</h2></a>
 <p>Flat enums are inconsistent with the rest of the language. Consider the set of
 items. Some don't have their own names, such as <code>extern {}</code> blocks, so items
 declared inside of them have no place to go but the enclosing namespace. Some
@@ -265,7 +272,7 @@ addition, search results incorrectly display a path for variant results that
 contains the enum itself, such as <code>std::option::Option::None</code>.  These issues
 can of course be fixed, but that will require adding more special cases to work
 around the inconsistent behavior of enums.</p>
-<a class="header" href="0390-enum-namespacing.html#usability" id="usability"><h2>Usability</h2></a>
+<a class="header" href="#usability" id="usability"><h2>Usability</h2></a>
 <p>This inconsistency makes it harder to work with enums compared to other items.</p>
 <p>There are two competing forces affecting the design of libraries. On one hand,
 the author wants to limit the size of individual files by breaking the crate
@@ -362,7 +369,7 @@ use messages::BackendMessage::*;
 use messages::FrontendMessage::*;
 use messages::{FrontendMessage, BackendMessage, WriteMessage, ReadMessage};
 #}</code></pre></pre>
-<a class="header" href="0390-enum-namespacing.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The compiler's resolve stage will be altered to place the value and type
 definitions for variants in their enum's module, just as methods of inherent
 impls are. Variants will be handled differently than those methods are,
@@ -385,7 +392,7 @@ only a small pre-1.0 change required. This initial conversion will focus on
 making the minimal set of changes required to port the compiler and standard
 libraries by reexporting variants in the old location. Later work can alter
 the APIs to take advantage of the new definition locations.</p>
-<a class="header" href="0390-enum-namespacing.html#library-changes" id="library-changes"><h2>Library changes</h2></a>
+<a class="header" href="#library-changes" id="library-changes"><h2>Library changes</h2></a>
 <p>Library authors can use reexports to take advantage of enum namespacing without
 causing too much downstream breakage:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -430,10 +437,10 @@ pub enum Item {
     ItemStatic(Bar),
 }
 #}</code></pre></pre>
-<a class="header" href="0390-enum-namespacing.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The transition period will cause enormous breakage in downstream code. It is
 also a fairly large change to make to resolve, which is already a bit fragile.</p>
-<a class="header" href="0390-enum-namespacing.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We can implement enum namespacing after 1.0 by adding a &quot;fallback&quot; case to
 resolve, where variants can be referenced from their &quot;flat&quot; definition location
 if no other definition would conflict in that namespace. In the grand scheme of
@@ -446,7 +453,7 @@ define enums to hold its own weight as a language feature. In addition, it
 would simply cause confusion, as library authors need to decide which one they
 want to use, and library consumers need to double check which place they can
 import variants from.</p>
-<a class="header" href="0390-enum-namespacing.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>A recent change placed enum variants in the type as well as the value namespace
 to allow for future language expansion. This broke some code that looked like
 this:</p>
@@ -510,9 +517,6 @@ and <code>Bar</code> structs will be in scope inside of the <code>MyEnum</code> 
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

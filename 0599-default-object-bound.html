@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0599-default-object-bound - </title>
+        <title>0599-default-object-bound - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/599">rust-lang/rfcs#599</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/22211">rust-lang/rust#22211</a></li>
 </ul>
-<a class="header" href="0599-default-object-bound.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add a default lifetime bound for object types, so that it is no longer
 necessary to write things like <code>Box&lt;Trait+'static&gt;</code> or <code>&amp;'a (Trait+'a)</code>. The default will be based on the context in which the
 object type appears. Typically, object types that appear underneath a
@@ -155,8 +162,8 @@ user-defined types with <code>T:'a</code> annotations override the default.</p>
 </ul>
 <p>Cases where the lifetime bound is either given explicitly or can be
 inferred from the traits involved are naturally unaffected.</p>
-<a class="header" href="0599-default-object-bound.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="0599-default-object-bound.html#current-situation" id="current-situation"><h4>Current situation</h4></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#current-situation" id="current-situation"><h4>Current situation</h4></a>
 <p>As described in <a href="https://github.com/rust-lang/rfcs/blob/master/text/0034-bounded-type-parameters.md">RFC 34</a>, object types carry a single lifetime
 bound. Sometimes, this bound can be inferred based on the traits
 involved. Frequently, however, it cannot, and in that case the
@@ -196,7 +203,7 @@ a boxed object type that is not bounded by <code>'static</code> or <code>Send</c
 object where the object itself has a distinct bound (e.g., <code>&amp;'a (Trait+'b)</code>). This is not to say these situations <em>never</em> arise; as
 we'll see below, both of these do arise in practice, but they are
 relatively unusual (and in fact there is never a good reason to do
-<code>&amp;'a (Trait+'b)</code>, though there can be a reason to have <code>&amp;'a mut (Trait+'b)</code>; see <a href="0599-default-object-bound.html#detailed-design">&quot;Detailed Design&quot;</a> for full details).</p>
+<code>&amp;'a (Trait+'b)</code>, though there can be a reason to have <code>&amp;'a mut (Trait+'b)</code>; see <a href="#detailed-design">&quot;Detailed Design&quot;</a> for full details).</p>
 <p>The need for a shorthand is made somewhat more urgent by
 <a href="https://github.com/rust-lang/rfcs/pull/458">RFC 458</a>, which disconnects the <code>Send</code> trait from the <code>'static</code>
 bound. This means that object types now are written <code>Box&lt;Foo+Send&gt;</code>
@@ -209,7 +216,7 @@ trait Message : Send { }
 Box&lt;Message&gt; // ERROR: 'static no longer inferred from `Send` supertrait
 Box&lt;Writer+Send&gt; // ERROR: 'static no longer inferred from `Send` bound
 #}</code></pre></pre>
-<a class="header" href="0599-default-object-bound.html#the-proposed-rule" id="the-proposed-rule"><h4>The proposed rule</h4></a>
+<a class="header" href="#the-proposed-rule" id="the-proposed-rule"><h4>The proposed rule</h4></a>
 <p>This RFC proposes to use the context in which an object type appears
 to derive a sensible default. Specifically, the default begins as
 <code>'static</code>.  Type constructors like <code>&amp;</code> or user-defined structs can
@@ -262,7 +269,7 @@ are resolved. (Also, from casual examination, it appears that cargo
 could in fact employ the proposed defaults without a problem, though
 the types would be different than the types as they appear in the
 source today, but this has not been fully verified.)</p>
-<a class="header" href="0599-default-object-bound.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>This section extends the high-level rule above with suppor for
 user-defined types, and also describes potential interactions with
 other parts of the system.</p>
@@ -403,7 +410,7 @@ fn main() {
 object types give the user less power than if the user had direct
 access to the underlying data; the user is confined to accessing the
 underlying data through a known interface.</p>
-<a class="header" href="0599-default-object-bound.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p><strong>A. Breaking change.</strong> This change has the potential to break some
 existing code, though given the statistics gathered we believe the
 effect will be minimal (in particular, defaults are only permitted in
@@ -433,7 +440,7 @@ past experiments where we used extensive inference in types and found
 that this gave rise to particularly confounding errors, since the
 errors were based on annotations that were inferred and hence not
 always obvious.</p>
-<a class="header" href="0599-default-object-bound.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ol>
 <li>
 <p><strong>Leave things as they are with an improved error message.</strong>
@@ -458,7 +465,7 @@ appearing in user-defined types like <code>Ref&lt;'a, Trait&gt;</code> get the w
 default.</p>
 </li>
 </ol>
-<a class="header" href="0599-default-object-bound.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -504,9 +511,6 @@ default.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0840-no-panic-in-c-string - </title>
+        <title>0840-no-panic-in-c-string - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/840">rust-lang/rfcs#840</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/22470">rust-lang/rust#22470</a></li>
 </ul>
-<a class="header" href="0840-no-panic-in-c-string.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Remove panics from <code>CString::from_slice</code> and <code>CString::from_vec</code>, making
 these functions return <code>Result</code> instead.</p>
-<a class="header" href="0840-no-panic-in-c-string.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <blockquote>
 <p>As I shivered and brooded on the casting of that brain-blasting shadow,
 I knew that I had at last pried out one of earth’s supreme horrors—one of
@@ -173,7 +180,7 @@ oblivious to the potential panic.</p>
 <p>The conventions on failure modes elsewhere in Rust libraries tend to limit
 panics to outcomes of programmer errors. Functions validating external data
 should return <code>Result</code> to allow graceful handling of the errors.</p>
-<a class="header" href="0840-no-panic-in-c-string.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The return types of <code>CString::from_slice</code> and <code>CString::from_vec</code> is changed
 to <code>Result</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -190,17 +197,17 @@ provides the <code>Vec</code> which has been moved into <code>CString::from_vec<
 <p><code>std::error::FromError</code> implementations are provided to convert the error
 types above to <code>std::io::Error</code> of the <code>InvalidInput</code> kind. This facilitates
 use of the conversion functions in input-processing code.</p>
-<a class="header" href="0840-no-panic-in-c-string.html#proof-of-concept-implementation" id="proof-of-concept-implementation"><h1>Proof-of-concept implementation</h1></a>
+<a class="header" href="#proof-of-concept-implementation" id="proof-of-concept-implementation"><h1>Proof-of-concept implementation</h1></a>
 <p>The proposed changes are implemented in a crates.io project
 <a href="https://github.com/mzabaluev/rust-c-str">c_string</a>, where the analog of
 <code>CString</code> is named <code>CStrBuf</code>.</p>
-<a class="header" href="0840-no-panic-in-c-string.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The need to extract the data from a <code>Result</code> in the success case is annoying.
 However, it may be viewed as a speed bump to make the developer aware of a
 potential failure and to require an explicit choice on how to handle it.
 Even the least graceful way, a call to <code>unwrap</code>, makes the potential panic
 apparent in the code.</p>
-<a class="header" href="0840-no-panic-in-c-string.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Non-panicky functions can be added alongside the existing functions, e.g.,
 as <code>from_slice_failing</code>. Adding new functions complicates the API where little
 reason for that exists; composition is preferred to adding function variants.
@@ -211,7 +218,7 @@ respectively, to highlight their conceptual proximity to <code>unpack</code>.</p
 <p>If the panicky behavior is preserved, plentiful possibilities for DoS attacks
 and other unforeseen failures in the field may be introduced by code oblivious
 to the input constraints.</p>
-<a class="header" href="0840-no-panic-in-c-string.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -257,9 +264,6 @@ to the input constraints.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

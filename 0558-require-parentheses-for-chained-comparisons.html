@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0558-require-parentheses-for-chained-comparisons - </title>
+        <title>0558-require-parentheses-for-chained-comparisons - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,10 +145,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/558">rust-lang/rfcs#558</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/20724">rust-lang/rust#20724</a></li>
 </ul>
-<a class="header" href="0558-require-parentheses-for-chained-comparisons.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Remove chaining of comparison operators (e.g. <code>a == b == c</code>) from the syntax.
 Instead, require extra parentheses (<code>(a == b) == c</code>).</p>
-<a class="header" href="0558-require-parentheses-for-chained-comparisons.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -159,13 +166,13 @@ and open up the possibility for python-like chained comparisons post-1.0.</p>
 <p>Additionally, making the chain <code>f &lt; b &gt; (c)</code> invalid allows us to easily produce
 a diagnostic message: &quot;Use <code>::&lt;</code> instead of <code>&lt;</code> if you meant to specify type arguments.&quot;,
 which would be a vast improvement over the current diagnostics for this mistake.</p>
-<a class="header" href="0558-require-parentheses-for-chained-comparisons.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Emit a syntax error when a comparison operator appears as an operand of another comparison operator
 (without being surrounded by parentheses).
 The comparison operators are <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code> <code>==</code> and <code>!=</code>.</p>
 <p>This is easily implemented directly in the parser.</p>
 <p>Note that this restriction on accepted syntax will effectively merge the precedence level 4 (<code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code>) with level 3 (<code>==</code> <code>!=</code>).</p>
-<a class="header" href="0558-require-parentheses-for-chained-comparisons.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It's a breaking change.</p>
 <p>In particular, code that currently uses the difference between precedence level 3 and 4 breaks
 and will require the use of parentheses:</p>
@@ -176,7 +183,7 @@ if a &lt; 0 == b &lt; 0 { /* both negative or both non-negative */ }
 #}</code></pre></pre>
 <p>However, I don't think this kind of code sees much use.
 The rustc codebase doesn't seem to have any occurrences of chained comparisons.</p>
-<a class="header" href="0558-require-parentheses-for-chained-comparisons.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>As this RFC just makes the chained comparison syntax available for post-1.0 language features,
 pretty much every alternative (including returning to the status quo) can still be implemented later.</p>
 <p>If this RFC is not accepted, it will be impossible to add python-style chained comparison operators later.</p>
@@ -184,7 +191,7 @@ pretty much every alternative (including returning to the status quo) can still 
 where a comparison operator appears as an operand of another comparison operator of the same precedence level.
 This minimizes the breaking changes, but does not allow full python-style chained comparison operators in the future
 (although a more limited form of them would still be possible).</p>
-<a class="header" href="0558-require-parentheses-for-chained-comparisons.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Is there real code that would get broken by this change?
 So far, I've been unable to find any.</p>
 
@@ -231,9 +238,6 @@ So far, I've been unable to find any.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1683-docs-team - </title>
+        <title>1683-docs-team - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,20 +146,20 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1683">rust-lang/rfcs#1683</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1683-docs-team.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Create a team responsible for documentation for the Rust project.</p>
-<a class="header" href="1683-docs-team.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p><a href="https://github.com/rust-lang/rfcs/blob/master/text/1068-rust-governance.md">RFC 1068</a> introduced a federated governance model for the Rust project. Several initial subteams were set up. There was a note
 after the <a href="https://github.com/rust-lang/rfcs/blob/master/text/1068-rust-governance.md#the-teams">original subteam list</a> saying this:</p>
 <blockquote>
 <p>In the long run, we will likely also want teams for documentation and for community events, but these can be spun up once there is a more clear need (and available resources).</p>
 </blockquote>
 <p>Now is the time for a documentation subteam.</p>
-<a class="header" href="1683-docs-team.html#why-documentation-was-left-out" id="why-documentation-was-left-out"><h2>Why documentation was left out</h2></a>
+<a class="header" href="#why-documentation-was-left-out" id="why-documentation-was-left-out"><h2>Why documentation was left out</h2></a>
 <p>Documentation was left out of the original list because it wasn't clear that there would be anyone but me on it. Furthermore,
 one of the original reasons for the subteams was to decide who gets counted amongst consensus for RFCs, but it was unclear
 how many documentation-related RFCs there would even be.</p>
-<a class="header" href="1683-docs-team.html#chicken-meet-egg" id="chicken-meet-egg"><h2>Chicken, meet egg</h2></a>
+<a class="header" href="#chicken-meet-egg" id="chicken-meet-egg"><h2>Chicken, meet egg</h2></a>
 <p>However, RFCs are not only what subteams do. To quote the RFC:</p>
 <blockquote>
 <ul>
@@ -169,7 +176,7 @@ deciding who gets <code>r+</code> rights is important. A lack of clarity in this
 chicken and egg situation: without a documentation team, it's unclear how to be more involved in working on Rust's
 documentation, but without people to be on the team, there's no reason to form a team. For this reason, I think
 a small initial team will break this logjam, and provide room for new contributors to grow.</p>
-<a class="header" href="1683-docs-team.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The Rust documentation team will be responsible for all of the things listed above. Specifically, they will pertain
 to these areas of the Rust project:</p>
 <ul>
@@ -187,7 +194,7 @@ attitude. To be clear, this does not mean <em>owning</em> the ecosystem docs, bu
 than just the Rust project itself.</p>
 <p>We will coordinate in the <code>#rust-docs</code> IRC room, and have regular meetings, as the team sees fit. Regular meetings will be
 important to coordinate broader goals; and participation will be important for team members. We hold meetings weekly.</p>
-<a class="header" href="1683-docs-team.html#membership" id="membership"><h2>Membership</h2></a>
+<a class="header" href="#membership" id="membership"><h2>Membership</h2></a>
 <ul>
 <li>@steveklabnik, team lead</li>
 <li>@GuillaumeGomez</li>
@@ -200,20 +207,20 @@ member of the team should pursue these goals:</p>
 <ul>
 <li>Contributing documentation patches to Rust itself</li>
 <li>Attending doc team meetings, which are open to all</li>
-<li>generally being available on [IRC]<sup class="footnote-reference"><a href="1683-docs-team.html#IRC">1</a></sup> to collaborate with others</li>
+<li>generally being available on [IRC]<sup class="footnote-reference"><a href="#IRC">1</a></sup> to collaborate with others</li>
 </ul>
 <p>I am not quantifying this exactly because it's not about reaching some specific number; adding someone to the team should
 make sense if someone is doing all of these things.</p>
 <div class="footnote-definition" id="IRC"><sup class="footnote-definition-label">1</sup>
 <p>The #rust-docs channel on irc.mozilla.org</p>
 </div>
-<a class="header" href="1683-docs-team.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This is Yet Another Team. Do we have too many teams? I don't think so, but someone might.</p>
-<a class="header" href="1683-docs-team.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The main alternative is not having a team. This is the status quo, so the situation is well-understood.</p>
 <p>It's possible that docs come under the purvew of &quot;tools&quot;, and so maybe the docs team would be an expansion
 of the tools team, rather than its own new team. Or some other subteam.</p>
-<a class="header" href="1683-docs-team.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -259,9 +266,6 @@ of the tools team, rather than its own new team. Or some other subteam.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

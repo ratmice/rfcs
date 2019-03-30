@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2361-dbg-macro - </title>
+        <title>2361-dbg-macro - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +146,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2361">rust-lang/rfcs#2361</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/54306">rust-lang/rust#54306</a></li>
 </ul>
-<a class="header" href="2361-dbg-macro.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add a <code>dbg!($expr)</code> macro to the prelude (so that it doesn’t need to be imported)
 that prints its argument with some metadata (source code location and stringification)
 before returning it.</p>
 <p>This is a simpler and more opinionated counter-proposal
 to <a href="https://github.com/rust-lang/rfcs/pull/2173">RFC 2173</a>.</p>
-<a class="header" href="2361-dbg-macro.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Sometimes a debugger may not have enough Rust-specific support to introspect some data
 (such as calling a Rust method), or it may not be convenient to use or available at all.
 “<code>printf</code> debugging” is possible in today’s Rust with:</p>
@@ -167,7 +174,7 @@ doesn’t indicate what value is being printed,
 some distinguishing information may need to be added.
 For example: <code>println!(&quot;foo = {:?}&quot;, x.foo());</code></li>
 </ul>
-<a class="header" href="2361-dbg-macro.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>To inspect the value of a given expression at run-time,
 it can be wrapped in the <code>dbg!</code> macro to print the value to <code>STDERR</code>,
 along with its source location and source code:</p>
@@ -211,16 +218,16 @@ fn main() {
 </code></pre>
 <p>Using <code>dbg!</code> requires type of the expression to implement the <code>std::fmt::Debug</code>
 trait.</p>
-<a class="header" href="2361-dbg-macro.html#move-semantics" id="move-semantics"><h2>Move semantics</h2></a>
+<a class="header" href="#move-semantics" id="move-semantics"><h2>Move semantics</h2></a>
 <p>The <code>dbg!(x)</code> macro moves the value <code>x</code> and takes ownership of it,
 unless the type of <code>x</code> implements <code>Copy</code>, and returns <code>x</code> unchanged.
 If you want to retain ownership of the value,
 you can instead borrow <code>x</code> with <code>dbg!(&amp;x)</code>.</p>
-<a class="header" href="2361-dbg-macro.html#unstable-output-format" id="unstable-output-format"><h2>Unstable output format</h2></a>
+<a class="header" href="#unstable-output-format" id="unstable-output-format"><h2>Unstable output format</h2></a>
 <p>The exact output printed by this macro should not be relied upon and is subject to future changes.</p>
-<a class="header" href="2361-dbg-macro.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>The macro below is added to <code>src/libstd/macros.rs</code>,
-with a doc-comment based on the <a href="2361-dbg-macro.html#guide-level-explanation">Guide-level explanation</a> of this RFC.</p>
+with a doc-comment based on the <a href="#guide-level-explanation">Guide-level explanation</a> of this RFC.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -239,36 +246,36 @@ macro_rules! dbg {
 #}</code></pre></pre>
 <p>The use of <code>match</code> over <code>let</code> is similar to the implementation of <code>assert_eq!</code>.
 It <a href="https://stackoverflow.com/questions/48732263/why-is-rusts-assert-eq-implemented-using-a-match#comment84465322_48732525">affects the lifetimes of temporaries</a>.</p>
-<a class="header" href="2361-dbg-macro.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Adding to the prelude should be done carefully.
 However a library can always define another macro with the same name and shadow this one.</p>
-<a class="header" href="2361-dbg-macro.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>[RFC 2173] and provides an a more complex alternative that offers more control but is also more complex.
 This RFC was designed with the goal of being a simpler and thus better fit for the standard library.</p>
-<a class="header" href="2361-dbg-macro.html#alternative-tweaking-formatting" id="alternative-tweaking-formatting"><h2>Alternative: tweaking formatting</h2></a>
+<a class="header" href="#alternative-tweaking-formatting" id="alternative-tweaking-formatting"><h2>Alternative: tweaking formatting</h2></a>
 <p>Any detail of the formatting can be tweaked. For example, <code>{:#?}</code> or <code>{:?}</code>?</p>
-<a class="header" href="2361-dbg-macro.html#a-simple-macro-without-any-control-over-output" id="a-simple-macro-without-any-control-over-output"><h2>A simple macro without any control over output</h2></a>
+<a class="header" href="#a-simple-macro-without-any-control-over-output" id="a-simple-macro-without-any-control-over-output"><h2>A simple macro without any control over output</h2></a>
 <p>This RFC does not offer users control over the exact output being printed.
 This is because a use of this macro is intended to be run a small number of times before being removed.
 If more control is desired, for example logging in an app shipped to end users,
 other options such as <code>println!</code> or the <code>log</code> crate remain available.</p>
-<a class="header" href="2361-dbg-macro.html#accepting-a-single-expression-instead-of-many" id="accepting-a-single-expression-instead-of-many"><h2>Accepting a single expression instead of many</h2></a>
+<a class="header" href="#accepting-a-single-expression-instead-of-many" id="accepting-a-single-expression-instead-of-many"><h2>Accepting a single expression instead of many</h2></a>
 <p>If the macro accepts more than one expression (returning a tuple),
 there is a question of what to do with a single expression.
 Returning a one-value tuple <code>($expr,)</code> is probably unexpected,
 but <em>not</em> doing so creates a discontinuty in the macro's behavior as things are added.
 With only one expression accepted,
 users can still pass a tuple expression or call the macro multiple times.</p>
-<a class="header" href="2361-dbg-macro.html#including-file-in-the-output" id="including-file-in-the-output"><h2>Including <code>file!()</code> in the output</h2></a>
+<a class="header" href="#including-file-in-the-output" id="including-file-in-the-output"><h2>Including <code>file!()</code> in the output</h2></a>
 <p>In a large project with multiple files,
 it becomes quite difficult to tell what the origin of the output is.
 Including <code>file!()</code> is therefore quite helpful in debugging.
 However, it is not very useful on the <a href="https://play.rust-lang.org">playground</a>,
 but that exception is acceptable.</p>
-<a class="header" href="2361-dbg-macro.html#including-the-line-number" id="including-the-line-number"><h2>Including the line number</h2></a>
+<a class="header" href="#including-the-line-number" id="including-the-line-number"><h2>Including the line number</h2></a>
 <p>The argument is analogous to that for <code>file!()</code>. For a large file,
 it would also be difficult to locate the source of the output without <code>line!()</code>.</p>
-<a class="header" href="2361-dbg-macro.html#excluding-the-column-number" id="excluding-the-column-number"><h2>Excluding the column number</h2></a>
+<a class="header" href="#excluding-the-column-number" id="excluding-the-column-number"><h2>Excluding the column number</h2></a>
 <p>Most likely, only one <code>dbg!(expr)</code> call will occur per line.
 The remaining cases will likely occur when dealing with binary operators such as with:
 <code>dbg!(x) + dbg!(y) + dbg!(z)</code>, or with several arguments to a function / method call.
@@ -286,7 +293,7 @@ since it uses horizontal screen real-estate but not vertical real-estate,
 which may still be a good reason to keep it.
 Nonetheless, this argument is not sufficient to keep <code>column!()</code>,
 wherefore <strong>this RFC will not include it</strong>.</p>
-<a class="header" href="2361-dbg-macro.html#including-stringifyexpr" id="including-stringifyexpr"><h2>Including <code>stringify!(expr)</code></h2></a>
+<a class="header" href="#including-stringifyexpr" id="including-stringifyexpr"><h2>Including <code>stringify!(expr)</code></h2></a>
 <p>As discussed in the rationale regarding <code>column!()</code>,
 <code>stringify!(expr)</code> improves the legibility of similar looking expressions.</p>
 <p>Another major motivation is that with many outputs,
@@ -295,7 +302,7 @@ it can become hard to associate the printed output with the logic as you wrote i
 With <code>stringify!</code>, you can easily see how the left-hand side reduces to the right-hand side.
 This makes it easier to reason about the trace of your program and why things happened as they did.
 The ability to trace effectively can greatly improve the ability to debug with ease and speed.</p>
-<a class="header" href="2361-dbg-macro.html#returning-the-value-that-was-given" id="returning-the-value-that-was-given"><h2>Returning the value that was given</h2></a>
+<a class="header" href="#returning-the-value-that-was-given" id="returning-the-value-that-was-given"><h2>Returning the value that was given</h2></a>
 <p>One goal of the macro is to intrude and disturb as little as possible in the workflow of the user.
 The macro should fit the user, not the other way around.
 Returning the value that was given, i.e: that <code>dbg!(expr) == expr</code>
@@ -323,14 +330,14 @@ let c = dbg!(fun(a)) + dbg!(fun(b));
 let y = dbg!(self.first()).second();
 #}</code></pre></pre>
 <p>This modification is considerably smaller and disturbs flow while debugging code to a lesser degree.</p>
-<a class="header" href="2361-dbg-macro.html#keeping-output-when-cfgdebug_assertions-is-disabled" id="keeping-output-when-cfgdebug_assertions-is-disabled"><h2>Keeping output when <code>cfg!(debug_assertions)</code> is disabled</h2></a>
+<a class="header" href="#keeping-output-when-cfgdebug_assertions-is-disabled" id="keeping-output-when-cfgdebug_assertions-is-disabled"><h2>Keeping output when <code>cfg!(debug_assertions)</code> is disabled</h2></a>
 <p>When <code>cfg!(debug_assertions)</code> is false,
 printing could be disabled to reduce runtime cost in release builds.
 However this cost is not relevant if uses of <code>dbg!</code> are removed before shipping to production,
 where crates such as <code>log</code> may be better suited,
 and deemed less important than the ability to easily investigate bugs that only occur with optimizations.
 These kinds of bugs <a href="https://github.com/servo/servo/issues/19519">do happen</a> and can be a pain to debug.</p>
-<a class="header" href="2361-dbg-macro.html#stderr-should-be-used-over-stdout-as-the-output-stream" id="stderr-should-be-used-over-stdout-as-the-output-stream"><h2><code>STDERR</code> should be used over <code>STDOUT</code> as the output stream</h2></a>
+<a class="header" href="#stderr-should-be-used-over-stdout-as-the-output-stream" id="stderr-should-be-used-over-stdout-as-the-output-stream"><h2><code>STDERR</code> should be used over <code>STDOUT</code> as the output stream</h2></a>
 <p>The messages printed using <code>dbg!</code> are not usually errors,
 which is one reason to use <code>STDOUT</code> instead.
 However, <code>STDERR</code> is often used as a second channel for extra messages.
@@ -339,14 +346,14 @@ This use of <code>STDERR</code> often occurs when <code>STDOUT</code> carries so
 where should hypothetical uses of <code>dbg!</code> print to in the case of <code>rg some_word &lt; input_file &gt; matching_lines</code>?
 Should they end up on the terminal or in the file <code>matching_lines</code>?
 Clearly the former is correct in this case.</p>
-<a class="header" href="2361-dbg-macro.html#outputting-lit--lit-for-dbglit-instead-of-lit" id="outputting-lit--lit-for-dbglit-instead-of-lit"><h2>Outputting <code>lit = lit</code> for <code>dbg!(lit);</code> instead of <code>lit</code></h2></a>
+<a class="header" href="#outputting-lit--lit-for-dbglit-instead-of-lit" id="outputting-lit--lit-for-dbglit-instead-of-lit"><h2>Outputting <code>lit = lit</code> for <code>dbg!(lit);</code> instead of <code>lit</code></h2></a>
 <p>The left hand side of the equality adds no new information wherefore it might be a redundant annoyance.
 On the other hand, it may give a sense of symmetry with the non-literal forms such as <code>a = 42</code>.
 Keeping <code>5 = 5</code> is also more consistent.
 In either case, since the macro is intentionally simple,
 there is little room for tweaks such as removing <code>lit =</code>.
 For these reasons, and especially the last one, the output format <code>lit = lit</code> is used.</p>
-<a class="header" href="2361-dbg-macro.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>Many languages have a construct that can be as terse as <code>print foo</code>.</p>
 <p>Some examples are:</p>
 <ul>
@@ -355,7 +362,7 @@ For these reasons, and especially the last one, the output format <code>lit = li
 <li><a href="http://php.net/manual/en/function.print-r.php">PHP</a></li>
 </ul>
 <p>The specific idea to return back the input <code>expr</code> in <code>dbg!(expr)</code> was inspired by <a href="http://hackage.haskell.org/package/base-4.10.1.0/docs/Debug-Trace.html#v:traceShowId"><code>traceShowId</code></a> in Haskell.</p>
-<a class="header" href="2361-dbg-macro.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Unbounded bikeshedding.</p>
 
                     </main>
@@ -401,9 +408,6 @@ For these reasons, and especially the last one, the output format <code>lit = li
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

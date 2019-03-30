@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0214-while-let - </title>
+        <title>0214-while-let - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,10 +145,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/214">rust-lang/rfcs#214</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/17687">rust-lang/rust#17687</a></li>
 </ul>
-<a class="header" href="0214-while-let.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce a new <code>while let PAT = EXPR { BODY }</code> construct. This allows for using a refutable pattern
 match (with optional variable binding) as the condition of a loop.</p>
-<a class="header" href="0214-while-let.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Just as <code>if let</code> was inspired by Swift, it turns out Swift supports <code>while let</code> as well. This was
 not discovered until much too late to include it in the <code>if let</code> RFC. It turns out that this sort of
 looping is actually useful on occasion. For example, the desugaring <code>for</code> loop is actually a variant
@@ -164,7 +171,7 @@ match &amp;mut EXPR {
 <p>This also makes the language a bit more consistent; right now, any condition that can be used with
 <code>if</code> can be used with <code>while</code>. The new <code>if let</code> adds a form of <code>if</code> that doesn't map to <code>while</code>.
 Supporting <code>while let</code> restores the equivalence of these two control-flow constructs.</p>
-<a class="header" href="0214-while-let.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p><code>while let</code> operates similarly to <code>if let</code>, in that it desugars to existing syntax. Specifically,
 the syntax</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -190,10 +197,10 @@ largely an artifact of the fact that the desugared <code>match</code> ends up wi
 and is not actually a goal of this syntax. The error may be suppressed in the future, which would be
 a backwards-compatible change.</p>
 <p>Just as with <code>if let</code>, <code>while let</code> will be introduced under a feature gate (named <code>while_let</code>).</p>
-<a class="header" href="0214-while-let.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Yet another addition to the grammar. Unlike <code>if let</code>, it's not obvious how useful this syntax will
 be.</p>
-<a class="header" href="0214-while-let.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>As with <code>if let</code>, this could plausibly be done with a macro, but it would be ugly and produce bad
 error messages.</p>
 <p><code>while let</code> could be extended to support alternative patterns, just as match arms do. This is not
@@ -201,7 +208,7 @@ part of the main proposal for the same reason it was left out of <code>if let</c
 weird, and b) it's a bit of an odd coupling with the <code>let</code> keyword as alternatives like this aren't
 going to be introducing variable bindings. However, it would make <code>while let</code> more general and able
 to replace more instances of <code>loop { match { ... } }</code> than is possible with the main design.</p>
-<a class="header" href="0214-while-let.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -247,9 +254,6 @@ to replace more instances of <code>loop { match { ... } }</code> than is possibl
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

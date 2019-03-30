@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0255-object-safety - </title>
+        <title>0255-object-safety - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/255">rust-lang/rfcs#255</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/17670">rust-lang/rust#17670</a></li>
 </ul>
-<a class="header" href="0255-object-safety.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Restrict which traits can be used to make trait objects.</p>
 <p>Currently, we allow any traits to be used for trait objects, but restrict the
 methods which can be called on such objects. Here, we propose instead
@@ -146,7 +153,7 @@ restricting which traits can be used to make objects. Despite being less
 flexible, this will make for better error messages, less surprising software
 evolution, and (hopefully) better design. The motivation for the proposed change
 is stronger due to part of the DST changes.</p>
-<a class="header" href="0255-object-safety.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Part of the planned, in progress DST work is to allow trait objects where a
 trait is expected. Example:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -198,11 +205,11 @@ where a trait object is used with a generic call and would be something like
 &quot;type error: SomeTrait does not implement SomeTrait&quot; - no indication that the
 non-object-safe method were to blame, only a failure in trait matching.</p>
 <p>Another advantage of this proposal is that it implies that all
-method-calls can always be rewritten into an equivalent <a href="0132-ufcs.md">UFCS</a>
+method-calls can always be rewritten into an equivalent <a href="0132-ufcs.html">UFCS</a>
 call. This simplifies the &quot;core language&quot; and makes method dispatch
 notation -- which involves some non-trivial inference -- into a kind
 of &quot;sugar&quot; for the more explicit UFCS notation.</p>
-<a class="header" href="0255-object-safety.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>To be precise about object-safety, an object-safe method must meet one
 of the following conditions:</p>
 <ul>
@@ -226,7 +233,7 @@ receiver and only where we allow <code>Sized?</code> types).</li>
 <p>A trait is object-safe if all of the following conditions hold:</p>
 <ul>
 <li>all of its methods are object-safe; and,</li>
-<li>the trait does not require that <code>Self : Sized</code> (see also <a href="0546-Self-not-sized-by-default.md">RFC 546</a>).</li>
+<li>the trait does not require that <code>Self : Sized</code> (see also <a href="0546-Self-not-sized-by-default.html">RFC 546</a>).</li>
 </ul>
 <p>When an expression with pointer-to-concrete type is coerced to a trait object,
 the compiler will check that the trait is object-safe (in addition to the usual
@@ -240,12 +247,12 @@ when code that attempted to use those features would only work if the
 by-value self methods are permitted, since currently one cannot invoke
 pass an unsized type by-value (though we consider that a useful future
 extension).</p>
-<a class="header" href="0255-object-safety.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This is a breaking change and forbids some safe code which is legal
 today. This can be addressed in two ways: splitting traits, or adding
 <code>where Self:Sized</code> clauses to methods that cannot not be used with
 objects.</p>
-<a class="header" href="0255-object-safety.html#example-problem" id="example-problem"><h3>Example problem</h3></a>
+<a class="header" href="#example-problem" id="example-problem"><h3>Example problem</h3></a>
 <p>Here is an example trait that is not object safe:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -257,7 +264,7 @@ trait SomeTrait {
     fn new() -&gt; Self;
 }
 #}</code></pre></pre>
-<a class="header" href="0255-object-safety.html#splitting-a-trait" id="splitting-a-trait"><h3>Splitting a trait</h3></a>
+<a class="header" href="#splitting-a-trait" id="splitting-a-trait"><h3>Splitting a trait</h3></a>
 <p>One option is to split a trait into object-safe and non-object-safe
 parts. We hope that this will lead to better design. We are not sure
 how much code this will affect, it would be good to have data about
@@ -273,7 +280,7 @@ trait SomeTraitCtor : SomeTrait {
     fn new() -&gt; Self;
 }
 #}</code></pre></pre>
-<a class="header" href="0255-object-safety.html#adding-a-where-clause" id="adding-a-where-clause"><h3>Adding a where-clause</h3></a>
+<a class="header" href="#adding-a-where-clause" id="adding-a-where-clause"><h3>Adding a where-clause</h3></a>
 <p>Sometimes adding a second trait feels like overkill. In that case, it
 is often an option to simply add a <code>where Self:Sized</code> clause to the
 methods of the trait that would otherwise violate the object safety
@@ -309,7 +316,7 @@ fn baz&lt;T:SomeTrait&gt;(t: &amp;T) {
     let v: T = SomeTrait::new(); // OK
 }
 #}</code></pre></pre>
-<a class="header" href="0255-object-safety.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could continue to check methods rather than traits are
 object-safe. When checking the bounds of a type parameter for a
 function call where the function is called with a trait object, we
@@ -322,9 +329,9 @@ non-object-safe methods from appearing in the trait. For example, we
 might permit <code>fn foo() -&gt; Self</code> because it (implicitly) requires that
 <code>Self</code> be sized. Similarly, we might permit other tests beyond just
 sized-ness. Any such extension would be backwards compatible.</p>
-<a class="header" href="0255-object-safety.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>N/A</p>
-<a class="header" href="0255-object-safety.html#edits" id="edits"><h1>Edits</h1></a>
+<a class="header" href="#edits" id="edits"><h1>Edits</h1></a>
 <ul>
 <li>2014-02-09. Edited by Nicholas Matsakis to (1) include the
 requirement that object-safe traits do not require <code>Self:Sized</code> and
@@ -375,9 +382,6 @@ object safety restrictions.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

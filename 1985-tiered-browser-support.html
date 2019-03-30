@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1985-tiered-browser-support - </title>
+        <title>1985-tiered-browser-support - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1985">rust-lang/rfcs#1985</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/43035">rust-lang/rust#43035</a></li>
 </ul>
-<a class="header" href="1985-tiered-browser-support.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Official web content produced by the Rust teams for consumption by Rust users
 should work in the majority of browsers that Rust users are visiting these
 sites in. The Rust compiler only supports <a href="https://forge.rust-lang.org/platform-support.html">a finite number of targets</a>,
@@ -148,7 +155,7 @@ testing resources. Similarly, we don't have enough time, expertise and testing
 resources to be sure that our web content works in every version of every
 browser. We should have a list of browsers and versions in various tiers of
 support.</p>
-<a class="header" href="1985-tiered-browser-support.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p><a href="https://github.com/rust-lang/rust/pull/41307">This pull request to remove JQuery from rustdoc's output</a> had
 discussion about what we could and could not do because of browser support.
 This is a discussion we haven't yet had as a community.</p>
@@ -172,8 +179,8 @@ give us, and we'd at least be spending time waiting for test results on the
 various stacks. <a href="https://www.browserstack.com/support">BrowserStack also doesn't support every platform</a>,
 Linux on the desktop being a notable section of our userbase missing from their
 platforms.</p>
-<a class="header" href="1985-tiered-browser-support.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1985-tiered-browser-support.html#rust-web-content" id="rust-web-content"><h2>Rust web content</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#rust-web-content" id="rust-web-content"><h2>Rust web content</h2></a>
 <p>Officially produced web content includes:</p>
 <ul>
 <li>rust-lang.org</li>
@@ -200,11 +207,11 @@ almost-official Rust web content:</p>
 <li>Discourse (used for <a href="https://users.rust-lang.org/">urlo</a> and <a href="https://internals.rust-lang.org/">irlo</a>)</li>
 <li><a href="https://github.com/azerupi/mdBook/">mdBook</a> output (used for the books and other documentation)</li>
 </ul>
-<a class="header" href="1985-tiered-browser-support.html#proposed-browser-support-tiers" id="proposed-browser-support-tiers"><h2>Proposed browser support tiers</h2></a>
-<p>Based on <a href="1985-tiered-browser-support.html#google-analytics-browser-usage-stats">actual usage metrics</a> and with a goal of spending our time in an
+<a class="header" href="#proposed-browser-support-tiers" id="proposed-browser-support-tiers"><h2>Proposed browser support tiers</h2></a>
+<p>Based on <a href="#google-analytics-browser-usage-stats">actual usage metrics</a> and with a goal of spending our time in an
 effective way, the browser support tiers would be defined as:</p>
 <p>Browsers are listed in <a href="https://github.com/ai/browserslist">browserslist</a> format.</p>
-<a class="header" href="1985-tiered-browser-support.html#supported-browsers" id="supported-browsers"><h3>Supported browsers</h3></a>
+<a class="header" href="#supported-browsers" id="supported-browsers"><h3>Supported browsers</h3></a>
 <p>Goal: Ensure functionality of our web content for 80% of users.</p>
 <p>Browsers:</p>
 <pre><code>last 2 Chrome versions
@@ -225,7 +232,7 @@ aren't currently tested, such as rustdoc output).</li>
 <li>Bugs affecting the functionality of the sites in these browsers are
 prioritized highly.</li>
 </ul>
-<a class="header" href="1985-tiered-browser-support.html#unsupported-browsers" id="unsupported-browsers"><h3>Unsupported browsers</h3></a>
+<a class="header" href="#unsupported-browsers" id="unsupported-browsers"><h3>Unsupported browsers</h3></a>
 <p>Goal: Avoid spending large amounts of time and code complexity debugging and
 hacking around quirks in older or more obscure browsers.</p>
 <p>Browsers:</p>
@@ -240,7 +247,7 @@ hacking around quirks in older or more obscure browsers.</p>
 they're deemed to not add an inordinate amount of complexity or maintenance
 burden (subjective, reviewers' judgment).</li>
 </ul>
-<a class="header" href="1985-tiered-browser-support.html#orthogonal-but-related-non-proposals" id="orthogonal-but-related-non-proposals"><h2>Orthogonal but related non-proposals</h2></a>
+<a class="header" href="#orthogonal-but-related-non-proposals" id="orthogonal-but-related-non-proposals"><h2>Orthogonal but related non-proposals</h2></a>
 <p>The following principles are assumptions I'm making that we currently follow
 and that we should continue to strive for, no matter what browser support
 policy we end up with:</p>
@@ -264,10 +271,10 @@ links and forms for progressive enhancement as much as possible.</li>
 </ul>
 <p>Please comment if you think any of these should <strong>not</strong> be assumed, but rest
 assured it is not the intent of this RFC to get rid of these kinds of support.</p>
-<a class="header" href="1985-tiered-browser-support.html#relevant-data" id="relevant-data"><h1>Relevant data</h1></a>
+<a class="header" href="#relevant-data" id="relevant-data"><h1>Relevant data</h1></a>
 <p><a href="http://caniuse.com/usage-table">CanIUse.com</a> has some statistics on global usage of browsers and versions,
 but our audience (developers) isn't the same as the general public.</p>
-<a class="header" href="1985-tiered-browser-support.html#google-analytics-browser-usage-stats" id="google-analytics-browser-usage-stats"><h2>Google analytics browser usage stats</h2></a>
+<a class="header" href="#google-analytics-browser-usage-stats" id="google-analytics-browser-usage-stats"><h2>Google analytics browser usage stats</h2></a>
 <p>We have Google Analytics on crates.io and on rust-lang.org. The entire data set
 of the usage stats by browser, browser verison, and OS are available <a href="https://docs.google.com/spreadsheets/d/1qgszm-_-Tn8FLi2v3vicuvyct3Grzz74JWcroILRq8s/edit?usp=sharing">in this
 Google sheet</a> for the visits to crates.io in the last month. I chose
@@ -295,7 +302,7 @@ rust-lang.org were less varied than the top 90% of visits to crates.io.</p>
 will also be an ESR but it was just released). Firefox 52 was the current major
 version for most of this past month; I'm guessing the early adopters of 53 and
 54 are likely Mozilla employees.</p>
-<a class="header" href="1985-tiered-browser-support.html#what-do-other-sites-in-our-niche-support" id="what-do-other-sites-in-our-niche-support"><h2>What do other sites in our niche support?</h2></a>
+<a class="header" href="#what-do-other-sites-in-our-niche-support" id="what-do-other-sites-in-our-niche-support"><h2>What do other sites in our niche support?</h2></a>
 <ul>
 <li><a href="https://help.github.com/articles/supported-browsers/">GitHub</a> - Current versions of Chrome, Firefox, Safari, Edge and IE 11.
 Best effort for Firefox ESR.</li>
@@ -303,18 +310,18 @@ Best effort for Firefox ESR.</li>
 8+, Android 4.3+ (doesn't specify which browser on the devices, doesn't look
 like they've updated these numbers in a while)</li>
 </ul>
-<a class="header" href="1985-tiered-browser-support.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>We should call this &quot;Rust Browser Support&quot;, and we should have the tiers listed
 on the Rust Forge in a similar way to the tiers of Rust platforms supported.</p>
 <p>We should link to the tiered browser support page from places where Rust web
 content is developed and on the <a href="https://www.rust-lang.org/en-US/faq.html">Rust FAQ</a>.</p>
-<a class="header" href="1985-tiered-browser-support.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>We exclude some people who are unwilling or unable to use a modern browser.</p>
-<a class="header" href="1985-tiered-browser-support.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could adopt the tiers proposed above but with different browser versions.</p>
 <p>We could adopt the browsers proposed above but with different levels of support.</p>
 <p>Other alternatives:</p>
-<a class="header" href="1985-tiered-browser-support.html#not-have-official-browser-support-tiers-status-quo" id="not-have-official-browser-support-tiers-status-quo"><h2>Not have official browser support tiers (status quo)</h2></a>
+<a class="header" href="#not-have-official-browser-support-tiers-status-quo" id="not-have-official-browser-support-tiers-status-quo"><h2>Not have official browser support tiers (status quo)</h2></a>
 <p>By not creating offical levels of browser support, we will continue to have the
 situation we have today: discussions and decisions are happening that affect
 the level of support that Rust web content has in various browsers, but we
@@ -322,13 +329,13 @@ don't have any agreed-upon guidelines to guide these discussions and decisions.<
 <p>We continue to not test in multiple browsers, instead relying on bug reports
 from users. The people doing the work continue to decide on an ad-hoc basis
 whether a fix is worth making or not.</p>
-<a class="header" href="1985-tiered-browser-support.html#support-all-browsers-in-all-configurations" id="support-all-browsers-in-all-configurations"><h2>Support all browsers in all configurations</h2></a>
+<a class="header" href="#support-all-browsers-in-all-configurations" id="support-all-browsers-in-all-configurations"><h2>Support all browsers in all configurations</h2></a>
 <p>We could choose to attempt to support any version of any browser on any device,
 testing with as much as we can. We would still have to rely on bug reports and
 help from the community to test with some configurations, but we wouldn't close
 any bug report or pull request due to the browser or version required to
 reproduce it.</p>
-<a class="header" href="1985-tiered-browser-support.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Am I missing any official web content that this policy should apply to?</li>
 <li>Is it possible to add browser tests to rustdoc or would that just make the
@@ -378,9 +385,6 @@ current situation of long, flaky rustc builds worse?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

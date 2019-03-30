@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2349-pin - </title>
+        <title>2349-pin - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2349">rust-lang/rfcs#2349</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/49150">rust-lang/rust#49150</a></li>
 </ul>
-<a class="header" href="2349-pin.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce new APIs to libcore / libstd to serve as safe abstractions for data
 which cannot be safely moved around.</p>
-<a class="header" href="2349-pin.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>A longstanding problem for Rust has been dealing with types that should not be
 moved. A common motivation for this is when a struct contains a pointer into
 its own representation - moving that struct would invalidate that pointer. This
@@ -153,7 +160,7 @@ in such a self-referential type, if it is allowed.</p>
 <p>This proposal adds an API to std which would allow you to guarantee that a
 particular value will never move again, enabling safe APIs that rely on
 self-references to exist.</p>
-<a class="header" href="2349-pin.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>The core goal of this RFC is to <strong>provide a reference type where the referent is guaranteed to never move before being dropped</strong>. We want to do this with a minimum disruption to the type system, and in fact, this RFC shows that we can achieve the goal without <em>any</em> type system changes.</p>
 <p>Let's take that goal apart, piece by piece, from the perspective of the futures (i.e. async/await) use case:</p>
 <ul>
@@ -184,8 +191,8 @@ trait Future {
 #}</code></pre></pre>
 <p>By default when implementing <code>Future</code> for a struct, this definition is equivalent to today's, which takes <code>&amp;mut self</code>. But if you want to allow self-referencing in your future, you just opt out of <code>Unpin</code>, and <code>Pin</code> takes care of the rest.</p>
 <p>This RFC also provides a pinned analogy to <code>Box</code> called <code>PinBox&lt;T&gt;</code>. It works along the same lines as the <code>Pin</code> type discussed here - if the type implements <code>Unpin</code>, it functions the same as the unpinned <code>Box</code>; if the type has opted out of <code>Unpin</code>, it guarantees that they type behind the reference will not be moved again.</p>
-<a class="header" href="2349-pin.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2349-pin.html#the-unpin-auto-trait" id="the-unpin-auto-trait"><h2>The <code>Unpin</code> auto trait</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#the-unpin-auto-trait" id="the-unpin-auto-trait"><h2>The <code>Unpin</code> auto trait</h2></a>
 <p>This new auto trait is added to the <code>core::marker</code> and <code>std::marker</code> modules:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -202,7 +209,7 @@ generators. Unlike previous <code>?Move</code> proposals, and unlike some traits
 <code>Sized</code> and <code>Copy</code>, this trait does not impose any compiler-based semantics
 types that do or don't implement it. Instead, the semantics are entirely
 enforced through library APIs which use <code>Unpin</code> as a marker.</p>
-<a class="header" href="2349-pin.html#pin" id="pin"><h2><code>Pin</code></h2></a>
+<a class="header" href="#pin" id="pin"><h2><code>Pin</code></h2></a>
 <p>The <code>Pin</code> struct is added to both <code>core::mem</code> and <code>std::mem</code>. It is a new kind
 of reference, with stronger requirements than <code>&amp;mut T</code></p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -213,7 +220,7 @@ pub struct Pin&lt;'a, T: ?Sized + 'a&gt; {
     data: &amp;'a mut T,
 }
 #}</code></pre></pre>
-<a class="header" href="2349-pin.html#safe-apis" id="safe-apis"><h3>Safe APIs</h3></a>
+<a class="header" href="#safe-apis" id="safe-apis"><h3>Safe APIs</h3></a>
 <p><code>Pin</code> implements <code>Deref</code>, but only implements <code>DerefMut</code> if the type it
 references implements <code>Unpin</code>. This way, it is not safe to call <code>mem::swap</code> or
 <code>mem::replace</code> when the type referenced does not implement <code>Unpin</code>.</p>
@@ -245,7 +252,7 @@ impl&lt;'a, T: ?Sized&gt; Pin&lt;'a, T&gt; {
 <p>It may also implement additional APIs as is useful for type conversions, such
 as <code>AsRef</code>, <code>From</code>, and so on. <code>Pin</code> implements <code>CoerceUnsized</code> as necessary to
 make coercing them into trait objects possible.</p>
-<a class="header" href="2349-pin.html#unsafe-apis" id="unsafe-apis"><h3>Unsafe APIs</h3></a>
+<a class="header" href="#unsafe-apis" id="unsafe-apis"><h3>Unsafe APIs</h3></a>
 <p><code>Pin</code> can be unsafely constructed from mutable references to types that may not
 implement <code>Unpin</code>. Users who use this constructor must know that the type
 they are passing a reference to will never be moved again after the <code>Pin</code> is
@@ -298,7 +305,7 @@ let bar_pin: Pin&lt;Bar&gt; = unsafe {
     Pin::new_unchecked(&amp;mut foo.bar)
 };
 #}</code></pre></pre>
-<a class="header" href="2349-pin.html#pinbox" id="pinbox"><h2><code>PinBox</code></h2></a>
+<a class="header" href="#pinbox" id="pinbox"><h2><code>PinBox</code></h2></a>
 <p>The <code>PinBox</code> type is added to alloc::boxed and std::boxed. It is analogous to
 the <code>Box</code> type in the same way that <code>Pin</code> is analogous to the reference types,
 and it has a similar API.</p>
@@ -310,7 +317,7 @@ pub struct PinBox&lt;T: ?Sized&gt; {
     inner: Box&lt;T&gt;,
 }
 #}</code></pre></pre>
-<a class="header" href="2349-pin.html#safe-api" id="safe-api"><h3>Safe API</h3></a>
+<a class="header" href="#safe-api" id="safe-api"><h3>Safe API</h3></a>
 <p>Unlike <code>Pin</code>, it is safe to construct a <code>PinBox</code> from a <code>T</code> and from a
 <code>Box&lt;T&gt;</code>, even if the type does not implement <code>Unpin</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -350,7 +357,7 @@ impl&lt;T: ?Sized&gt; PinBox&lt;T&gt; {
 implement <code>Unpin</code>. Once you heap allocate that data inside of a <code>PinBox</code>, you
 know that it will never change address again, and you can hand out <code>Pin</code>
 references to that data.</p>
-<a class="header" href="2349-pin.html#unsafe-api" id="unsafe-api"><h3>Unsafe API</h3></a>
+<a class="header" href="#unsafe-api" id="unsafe-api"><h3>Unsafe API</h3></a>
 <p><code>PinBox</code> can be unsafely converted into <code>&amp;mut T</code> and <code>Box&lt;T&gt;</code> even if the type
 it references does not implement <code>Unpin</code>, similar to <code>Pin</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -361,7 +368,7 @@ impl&lt;T: ?Sized&gt; PinBox&lt;T&gt; {
     pub unsafe fn into_inner(this: PinBox&lt;T&gt;) -&gt; Box&lt;T&gt; { ... }
 }
 #}</code></pre></pre>
-<a class="header" href="2349-pin.html#immovable-generators" id="immovable-generators"><h2>Immovable generators</h2></a>
+<a class="header" href="#immovable-generators" id="immovable-generators"><h2>Immovable generators</h2></a>
 <p>Today, the unstable generators feature has an option to create generators which
 contain references that live across yield points - these are, in effect,
 internal references into the generator's state machine. Because internal
@@ -377,12 +384,12 @@ instead of <code>&amp;mut self</code>.</li>
 </ol>
 <p>This is an example of how the APIs in this RFC allow for self-referential data
 types to be created safely.</p>
-<a class="header" href="2349-pin.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This adds additional APIs to std, including an auto trait. Such additions
 should not be taken lightly, and only included if they are well-justified by
 the abstractions they express.</p>
-<a class="header" href="2349-pin.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
-<a class="header" href="2349-pin.html#comparison-to-move" id="comparison-to-move"><h2>Comparison to <code>?Move</code></h2></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#comparison-to-move" id="comparison-to-move"><h2>Comparison to <code>?Move</code></h2></a>
 <p>One previous proposal was to add a built-in <code>Move</code> trait, similar to <code>Sized</code>. A
 type that did not implement <code>Move</code> could not be moved after it had been
 referenced.</p>
@@ -396,7 +403,7 @@ a type that can't be moved had a much broader impact.</p>
 <p>Instead, we require APIs to opt into supporting immovability (a niche case) by
 operating with the <code>Pin</code> type, avoiding &quot;infecting&quot; the basic reference type
 with concerns around immovable types.</p>
-<a class="header" href="2349-pin.html#comparison-to-using-unsafe-apis" id="comparison-to-using-unsafe-apis"><h2>Comparison to using <code>unsafe</code> APIs</h2></a>
+<a class="header" href="#comparison-to-using-unsafe-apis" id="comparison-to-using-unsafe-apis"><h2>Comparison to using <code>unsafe</code> APIs</h2></a>
 <p>Another alternative we've considered was to just have the APIs which require
 immovability be <code>unsafe</code>. It would be up to the users of these APIs to review
 and guarantee that they never moved the self-referential types. For example,
@@ -415,7 +422,7 @@ trait Generator {
 burden on every user who wants to call resume to guarantee (at the risk of
 memory unsafety) that their types were not moved, or that they were movable.
 This seemed like a worse trade off than adding these APIs.</p>
-<a class="header" href="2349-pin.html#anchor-as-a-wrapper-type-and-stablederef" id="anchor-as-a-wrapper-type-and-stablederef"><h2>Anchor as a wrapper type and <code>StableDeref</code></h2></a>
+<a class="header" href="#anchor-as-a-wrapper-type-and-stablederef" id="anchor-as-a-wrapper-type-and-stablederef"><h2>Anchor as a wrapper type and <code>StableDeref</code></h2></a>
 <p>In a previous iteration of this RFC, there was a wrapper type called <code>Anchor</code>
 that could &quot;anchor&quot; any smart pointer, and there was a hierarchy of traits
 relating to the stability of the referent of different pointer types. This has
@@ -433,7 +440,7 @@ access to the smart pointer (unless the referent implements <code>Unpin</code>),
 previous iteration of the RFC. For this reason, replacing <code>Anchor</code> with
 <code>PinBox</code> and just supporting <code>PinBox&lt;[T]&gt;</code> reduced the API complexity without
 losing any expressiveness.</p>
-<a class="header" href="2349-pin.html#stack-pinning-api-potential-future-extension" id="stack-pinning-api-potential-future-extension"><h2>Stack pinning API (potential future extension)</h2></a>
+<a class="header" href="#stack-pinning-api-potential-future-extension" id="stack-pinning-api-potential-future-extension"><h2>Stack pinning API (potential future extension)</h2></a>
 <p>This API supports pinning <code>!Unpin</code> types in the heap. However, they can also
 be safely held in place in the stack, allowing a safe API for creating a <code>Pin</code>
 referencing a stack allocated <code>!Unpin</code> type.</p>
@@ -458,14 +465,14 @@ impl&lt;'a, T&gt; PinTemporary&lt;'a, T&gt; {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2349-pin.html#making-pin-a-built-in-type-potential-future-extension" id="making-pin-a-built-in-type-potential-future-extension"><h2>Making <code>Pin</code> a built-in type (potential future extension)</h2></a>
+<a class="header" href="#making-pin-a-built-in-type-potential-future-extension" id="making-pin-a-built-in-type-potential-future-extension"><h2>Making <code>Pin</code> a built-in type (potential future extension)</h2></a>
 <p>The <code>Pin</code> type could instead be a new kind of first-class reference - <code>&amp;'a pin T</code>. This would have some advantages - it would be trivial to project through
 fields, for example, and &quot;stack pinning&quot; would not require an API, it would be
 natural. However, it has the downside of adding a new reference type, a very
 big language change.</p>
 <p>For now, we're happy to stick with the <code>Pin</code> struct in std, and if this type is
 ever added, turn the <code>Pin</code> type into an alias for the reference type.</p>
-<a class="header" href="2349-pin.html#having-both-pin-and-pinmut" id="having-both-pin-and-pinmut"><h2>Having both <code>Pin</code> and <code>PinMut</code></h2></a>
+<a class="header" href="#having-both-pin-and-pinmut" id="having-both-pin-and-pinmut"><h2>Having both <code>Pin</code> and <code>PinMut</code></h2></a>
 <p>Instead of just having <code>Pin</code>, the type called <code>Pin</code> could instead be <code>PinMut</code>,
 and we could have a type called <code>Pin</code>, which is like <code>PinMut</code>, but only
 contains a shared, immutable reference.</p>
@@ -475,7 +482,7 @@ normal immutable reference does not. If a user needs to pass around references
 to data stored pinned, an <code>&amp;Pin</code> (under the definition of <code>Pin</code> provided in
 this RFC) would suffice. For this reason, the <code>Pin</code>/<code>PinMut</code> distinction
 introduced extra types and complexity without any impactful benefit.</p>
-<a class="header" href="2349-pin.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>In addition to the future extensions discussed above, the APIs of the three pin
 types in std will grow over time as they implement more common conversion
 traits and so on.</p>
@@ -528,9 +535,6 @@ to ensure that a destructor always runs if the memory becomes invalid.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

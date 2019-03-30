@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2145-type-privacy - </title>
+        <title>2145-type-privacy - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2145">rust-lang/rfcs#2145</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/48054">rust-lang/rust#48054</a></li>
 </ul>
-<a class="header" href="2145-type-privacy.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Type privacy rules are documented.<br />
 Private-in-public errors are relaxed and turned into lints.</p>
-<a class="header" href="2145-type-privacy.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Type privacy is implemented, but its rules still need to be documentated and
 explained.</p>
 <p>Private-in-public checker is the previous incarnation of type privacy that
@@ -163,8 +170,8 @@ completely removed.<br />
 Lints, unlike errors, can use heuristics, so &quot;private-in-public&quot; diagnostics can
 match programmer's intuition closer now by using reachability-based heuristics
 instead of just local <code>pub</code> annotations.</p>
-<a class="header" href="2145-type-privacy.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
-<a class="header" href="2145-type-privacy.html#type-privacy" id="type-privacy"><h2>Type privacy</h2></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#type-privacy" id="type-privacy"><h2>Type privacy</h2></a>
 <p>Type privacy ensures that a type private to some module cannot be used outside
 of this module (unless anonymized) without a privacy error.<br />
 This is similar to more familiar name privacy ensuring that private items or
@@ -259,7 +266,7 @@ fn f&lt;T: m::Alias&gt;() { ... }
 #}</code></pre></pre>
 <p>(Trait objects are considered types, so they are covered by previous
 paragraphs.)</p>
-<a class="header" href="2145-type-privacy.html#private-in-public-lints" id="private-in-public-lints"><h2>Private-in-public lints</h2></a>
+<a class="header" href="#private-in-public-lints" id="private-in-public-lints"><h2>Private-in-public lints</h2></a>
 <p>Previously type privacy was ensured by so called private-in-public errors,
 that worked preventively.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -316,7 +323,7 @@ be public, or <code>f</code> is supposed to be private. It would be nice to diag
 cases like this, but to avoid &quot;false positives&quot; like the previous example with
 <code>outer</code>/<code>inner</code>.<br />
 Meet reachability-based private-in-public <em>lints</em>!</p>
-<a class="header" href="2145-type-privacy.html#lint-1-private-types-in-primary-interface-of-effectively-public-items" id="lint-1-private-types-in-primary-interface-of-effectively-public-items"><h3>Lint #1: Private types in primary interface of effectively public items</h3></a>
+<a class="header" href="#lint-1-private-types-in-primary-interface-of-effectively-public-items" id="lint-1-private-types-in-primary-interface-of-effectively-public-items"><h3>Lint #1: Private types in primary interface of effectively public items</h3></a>
 <p>Effective visibility of an item is how far it's actually reexported or leaked
 through other means, like return types.<br />
 Effective visibility can never be larger than nominal visibility (i.e. what
@@ -345,7 +352,7 @@ outer modules due to type privacy (primary interface is considered part of the
 type when type privacy is checked), so it's very desirable to warn about this
 situation in advance and this lint needs to be at least warn-by-default.</p>
 <p>Provisional name for the lint - <code>private_interfaces</code>.</p>
-<a class="header" href="2145-type-privacy.html#lint-2-private-traitstypes-in-secondary-interface-of-effectively-public-items" id="lint-2-private-traitstypes-in-secondary-interface-of-effectively-public-items"><h3>Lint #2: Private traits/types in secondary interface of effectively public items</h3></a>
+<a class="header" href="#lint-2-private-traitstypes-in-secondary-interface-of-effectively-public-items" id="lint-2-private-traitstypes-in-secondary-interface-of-effectively-public-items"><h3>Lint #2: Private traits/types in secondary interface of effectively public items</h3></a>
 <p>This lint is reported if private types or traits are found in trait bounds or
 <code>where</code> clauses of an effectively public item.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -370,7 +377,7 @@ backward-compatibly.<br />
 This lint replaces part of private-in-public errors and can be reported as
 warn-by-default or allow-by-default.</p>
 <p>Provisional name for the lint - <code>private_bounds</code>.</p>
-<a class="header" href="2145-type-privacy.html#lint-3-voldemort-types-its-reachable-but-i-cant-name-it" id="lint-3-voldemort-types-its-reachable-but-i-cant-name-it"><h3>Lint #3: &quot;Voldemort types&quot; (it's reachable, but I can't name it)</h3></a>
+<a class="header" href="#lint-3-voldemort-types-its-reachable-but-i-cant-name-it" id="lint-3-voldemort-types-its-reachable-but-i-cant-name-it"><h3>Lint #3: &quot;Voldemort types&quot; (it's reachable, but I can't name it)</h3></a>
 <p>Consider this code</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -397,14 +404,14 @@ checking that many people <em>expected</em> from private-in-public.<br />
 The lint should be allow-by-default or it can be placed into Clippy as an
 alternative.</p>
 <p>Provisional name for the lint - <code>unnameable_types</code>.</p>
-<a class="header" href="2145-type-privacy.html#lint-4-private_in_public" id="lint-4-private_in_public"><h3>Lint #4: <code>private_in_public</code></h3></a>
+<a class="header" href="#lint-4-private_in_public" id="lint-4-private_in_public"><h3>Lint #4: <code>private_in_public</code></h3></a>
 <p>Some private-in-public erros are currently reported as a lint
 <code>private_in_public</code> for compatibility reasons.<br />
 This compatibility lint will be removed and its uses will be reported as
 warnings by <code>renamed_and_removed_lints</code>.</p>
-<a class="header" href="2145-type-privacy.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2145-type-privacy.html#type-privacy-1" id="type-privacy-1"><h2>Type privacy</h2></a>
-<a class="header" href="2145-type-privacy.html#how-to-determine-visibility-of-a-type" id="how-to-determine-visibility-of-a-type"><h3>How to determine visibility of a type?</h3></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#type-privacy-1" id="type-privacy-1"><h2>Type privacy</h2></a>
+<a class="header" href="#how-to-determine-visibility-of-a-type" id="how-to-determine-visibility-of-a-type"><h3>How to determine visibility of a type?</h3></a>
 <ul>
 <li>Built-in types are considered <code>pub</code> (integer and floating point types, <code>bool</code>,
 <code>char</code>, <code>str</code>, <code>!</code>).</li>
@@ -456,7 +463,7 @@ parameters and the method's nominal visibility.<br />
 </li>
 <li>&quot;Infer me&quot; types <code>_</code> are replaced with their inferred types before checking.</li>
 </ul>
-<a class="header" href="2145-type-privacy.html#the-type-privacy-rule" id="the-type-privacy-rule"><h3>The type privacy rule</h3></a>
+<a class="header" href="#the-type-privacy-rule" id="the-type-privacy-rule"><h3>The type privacy rule</h3></a>
 <p>A type or a trait private to module <code>m</code> (<code>vis(in m)</code>) cannot be used outside of
 that module (<code>vis(outside) &gt; vis(in m)</code>).<br />
 Uses include naming this type or trait (possibly through aliases) or obtaining
@@ -466,7 +473,7 @@ So it's possible for a macro 2.0 to name some private type without causing name
 privacy errors, but it will still be reported as a type privacy violation.<br />
 This can be partially relaxed in the future, but such relaxations are out of
 scope for this RFC.</p>
-<a class="header" href="2145-type-privacy.html#additional-restrictions-for-associated-items" id="additional-restrictions-for-associated-items"><h3>Additional restrictions for associated items</h3></a>
+<a class="header" href="#additional-restrictions-for-associated-items" id="additional-restrictions-for-associated-items"><h3>Additional restrictions for associated items</h3></a>
 <p>For technical reasons it's not always desirable or possible to fully normalize
 associated types before checking them for privacy.<br />
 So, if we see <code>&lt;Type as Trait&gt;::AssocType</code> we can guaranteedly check only <code>Type</code>
@@ -532,7 +539,7 @@ let x: &lt;Pub&lt;_&gt; as Trait&gt;::A;
 privacy rule - &quot;can't name a private type&quot; - if all <code>_</code>s (types to infer,
 explicit or implicit) are replaced by their inferred types before checking, so
 <code>Pub</code> and <code>Pub&lt;_&gt;</code> in the examples above become <code>Pub&lt;Priv&gt;</code>.</p>
-<a class="header" href="2145-type-privacy.html#lints" id="lints"><h3>Lints</h3></a>
+<a class="header" href="#lints" id="lints"><h3>Lints</h3></a>
 <p>Effective visibility of an item is determined by a module into which it can be
 leaked through</p>
 <ul>
@@ -563,7 +570,7 @@ reexports, or through trivial type aliases (<code>type X = Y;</code>, no generic
 sides).<br />
 This lint is allow-by-default.</p>
 <p>Compatibility lint <code>private_in_public</code> is never reported and removed.</p>
-<a class="header" href="2145-type-privacy.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>With</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -579,14 +586,14 @@ though.<br />
 <code>rustdoc</code> may be not fully prepared to document items with private traits in
 bounds, manually written documentation explaining how to use the interface
 may be required.</p>
-<a class="header" href="2145-type-privacy.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
 <p>Names for the lints are subject to bikeshedding.</p>
 <p><code>private_interfaces</code> and <code>private_bounds</code> can be merged into one lint.
 The rationale for keeping them separate is different probabilities
 of errors in case of lint violations.<br />
 The first lint indicates an almost guaranteed error on client side,
 the second one is more in the &quot;missing documentation&quot; category.</p>
-<a class="header" href="2145-type-privacy.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>It's not fully clear if the restriction for associated type definitions required for
 type privacy soundness, or it's just a workaround for a technical difficulty.</p>
 <p>Interactions between macros 2.0 and the notions of reachability / effective
@@ -635,9 +642,6 @@ visibility used for the lints are unclear.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

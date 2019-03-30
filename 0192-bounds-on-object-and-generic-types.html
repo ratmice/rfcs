@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0192-bounds-on-object-and-generic-types - </title>
+        <title>0192-bounds-on-object-and-generic-types - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/192">rust-lang/rfcs#192</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/16462">rust-lang/rust#16462</a></li>
 </ul>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <ul>
 <li>Remove the special-case bound <code>'static</code> and replace with a generalized
 <em>lifetime bound</em> that can be used on objects and type parameters.</li>
@@ -151,15 +158,15 @@ the lifetime <code>'a</code> outlives the lifetime <code>'b</code>. These exist 
 are always inferred; this RFC adds the ability to specify them
 explicitly, which is sometimes needed in more complex cases.</li>
 </ul>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, the type system is not supposed to allow references to
 escape into object types. However, there are various bugs where it
 fails to prevent this from happening. Moreover, it is very useful (and
 frequently necessary) to store a reference into an object. Moreover,
 the current treatment of generic types is in some cases naive and not
 obviously sound.</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#lifetime-bounds-on-parameters" id="lifetime-bounds-on-parameters"><h2>Lifetime bounds on parameters</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#lifetime-bounds-on-parameters" id="lifetime-bounds-on-parameters"><h2>Lifetime bounds on parameters</h2></a>
 <p>The heart of the new design is the concept of a <em>lifetime bound</em>. In fact,
 this (sort of) exists today in the form of the <code>'static</code> bound:</p>
 <pre><code> fn foo&lt;A:'static&gt;(x: A) { ... }
@@ -199,7 +206,7 @@ declared:</p>
 </code></pre>
 <p>Here, the constraint <code>T:'a</code> indicates that the data being iterated
 over must live at least as long as the collection (logically enough).</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#lifetime-bounds-on-object-types" id="lifetime-bounds-on-object-types"><h2>Lifetime bounds on object types</h2></a>
+<a class="header" href="#lifetime-bounds-on-object-types" id="lifetime-bounds-on-object-types"><h2>Lifetime bounds on object types</h2></a>
 <p>Like parameters, all object types have a lifetime bound. Unlike
 parameter types, however, object types are <em>required</em> to have exactly
 one bound. This bound can be either specified explicitly or derived
@@ -246,7 +253,7 @@ type WriterRef&lt;'a&gt; = &amp;'a (Writer+'a);
 the burden.</p>
 <p>See Appendix B for the motivation on why object types are permitted to
 have exactly one lifetime bound.</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#specifying-relations-between-lifetimes" id="specifying-relations-between-lifetimes"><h2>Specifying relations between lifetimes</h2></a>
+<a class="header" href="#specifying-relations-between-lifetimes" id="specifying-relations-between-lifetimes"><h2>Specifying relations between lifetimes</h2></a>
 <p>Currently, when a type or fn has multiple lifetime parameters, there
 is no facility to explicitly specify a relationship between them. For
 example, in a function like this:</p>
@@ -263,7 +270,7 @@ them explicitly (and necessary in some cases, see below).</p>
 </code></pre>
 <p>that would indicate that the lifetime '<code>x</code> was shorter than (or equal
 to) <code>'y</code>.</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#the-type-must-outlive-and-well-formedness-relation" id="the-type-must-outlive-and-well-formedness-relation"><h2>The &quot;type must outlive&quot; and well-formedness relation</h2></a>
+<a class="header" href="#the-type-must-outlive-and-well-formedness-relation" id="the-type-must-outlive-and-well-formedness-relation"><h2>The &quot;type must outlive&quot; and well-formedness relation</h2></a>
 <p>Many of the rules to come make use of a &quot;type must outlive&quot; relation,
 written <code>T outlives 'a</code>. This relation means primarily that all
 borrowed data in <code>T</code> is known to have a lifetime of at least '<code>a</code>
@@ -292,11 +299,11 @@ WF(SomeTrait+'static : 'a) = ['static : 'a]
 // Object type with bound 'a 
 WF(SomeTrait+'a : 'b) = ['a : 'b]
 </code></pre>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#rules-for-when-object-closure-is-legal" id="rules-for-when-object-closure-is-legal"><h2>Rules for when object closure is legal</h2></a>
+<a class="header" href="#rules-for-when-object-closure-is-legal" id="rules-for-when-object-closure-is-legal"><h2>Rules for when object closure is legal</h2></a>
 <p>Whenever data of type <code>T</code> is closed over to form an object, the type
 checker will require that <code>T outlives 'a</code> where <code>'a</code> is the primary
 lifetime bound of the object type.</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#rules-for-types-to-be-well-formed" id="rules-for-types-to-be-well-formed"><h2>Rules for types to be well-formed</h2></a>
+<a class="header" href="#rules-for-types-to-be-well-formed" id="rules-for-types-to-be-well-formed"><h2>Rules for types to be well-formed</h2></a>
 <p>Currently we do not apply any tests to the types that appear in type
 declarations. Per RFC 11, however, this should change, as we intend to
 enforce trait bounds on types, wherever those types appear. Similarly,
@@ -310,11 +317,11 @@ well-formed if <code>T:'a</code>. Per usual practice, this RFC does not propose
 any form of inference on struct declarations and instead requires all
 conditions to be spelled out (this is in contrast to fns and methods,
 see below).</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#rules-for-expression-type-validity" id="rules-for-expression-type-validity"><h2>Rules for expression type validity</h2></a>
+<a class="header" href="#rules-for-expression-type-validity" id="rules-for-expression-type-validity"><h2>Rules for expression type validity</h2></a>
 <p>We should add the condition that for every expression with lifetime
 <code>'e</code> and type <code>T</code>, then <code>T outlives 'e</code>. We already enforce this in
 many special cases but not uniformly.</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#inference" id="inference"><h2>Inference</h2></a>
+<a class="header" href="#inference" id="inference"><h2>Inference</h2></a>
 <p>The compiler will infer lifetime bounds on both type parameters and
 region parameters as follows. Within a function or method, we apply
 the wellformedness function <code>WF</code> to each function or parameter type.
@@ -345,7 +352,7 @@ iterators).</p>
 <p>Note that this sort of inference is already done. This RFC simply
 proposes a more extensive version that also includes bounds of the
 form <code>X:'a</code>, where <code>X</code> is a type parameter.</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#what-does-all-this-mean-in-practice" id="what-does-all-this-mean-in-practice"><h1>What does all this mean in practice?</h1></a>
+<a class="header" href="#what-does-all-this-mean-in-practice" id="what-does-all-this-mean-in-practice"><h1>What does all this mean in practice?</h1></a>
 <p>This RFC has a lot of details. The main implications for end users are:</p>
 <ol>
 <li>
@@ -383,7 +390,7 @@ struct LocalContext&lt;'local, 'global:'local&gt; {
 order for this type to be well-formed.</p>
 </li>
 </ol>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#phasing" id="phasing"><h1>Phasing</h1></a>
+<a class="header" href="#phasing" id="phasing"><h1>Phasing</h1></a>
 <p>Some parts of this RFC require new syntax and thus must be phased in.
 The current plan is to divide the implementation three parts:</p>
 <ol>
@@ -405,12 +412,12 @@ gate <code>issue_5723_bootstrap</code>.</li>
 snapshot. Parts 1 and 2 have largely been written. Depending on
 precisely how the timing works out, it might make sense to just merge
 parts 1 and 3.</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#drawbacks--alternatives" id="drawbacks--alternatives"><h1>Drawbacks / Alternatives</h1></a>
+<a class="header" href="#drawbacks--alternatives" id="drawbacks--alternatives"><h1>Drawbacks / Alternatives</h1></a>
 <p>If we do not implement some solution, we could continue with the
 current approach (but patched to be sound) of banning references from
 being closed over in object types. I consider this a non-starter.</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#inferring-wellformedness-bounds" id="inferring-wellformedness-bounds"><h2>Inferring wellformedness bounds</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#inferring-wellformedness-bounds" id="inferring-wellformedness-bounds"><h2>Inferring wellformedness bounds</h2></a>
 <p>Under this RFC, it is required to write bounds on struct types which are
 in principle inferable from their contents. For example, iterators
 tend to follow a pattern like:</p>
@@ -427,7 +434,7 @@ potentially be addressed with better error messages, though our track
 record for lifetime error messages is not very good so far.</p>
 <p>Also, there is a potential interaction between this sort of inference
 and the description of default trait bounds below.</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#default-trait-bounds" id="default-trait-bounds"><h2>Default trait bounds</h2></a>
+<a class="header" href="#default-trait-bounds" id="default-trait-bounds"><h2>Default trait bounds</h2></a>
 <p>When referencing a trait object, it is almost <em>always</em> the case that one follows
 certain fixed patterns:</p>
 <ul>
@@ -466,7 +473,7 @@ is just to disable the <code>'static</code> default that would otherwise be
 inserted.</p>
 </li>
 </ul>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#appendix-definition-of-the-outlives-relation-and-well-formedness" id="appendix-definition-of-the-outlives-relation-and-well-formedness"><h1>Appendix: Definition of the outlives relation and well-formedness</h1></a>
+<a class="header" href="#appendix-definition-of-the-outlives-relation-and-well-formedness" id="appendix-definition-of-the-outlives-relation-and-well-formedness"><h1>Appendix: Definition of the outlives relation and well-formedness</h1></a>
 <p>To make this more specific, we can &quot;formally&quot; model the Rust type
 system as:</p>
 <pre><code>T = scalar (int, uint, fn(...))   // Boring stuff
@@ -515,7 +522,7 @@ formulations and does not represent a loss of expressiveness.</li>
 </ul>
 <p>We can then say that <code>T outlives 'a</code> if all lifetime relations
 returned by <code>WF(T:'a)</code> hold.</p>
-<a class="header" href="0192-bounds-on-object-and-generic-types.html#appendix-b-why-object-types-must-have-exactly-one-bound" id="appendix-b-why-object-types-must-have-exactly-one-bound"><h1>Appendix B: Why object types must have exactly one bound</h1></a>
+<a class="header" href="#appendix-b-why-object-types-must-have-exactly-one-bound" id="appendix-b-why-object-types-must-have-exactly-one-bound"><h1>Appendix B: Why object types must have exactly one bound</h1></a>
 <p>The motivation is that handling multiple bounds is overwhelmingly
 complicated to reason about and implement. In various places,
 constraints arise of the form <code>all i. exists j. R[i] &lt;= R[j]</code>, where
@@ -591,9 +598,6 @@ constraint of the form <code>all i. exists j.</code>.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

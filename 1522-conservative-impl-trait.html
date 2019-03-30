@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1522-conservative-impl-trait - </title>
+        <title>1522-conservative-impl-trait - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1522">rust-lang/rfcs#1522</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/34511">rust-lang/rust#34511</a></li>
 </ul>
-<a class="header" href="1522-conservative-impl-trait.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add a conservative form of abstract return types, also known as <code>impl Trait</code>, that will be compatible with most possible future extensions
 by initially being restricted to:</p>
 <ul>
@@ -164,7 +171,7 @@ for x in foo(10) {
     // x = 0, 100, 200, ...
 }
 #}</code></pre></pre>
-<a class="header" href="1522-conservative-impl-trait.html#background" id="background"><h1>Background</h1></a>
+<a class="header" href="#background" id="background"><h1>Background</h1></a>
 <p>There has been much discussion around the <code>impl Trait</code> feature already, with
 different proposals extending the core idea into different directions:</p>
 <ul>
@@ -182,7 +189,7 @@ step requires resolving some of the core questions raised in
 <p>This RFC is closest in spirit to the
 <a href="https://github.com/rust-lang/rfcs/pull/105">original RFC</a>, and we'll repeat
 its motivation and some other parts of its text below.</p>
-<a class="header" href="1522-conservative-impl-trait.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <blockquote>
 <p>Why are we doing this? What use cases does it support? What is the expected outcome?</p>
 </blockquote>
@@ -262,14 +269,14 @@ kind of iterator they produce.</p>
 <p>In short, unboxed abstract types make it easy for a function signature to
 promise nothing more than a trait bound, and do not generally require the
 function's author to write down the concrete type implementing the bound.</p>
-<a class="header" href="1522-conservative-impl-trait.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>As explained at the start of the RFC, the focus here is a relatively narrow
 introduction of abstract types limited to the return type of inherent methods
 and free functions. While we still need to resolve some of the core questions
 about what an &quot;abstract type&quot; means even in these cases, we avoid some of the
 complexities that come along with allowing the feature in other locations or
 with other extensions.</p>
-<a class="header" href="1522-conservative-impl-trait.html#syntax" id="syntax"><h2>Syntax</h2></a>
+<a class="header" href="#syntax" id="syntax"><h2>Syntax</h2></a>
 <p>Let's start with the bikeshed: The proposed syntax is <code>impl Trait</code> in return type
 position, composing like trait objects to forms like <code>impl Foo + Send + 'a</code>.</p>
 <p>It can be explained as &quot;a type that implements <code>Trait</code>&quot;,
@@ -282,7 +289,7 @@ changed back to the current form.</p>
 good reasons for or against them, but since the concrete choice of syntax
 is not a blocker for the implementation of this RFC, it is intended for
 a possible follow-up RFC to address syntax changes if needed.</p>
-<a class="header" href="1522-conservative-impl-trait.html#semantics" id="semantics"><h2>Semantics</h2></a>
+<a class="header" href="#semantics" id="semantics"><h2>Semantics</h2></a>
 <p>The core semantics of the feature is described below.</p>
 <p>Note that the sections after this one go into more detail on some of the design
 decisions, and that <strong>it is likely for many of the mentioned limitations to be
@@ -394,8 +401,8 @@ fn sum_to(n: u32) -&gt; impl Display {
 </ul>
 </li>
 </ul>
-<a class="header" href="1522-conservative-impl-trait.html#rationale" id="rationale"><h2>Rationale</h2></a>
-<a class="header" href="1522-conservative-impl-trait.html#why-these-semantics-for-the-return-type" id="why-these-semantics-for-the-return-type"><h3>Why these semantics for the return type?</h3></a>
+<a class="header" href="#rationale" id="rationale"><h2>Rationale</h2></a>
+<a class="header" href="#why-these-semantics-for-the-return-type" id="why-these-semantics-for-the-return-type"><h3>Why these semantics for the return type?</h3></a>
 <p>There has been a lot of discussion about what the semantics of the return type
 should be, with the theoretical extremes being &quot;full return type inference&quot; and
 &quot;fully abstract type that behaves like a autogenerated newtype wrapper&quot;. (This
@@ -406,7 +413,7 @@ allows OIBITs to leak through, and allows specialization to &quot;see&quot; the 
 being returned. That is, <code>impl Trait</code> does not attempt to be a &quot;tightly sealed&quot;
 abstraction boundary. The rationale for this design is a mixture of pragmatics
 and principles.</p>
-<a class="header" href="1522-conservative-impl-trait.html#specialization-transparency" id="specialization-transparency"><h4>Specialization transparency</h4></a>
+<a class="header" href="#specialization-transparency" id="specialization-transparency"><h4>Specialization transparency</h4></a>
 <p><strong>Principles for specialization transparency</strong>:</p>
 <p>The <a href="https://github.com/rust-lang/rfcs/pull/1210">specialization RFC</a> has given
 us a basic principle for how to understand bounds in function generics: they
@@ -430,7 +437,7 @@ break through abstractions with more efficient special-case code.</p>
 returning <code>impl Iterator</code>. We are very likely to employ specialization for various
 iterator types, and making the underlying return type invisible to
 specialization would lose out on those efficiency wins.</p>
-<a class="header" href="1522-conservative-impl-trait.html#oibit-transparency" id="oibit-transparency"><h4>OIBIT transparency</h4></a>
+<a class="header" href="#oibit-transparency" id="oibit-transparency"><h4>OIBIT transparency</h4></a>
 <p>OIBITs leak through an abstract return type. This might be considered controversial, since
 it effectively opens a channel where the result of function-local type inference affects
 item-level API, but has been deemed worth it for the following reasons:</p>
@@ -462,7 +469,7 @@ definitions.)</p>
 <p>But since the number of used OIBITs is relatively small, deducing the return type
 in a function body and reasoning about whether such a breakage will occur has
 been deemed as a manageable amount of work.</p>
-<a class="header" href="1522-conservative-impl-trait.html#wherefore-type-abstraction" id="wherefore-type-abstraction"><h4>Wherefore type abstraction?</h4></a>
+<a class="header" href="#wherefore-type-abstraction" id="wherefore-type-abstraction"><h4>Wherefore type abstraction?</h4></a>
 <p>In the <a href="https://github.com/rust-lang/rfcs/pull/1305">most recent RFC</a> related to
 this feature, a more &quot;tightly sealed&quot; abstraction mechanism was
 proposed. However, part of the discussion on specialization centered on
@@ -472,21 +479,21 @@ primary mechanism for hiding
 (<a href="https://github.com/rust-lang/rfcs/pull/1210#issuecomment-181992044">&quot;privacy is the new parametricity&quot;</a>). In
 practice, that means that if you want opacity against specialization, you should
 use something like a newtype.</p>
-<a class="header" href="1522-conservative-impl-trait.html#anonymity" id="anonymity"><h3>Anonymity</h3></a>
+<a class="header" href="#anonymity" id="anonymity"><h3>Anonymity</h3></a>
 <p>A abstract return type cannot be named in this proposal, which means that it
 cannot be placed into <code>structs</code> and so on. This is not a fundamental limitation
 in any sense; the limitation is there both to keep this RFC simple, and because
 the precise way we might want to allow naming of such types is still a bit
 unclear. Some possibilities include a <code>typeof</code> operator, or explicit named
 abstract types.</p>
-<a class="header" href="1522-conservative-impl-trait.html#limitation-to-only-return-type-position" id="limitation-to-only-return-type-position"><h3>Limitation to only return type position</h3></a>
+<a class="header" href="#limitation-to-only-return-type-position" id="limitation-to-only-return-type-position"><h3>Limitation to only return type position</h3></a>
 <p>There have been various proposed additional places where abstract types
 might be usable. For example, <code>fn x(y: impl Trait)</code> as shorthand for
 <code>fn x&lt;T: Trait&gt;(y: T)</code>.</p>
 <p>Since the exact semantics and user experience for these locations are yet
 unclear (<code>impl Trait</code> would effectively behave completely different before and after
 the <code>-&gt;</code>), this has also been excluded from this proposal.</p>
-<a class="header" href="1522-conservative-impl-trait.html#type-transparency-in-recursive-functions" id="type-transparency-in-recursive-functions"><h3>Type transparency in recursive functions</h3></a>
+<a class="header" href="#type-transparency-in-recursive-functions" id="type-transparency-in-recursive-functions"><h3>Type transparency in recursive functions</h3></a>
 <p>Functions with abstract return types can not see through their own return type,
 making code like this not compile:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -523,11 +530,11 @@ fn sum_to(n: u32) -&gt; impl Display {
     sum_to_(n)
 }
 #}</code></pre></pre>
-<a class="header" href="1522-conservative-impl-trait.html#not-legal-in-function-pointersclosure-traits" id="not-legal-in-function-pointersclosure-traits"><h3>Not legal in function pointers/closure traits</h3></a>
+<a class="header" href="#not-legal-in-function-pointersclosure-traits" id="not-legal-in-function-pointersclosure-traits"><h3>Not legal in function pointers/closure traits</h3></a>
 <p>Because <code>impl Trait</code> defines a type tied to the concrete function body,
 it does not make much sense to talk about it separately in a function signature,
 so the syntax is forbidden there.</p>
-<a class="header" href="1522-conservative-impl-trait.html#compatibility-with-conditional-trait-bounds" id="compatibility-with-conditional-trait-bounds"><h3>Compatibility with conditional trait bounds</h3></a>
+<a class="header" href="#compatibility-with-conditional-trait-bounds" id="compatibility-with-conditional-trait-bounds"><h3>Compatibility with conditional trait bounds</h3></a>
 <p>One valid critique for the existing <code>impl Trait</code> proposal is that it does not
 cover more complex scenarios where the return type would implement
 one or more traits depending on whether a type parameter does so with another.</p>
@@ -544,7 +551,7 @@ impl&lt;I: DoubleEndedIterator&gt; DoubleEndedIterator for SkipOne&lt;I&gt; { ..
 <p>Using just <code>-&gt; impl Iterator</code>, this would not be possible to reproduce.</p>
 <p>Since there have been no proposals so far that would address this in a way
 that would conflict with the fixed-trait-set case, this RFC punts on that issue as well.</p>
-<a class="header" href="1522-conservative-impl-trait.html#limitation-to-freeinherent-functions" id="limitation-to-freeinherent-functions"><h3>Limitation to free/inherent functions</h3></a>
+<a class="header" href="#limitation-to-freeinherent-functions" id="limitation-to-freeinherent-functions"><h3>Limitation to free/inherent functions</h3></a>
 <p>One important usecase of abstract return types is to use them in trait methods.</p>
 <p>However, there is an issue with this, namely that in combinations with generic
 trait methods, they are effectively equivalent to higher kinded types.
@@ -598,11 +605,11 @@ it is not yet possible to reach a concrete solution here.</p>
 a abstract return type is its own thing or sugar for a associated type,
 how it interacts with other associated items and so on,
 so forbidding them in traits seems like the best initial course of action.</p>
-<a class="header" href="1522-conservative-impl-trait.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <blockquote>
 <p>Why should we <em>not</em> do this?</p>
 </blockquote>
-<a class="header" href="1522-conservative-impl-trait.html#drawbacks-due-to-the-proposals-minimalism" id="drawbacks-due-to-the-proposals-minimalism"><h2>Drawbacks due to the proposal's minimalism</h2></a>
+<a class="header" href="#drawbacks-due-to-the-proposals-minimalism" id="drawbacks-due-to-the-proposals-minimalism"><h2>Drawbacks due to the proposal's minimalism</h2></a>
 <p>As has been elaborated on above, there are various way this feature could be
 extended and combined with the language, so implementing it might cause issues
 down the road if limitations or incompatibilities become apparent. However,
@@ -615,14 +622,14 @@ understand the feature in a highly special-cased way, rather than as a general
 way to talk about unknown-but-bounded types in function signatures. This could
 be particularly bewildering to newcomers, who must choose between <code>T: Trait</code>,
 <code>Box&lt;Trait&gt;</code>, and <code>impl Trait</code>, with the latter only usable in one place.</p>
-<a class="header" href="1522-conservative-impl-trait.html#drawbacks-due-to-partial-transparency" id="drawbacks-due-to-partial-transparency"><h2>Drawbacks due to partial transparency</h2></a>
+<a class="header" href="#drawbacks-due-to-partial-transparency" id="drawbacks-due-to-partial-transparency"><h2>Drawbacks due to partial transparency</h2></a>
 <p>The fact that specialization and OIBITs can &quot;see through&quot; <code>impl Trait</code> may be
 surprising, to the extent that one wants to see <code>impl Trait</code> as an abstraction
 mechanism. However, as the RFC argued in the rationale section, this design is
 probably the most consistent with our existing post-specialization abstraction
 mechanisms, and lead to the relatively simple story that <em>privacy</em> is the way to
 achieve hiding in Rust.</p>
-<a class="header" href="1522-conservative-impl-trait.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <blockquote>
 <p>What other designs have been considered? What is the impact of not doing this?</p>
 </blockquote>
@@ -631,7 +638,7 @@ repeat here.</p>
 <p>But basically, without this feature certain things remain hard or impossible to do
 in Rust, like returning a efficiently usable type parameterized by
 types private to a function body, for example an iterator adapter containing a closure.</p>
-<a class="header" href="1522-conservative-impl-trait.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <blockquote>
 <p>What parts of the design are still to be determined?</p>
 </blockquote>
@@ -683,9 +690,6 @@ have to typecheck the function body to determine which OIBITs apply).</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

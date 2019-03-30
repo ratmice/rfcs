@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2325-stable-simd - </title>
+        <title>2325-stable-simd - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2325">rust-lang/rfcs#2325</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/48556">rust-lang/rust#48556</a></li>
 </ul>
-<a class="header" href="2325-stable-simd.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>The purpose of this RFC is to provide a framework for SIMD to be used on stable
 Rust. It proposes stabilizing x86-specific vendor intrinsics, but includes the
 scaffolding for other platforms as well as a future portable SIMD design (to be
 fleshed out in another RFC).</p>
-<a class="header" href="2325-stable-simd.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Stable Rust today does not typically expose all of the capabilities of the
 platform that you're running on. A notable gap in Rust's support includes SIMD
 (single instruction multiple data) support. For example on x86 you don't
@@ -166,7 +173,7 @@ and the <a href="https://github.com/rust-lang-nursery/stdsimd">stdsimd</a> crate
 around SIMD in Rust and is targeted at providing path forward for using SIMD on
 stable Rust while allowing the compiler to change in the future and retain a
 stable interface.</p>
-<a class="header" href="2325-stable-simd.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>Let's say you've just heard about this fancy feature called &quot;auto vectorization&quot;
 in LLVM and you want to take advantage of it. For example you've got a function
 like this you'd like to make faster:</p>
@@ -330,13 +337,13 @@ than <code>std::arch</code>.</li>
 </ul>
 <p>The design around these portable types are ongoing, however, and stay tuned for
 an RFC for the <code>std::simd</code> module!</p>
-<a class="header" href="2325-stable-simd.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>Stable SIMD in Rust ends up requiring a surprising number of both language and
 library features to be productive. Thankfully, though, there's has been quite a
 bit of experimentation over time with SIMD in Rust and we've gotten a lot of
 good experience along the way! In this section, though, we'll be going into the
 various features in detail.</p>
-<a class="header" href="2325-stable-simd.html#the-target_feature-attribute" id="the-target_feature-attribute"><h2>The <code>#[target_feature]</code> Attribute</h2></a>
+<a class="header" href="#the-target_feature-attribute" id="the-target_feature-attribute"><h2>The <code>#[target_feature]</code> Attribute</h2></a>
 <p>The <code>#[target_feature]</code> attribute was specified in <a href="https://github.com/rust-lang/rfcs/blob/master/text/2045-target-feature.md">RFC 2045</a> and
 remains unchanged from that specification. As a quick recap it allows you to add
 this attribute to functions:</p>
@@ -383,7 +390,7 @@ For reasons discussed later, it's proposed that MMX types are omitted from the
 first pass of stabilization. AMD also has some specific features supported
 (<code>sse4a</code>, <code>tbm</code>), and so do ARM, MIPS, and PowerPC, but none of these feature
 names a proposed for becoming stable in the first pass.</p>
-<a class="header" href="2325-stable-simd.html#the-target_feature-value-in-cfg" id="the-target_feature-value-in-cfg"><h2>The <code>target_feature</code> value in <code>#[cfg]</code></h2></a>
+<a class="header" href="#the-target_feature-value-in-cfg" id="the-target_feature-value-in-cfg"><h2>The <code>target_feature</code> value in <code>#[cfg]</code></h2></a>
 <p>In addition to enabling target features for a function the compiler will also
 allow statically testing whether a particular target feature is enabled. This
 corresponds to the <code>cfg_target_feature</code> feature today in rustc, and can be seen
@@ -412,7 +419,7 @@ if cfg!(target_feature = &quot;avx&quot;) {
 <p>The <code>#[cfg]</code> attribute and <code>cfg!</code> macro statically resolve and <strong>do not do
 runtime dispatch</strong>. Tweaking these functions is currently done via the <code>-C target-feature</code> flag to the compiler. This flag to the compiler accepts a
 similar set of strings to the ones specified above and is already &quot;stable&quot;.</p>
-<a class="header" href="2325-stable-simd.html#the-is_target_feature_detected-macro" id="the-is_target_feature_detected-macro"><h2>The <code>is_target_feature_detected!</code> Macro</h2></a>
+<a class="header" href="#the-is_target_feature_detected-macro" id="the-is_target_feature_detected-macro"><h2>The <code>is_target_feature_detected!</code> Macro</h2></a>
 <p>One mode of operation with intrinsics is to compile <em>part</em> of a program with
 certain CPU features enabled but not the entire program. This way a portable
 program can be compiled which runs across a broad range of hardware which can
@@ -465,7 +472,7 @@ where it is possible to do CPU feature detection in libcore (as it's just the
 <code>cpuid</code> instruction), but for consistency across platforms the macro will only
 be available in libstd for now. This placement can of course be relaxed in the
 future if necessary.</p>
-<a class="header" href="2325-stable-simd.html#the-stdarch-module" id="the-stdarch-module"><h2>The <code>std::arch</code> Module</h2></a>
+<a class="header" href="#the-stdarch-module" id="the-stdarch-module"><h2>The <code>std::arch</code> Module</h2></a>
 <p>This is where the real meat is. A new module will be added to the standard
 library, <code>std::arch</code>. This module will also be available in <code>core::arch</code>
 (and <code>std</code> will simply reexport it). The contents of this module provide no
@@ -524,7 +531,7 @@ their way into the main Rust repository. For example there are not currently any
 implemented AVX-512 intrinsics, but that doesn't mean we won't implement them!
 Rather once implemented they'll be stabilized and included in libstd following
 the Rust release model.</p>
-<a class="header" href="2325-stable-simd.html#the-types-in-stdarch" id="the-types-in-stdarch"><h2>The types in <code>std::arch</code></h2></a>
+<a class="header" href="#the-types-in-stdarch" id="the-types-in-stdarch"><h2>The types in <code>std::arch</code></h2></a>
 <p>It's worth paying close attention to the types in <code>std::arch</code>. Types like
 <code>__m128i</code> are intended to represent a 128-bit packed SIMD register on x86, but
 there's nothing stopping you from using types like <code>Option&lt;__m128i&gt;</code> in your
@@ -548,7 +555,7 @@ SIMD arguments are passed across boundaries and whatnot.</p>
 <p>Again though, note that this section is largely an implementation detail of SIMD
 in Rust today, though it's enabling usage without a lot of codegen errors
 popping up all over the place.</p>
-<a class="header" href="2325-stable-simd.html#intrinsics-in-stdarch-and-constant-arguments" id="intrinsics-in-stdarch-and-constant-arguments"><h2>Intrinsics in <code>std::arch</code> and constant arguments</h2></a>
+<a class="header" href="#intrinsics-in-stdarch-and-constant-arguments" id="intrinsics-in-stdarch-and-constant-arguments"><h2>Intrinsics in <code>std::arch</code> and constant arguments</h2></a>
 <p>There are a number of intrinsics on x86 (and other) platforms that require their
 arguments to be constants rather than decided at runtime. For example
 <a href="https://software.intel.com/sites/landingpage/IntrinsicsGuide/#text=insert_pi&amp;expand=2973"><code>_mm_insert_pi16</code></a> requires its third argument to be a
@@ -566,7 +573,7 @@ a direct invocation.</p>
 <p>It's hoped that this restriction will allow <code>stdsimd</code> to be forward compatible
 with a future const-powered world of Rust but in the meantime not otherwise
 block stabilization of these intrinsics.</p>
-<a class="header" href="2325-stable-simd.html#portable-packed-simd" id="portable-packed-simd"><h2>Portable packed SIMD</h2></a>
+<a class="header" href="#portable-packed-simd" id="portable-packed-simd"><h2>Portable packed SIMD</h2></a>
 <p>So-called &quot;portable&quot; packed SIMD types are currently implemented in both the
 <a href="https://github.com/rust-lang-nursery/stdsimd">stdsimd</a> and <a href="https://github.com/rust-lang-nursery/simd">simd</a> crates. These types look like <code>u8x16</code> and
 explicitly specify how many lanes they have (16 in this case) and what type each
@@ -593,7 +600,7 @@ types.</li>
 decoupled from intrinsics. If they both end up being implemented then
 there will be jkro-cost interoperation between them, but neither
 will necessarily depend on the other.</p>
-<a class="header" href="2325-stable-simd.html#not-stabilizing-mmx-in-this-rfc" id="not-stabilizing-mmx-in-this-rfc"><h2>Not stabilizing MMX in this RFC</h2></a>
+<a class="header" href="#not-stabilizing-mmx-in-this-rfc" id="not-stabilizing-mmx-in-this-rfc"><h2>Not stabilizing MMX in this RFC</h2></a>
 <p>This RFC proposed notably omitting the MMX intrinsics, or those related to
 <code>__m64</code> in other words. The MMX type <code>__m64</code> and the intrinsics have been
 somewhat problematic in a number of ways. Known cases include:</p>
@@ -605,7 +612,7 @@ somewhat problematic in a number of ways. Known cases include:</p>
 <p>Due to these issues having an unclear conclusion as well as a seeming lack of
 desire to stabilize MMX intrinsics, the <code>__m64</code> and all related intrinsics
 <strong>will not be stabilized</strong> via this RFC.</p>
-<a class="header" href="2325-stable-simd.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This RFC represents a <em>significant</em> addition to the standard library, maybe one
 of the largest we've ever done! As a result alternate implementations of Rust
 will likely have a difficult time catching up to rustc/LLVM with all the SIMD
@@ -618,13 +625,13 @@ infeasible to carefully review each addition in isolation. While there are a
 number of automatic verifications in place we're likely to inevitably make a
 mistake when stabilizing something. <em>Fixing</em> a stabilization can often be quite
 difficult and costly.</p>
-<a class="header" href="2325-stable-simd.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>Over the years quite a few iterations have happened for SIMD in Rust. This RFC
 draws from as many of those as it can and attempts to strike a balance between
 exposing functionality while still allowing us to implement everything in a
 stable fashion for years to come (and without blocking us from updating LLVM,
 for example). Despite this there's a few alternatives we could do as well.</p>
-<a class="header" href="2325-stable-simd.html#portable-types-in-architecture-interfaces" id="portable-types-in-architecture-interfaces"><h2>Portable types in architecture interfaces</h2></a>
+<a class="header" href="#portable-types-in-architecture-interfaces" id="portable-types-in-architecture-interfaces"><h2>Portable types in architecture interfaces</h2></a>
 <p>It was initially attempted in the <a href="https://github.com/rust-lang-nursery/stdsimd">stdsimd</a> crate that we would use the portable
 types on all of the intrinsics. For example instead of:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -658,7 +665,7 @@ what Intel does and attempt to find the most appropriate type.</p>
 <p>There is interest by both current <code>stdsimd</code> maintainers and users to expose
 a &quot;better-typed&quot; SIMD API in crates.io that builds on top of the intrinsics
 proposed for stabilization here.</p>
-<a class="header" href="2325-stable-simd.html#stabilizing-simd-implementation-details" id="stabilizing-simd-implementation-details"><h2>Stabilizing SIMD implementation details</h2></a>
+<a class="header" href="#stabilizing-simd-implementation-details" id="stabilizing-simd-implementation-details"><h2>Stabilizing SIMD implementation details</h2></a>
 <p>Another alternative to the bulk of this RFC is allowing more raw access to the
 internals of LLVM. For example stabilizing <code>#[repr(simd)]</code> or the ability to
 write <code>extern &quot;platform-intrinsics&quot; { ... }</code> or <code>#[link_llvm_intrinsic...]</code>.
@@ -676,11 +683,11 @@ alternate backends than in LLVM's.</li>
 <p>As a result, it's intended that instead of exposing raw building blocks (and
 allowing <code>stdsimd</code> to live on crates.io) we'll instead pull in <code>stdsimd</code> to the
 standard library and expose it as the stable interface to SIMD in Rust.</p>
-<a class="header" href="2325-stable-simd.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>There's a number of unresolved questions around stabilizing SIMD today which
 don't pose serious blockers and may also wish to be considered open bugs rather
 than blocking stabilization:</p>
-<a class="header" href="2325-stable-simd.html#relying-on-unexported-llvm-apis" id="relying-on-unexported-llvm-apis"><h2>Relying on unexported LLVM APIs</h2></a>
+<a class="header" href="#relying-on-unexported-llvm-apis" id="relying-on-unexported-llvm-apis"><h2>Relying on unexported LLVM APIs</h2></a>
 <p>The static detection performed by <code>cfg!</code> and <code>#[cfg]</code> currently relies on a
 <a href="https://github.com/rust-lang/llvm/commit/68e1e29618b2bd094d82faac16cf8e89959bbd68">Rust-specific patch to LLVM</a>. LLVM internal knows all about
 hierarchies of features and such. For example if you compile with <code>-C target-feature=+avx2</code> then <code>cfg!(target_feature = &quot;sse2&quot;)</code> also needs to resolve
@@ -696,7 +703,7 @@ or <code>-C target-cpu</code> flags.</p>
 this regard. It's an option for rustc to do the same but it may also be an
 option to expose the information in upstream LLVM. So far there appears to have
 been no attempts to upstream this patch into LLVM itself.</p>
-<a class="header" href="2325-stable-simd.html#packed-simd-types-in-extern-functions-are-not-sound" id="packed-simd-types-in-extern-functions-are-not-sound"><h2>Packed SIMD types in <code>extern</code> functions are not sound</h2></a>
+<a class="header" href="#packed-simd-types-in-extern-functions-are-not-sound" id="packed-simd-types-in-extern-functions-are-not-sound"><h2>Packed SIMD types in <code>extern</code> functions are not sound</h2></a>
 <p>The packed SIMD types have particular care paid to them with respect to their
 ABI in Rust and how they're passed between functions, notably to ensure that
 they work properly throughout Rust programs. The &quot;fix&quot; to pass them in memory
@@ -707,7 +714,7 @@ other function ABIs.</p>
 implement a &quot;lint&quot; or a compiler error of sorts to forbid this situation in the
 short term. We could also possibly accept this as a known bug for the time
 being.</p>
-<a class="header" href="2325-stable-simd.html#what-if-were-wrong" id="what-if-were-wrong"><h2>What if we're wrong?</h2></a>
+<a class="header" href="#what-if-were-wrong" id="what-if-were-wrong"><h2>What if we're wrong?</h2></a>
 <p>Despite the CI infrastructure of the <code>stdsimd</code> crate it seems inevitable that
 we'll get an intrinsic wrong at some point. What do we do in a situation like
 that? This situation is somewhat analagous to the <code>libc</code> crate but there you can
@@ -760,9 +767,6 @@ always the best...</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1506-adt-kinds - </title>
+        <title>1506-adt-kinds - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,20 +146,20 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1506">rust-lang/rfcs#1506</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/35626">rust-lang/rust#35626</a></li>
 </ul>
-<a class="header" href="1506-adt-kinds.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Provide a simple model describing three kinds of structs and variants and their relationships.<br />
 Provide a way to match on structs/variants in patterns regardless of their kind (<code>S{..}</code>).<br />
 Permit tuple structs and tuple variants with zero fields (<code>TS()</code>).</p>
-<a class="header" href="1506-adt-kinds.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>There's some mental model lying under the current implementation of ADTs, but it is not written
 out explicitly and not implemented completely consistently.
 Writing this model out helps to identify its missing parts.
 Some of this missing parts turn out to be practically useful.
 This RFC can also serve as a piece of documentation.</p>
-<a class="header" href="1506-adt-kinds.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The text below mostly talks about structures, but almost everything is equally applicable to
 variants.</p>
-<a class="header" href="1506-adt-kinds.html#braced-structs" id="braced-structs"><h2>Braced structs</h2></a>
+<a class="header" href="#braced-structs" id="braced-structs"><h2>Braced structs</h2></a>
 <p>Braced structs are declared with braces (unsurprisingly).</p>
 <pre><code>struct S {
     field1: Type1,
@@ -170,7 +177,7 @@ expressions/patterns can be used with type aliases).
 Fields of a braced struct can be accessed with dot syntax <code>s.field1</code>.</p>
 <p>Note: struct <em>variants</em> are currently defined in the value namespace in addition to type namespace,
 there are no particular reasons for this and this is probably temporary.</p>
-<a class="header" href="1506-adt-kinds.html#unit-structs" id="unit-structs"><h2>Unit structs</h2></a>
+<a class="header" href="#unit-structs" id="unit-structs"><h2>Unit structs</h2></a>
 <p>Unit structs are defined without any fields or brackets.</p>
 <pre><code>struct US;
 </code></pre>
@@ -194,7 +201,7 @@ defined (so these expressions/patterns cannot be used with type aliases).</p>
 to <code>match</code> exhaustiveness), but it's a close approximation.<br />
 Note 2: the constant is pretty weirdly namespaced in case of unit <em>variants</em>, constants can't be
 defined in &quot;enum modules&quot; manually.</p>
-<a class="header" href="1506-adt-kinds.html#tuple-structs" id="tuple-structs"><h2>Tuple structs</h2></a>
+<a class="header" href="#tuple-structs" id="tuple-structs"><h2>Tuple structs</h2></a>
 <p>Tuple structs are declared with parentheses.</p>
 <pre><code>struct TS(Type0, Type1, Type2);
 </code></pre>
@@ -228,7 +235,7 @@ on the additional knowledge, that <code>TS</code> is a constructor.</p>
 lexically (they are integer literals), so such fields can't be defined manually.<br />
 Note 2: the constructor function is not exactly a <code>fn</code> item, there are subtle differences (e.g. with
 regards to privacy checks), but it's a close approximation.</p>
-<a class="header" href="1506-adt-kinds.html#summary-of-the-changes" id="summary-of-the-changes"><h2>Summary of the changes.</h2></a>
+<a class="header" href="#summary-of-the-changes" id="summary-of-the-changes"><h2>Summary of the changes.</h2></a>
 <p>Everything related to braced structs and unit structs is already implemented.</p>
 <p>New: Permit tuple structs and tuple variants with 0 fields. This restriction is artificial and can
 be lifted trivially. Macro writers dealing with tuple structs/variants will be happy to get rid of
@@ -253,11 +260,11 @@ for braces structs (<code>ExprStruct</code>/<code>PatKind::Struct</code>), tuple
 (<code>ExprCall</code>/<code>PatKind::TupleStruct</code>) and unit structs (<code>ExprPath</code>/<code>PatKind::Path</code>). With proposed
 changes <code>#[derive]</code> could simplify its logic and always generate braced forms for expressions and
 patterns.</p>
-<a class="header" href="1506-adt-kinds.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>None.</p>
-<a class="header" href="1506-adt-kinds.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>None.</p>
-<a class="header" href="1506-adt-kinds.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -303,9 +310,6 @@ patterns.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

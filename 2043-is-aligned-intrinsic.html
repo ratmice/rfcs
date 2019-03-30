@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2043-is-aligned-intrinsic - </title>
+        <title>2043-is-aligned-intrinsic - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2043">rust-lang/rfcs#2043</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44488">rust-lang/rust#44488</a></li>
 </ul>
-<a class="header" href="2043-is-aligned-intrinsic.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add an intrinsic (<code>fn align_offset(ptr: *const (), align: usize) -&gt; usize</code>)
 which returns the number of bytes that need to be skipped in order to correctly align the
 pointer <code>ptr</code> to <code>align</code>.</p>
@@ -149,7 +156,7 @@ The method simplifies the common use case, returning
 the unaligned prefix, the aligned center part and the unaligned trailing elements.
 The function is unsafe because it produces a <code>&amp;U</code> to the memory location of a <code>T</code>,
 which might expose padding bytes or violate invariants of <code>T</code> or <code>U</code>.</p>
-<a class="header" href="2043-is-aligned-intrinsic.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The standard library (and most likely many crates) use code like</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -165,8 +172,8 @@ but it also makes it impossible for <code>miri</code> to evaluate such statement
 means that <code>miri</code> cannot do utf8-checking, since that code contains such
 optimizations. Without utf8-checking, Rustc's future const evaluation would not
 be able to convert a <code>[u8]</code> into a <code>str</code>.</p>
-<a class="header" href="2043-is-aligned-intrinsic.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="2043-is-aligned-intrinsic.html#supporting-intrinsic" id="supporting-intrinsic"><h2>supporting intrinsic</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#supporting-intrinsic" id="supporting-intrinsic"><h2>supporting intrinsic</h2></a>
 <p>Add a new intrinsic</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -199,7 +206,7 @@ fn align_offset(ptr: *const (), align: usize) -&gt; usize {
 #}</code></pre></pre>
 <p>The <code>align</code> parameter must be a power of two and smaller than <code>2^32</code>.
 Usually one should pass in the result of an <code>align_of</code> call.</p>
-<a class="header" href="2043-is-aligned-intrinsic.html#standard-library-functions" id="standard-library-functions"><h2>standard library functions</h2></a>
+<a class="header" href="#standard-library-functions" id="standard-library-functions"><h2>standard library functions</h2></a>
 <p>Add a new method <code>align_offset</code> to <code>*const T</code> and <code>*mut T</code>, which forwards to the
 <code>align_offset</code> intrinsic.</p>
 <p>Add two new methods <code>align_to</code> and <code>align_to_mut</code> to the slice type.</p>
@@ -251,8 +258,8 @@ unsafe fn align_to&lt;U&gt;(&amp;self) -&gt; (&amp;[T], &amp;[U], &amp;[T]) {
 cannot rely on any behaviour except that the <code>&amp;[U]</code>'s elements are correctly
 aligned and that all bytes of the original slice are present in the resulting
 three slices.</p>
-<a class="header" href="2043-is-aligned-intrinsic.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
-<a class="header" href="2043-is-aligned-intrinsic.html#by-example" id="by-example"><h2>By example</h2></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#by-example" id="by-example"><h2>By example</h2></a>
 <p>On most platforms alignment is a well known concept independent of Rust.
 Currently unsafe Rust code doing alignment checks needs to reproduce the known
 patterns from C, which are hard to read and prone to errors when modified later.</p>
@@ -268,7 +275,7 @@ slices are used</li>
 </ul>
 </li>
 </ol>
-<a class="header" href="2043-is-aligned-intrinsic.html#example-1-pointers" id="example-1-pointers"><h3>Example 1 (pointers)</h3></a>
+<a class="header" href="#example-1-pointers" id="example-1-pointers"><h3>Example 1 (pointers)</h3></a>
 <p>The standard library uses an alignment optimization for quickly
 skipping over ascii code during utf8 checking a byte slice. The current code
 looks as follows:</p>
@@ -292,7 +299,7 @@ let align = unsafe {
     ptr.offset(index).align_offset(usize_bytes)
 };
 #}</code></pre></pre>
-<a class="header" href="2043-is-aligned-intrinsic.html#example-2-slices" id="example-2-slices"><h2>Example 2 (slices)</h2></a>
+<a class="header" href="#example-2-slices" id="example-2-slices"><h2>Example 2 (slices)</h2></a>
 <p>The <code>memchr</code> impl in the standard library explicitly uses the three phases of
 the <code>align_to</code> functions:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -377,7 +384,7 @@ if let Some(index) = position {
 // find the byte in the trailing unaligned part
 tail.iter().position(|elt| *elt == x).map(|i| head.len() + mid.len() + i)
 #}</code></pre></pre>
-<a class="header" href="2043-is-aligned-intrinsic.html#documentation" id="documentation"><h2>Documentation</h2></a>
+<a class="header" href="#documentation" id="documentation"><h2>Documentation</h2></a>
 <p>A lint could be added to <code>clippy</code> which detects hand-written alignment checks and
 suggests to use the <code>align_to</code> function instead.</p>
 <p>The <code>std::mem::align</code> function's documentation should point to <code>[T]::align_to</code>
@@ -385,14 +392,14 @@ in order to increase the visibility of the function. The documentation of
 <code>std::mem::align</code> should note that it is unidiomatic to manually align pointers,
 since that might not be supported on all platforms and is prone to implementation
 errors.</p>
-<a class="header" href="2043-is-aligned-intrinsic.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>None known to the author.</p>
-<a class="header" href="2043-is-aligned-intrinsic.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="2043-is-aligned-intrinsic.html#duplicate-functions-without-optimizations-for-miri" id="duplicate-functions-without-optimizations-for-miri"><h2>Duplicate functions without optimizations for miri</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#duplicate-functions-without-optimizations-for-miri" id="duplicate-functions-without-optimizations-for-miri"><h2>Duplicate functions without optimizations for miri</h2></a>
 <p>Miri could intercept calls to functions known to do alignment checks on pointers
 and roll its own implementation for them. This doesn't scale well and is prone
 to errors due to code duplication.</p>
-<a class="header" href="2043-is-aligned-intrinsic.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>produce a lint in case <code>sizeof&lt;T&gt;() % sizeof&lt;U&gt;() != 0</code> and in case the expansion
 is not part of a monomorphisation, since in that case <code>align_to</code> is statically
@@ -442,9 +449,6 @@ known to never be effective</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2437-rustfmt-stability - </title>
+        <title>2437-rustfmt-stability - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,17 +146,17 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2437">rust-lang/rfcs#2437</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/54504">rust-lang/rust#54504</a></li>
 </ul>
-<a class="header" href="2437-rustfmt-stability.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>With any luck, Rustfmt 1.0 will happen very soon. The Rust community takes promises of stability very seriously, and Rustfmt (due to being a tool as well as a library) has some interesting constraints on stability. Users should be able to update Rustfmt without hurting their workflow. Where it is used in scripts or on CI, updating Rustfmt should not cause operational errors or unexpected failure.</p>
 <p>Some changes would clearly be non-breaking (e.g., performance improvements) or clearly breaking (e.g., removing an API function or changing formatting in violation of the specification). However, there is a large grey area of changes (e.g., changing unspecified formatting) that must be addressed so that Rustfmt can evolve without hurting users.</p>
 <p>The goal is for formatting to only ever change when a user deliberately upgrades Rustfmt. For a project using Rustfmt, the version of Rustfmt (and thus the exact formatting) can be controlled by some artifact which can be checked-in to version control; thus all project developers and continuous integration will have the same formatting (until Rustfmt is explicitly upgraded).</p>
 <p>I propose handling versioning internally in Rustfmt, by formatting according to the rules of previous versions and having users opt-in to breaking changes.</p>
-<a class="header" href="2437-rustfmt-stability.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Instability is annoying.</p>
 <p>One particularly tricky use case is Rustfmt being used to check formatting in CI. Here, we are not (with the current standard installation path) in control of exactly which version of Rustfmt is run, but if formatting varies between versions then the CI check will give a false negative, which will be infuriating for contributors and maintainers (there is already evidence of this blocking the continuous use of Rustfmt).</p>
 <p>For users running Rustfmt locally, having formatting change frequently is distracting and produces confusing diffs. It is important that the formatting done locally by a developer matches the formatting checked on the CI - if the version of Rustfmt changes and formatting changes too, then the developer could have run Rustfmt but still fail CI. Finally, a big motivator for an automated formatting tool like Rustfmt is that formatting is consistent across the community. This benefit is harmed if different projects are using different versions of Rustfmt with different formatting.</p>
 <p>Rustfmt has a programmatic API (the RLS is a major client), the usual backwards compatibility concerns apply here.</p>
-<a class="header" href="2437-rustfmt-stability.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>If you're using Rustfmt, formatting won't change without an explicit upgrade (i.e., a major version increase). This covers all formatting to all code, subject to the following restrictions:</p>
 <ul>
 <li>using the default options</li>
@@ -160,32 +167,32 @@
 <p>Furthermore, any program which depends on Rustfmt and uses it's API, or script that runs Rustfmt in any stable configuration will continue to build and run after an update.</p>
 <p>I do expect that there will be major version increments to Rustfmt (i.e., there will be a 2.0 some day). However, I hope these are rare and infrequent. I think these can be rare because backwards compatibility is more valuable for most users than slightly better formatting. On the other hand, I think as the language evolves it is likely that preferred formatting idioms will change, and that when Rustfmt can do more (for example, better format macros or comments), users will want to take advantage of these features.</p>
 <p>If a user uses Rustfmt in CI, I do not propose that they will always be able to update their Rust version without having to update their Rustfmt version, and that may cause some formatting changes. But, it should be a conscious decision by the user to do so, and they should not be <em>surprised</em> by formatting changes.</p>
-<a class="header" href="2437-rustfmt-stability.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2437-rustfmt-stability.html#background" id="background"><h2>Background</h2></a>
-<a class="header" href="2437-rustfmt-stability.html#specification" id="specification"><h3>Specification</h3></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#background" id="background"><h2>Background</h2></a>
+<a class="header" href="#specification" id="specification"><h3>Specification</h3></a>
 <p>Rustfmt's formatting has been specified in the <a href="https://github.com/rust-lang-nursery/fmt-rfcs">formatting RFC process</a> by the Rust community style team. The guidelines are described by <a href="https://github.com/rust-lang/rfcs/pull/2436">RFC 2436</a>. The guide aims to be complete and precise, however, it does not aim to totally constrain how a tool formats Rust code. In particular, it allows tools some freedom in formatting 'small' instances of some items in a more compact format. It also does not totally specify the interaction of nested items, especially expressions.</p>
 <p>For example, the guide specifies how a method call and a chain of field field access are formatted across both single and multiple lines. However, if a chain of field accesses is nested inside a method call, and the whole expression does not fit on one line, it does not specify whether the method call or the field access or both should use the multiple line form.</p>
 <p>In terms of the implementation, there are <a href="https://github.com/rust-lang-nursery/rustfmt#limitations">limitations</a> on Rustfmt 1.0; for example, Rustfmt will not format comments or many macros. The stability guidelines proposed here apply to all code, not just the code which Rustfmt can format.</p>
-<a class="header" href="2437-rustfmt-stability.html#use-cases" id="use-cases"><h3>Use cases</h3></a>
-<a class="header" href="2437-rustfmt-stability.html#general-use" id="general-use"><h4>General use</h4></a>
+<a class="header" href="#use-cases" id="use-cases"><h3>Use cases</h3></a>
+<a class="header" href="#general-use" id="general-use"><h4>General use</h4></a>
 <p>Either on the command line (<code>rustfmt</code> or <code>cargo fmt</code>) or via an editor (where format-on-save is a common work flow).</p>
 <p>Major changes to formatting are distracting and pollute diffs. Changing command line options might break scripts or editor integration.</p>
 <p>Users can typically choose when to update (<code>rustup update</code>), but might be constrained by the toolchain they are using (i.e., they have a minimum Rustfmt version which supports the Rust version they are using). If they use Rustfmt via the RLS, then the version is dependent on the RLS version, not Rustfmt (see below).</p>
-<a class="header" href="2437-rustfmt-stability.html#ci" id="ci"><h4>CI</h4></a>
+<a class="header" href="#ci" id="ci"><h4>CI</h4></a>
 <p>Any formatting change could cause erroneous CI errors. Ideally, users want to avoid a long build of Rustfmt, but relying on Rustup means getting the latest version of Rustfmt. Effectively, cannot control when an update happens. Important that developers can get the same results locally as on the CI, or it becomes impossible to land patches.</p>
-<a class="header" href="2437-rustfmt-stability.html#api-clients" id="api-clients"><h4>API clients</h4></a>
+<a class="header" href="#api-clients" id="api-clients"><h4>API clients</h4></a>
 <p>Can control versioning using Cargo, but there is likely to be pressure from end-users to have an up to date version. API breaking changes would cause build errors. Formatting changes might break tests.</p>
-<a class="header" href="2437-rustfmt-stability.html#options" id="options"><h4>Options</h4></a>
+<a class="header" href="#options" id="options"><h4>Options</h4></a>
 <p>Rustfmt can be configured with <a href="https://github.com/rust-lang-nursery/rustfmt/blob/master/Configurations.md">many options</a> from the command line and a config file (rustfmt.toml). Options can be stable or unstable. Unstable options can only be used on the nightly toolchain and require opt-in with the <code>--unstable-features</code> command line flag. All options have default values and users are strongly encouraged to use these defaults.</p>
 <p>There is currently an unstable <code>required_version</code> option which enforces that the program is being formatted with a given version of Rustfmt, however, there is no mechanism to get the specified version.</p>
-<a class="header" href="2437-rustfmt-stability.html#distribution-and-versioning" id="distribution-and-versioning"><h3>Distribution and versioning</h3></a>
+<a class="header" href="#distribution-and-versioning" id="distribution-and-versioning"><h3>Distribution and versioning</h3></a>
 <p>Rustfmt can be built and run <a href="https://github.com/rust-lang-nursery/rustfmt">from source</a>, but requires a nightly toolchain. It can be used as a library or installed via Cargo. It is versioned in the usual way (currently 0.6.0). There are two crates on crates.io - <code>rustfmt-nightly</code> is up to date and requires a nightly toolchain, <code>rustfmt</code> is deprecated.</p>
 <p>If using Rustfmt as a tool, the recommended way to install is via Rustup (<code>rustup component add rustfmt-preview</code>). This method does not require a nightly toolchain. Versioning is linked to the Rust toolchain (Rustfmt is not meaningfully versioned outside of the Rust version). The version of Rustfmt available on the nightly channel depends on the version of the rustfmt submodule in the Rust repo. This is manually updated approximately once per week. The version of Rustfmt available on beta and stable is the version on nightly when it became beta. Updates to rustfmt on the beta channel happen occasionally.</p>
 <p>If using Rustup, then there is no way to get a specific version of Rustfmt, only the version associated with a specific version of Rust.</p>
 <p>A common way to use Rustfmt is in an editor via the RLS. The RLS is primarily distributed via Rustup. When installed in this way, the version of Rustfmt used is the same as if Rustfmt were installed directly via Rustup (note that this is the version in the Rust repo submodule and not necessarily the same version as indicated by the RLS's Cargo.toml).</p>
-<a class="header" href="2437-rustfmt-stability.html#definition-of-changes" id="definition-of-changes"><h2>Definition of changes</h2></a>
+<a class="header" href="#definition-of-changes" id="definition-of-changes"><h2>Definition of changes</h2></a>
 <p>In this section we define what constitutes different kinds of breaking change for Rustfmt.</p>
-<a class="header" href="2437-rustfmt-stability.html#api-breaking-change" id="api-breaking-change"><h3>API breaking change</h3></a>
+<a class="header" href="#api-breaking-change" id="api-breaking-change"><h3>API breaking change</h3></a>
 <p>A change that could cause a dependent crate not to build, could break a script using the executable, or breaks specification-level formatting compatibility. A formatting change in this category would be frustrating even for occasional users.</p>
 <p>Examples:</p>
 <ul>
@@ -198,14 +205,14 @@ formatting <em>behaviour</em> of non-default variants is <em>not</em> a breaking
 </ul>
 <p>Any API breaking change will require a major version increment. Changes to formatting at this level (other than bug fixes) will require an amendment to the specification RFC</p>
 <p>An API breaking change would cause a semver major version increment.</p>
-<a class="header" href="2437-rustfmt-stability.html#major-formatting-breaking-change" id="major-formatting-breaking-change"><h3>Major formatting breaking change</h3></a>
+<a class="header" href="#major-formatting-breaking-change" id="major-formatting-breaking-change"><h3>Major formatting breaking change</h3></a>
 <p>Any change which would change the formatting of code which was previously correctly formatted. In particular when run on CI, any change which would cause <code>rustfmt --check</code> to fail where it previously succeeded.</p>
 <p>This only applies to formatting with the default options. It includes bug fixes, and changes at any level of detail or to any kind of code.</p>
 <p>A major formatting breaking change would cause a semver minor version increment, however, users would have to opt-in to the change.</p>
-<a class="header" href="2437-rustfmt-stability.html#minor-formatting-breaking-change" id="minor-formatting-breaking-change"><h3>Minor formatting breaking change</h3></a>
+<a class="header" href="#minor-formatting-breaking-change" id="minor-formatting-breaking-change"><h3>Minor formatting breaking change</h3></a>
 <p>These are changes to formatting which cannot cause regressions for users using default options and stable Rust. That is any change to formatting which only affects formatting with non-default options or only affects code which does not compile with stable Rust.</p>
 <p>A minor formatting breaking change would cause a semver minor version increment.</p>
-<a class="header" href="2437-rustfmt-stability.html#non-breaking-change" id="non-breaking-change"><h3>Non-breaking change</h3></a>
+<a class="header" href="#non-breaking-change" id="non-breaking-change"><h3>Non-breaking change</h3></a>
 <p>These changes cannot cause breakage to any user.</p>
 <p>Examples:</p>
 <ul>
@@ -217,7 +224,7 @@ formatting <em>behaviour</em> of non-default variants is <em>not</em> a breaking
 <li>performance improvements or other non-formatting, non-API changes</li>
 </ul>
 <p>Such changes only require a patch version increment.</p>
-<a class="header" href="2437-rustfmt-stability.html#proposal" id="proposal"><h2>Proposal</h2></a>
+<a class="header" href="#proposal" id="proposal"><h2>Proposal</h2></a>
 <p>Dealing with API breaking changes and non-breaking changes is trivial so won't be covered here.</p>
 <ul>
 <li>Stabilise the <code>required_version</code> option (probably renamed)</li>
@@ -229,12 +236,12 @@ formatting <em>behaviour</em> of non-default variants is <em>not</em> a breaking
 <li>internally, <code>required_version</code> is supported just like other configuration options</li>
 <li>alternative: the version could be specified in Cargo.toml as a dev-dependency/task and passed to rustfmt</li>
 </ul>
-<a class="header" href="2437-rustfmt-stability.html#publishing" id="publishing"><h3>Publishing</h3></a>
+<a class="header" href="#publishing" id="publishing"><h3>Publishing</h3></a>
 <p>Rustfmt can be used via three major channels: via Cargo, via Rustup, and via the RLS. To ensure there are no surprises between the different distribution mechanisms, we will only distribute published versions, i.e., we will not publish a Git commit which does not correspond to a release via Rustup or the RLS.</p>
-<a class="header" href="2437-rustfmt-stability.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>We want to make sure Rustfmt can evolve and stability guarantees make that more complex. However, it is certainly a price worth paying, and we should just ensure that we can still make forwards progress on Rustfmt.</p>
-<a class="header" href="2437-rustfmt-stability.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
-<a class="header" href="2437-rustfmt-stability.html#external-handling" id="external-handling"><h2>External handling</h2></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#external-handling" id="external-handling"><h2>External handling</h2></a>
 <ul>
 <li>Major formatting changes cause a major version increment, minor formatting changes cause a minor version increment
 <ul>
@@ -254,16 +261,16 @@ formatting <em>behaviour</em> of non-default variants is <em>not</em> a breaking
 <li>alternative - rather than use Cargo, have a program dedicated to managing Rustfmt versions</li>
 </ul>
 <p>Rustfmt would have to maintain a branch for every supported release and backport 'necessary' changes. Hopefully we would minimise these - there should be no security fixes, and most bug fixes would be breaking. Anyone who expects to get changes to unstable Rustfmt should be using the latest version, so we shouldn't backport unstable changes. I'm sure there would be some backports though.</p>
-<a class="header" href="2437-rustfmt-stability.html#rationale-for-choosing-internal-handling" id="rationale-for-choosing-internal-handling"><h2>Rationale for choosing internal handling</h2></a>
+<a class="header" href="#rationale-for-choosing-internal-handling" id="rationale-for-choosing-internal-handling"><h2>Rationale for choosing internal handling</h2></a>
 <p>The internal handling approach adds complexity to Rustfmt (but no worse than current options). Every bug fix or improvement would need to be gated on either the <code>required_version</code> or an unstable option.</p>
 <p>On the other hand, all changes are internal to Rustfmt and we don't require changes to any other tools. Users would rarely need to install or build different versions of Rustfmt. Non-breaking changes get to all users quickly.</p>
 <p>It is not clear how to integrate the external handling with Rustup, which is how many users get Rustfmt. It would also be complicated to manage branches and backports under the external handling approach.</p>
-<a class="header" href="2437-rustfmt-stability.html#other-alternatives" id="other-alternatives"><h2>Other alternatives</h2></a>
+<a class="header" href="#other-alternatives" id="other-alternatives"><h2>Other alternatives</h2></a>
 <p>Two alternative are spelled out above. A third alternative is to version according to semver, but not make any special effort to constrain breaking changes. This would result in either slowing down development of Rustfmt or frequent breaking changes. Due to the nature of distribution of rustfmt, that would make it effectively impossible to use in CI.</p>
-<a class="header" href="2437-rustfmt-stability.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>Rust itself has had a very strict backwards compatibility guarantee. Rust sticks strictly to semver versions and avoids any major version increment; even the <a href="https://github.com/rust-lang/rfcs/blob/master/text/2052-epochs.md">2018 edition</a> avoids a breaking change by requiring an opt-in. However, it has been possible to fix bugs without being strictly backwards compatible, due to the way Rustfmt will be used in CI, it is not clear if that will be possible for Rustfmt.</p>
 <p>Other formatters (Gofmt, Clang Format) have not dealt with the stability/versioning issue. I believe this is possible because they are not widely used in CI and because they are fairly mature and do not change formatting much.</p>
-<a class="header" href="2437-rustfmt-stability.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Whether we want to specify the version in Cargo instead of/as well as in rustfmt.toml.</p>
 
                     </main>
@@ -309,9 +316,6 @@ formatting <em>behaviour</em> of non-default variants is <em>not</em> a breaking
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

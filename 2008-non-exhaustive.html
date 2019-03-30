@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2008-non-exhaustive - </title>
+        <title>2008-non-exhaustive - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2008">rust-lang/rfcs#2008</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44109">rust-lang/rust#44109</a></li>
 </ul>
-<a class="header" href="2008-non-exhaustive.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC introduces the <code>#[non_exhaustive]</code> attribute for enums and structs,
 which indicates that more variants/fields may be added to an enum/struct in the
 future.</p>
@@ -149,8 +156,8 @@ future.</p>
 from constructing or exhaustively matching, to ensure that adding new fields is
 not a breaking change.</p>
 <p>This is a post-1.0 version of <a href="https://github.com/rust-lang/rfcs/pull/757">RFC 757</a>, with some additions.</p>
-<a class="header" href="2008-non-exhaustive.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="2008-non-exhaustive.html#enums" id="enums"><h2>Enums</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#enums" id="enums"><h2>Enums</h2></a>
 <p>The most common use for non-exhaustive enums is error types. Because adding
 features to a crate may result in different possibilities for errors, it makes
 sense that more types of errors will be added in the future.</p>
@@ -222,7 +229,7 @@ match error_kind {
 #}</code></pre></pre>
 <p>Then we can add as many variants as we want without breaking any downstream
 matches.</p>
-<a class="header" href="2008-non-exhaustive.html#how-we-do-this-today" id="how-we-do-this-today"><h3>How we do this today</h3></a>
+<a class="header" href="#how-we-do-this-today" id="how-we-do-this-today"><h3>How we do this today</h3></a>
 <p>We force users add this arm for <a href="https://doc.rust-lang.org/1.17.0/std/io/enum.ErrorKind.html"><code>std::io::ErrorKind</code></a> by adding a hidden
 variant:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -289,7 +296,7 @@ __Nonexhaustive,
 Additionally, while plenty of crates could benefit from the idea of
 non-exhaustiveness, plenty don't because this isn't documented in the Rust book,
 and only documented elsewhere as a hack until a better solution is proposed.</p>
-<a class="header" href="2008-non-exhaustive.html#opportunity-for-optimisation" id="opportunity-for-optimisation"><h3>Opportunity for optimisation</h3></a>
+<a class="header" href="#opportunity-for-optimisation" id="opportunity-for-optimisation"><h3>Opportunity for optimisation</h3></a>
 <p>Currently, the <code>#[doc(hidden)]</code> hack leads to a few missed opportunities
 for optimisation. For example, take this enum:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -332,7 +339,7 @@ we could still <em>technically</em> use that wildcard branch.</p>
 <p>Although these options will unlikely matter in this example because
 error-handling code (hopefully) shouldn't run very often, it could matter for
 other use cases.</p>
-<a class="header" href="2008-non-exhaustive.html#structs" id="structs"><h2>Structs</h2></a>
+<a class="header" href="#structs" id="structs"><h2>Structs</h2></a>
 <p>The most common use for non-exhaustive structs is config types. It often makes
 sense to make fields public for ease-of-use, although this can ultimately lead
 to breaking changes if we're not careful.</p>
@@ -383,15 +390,15 @@ pub struct Config {
 <p>But this makes it more difficult for the crate itself to construct <code>Config</code>,
 because you have to add a <code>non_exhaustive: ()</code> field every time you make a new
 value.</p>
-<a class="header" href="2008-non-exhaustive.html#other-kinds-of-structs" id="other-kinds-of-structs"><h3>Other kinds of structs</h3></a>
+<a class="header" href="#other-kinds-of-structs" id="other-kinds-of-structs"><h3>Other kinds of structs</h3></a>
 <p>Because enum variants are <em>kind</em> of like a struct, any change we make to structs
 should apply to them too. Additionally, any change should apply to tuple structs
 as well.</p>
-<a class="header" href="2008-non-exhaustive.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>An attribute <code>#[non_exhaustive]</code> is added to the language, which will (for now)
 fail to compile if it's used on anything other than an enum or struct
 definition, or enum variant.</p>
-<a class="header" href="2008-non-exhaustive.html#enums-1" id="enums-1"><h2>Enums</h2></a>
+<a class="header" href="#enums-1" id="enums-1"><h2>Enums</h2></a>
 <p>Within the crate that defines the enum, this attribute is essentially ignored,
 so that the current crate can continue to exhaustively match the enum. The
 justification for this is that any changes to the enum will likely result in
@@ -439,7 +446,7 @@ dead and remove it.</p>
 <code>#[non_exhaustive]</code> lint. That said, modifying warn-only lints is generally
 assumed to not be a breaking change, even though users can make it a breaking
 change by manually denying lints.</p>
-<a class="header" href="2008-non-exhaustive.html#structs-1" id="structs-1"><h2>Structs</h2></a>
+<a class="header" href="#structs-1" id="structs-1"><h2>Structs</h2></a>
 <p>Like with enums, the attribute is essentially ignored in the crate that defines
 the struct, so that users can continue to construct values for the struct.
 However, this will prevent downstream users from constructing or exhaustively
@@ -482,7 +489,7 @@ let &amp;Config { window_width, window_height, .. } = config;
 <p>Although it should not be explicitly forbidden by the language to mark a struct
 with some private fields as non-exhaustive, it should emit a warning to tell the
 user that the attribute has no effect.</p>
-<a class="header" href="2008-non-exhaustive.html#tuple-structs" id="tuple-structs"><h2>Tuple structs</h2></a>
+<a class="header" href="#tuple-structs" id="tuple-structs"><h2>Tuple structs</h2></a>
 <p>Non-exhaustive tuple structs will operate similarly to structs, however, will
 disallow matching directly. For example, take this example on stable today:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -516,7 +523,7 @@ let Config { 0: width, 1: height, .. } = config;
 <p>We can think of this as lowering the visibility of the constructor to
 <code>pub(crate)</code> if it is marked as <code>pub</code>, then applying the standard structure
 rules.</p>
-<a class="header" href="2008-non-exhaustive.html#unit-structs" id="unit-structs"><h2>Unit structs</h2></a>
+<a class="header" href="#unit-structs" id="unit-structs"><h2>Unit structs</h2></a>
 <p>Unit structs will work very similarly to tuple structs. Consider this struct:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -533,7 +540,7 @@ let Unit { .. } = unit;
 #}</code></pre></pre>
 <p>Similarly to tuple structs, this will simply lower the visibility of the
 constructor to <code>pub(crate)</code> if it were marked as <code>pub</code>.</p>
-<a class="header" href="2008-non-exhaustive.html#functional-record-updates" id="functional-record-updates"><h2>Functional record updates</h2></a>
+<a class="header" href="#functional-record-updates" id="functional-record-updates"><h2>Functional record updates</h2></a>
 <p>Functional record updates will operate very similarly to if the struct had an
 extra, private field. Take this example:</p>
 <pre><code>#[derive(Debug)]
@@ -555,7 +562,7 @@ println!(&quot;{:?}&quot;, c);
 </code></pre>
 <p>Although outside of the defining crate, it will not, because <code>Config</code> could, in
 the future, contain private fields that the user didn't account for.</p>
-<a class="header" href="2008-non-exhaustive.html#changes-to-rustdoc" id="changes-to-rustdoc"><h2>Changes to rustdoc</h2></a>
+<a class="header" href="#changes-to-rustdoc" id="changes-to-rustdoc"><h2>Changes to rustdoc</h2></a>
 <p>Right now, the only indicator that rustdoc gives for non-exhaustive enums and
 structs is a comment saying &quot;some variants/fields omitted.&quot; This shows up
 whenever variants or fields are marked as <code>#[doc(hidden)]</code>, or when fields are
@@ -568,7 +575,7 @@ when they are added.</p>
 <p>These two messages should be distinct; the former says &quot;this enum/struct has
 stuff that you shouldn't see,&quot; while the latter says &quot;this enum/struct is
 incomplete and may be extended in the future.&quot;</p>
-<a class="header" href="2008-non-exhaustive.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>Changes to rustdoc should make it easier for users to understand the concept of
 non-exhaustive enums and structs in the wild.</p>
 <p>In the chapter on enums, a section should be added specifically for
@@ -580,13 +587,13 @@ structs. Public fields should be preferred over getter/setter methods in Rust,
 although users should be aware that adding extra fields is a potentially
 breaking change. In this chapter, users should be taught about non-exhaustive
 enum variants as well.</p>
-<a class="header" href="2008-non-exhaustive.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>The <code>#[doc(hidden)]</code> hack in practice is usually good enough.</li>
 <li>An attribute may be more confusing than a dedicated syntax.</li>
 <li><code>non_exhaustive</code> may not be the clearest name.</li>
 </ul>
-<a class="header" href="2008-non-exhaustive.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>Provide a dedicated syntax instead of an attribute. This would likely be done
 by adding a <code>...</code> variant or field, as proposed by the original
@@ -595,13 +602,13 @@ by adding a <code>...</code> variant or field, as proposed by the original
 giving a less-hacky way to create a hidden variant/field.</li>
 <li>Document the <code>#[doc(hidden)]</code> hack and make it more well-known.</li>
 </ul>
-<a class="header" href="2008-non-exhaustive.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>It may make sense to have a &quot;not exhaustive enough&quot; lint to non-exhaustive
 enums or structs, so that users can be warned if they are missing fields or
 variants despite having a wildcard arm to warn on them.</p>
 <p>Although this is beyond the scope of this particular RFC, it may be good as a
 clippy lint in the future.</p>
-<a class="header" href="2008-non-exhaustive.html#extending-to-traits" id="extending-to-traits"><h2>Extending to traits</h2></a>
+<a class="header" href="#extending-to-traits" id="extending-to-traits"><h2>Extending to traits</h2></a>
 <p>Tangentially, it also makes sense to have non-exhaustive traits as well, even
 though they'd be non-exhaustive in a different way. Take this example from
 <a href="https://github.com/BurntSushi/byteorder/tree/f8e7685b3a81c52f5448fd77fb4e0535bc92f880"><code>byteorder</code></a>:</p>
@@ -691,9 +698,6 @@ implemented downstream.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

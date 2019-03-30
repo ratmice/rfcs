@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2306-convert-id - </title>
+        <title>2306-convert-id - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,15 +146,15 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2306">rust-lang/rfcs#2306</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/53500">rust-lang/rust#53500</a></li>
 </ul>
-<a class="header" href="2306-convert-id.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Adds an identity function <code>pub const fn identity&lt;T&gt;(x: T) -&gt; T { x }</code>
 as <code>core::convert::identity</code>. The function is also re-exported to
 <code>std::convert::identity</code>.</p>
-<a class="header" href="2306-convert-id.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="2306-convert-id.html#the-identity-function-is-useful" id="the-identity-function-is-useful"><h2>The identity function is useful</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#the-identity-function-is-useful" id="the-identity-function-is-useful"><h2>The identity function is useful</h2></a>
 <p>While it might seem strange to have a function that just returns back the input,
 there are some cases where the function is useful.</p>
-<a class="header" href="2306-convert-id.html#using-identity-to-do-nothing-among-a-collection-of-mappers" id="using-identity-to-do-nothing-among-a-collection-of-mappers"><h3>Using <code>identity</code> to do nothing among a collection of mappers</h3></a>
+<a class="header" href="#using-identity-to-do-nothing-among-a-collection-of-mappers" id="using-identity-to-do-nothing-among-a-collection-of-mappers"><h3>Using <code>identity</code> to do nothing among a collection of mappers</h3></a>
 <p>When you have collections such as maps or arrays of mapping functions like
 below and you watch to dispatch to those you sometimes need the identity
 function as a way of not transforming the input. You can use the identity
@@ -164,7 +171,7 @@ map.insert(&quot;foo&quot;, do_interesting_stuff);
 map.insert(&quot;bar&quot;, other_stuff);
 map.insert(&quot;baz&quot;, identity);
 #}</code></pre></pre>
-<a class="header" href="2306-convert-id.html#using-identity-as-a-no-op-function-in-a-conditional" id="using-identity-as-a-no-op-function-in-a-conditional"><h3>Using <code>identity</code> as a no-op function in a conditional</h3></a>
+<a class="header" href="#using-identity-as-a-no-op-function-in-a-conditional" id="using-identity-as-a-no-op-function-in-a-conditional"><h3>Using <code>identity</code> as a no-op function in a conditional</h3></a>
 <p>This reasoning also applies to simpler yes/no dispatch as below:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -175,7 +182,7 @@ let mapper = if condition { some_manipulation } else { identity };
 
 do_stuff(42);
 #}</code></pre></pre>
-<a class="header" href="2306-convert-id.html#using-identity-to-concatenate-an-iterator-of-iterators" id="using-identity-to-concatenate-an-iterator-of-iterators"><h3>Using <code>identity</code> to concatenate an iterator of iterators</h3></a>
+<a class="header" href="#using-identity-to-concatenate-an-iterator-of-iterators" id="using-identity-to-concatenate-an-iterator-of-iterators"><h3>Using <code>identity</code> to concatenate an iterator of iterators</h3></a>
 <p>We can use the identity function to concatenate an iterator of iterators
 into a single iterator.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -189,7 +196,7 @@ assert_eq!(vec![1, 3, 4, 5, 6], concatenated);
 <p>While the standard library has recently added <code>Iterator::flatten</code>,
 which you should use instead, to achieve the same semantics, similar situations
 are likely in the wild and the <code>identity</code> function can be used in those cases.</p>
-<a class="header" href="2306-convert-id.html#using-identity-to-keep-the-some-variants-of-an-iterator-of-optiont" id="using-identity-to-keep-the-some-variants-of-an-iterator-of-optiont"><h3>Using <code>identity</code> to keep the <code>Some</code> variants of an iterator of <code>Option&lt;T&gt;</code></h3></a>
+<a class="header" href="#using-identity-to-keep-the-some-variants-of-an-iterator-of-optiont" id="using-identity-to-keep-the-some-variants-of-an-iterator-of-optiont"><h3>Using <code>identity</code> to keep the <code>Some</code> variants of an iterator of <code>Option&lt;T&gt;</code></h3></a>
 <p>We can keep all the maybe variants by simply <code>iter.filter_map(identity)</code>.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -198,17 +205,17 @@ let iter = vec![Some(1), None, Some(3)].into_iter();
 let filtered = iter.filter_map(identity).collect::&lt;Vec&lt;_&gt;&gt;();
 assert_eq!(vec![1, 3], filtered);
 #}</code></pre></pre>
-<a class="header" href="2306-convert-id.html#to-be-clear-that-you-intended-to-use-an-identity-conversion" id="to-be-clear-that-you-intended-to-use-an-identity-conversion"><h3>To be clear that you intended to use an identity conversion</h3></a>
+<a class="header" href="#to-be-clear-that-you-intended-to-use-an-identity-conversion" id="to-be-clear-that-you-intended-to-use-an-identity-conversion"><h3>To be clear that you intended to use an identity conversion</h3></a>
 <p>If you instead use a closure as in <code>|x| x</code> when you need an
 identity conversion, it is less clear that this was intentional.
 With <code>identity</code>, this intent becomes clearer.</p>
-<a class="header" href="2306-convert-id.html#the-drop-function-as-a-precedent" id="the-drop-function-as-a-precedent"><h2>The <code>drop</code> function as a precedent</h2></a>
+<a class="header" href="#the-drop-function-as-a-precedent" id="the-drop-function-as-a-precedent"><h2>The <code>drop</code> function as a precedent</h2></a>
 <p>The <code>drop</code> function in <code>core::mem</code> is defined as <code>pub fn drop&lt;T&gt;(_x: T) { }</code>.
 The same effect can be achieved by writing <code>{ _x; }</code>. This presents us
 with a precendent that such trivial functions are considered useful and
 includable inside the standard library even though they can be written easily
 inside a user's crate.</p>
-<a class="header" href="2306-convert-id.html#avoiding-repetition-in-user-crates" id="avoiding-repetition-in-user-crates"><h2>Avoiding repetition in user crates</h2></a>
+<a class="header" href="#avoiding-repetition-in-user-crates" id="avoiding-repetition-in-user-crates"><h2>Avoiding repetition in user crates</h2></a>
 <p>Here are a few examples of the identity function being defined and used:</p>
 <ul>
 <li>https://docs.rs/functils/0.0.2/functils/fn.identity.html</li>
@@ -217,7 +224,7 @@ inside a user's crate.</p>
 </ul>
 <p>There's a smattering of more examples. To reduce duplication,
 it should be provided in the standard library as a common place it is defined.</p>
-<a class="header" href="2306-convert-id.html#precedent-from-other-languages" id="precedent-from-other-languages"><h2>Precedent from other languages</h2></a>
+<a class="header" href="#precedent-from-other-languages" id="precedent-from-other-languages"><h2>Precedent from other languages</h2></a>
 <p>There are other languages that include an identity function in
 their standard libraries, among these are:</p>
 <ul>
@@ -234,7 +241,7 @@ their standard libraries, among these are:</p>
 <li><a href="http://www.cse.chalmers.se/%7Enad/repos/lib/src/Function.agda">Agda</a></li>
 <li><a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#identity">Elm</a></li>
 </ul>
-<a class="header" href="2306-convert-id.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>An identity function is a mapping of one type onto itself such that the output
 is the same as the input. In other words, a function <code>identity : T -&gt; T</code> for
 some type <code>T</code> defined as <code>identity(x) = x</code>. This RFC adds such a function for
@@ -248,22 +255,22 @@ pub const fn identity&lt;T&gt;(x: T) -&gt; T { x }
 <p>This function is also re-exported to <code>std::convert::identity</code>.</p>
 <p>It is important to note that the input <code>x</code> passed to the function is
 moved since Rust uses move semantics by default.</p>
-<a class="header" href="2306-convert-id.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>An identity function defined as <code>pub const fn identity&lt;T&gt;(x: T) -&gt; T { x }</code>
 exists as <code>core::convert::identity</code>. The function is also re-exported as
 <code>std::convert::identity</code>-</p>
 <p>Note that the identity function is not always equivalent to a closure
 such as <code>|x| x</code> since the closure may coerce <code>x</code> into a different type
 while the identity function never changes the type.</p>
-<a class="header" href="2306-convert-id.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It is already possible to do this in user code by:</p>
 <ul>
 <li>using an identity closure: <code>|x| x</code>.</li>
 <li>writing the <code>identity</code> function as defined in the RFC yourself.</li>
 </ul>
-<p>These are contrasted with the <a href="2306-convert-id.html#motivation">motivation</a> for including the function
+<p>These are contrasted with the <a href="#motivation">motivation</a> for including the function
 in the standard library.</p>
-<a class="header" href="2306-convert-id.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>The rationale for including this in <code>convert</code> and not <code>mem</code> is that the
 former generally deals with conversions, and identity conversion&quot; is a used
 phrase. Meanwhile, <code>mem</code> does not relate to <code>identity</code> other than that both
@@ -272,17 +279,17 @@ it in <code>mem</code> is still an alternative, but as explained, it isn't fitti
 <p>Naming the function <code>id</code> instead of <code>identity</code> is a possibility.
 This name is however ambiguous with <em>&quot;identifier&quot;</em> and less clear
 wherefore <code>identifier</code> was opted for.</p>
-<a class="header" href="2306-convert-id.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>There are no unresolved questions.</p>
-<a class="header" href="2306-convert-id.html#possible-future-work" id="possible-future-work"><h1>Possible future work</h1></a>
+<a class="header" href="#possible-future-work" id="possible-future-work"><h1>Possible future work</h1></a>
 <p>A previous iteration of this RFC proposed that the <code>identity</code> function
 should be added to prelude of both libcore and libstd.
 However, the library team decided that for the time being, it was not sold on
 this inclusion. As we gain usage experience with using this function,
 it is possible to revisit this in the future if the team chances its mind.</p>
 <p>The section below details, for posterity,
-the argument for inclusion that was previously in the <a href="2306-convert-id.html#motivation">motivation</a>.</p>
-<a class="header" href="2306-convert-id.html#the-case-for-inclusion-in-the-prelude" id="the-case-for-inclusion-in-the-prelude"><h2>The case for inclusion in the prelude</h2></a>
+the argument for inclusion that was previously in the <a href="#motivation">motivation</a>.</p>
+<a class="header" href="#the-case-for-inclusion-in-the-prelude" id="the-case-for-inclusion-in-the-prelude"><h2>The case for inclusion in the prelude</h2></a>
 <p>Let's compare the effort required, assuming that each letter
 typed has a uniform cost with respect to effort.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -347,9 +354,6 @@ especially relevant in the case of <code>drop</code> which is also a trivial fun
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

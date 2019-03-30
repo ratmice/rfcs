@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1298-incremental-compilation - </title>
+        <title>1298-incremental-compilation - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,22 +146,22 @@
 <li>RFC PR: (leave this empty)</li>
 <li>Rust Issue: (leave this empty)</li>
 </ul>
-<a class="header" href="1298-incremental-compilation.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Enable the compiler to cache incremental workproducts.</p>
-<a class="header" href="1298-incremental-compilation.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The goal of incremental compilation is, naturally, to improve build
 times when making small edits. Any reader who has never felt the need
 for such a feature is strongly encouraged to attempt hacking on the
 compiler or servo sometime (naturally, all readers are so encouraged,
 regardless of their opinion on the need for incremental compilation).</p>
-<a class="header" href="1298-incremental-compilation.html#basic-usage" id="basic-usage"><h2>Basic usage</h2></a>
+<a class="header" href="#basic-usage" id="basic-usage"><h2>Basic usage</h2></a>
 <p>The basic usage will be that one enables incremental compilation using
 a compiler flag like <code>-C incremental-compilation=TMPDIR</code>. The <code>TMPDIR</code>
 directory is intended to be an empty directory that the compiler can
 use to store intermediate by-products; the compiler will automatically
 &quot;GC&quot; this directory, deleting older files that are no longer relevant
 and creating new ones.</p>
-<a class="header" href="1298-incremental-compilation.html#high-level-design" id="high-level-design"><h2>High-level design</h2></a>
+<a class="header" href="#high-level-design" id="high-level-design"><h2>High-level design</h2></a>
 <p>The high-level idea is that we will track the following intermediate
 workproducts for every function (and, indeed, for other kinds of items
 as well, but functions are easiest to describe):</p>
@@ -195,13 +202,13 @@ that this dependency graph is complete: if edges are missing, the
 result will be obscure errors where changes are not fully propagated,
 yielding inexplicable behavior at runtime. This RFC proposes an
 automatic scheme based on encapsulation.</p>
-<a class="header" href="1298-incremental-compilation.html#interaction-with-lints-and-compiler-plugins" id="interaction-with-lints-and-compiler-plugins"><h3>Interaction with lints and compiler plugins</h3></a>
+<a class="header" href="#interaction-with-lints-and-compiler-plugins" id="interaction-with-lints-and-compiler-plugins"><h3>Interaction with lints and compiler plugins</h3></a>
 <p>Although rustc does not yet support compiler plugins through a stable
 interface, we have long planned to allow for custom lints, syntax
 extensions, and other sorts of plugins. It would be nice therefore to
 be able to accommodate such plugins in the design, so that their
 inputs can be tracked and accounted for as well.</p>
-<a class="header" href="1298-incremental-compilation.html#interaction-with-optimization" id="interaction-with-optimization"><h2>Interaction with optimization</h2></a>
+<a class="header" href="#interaction-with-optimization" id="interaction-with-optimization"><h2>Interaction with optimization</h2></a>
 <p>It is important to clarify, though, that this design does not attempt
 to enable full optimizing for incremental compilation; indeed the two
 are somewhat at odds with one another, as full optimization may
@@ -211,23 +218,23 @@ situation is further exacerbated by the fact that LLVM does not
 provide any way to track these sorts of dependencies (e.g., one cannot
 even determine what inlining took place, though @dotdash suggested a
 clever trick of using llvm lifetime hints). Strategies for handling
-this are discussed in the <a href="1298-incremental-compilation.html#optimization">Optimization section</a> below.</p>
-<a class="header" href="1298-incremental-compilation.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+this are discussed in the <a href="#optimization">Optimization section</a> below.</p>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>We begin with a high-level execution plan, followed by sections that
 explore aspects of the plan in more detail. The high-level summary
 includes links to each of the other sections.</p>
-<a class="header" href="1298-incremental-compilation.html#high-level-execution-plan" id="high-level-execution-plan"><h2>High-level execution plan</h2></a>
+<a class="header" href="#high-level-execution-plan" id="high-level-execution-plan"><h2>High-level execution plan</h2></a>
 <p>Regardless of whether it is invoked in incremental compilation mode or
 not, the compiler will always parse and macro expand the entire crate,
 resulting in a HIR tree. Once we have a complete HIR tree, and if we
 are invoked in incremental compilation mode, the compiler will then
 try to determine which parts of the crate have changed since the last
-execution. For each item, we compute a <a href="1298-incremental-compilation.html#defid">(mostly) stable id</a>
+execution. For each item, we compute a <a href="#defid">(mostly) stable id</a>
 based primarily on the item's name and containing module. We then
 compute a hash of its contents and compare that hash against the hash
 that the item had in the compilation (if any).</p>
 <p>Once we know which items have changed, we consult a
-<a href="1298-incremental-compilation.html#depgraph">dependency graph</a> to tell us which artifacts are still
+<a href="#depgraph">dependency graph</a> to tell us which artifacts are still
 usable. These artifacts can take the form of serializing MIR graphs,
 LLVM IR, compiled object code, and so forth. The dependency graph
 tells us which bits of AST contributed to each artifact. It is
@@ -245,16 +252,16 @@ times. (Eventually, though, it might be nice to restructure the
 compiler so that it operates in more of a demand driven style, rather
 than a series of sweeping passes.)</p>
 <p>When we come to the final LLVM stages, we must
-<a href="1298-incremental-compilation.html#optimization">separate the functions into distinct &quot;codegen units&quot;</a>
+<a href="#optimization">separate the functions into distinct &quot;codegen units&quot;</a>
 for the purpose of LLVM code generation. This will build on the
 existing &quot;codegen-units&quot; used for parallel code generation. LLVM may
 perform inlining or interprocedural analysis within a unit, but not
 across units, which limits the amount of reoptimization needed when
 one of those functions changes.</p>
 <p>Finally, the RFC closes with a discussion of
-<a href="1298-incremental-compilation.html#testing">testing strategies</a> we can use to help avoid bugs due to
+<a href="#testing">testing strategies</a> we can use to help avoid bugs due to
 incremental compilation.</p>
-<a class="header" href="1298-incremental-compilation.html#staging" id="staging"><h3>Staging</h3></a>
+<a class="header" href="#staging" id="staging"><h3>Staging</h3></a>
 <p>One important question is how to stage the incremental compilation
 work. That is, it'd be nice to start seeing some benefit as soon as
 possible. One possible plan is as follows:</p>
@@ -277,7 +284,7 @@ object code. However, this is expected to be be a second order effect
 overall, particularly since LLVM optimization time can be a very large
 portion of compilation.</p>
 <p><a id="defid"></a></p>
-<a class="header" href="1298-incremental-compilation.html#handling-defids" id="handling-defids"><h2>Handling DefIds</h2></a>
+<a class="header" href="#handling-defids" id="handling-defids"><h2>Handling DefIds</h2></a>
 <p>In order to correlate artifacts between compilations, we need some
 stable way to name items across compilations (and across crates).  The
 compiler currently uses something called a <code>DefId</code> to identify each
@@ -310,7 +317,7 @@ struct <code>Foo</code> declared in a module <code>bar</code> would just have a 
 <code>bar::Foo</code>. However, the paths are also able to express things for
 which there is no syntax, such as an item declared within a function
 body.</p>
-<a class="header" href="1298-incremental-compilation.html#disambiguation" id="disambiguation"><h3>Disambiguation</h3></a>
+<a class="header" href="#disambiguation" id="disambiguation"><h3>Disambiguation</h3></a>
 <p>For the most part, paths should naturally be unique. However, there
 are some cases where a single parent may have multiple children with
 the same path. One case would be erroneous programs, where there are
@@ -361,8 +368,8 @@ I've uncovered a few fishy cases where we using the node id from
 external crates to index into the local crate's HIR map, which is
 certainly incorrect. --nmatsakis</p>
 <p><a id="depgraph"></p>
-<a class="header" href="1298-incremental-compilation.html#identifying-and-tracking-dependencies" id="identifying-and-tracking-dependencies"><h2>Identifying and tracking dependencies</h2></a>
-<a class="header" href="1298-incremental-compilation.html#core-idea-a-fine-grained-dependency-graph" id="core-idea-a-fine-grained-dependency-graph"><h3>Core idea: a fine-grained dependency graph</h3></a>
+<a class="header" href="#identifying-and-tracking-dependencies" id="identifying-and-tracking-dependencies"><h2>Identifying and tracking dependencies</h2></a>
+<a class="header" href="#core-idea-a-fine-grained-dependency-graph" id="core-idea-a-fine-grained-dependency-graph"><h3>Core idea: a fine-grained dependency graph</h3></a>
 <p>Naturally any form of incremental compilation requires a detailed
 understanding of how each work item is dependent on other work items.
 This is most readily visualized as a dependency graph; the
@@ -386,7 +393,7 @@ graph nodes for the signature and body of each function.</p>
 is helpful here. If we supported, e.g., return type inference, than it
 would be harder to know whether a change to <code>bar</code> means <code>foo</code> must be
 recompiled.)</p>
-<a class="header" href="1298-incremental-compilation.html#categories-of-nodes" id="categories-of-nodes"><h3>Categories of nodes</h3></a>
+<a class="header" href="#categories-of-nodes" id="categories-of-nodes"><h3>Categories of nodes</h3></a>
 <p>This section gives a kind of &quot;first draft&quot; of the set of graph
 nodes/edges that we will use. It is expected that the full set of
 nodes/edges will evolve in the course of implementation (and of course
@@ -487,9 +494,9 @@ SIG(bar) ----&gt; COLLECT(bar)                   | |         v
 function changes, we will need to rebuild the MIR for <code>foo</code>. But there
 is no path from the body of <code>bar</code> to the MIR for foo, so changes there
 need not trigger a rebuild (we are assuming here that <code>bar</code> is not
-inlined into <code>foo</code>; see the <a href="1298-incremental-compilation.html#optimization">section on optimizations</a>
+inlined into <code>foo</code>; see the <a href="#optimization">section on optimizations</a>
 for more details on how to handle those sorts of dependencies).</p>
-<a class="header" href="1298-incremental-compilation.html#building-the-graph" id="building-the-graph"><h3>Building the graph</h3></a>
+<a class="header" href="#building-the-graph" id="building-the-graph"><h3>Building the graph</h3></a>
 <p>It is very important the dependency graph contain <em>all</em> edges. If any
 edges are missing, it will mean that we will get inconsistent builds,
 where something should have been rebuilt what was not. Hand-coding a
@@ -523,7 +530,7 @@ top of the stack (it is an error if the stack is empty). Similarly,
 push/pop a procedure at the right time, or fail to invoke
 read/write. There are a number of refactorings we can do on the
 compiler to make this scheme more robust.</p>
-<a class="header" href="1298-incremental-compilation.html#procedures" id="procedures"><h4>Procedures</h4></a>
+<a class="header" href="#procedures" id="procedures"><h4>Procedures</h4></a>
 <p>Most of the compiler passes operate an item at a time. Nonetheless,
 they are largely encoded using the standard visitor, which walks all
 HIR nodes. We can refactor most of them to instead use an outer
@@ -540,14 +547,14 @@ time. Otherwise, failing to push/pop a procedure at the right time
 could result in edges being added to the wrong procedure. It is likely
 possible to refactor things to maintain this invariant, but that has
 to be determined as we go.</p>
-<a class="header" href="1298-incremental-compilation.html#ir-nodes" id="ir-nodes"><h4>IR nodes</h4></a>
+<a class="header" href="#ir-nodes" id="ir-nodes"><h4>IR nodes</h4></a>
 <p>Adding edges to the IR nodes that represent the compiler's
 intermediate byproducts can be done by leveraging privacy. The idea is
 to enforce the use of accessors to the maps and so forth, rather than
 allowing direct access. These accessors will call the <code>read_from</code> and
 <code>write_to</code> methods as appropriate to add edges to/from the current
 active procedure.</p>
-<a class="header" href="1298-incremental-compilation.html#hir-nodes" id="hir-nodes"><h4>HIR nodes</h4></a>
+<a class="header" href="#hir-nodes" id="hir-nodes"><h4>HIR nodes</h4></a>
 <p>HIR nodes are a bit trickier to encapsulate. After all, the HIR map
 itself gives access to the root of the tree, which in turn gives
 access to everything else -- and encapsulation is harder to enforce
@@ -576,7 +583,7 @@ procedure nodes. This visitor can hand off just an opaque id for each
 item, requiring the pass itself to go through the map to fetch the
 actual HIR, thus triggering a read edge (we might also bake this
 behavior into the visitor for convenience).</p>
-<a class="header" href="1298-incremental-compilation.html#persisting-the-graph" id="persisting-the-graph"><h3>Persisting the graph</h3></a>
+<a class="header" href="#persisting-the-graph" id="persisting-the-graph"><h3>Persisting the graph</h3></a>
 <p>Once we've built the graph, we have to persist it, along with some
 associated information. The idea is that the compiler, when invoked,
 will be supplied with a directory. It will store temporary files in
@@ -611,7 +618,7 @@ table and store it. The following data will need to be serialized:</p>
 <p>This list was gathered primarily by spelunking through the compiler.
 It is probably somewhat incomplete. The appendix below lists an
 exhaustive exploration.</p>
-<a class="header" href="1298-incremental-compilation.html#reusing-and-garbage-collecting-artifacts" id="reusing-and-garbage-collecting-artifacts"><h3>Reusing and garbage collecting artifacts</h3></a>
+<a class="header" href="#reusing-and-garbage-collecting-artifacts" id="reusing-and-garbage-collecting-artifacts"><h3>Reusing and garbage collecting artifacts</h3></a>
 <p>The general procedure when the compiler starts up in incremental mode
 will be to parse and macro expand the input, create the corresponding
 set of HIR nodes, and compute their hashes. We can then load the
@@ -629,7 +636,7 @@ to the dep graph with no dependencies.</li>
 nodes reachable from those HIR nodes). As part of the deletion
 process, we remove whatever on disk artifact that may have existed.</p>
 <p><a id="span"></a></p>
-<a class="header" href="1298-incremental-compilation.html#handling-spans" id="handling-spans"><h3>Handling spans</h3></a>
+<a class="header" href="#handling-spans" id="handling-spans"><h3>Handling spans</h3></a>
 <p>There are times when the precise span of an item is a significant part
 of its metadata. For example, debuginfo needs to identify line numbers
 and so forth. However, editing one fn will affect the line numbers for
@@ -647,7 +654,7 @@ compute the current span by finding tha corresponding AST node and
 loading its span. This will require some refactoring and work however.</li>
 </ol>
 <p><a id="optimization"></a></p>
-<a class="header" href="1298-incremental-compilation.html#optimization-and-codegen-units" id="optimization-and-codegen-units"><h2>Optimization and codegen units</h2></a>
+<a class="header" href="#optimization-and-codegen-units" id="optimization-and-codegen-units"><h2>Optimization and codegen units</h2></a>
 <p>There is an inherent tension between incremental compilation and full
 optimization. Full optimization may perform inlining and
 inter-function analysis, which can cause small edits in one function
@@ -682,11 +689,11 @@ strategy by replicating things that look like good candidates for
 inlining into each module; call graphs and profiling information may
 be a good input for such heuristics.</p>
 <p><a id="testing"></a></p>
-<a class="header" href="1298-incremental-compilation.html#testing-strategy" id="testing-strategy"><h2>Testing strategy</h2></a>
+<a class="header" href="#testing-strategy" id="testing-strategy"><h2>Testing strategy</h2></a>
 <p>If we are not careful, incremental compilation has the potential to
 produce an infinite stream of irreproducible bug reports, so it's
 worth considering how we can best test this code.</p>
-<a class="header" href="1298-incremental-compilation.html#regression-tests" id="regression-tests"><h3>Regression tests</h3></a>
+<a class="header" href="#regression-tests" id="regression-tests"><h3>Regression tests</h3></a>
 <p>The first and most obvious piece of infrastructure is something for
 reliable regression testing. The plan is simply to have a series of
 sources and patches. The source will have each patch applied in
@@ -695,7 +702,7 @@ that (a) we only rebuilt what we expected to rebuild and (b) compare
 the result with the result of a fresh build from scratch.  This allows
 us to build up tests for specific scenarios or bug reports, but
 doesn't help with <em>finding</em> bugs in the first place.</p>
-<a class="header" href="1298-incremental-compilation.html#replaying-cratesio-versions-and-git-history" id="replaying-cratesio-versions-and-git-history"><h3>Replaying crates.io versions and git history</h3></a>
+<a class="header" href="#replaying-cratesio-versions-and-git-history" id="replaying-cratesio-versions-and-git-history"><h3>Replaying crates.io versions and git history</h3></a>
 <p>The next step is to search across crates.io for consecutive
 releases. For a given package, we can checkout version <code>X.Y</code> and then
 version <code>X.(Y+1)</code> and check that incrementally building from one to
@@ -705,7 +712,7 @@ results as before (pass or fail).</p>
 identify pairs of consecutive commits. This has the advantage of being
 more fine-grained, but the disadvantage of being a MUCH larger search
 space.</p>
-<a class="header" href="1298-incremental-compilation.html#fuzzing" id="fuzzing"><h3>Fuzzing</h3></a>
+<a class="header" href="#fuzzing" id="fuzzing"><h3>Fuzzing</h3></a>
 <p>The problem with replaying crates.io versions and even git commits is
 that they are probably much larger changes than the typical
 recompile. Another option is to use fuzzing, making &quot;innocuous&quot;
@@ -717,14 +724,14 @@ should test that too -- in particular, we want to test that the proper
 errors are reported when code is invalid, as well.  @nrc also
 suggested a clever hybrid, where we use git commits as a source for
 the fuzzer's edits, gradually building up the commit.</p>
-<a class="header" href="1298-incremental-compilation.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The primary drawback is that incremental compilation may introduce a
 new vector for bugs. The design mitigates this concern by attempting
 to make the construction of the dependency graph as automated as
 possible. We also describe automated testing strategies.</p>
-<a class="header" href="1298-incremental-compilation.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>This design is an evolution from <a href="https://github.com/rust-lang/rfcs/pull/594">RFC 594</a>.</p>
-<a class="header" href="1298-incremental-compilation.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -770,9 +777,6 @@ possible. We also describe automated testing strategies.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

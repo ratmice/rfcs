@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1990-external-doc-attribute - </title>
+        <title>1990-external-doc-attribute - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -149,7 +156,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1990">rust-lang/rfcs#1990</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44732">rust-lang/rust#44732</a></li>
 </ul>
-<a class="header" href="1990-external-doc-attribute.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Documentation is an important part of any project, it allows developers to
 explain how to use items within a library as well as communicate the intent of
 how to use it through examples. Rust has long championed this feature through
@@ -157,7 +164,7 @@ the use of documentation comments and <code>rustdoc</code> to generate beautiful
 navigate documentation. However, there is no way right now to have documentation
 be imported into the code from an external file. This RFC proposes a way to
 extend the functionality of Rust to include this ability.</p>
-<a class="header" href="1990-external-doc-attribute.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <ol>
 <li>Many smaller crates are able to do all of the documentation that's needed in
 a README file within their repo. Being able to include this as a crate or
@@ -186,7 +193,7 @@ choosing what file to import as a doc comment.</li>
 <p>These are just a few reasons as to why we should do this, but the expected
 outcome of this feature is expected to be positive with little to no downside
 for a user.</p>
-<a class="header" href="1990-external-doc-attribute.html#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
 <p>All files included through the attribute will be relative paths from the crate
 root directory. Given a file like this stored in <code>docs/example.md</code>:</p>
 <pre><code class="language-md"># I'm an example
@@ -251,16 +258,16 @@ mod example {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="1990-external-doc-attribute.html#acceptable-paths" id="acceptable-paths"><h2>Acceptable Paths</h2></a>
+<a class="header" href="#acceptable-paths" id="acceptable-paths"><h2>Acceptable Paths</h2></a>
 <p>If you've noticed the path given <code>../docs/example.md</code> is a relative path to
 <code>src</code>. This was decided upon as a good first implementation and further RFCs
 could be written to expand on what syntax is acceptable for paths. For instance
 not being relative to <code>src</code>.</p>
-<a class="header" href="1990-external-doc-attribute.html#missing-files-or-incorrect-paths" id="missing-files-or-incorrect-paths"><h2>Missing Files or Incorrect Paths</h2></a>
+<a class="header" href="#missing-files-or-incorrect-paths" id="missing-files-or-incorrect-paths"><h2>Missing Files or Incorrect Paths</h2></a>
 <p>If a file given to <code>include</code> is missing then this should trigger a compilation
 error as the given file was supposed to be put into the code but for some reason
 or other it is not there.</p>
-<a class="header" href="1990-external-doc-attribute.html#line-numbers-when-errors-occur" id="line-numbers-when-errors-occur"><h2>Line Numbers When Errors Occur</h2></a>
+<a class="header" href="#line-numbers-when-errors-occur" id="line-numbers-when-errors-occur"><h2>Line Numbers When Errors Occur</h2></a>
 <p>As with all macros being expanded this brings up the question of line numbers
 and for documentation tests especially so, to keep things simple for the user
 the documentation should be treated separately from the code. Since the
@@ -287,7 +294,7 @@ from the code base itself. Having the numbers for the lines being used because
 they were inserted into the code for these scenarios would cause confusion and
 would obfuscate where errors occur, making it harder not easier for end users,
 making this feature useless if it creates ergonomic overhead like this.</p>
-<a class="header" href="1990-external-doc-attribute.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p><code>#[doc(include = &quot;file_path&quot;)]</code> is an extension of the current
 <code>#[doc = &quot;doc&quot;]</code> attribute by allowing documentation to exist outside of the
 source code. This isn't entirely hard to grasp if one is familiar with
@@ -303,7 +310,7 @@ Language book to teach new users. Currently the newest version of The Rust
 Programming Language book has a section for <a href="https://doc.rust-lang.org/nightly/book/second-edition/ch14-02-publishing-to-crates-io.html#documentation-comments">doc comments</a> that will need to be expanded
 to show how users can include docs from external sources. The Rust Reference
 comments section would need to updated to include this new syntax as well.</p>
-<a class="header" href="1990-external-doc-attribute.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>This might confuse or frustrate people reading the code directly who prefer
 those doc comments to be inline with the code rather than in a separate file.
@@ -311,7 +318,7 @@ This creates a burden of ergonomics by having to know the context of the code
 that the doc comment is for while reading it separately from the code it
 documents.</li>
 </ul>
-<a class="header" href="1990-external-doc-attribute.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Currently there already <a href="https://github.com/mgattozzi/rdoc">exists a plugin</a>
 that could be used as a reference and has shown that
 <a href="https://www.reddit.com/r/rust/comments/67kqs6/announcing_rdoc_a_tiny_rustc_plugin_to_host_your/">there is interest</a>.
@@ -324,7 +331,7 @@ the language itself. Docs will remain the same as they always have and will
 continue to work as is if this alternative is chosen, though this means we limit
 what we do and do not want rustc/rustdoc to be able to achieve here when it
 comes to docs.</p>
-<a class="header" href="1990-external-doc-attribute.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>What would be best practices for adding docs to crates?</li>
 </ul>
@@ -372,9 +379,6 @@ comes to docs.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

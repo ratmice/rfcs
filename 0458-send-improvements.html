@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0458-send-improvements - </title>
+        <title>0458-send-improvements - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/458">rust-lang/rfcs#458</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/22251">rust-lang/rust#22251</a></li>
 </ul>
-<a class="header" href="0458-send-improvements.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>I propose altering the <code>Send</code> trait as proposed by RFC #17 as
 follows:</p>
 <ul>
@@ -155,7 +162,7 @@ unsafe impl&lt;'a, T&gt; Send for &amp;'a T where T: Sync + 'a {}
 <li>Evaluate each <code>Send</code> bound currently in <code>libstd</code> and either leave it as-is, add an
 explicit <code>'static</code> bound, or bound it with another lifetime parameter.</li>
 </ul>
-<a class="header" href="0458-send-improvements.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, Rust has two types that deal with concurrency: <code>Sync</code> and <code>Send</code></p>
 <p>If <code>T</code> is <code>Sync</code>, then <code>&amp;T</code> is threadsafe (that is, can cross task boundaries without
 data races).  This is always true of any type with simple inherited mutability, and it is also true
@@ -183,8 +190,8 @@ and worker tasks from concurrently accessing an item that is <code>Sync + NoSend
 <li>Because <code>Send</code> has a <code>'static</code> bound, most concurrency constructs cannot be used if they have any non-static references in them, even in a thread with a bounded lifetime.  It seems like there should be a way to extend <code>Send</code> to shorter lifetimes.  But
 naively removing the <code>'static</code> bound causes memory unsafety in existing APIs like Mutex.</li>
 </ul>
-<a class="header" href="0458-send-improvements.html#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
-<a class="header" href="0458-send-improvements.html#proposal" id="proposal"><h2>Proposal</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed Design</h1></a>
+<a class="header" href="#proposal" id="proposal"><h2>Proposal</h2></a>
 <p>Extend the current meaning of <code>Send</code> in a (mostly) backwards-compatible way that
 retains memory-safety, but allows for existing concurrent types like <code>Arc</code> and <code>Mutex</code> to be
 used across non-<code>'static</code> boundaries.  Use <code>Send</code> with a bounded lifetime instead of <code>Sync</code> for fork-join concurrency.</p>
@@ -226,7 +233,7 @@ guaranteed to be threadsafe by Rust's type system.</p>
 sensible defaults.  For example, the <code>spawn()</code> APIs should all have <code>'static</code> bounds,
 preserving current behavior.  I don't think this would be too difficult, but it may be that there
 are some edge cases here where it's tricky to determine what the right solution is.</p>
-<a class="header" href="0458-send-improvements.html#more-unusual-types" id="more-unusual-types"><h2>More unusual types</h2></a>
+<a class="header" href="#more-unusual-types" id="more-unusual-types"><h2>More unusual types</h2></a>
 <p>We discussed whether a type with a destructor that manipulated thread-local data could be non-<code>Send</code> even though <code>&amp;mut T</code> was.  In general it could not, because you can call a destructor through <code>&amp;mut</code> references (through <code>swap</code> or simply assigning a new value to <code>*x</code> where <code>x: &amp;mut T</code>).  It was noted that since <code>&amp;uniq T</code> cannot be dropped, this suggests a role for such types.</p>
 <p>Some unusual types proposed by <code>arielb1</code> and myself to explain why <code>T: Send</code> does not mean <code>&amp;mut T</code> is threadsafe, and <code>T: Sync</code> does not imply <code>T: Send</code>.  The first type is a bottom type, the second takes <code>self</code> by value (so <code>RcMainTask</code> is not <code>Send</code> but <code>&amp;mut RcMainTask</code> is <code>Send</code>).</p>
 <p>Comments from arielb1:</p>
@@ -304,9 +311,9 @@ impl&lt;T&gt; Deref&lt;T&gt; for RcMut&lt;T&gt; {
 // fn on_main_task() -&gt; bool { false /* XXX: implement */ }
 // fn main() {}
 </code></pre></pre>
-<a class="header" href="0458-send-improvements.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Libraries get a bit more complicated to write, since you may have to write <code>Send + 'static</code> where previously you just wrote <code>Send</code>.</p>
-<a class="header" href="0458-send-improvements.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could accept the status quo.  This would mean that any existing <code>Sync</code> <code>NoSend</code>
 type like those described above would be unsafe (that is, it would not be possible to write a non-<code>'static</code> closure with the correct bounds to make it safe to use), and it would not be possible to write a type like <code>Arc&lt;T&gt;</code> for a <code>T</code> with a bounded lifetime, as well as other safe concurrency constructs for fork-join concurrency.  I do not think this is a good alternative.</p>
 <p>We could do as proposed above, but change <code>Sync</code> to be a subtype of <code>Send</code>.  Things wouldn't be too
@@ -316,7 +323,7 @@ purpose.  I suppose the advantage of this would be that user code currently usin
 get a <code>'static</code> bound would not break.  However, I don't think it makes a lot of sense to keep the
 current <code>Send</code> type around if this is implemented, since the new type should be backwards compatible
 with it where it was being used semantically correctly.</p>
-<a class="header" href="0458-send-improvements.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Is the new scheme actually safe?  I <em>think</em> it is, but I certainly haven't proved it.</p>
@@ -377,9 +384,6 @@ things in bounded-lifetime threads that you can in regular threads, but it may b
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

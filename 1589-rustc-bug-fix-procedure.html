@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1589-rustc-bug-fix-procedure - </title>
+        <title>1589-rustc-bug-fix-procedure - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1589">rust-lang/rfcs#1589</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Defines a best practices procedure for making bug fixes or soundness
 corrections in the compiler that can cause existing code to stop
 compiling.</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>From time to time, we encounter the need to make a bug fix, soundness
 correction, or other change in the compiler which will cause existing
 code to stop compiling. When this happens, it is important that we
@@ -163,7 +170,7 @@ unexpectedly large consequences or there may be a way to avoid the
 change that was not considered.  In those cases, we may decide to
 change course and roll back the change, or find another solution (if
 warnings are being used, this is particularly easy to do).</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#what-qualifies-as-a-bug-fix" id="what-qualifies-as-a-bug-fix"><h3>What qualifies as a bug fix?</h3></a>
+<a class="header" href="#what-qualifies-as-a-bug-fix" id="what-qualifies-as-a-bug-fix"><h3>What qualifies as a bug fix?</h3></a>
 <p>Note that this RFC does not try to define when a breaking change is
 permitted. That is already covered under <a href="https://github.com/rust-lang/rfcs/blob/master/text/1122-language-semver.md">RFC 1122</a>. This document
 assumes that the change being made is in accordance with those
@@ -177,7 +184,7 @@ where the compiler behaves inconsistently and no formal behavior had
 been previously decided.</li>
 </ul>
 <p>Please see <a href="https://github.com/rust-lang/rfcs/blob/master/text/1122-language-semver.md">the RFC</a> for full details!</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The procedure for making a breaking change is as follows (each of
 these steps is described in more detail below):</p>
 <ol start="0">
@@ -208,7 +215,7 @@ and direct them to the tracking issue</li>
 <p>Finally, for changes to libsyntax that will affect plugins, the
 general policy is to batch these changes. That is discussed below in
 more detail.</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#tracking-issue" id="tracking-issue"><h3>Tracking issue</h3></a>
+<a class="header" href="#tracking-issue" id="tracking-issue"><h3>Tracking issue</h3></a>
 <p>Every breaking change should be accompanied by a <strong>dedicated tracking
 issue</strong> for that change. The main text of this issue should describe
 the change being made, with a focus on what users must do to fix their
@@ -221,7 +228,7 @@ below. An example of how such an issue should look can be
 <a href="https://gist.github.com/nikomatsakis/631ec8b4af9a18b5d062d9d9b7d3d967">found here</a>.</p>
 <p>The issue should be tagged with (at least) <code>B-unstable</code> and
 <code>T-compiler</code>.</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#tracking-issue-template" id="tracking-issue-template"><h3>Tracking issue template</h3></a>
+<a class="header" href="#tracking-issue-template" id="tracking-issue-template"><h3>Tracking issue template</h3></a>
 <p>What follows is a template for tracking issues.</p>
 <hr />
 <p>This is the <strong>summary issue</strong> for the <code>YOUR_LINT_NAME_HERE</code>
@@ -231,10 +238,10 @@ code that is affected by it. It also provides a place to ask questions
 or register a complaint if you feel the change should not be made. For
 more information on the policy around future-compatibility warnings,
 see our <a href="LINK_TO_THIS_RFC">breaking change policy guidelines</a>.</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#what-is-the-warning-for" id="what-is-the-warning-for"><h4>What is the warning for?</h4></a>
+<a class="header" href="#what-is-the-warning-for" id="what-is-the-warning-for"><h4>What is the warning for?</h4></a>
 <p><em>Describe the conditions that trigger the warning and how they can be
 fixed. Also explain why the change was made.</em>*</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#when-will-this-warning-become-a-hard-error" id="when-will-this-warning-become-a-hard-error"><h4>When will this warning become a hard error?</h4></a>
+<a class="header" href="#when-will-this-warning-become-a-hard-error" id="when-will-this-warning-become-a-hard-error"><h4>When will this warning become a hard error?</h4></a>
 <p>At the beginning of each 6-week release cycle, the Rust compiler team
 will review the set of outstanding future compatibility warnings and
 nominate some of them for <strong>Final Comment Period</strong>. Toward the end of
@@ -242,7 +249,7 @@ the cycle, we will review any comments and make a final determination
 whether to convert the warning into a hard error or remove it
 entirely.</p>
 <hr />
-<a class="header" href="1589-rustc-bug-fix-procedure.html#issuing-future-compatibility-warnings" id="issuing-future-compatibility-warnings"><h3>Issuing future compatibility warnings</h3></a>
+<a class="header" href="#issuing-future-compatibility-warnings" id="issuing-future-compatibility-warnings"><h3>Issuing future compatibility warnings</h3></a>
 <p>The best way to handle a breaking change is to begin by issuing
 future-compatibility warnings. These are a special category of lint
 warning. Adding a new future-compatibility warning can be done as
@@ -283,7 +290,7 @@ tcx.sess.add_lint(
     binding.span,
     format!(&quot;some helper message here&quot;));
 #}</code></pre></pre>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#helpful-techniques" id="helpful-techniques"><h4>Helpful techniques</h4></a>
+<a class="header" href="#helpful-techniques" id="helpful-techniques"><h4>Helpful techniques</h4></a>
 <p>It can often be challenging to filter out new warnings from older,
 pre-existing errors. One technique that has been used in the past is
 to run the older code unchanged and collect the errors it would have
@@ -292,12 +299,12 @@ which do not appear in that original set. Another option is to abort
 compilation after the original code completes if errors are reported:
 then you know that your new code will only execute when there were no
 errors before.</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#crater-and-cratesio" id="crater-and-cratesio"><h4>Crater and crates.io</h4></a>
+<a class="header" href="#crater-and-cratesio" id="crater-and-cratesio"><h4>Crater and crates.io</h4></a>
 <p>We should always do a crater run to assess impact. It is polite and
 considerate to at least notify the authors of affected crates the
 breaking change.  If we can submit PRs to fix the problem, so much the
 better.</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#is-it-ever-acceptable-to-go-directly-to-issuing-errors" id="is-it-ever-acceptable-to-go-directly-to-issuing-errors"><h4>Is it ever acceptable to go directly to issuing errors?</h4></a>
+<a class="header" href="#is-it-ever-acceptable-to-go-directly-to-issuing-errors" id="is-it-ever-acceptable-to-go-directly-to-issuing-errors"><h4>Is it ever acceptable to go directly to issuing errors?</h4></a>
 <p>Changes that are believed to have negligible impact can go directly to
 issuing an error. One rule of thumb would be to check against
 <code>crates.io</code>: if fewer than 10 <strong>total</strong> affected projects are found
@@ -330,7 +337,7 @@ users can use them.</li>
 </ul>
 </li>
 </ol>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#stabilization" id="stabilization"><h3>Stabilization</h3></a>
+<a class="header" href="#stabilization" id="stabilization"><h3>Stabilization</h3></a>
 <p>After a change is made, we will <strong>stabilize</strong> the change using the same
 process that we use for unstable features:</p>
 <ul>
@@ -348,7 +355,7 @@ we will review comments and make a final determination:
 </ul>
 <p>Ideally, breaking changes should have landed on the <strong>stable branch</strong>
 of the compiler before they are finalized.</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#batching-breaking-changes-to-libsyntax" id="batching-breaking-changes-to-libsyntax"><h3>Batching breaking changes to libsyntax</h3></a>
+<a class="header" href="#batching-breaking-changes-to-libsyntax" id="batching-breaking-changes-to-libsyntax"><h3>Batching breaking changes to libsyntax</h3></a>
 <p>Due to the lack of stable plugins, making changes to libsyntax can
 currently be quite disruptive to the ecosystem that relies on plugins.
 In an effort to ease this pain, we generally try to batch up such
@@ -359,12 +366,12 @@ piecemeal fashion. In practice, this means that you should add:</p>
 <p>to the PR and avoid directly merging it. In the future we may develop
 a more polished procedure here, but the hope is that this is a
 relatively temporary state of affairs.</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Following this policy can require substantial effort and slows the
 time it takes for a change to become final. However, this is far
 outweighed by the benefits of avoiding sharp disruptions in the
 ecosystem.</p>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>There are obviously many points that we could tweak in this policy:</p>
 <ul>
 <li>Eliminate the tracking issue.</li>
@@ -379,7 +386,7 @@ inconsistent treatment of issues.</li>
 has to stop evolving, or else would issue new major versions quite
 frequently, causing undue disruption.</li>
 </ul>
-<a class="header" href="1589-rustc-bug-fix-procedure.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>N/A</p>
 <!-- -Links--------------------------------------------------------------------- -->
 
@@ -426,9 +433,6 @@ frequently, causing undue disruption.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

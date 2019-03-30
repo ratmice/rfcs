@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2436-style-guide - </title>
+        <title>2436-style-guide - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,35 +146,35 @@
 <li>RFC PR: #2436</li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="2436-style-guide.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC defines an official Rust style guide. The style is a specification for the default behaviour of <a href="https://github.com/rust-lang-nursery/rustfmt">Rustfmt</a>, is required for official Rust projects (including the compiler and standard libraries), and is recommended for all Rust projects. The style guide in this RFC only covers the formatting of code, it does not have any recommendations about how to write idiomatic or high quality Rust code.</p>
 <p>The formatting guidelines in the style guide have been decided on in the <a href="https://github.com/rust-lang/rfcs/blob/master/text/1607-style-rfcs.md">formatting RFC process</a> by the style team. The guidelines were <a href="https://github.com/rust-lang-nursery/fmt-rfcs/issues?utf8=%E2%9C%93&amp;q=is%3Aissue">extensively debated</a> and this RFC is the result of that consensus process. I would like to discourage re-opening debate on the guidelines themselves here. Please limit discussion to the presentation and application of the guide, omissions from the guide, and issues which were missed in the formatting RFC process.</p>
 <p>Thanks to the style team for their work on the guidelines: Brian Anderson, Jorge Aparicio, Nick Cameron, Steve Klabnik, Nicole Mazzuca, Scott Olson, and Josh Triplett.</p>
-<a class="header" href="2436-style-guide.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Formatting code is a mostly mechanical task which takes both time and mental effort. By using an automatic formatting tool, a programmer is relieved of this task and can concentrate on more important things.</p>
 <p>Furthermore, by sticking to an established style guide (such as this one), programmers don't need to formulate ad hoc style rules, nor do they need to debate with other programmers what style rules should be used, saving time, communication overhead, and mental energy.</p>
 <p>Humans comprehend information through pattern matching. By ensuring that all Rust code has similar formatting, less mental effort is required to comprehend a new project, lowering the bar to entry for new developers.</p>
 <p>Thus, there are productivity benefits to using a formatting tool (such as rustfmt), and even larger benefits by using a community-consistent formatting, typically by using a formatting tool's default settings.</p>
-<a class="header" href="2436-style-guide.html#options" id="options"><h2>Options</h2></a>
+<a class="header" href="#options" id="options"><h2>Options</h2></a>
 <p>Rustfmt has many options for customising formatting. The behaviour of those options is outside the scope of this RFC. We recommend that users do not configure Rustfmt using the available options and use the default settings. The reason for doing so is consistency in code formatting across the ecosystem - this lowers the bar for developers to move from one project to another because they don't need to get used to reading a new style of formatting.</p>
-<a class="header" href="2436-style-guide.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
-<p>See the <a href="../style-guide/README.md">guide text</a>.</p>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<p>See the <a href="../style-guide/README.html">guide text</a>.</p>
 <p>The style guide lives in the RFC repo, since it can be considered an appendix to this RFC. We might want to duplicate the style guide elsewhere to make it more discoverable, but the version here will be the 'source of truth'. Amendments to the style guide should go through the RFC process.</p>
-<a class="header" href="2436-style-guide.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>One can level some criticisms at having a style guide:</p>
 <ul>
 <li>it is bureaucratic, gives developers more to worry about, and crushes creativity,</li>
 <li>there are edge cases where the style rules make code look worse (e.g., around FFI).</li>
 </ul>
 <p>However, these are heavily out-weighed by the benefits.</p>
-<a class="header" href="2436-style-guide.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>Many alternative formatting guidelines were discussed in the <a href="https://github.com/rust-lang-nursery/fmt-rfcs/issues?utf8=%E2%9C%93&amp;q=is%3Aissue">formatting RFC process</a>. The guiding principles behind that process are outlined in <a href="https://github.com/rust-lang-nursery/fmt-rfcs#guiding-principles">that repo</a>.</p>
 <p>A possible alternative to this style of style guide would be to try and provide a complete and exhaustive specification, such that if any two tools correctly implemented the specification, they would always format code in the same style. However, this would be a massive undertaking and of limited value (it would permit projects to move easily from one tool to another, but since the tools would be so constrained, there would be little benefit in making a second tool).</p>
 <p>We could also not have a written style guide and state that the output of Rustfmt is the official Rust style, however, that would not have permitted the community input that the formatting RFC process facilitated, and would not give a good way to judge breaking changes in Rustfmt.</p>
-<a class="header" href="2436-style-guide.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>Rust has <a href="https://rust-lang-nursery.github.io/api-guidelines/">API design guidelines</a>; an early version ('the Rust style guide') contained both formatting and API design guidelines.</p>
 <p>Some language have official style guides (e.g., <a href="https://www.python.org/dev/peps/pep-0008/">Python</a> and <a href="https://kotlinlang.org/docs/reference/coding-conventions.html#formatting">Kotlin</a>). For those that do not, several unofficial guides usually appear, for example, there are several style guides for C++, such as <a href="https://google.github.io/styleguide/cppguide.html">Google's</a> and <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/Coding_Style">Mozilla's</a>.</p>
-<a class="header" href="2436-style-guide.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 
                     </main>
 
@@ -212,9 +219,6 @@
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

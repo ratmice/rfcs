@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2169-euclidean-modulo - </title>
+        <title>2169-euclidean-modulo - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2169">rust-lang/rfcs#2169</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/49048">rust-lang/rust#49048</a></li>
 </ul>
-<a class="header" href="2169-euclidean-modulo.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes the addition of a modulo method with more useful and mathematically regular properties over the built-in remainder <code>%</code> operator when the dividend or divisor is negative, along with the associated division method.</p>
 <p>For previous discussion, see: https://internals.rust-lang.org/t/mathematical-modulo-operator/5952.</p>
-<a class="header" href="2169-euclidean-modulo.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The behaviour of division and modulo, as implemented by Rust's (truncated) division <code>/</code> and remainder (or truncated modulo) <code>%</code> operators, with respect to negative operands is unintuitive and has fewer useful mathematical properties than that of other varieties of division and modulo, such as flooring and Euclidean<a href="https://dl.acm.org/citation.cfm?doid=128861.128862">[1]</a>. While there are good reasons for this design decision<a href="https://mail.mozilla.org/pipermail/rust-dev/2013-April/003786.html">[2]</a>, having convenient access to a modulo operation, in addition to the remainder is very useful, and has often been requested<a href="https://mail.mozilla.org/pipermail/rust-dev/2013-April/003680.html">[3]</a><a href="https://github.com/rust-lang/rust/issues/13909">[4]</a><a href="https://stackoverflow.com/questions/31210357/is-there-a-modulus-not-remainder-function-operation">[5]</a><a href="https://users.rust-lang.org/t/proper-modulo-support/903">[6]</a><a href="https://www.reddit.com/r/rust/comments/3yoo1q/remainder/">[7]</a>.</p>
-<a class="header" href="2169-euclidean-modulo.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -154,7 +161,7 @@
 ((-8).div_euc(3), (-8).mod_euc(3))  // (-3,  1)
 #}</code></pre></pre>
 <p>Euclidean division &amp; modulo for integers and floating-point numbers will be achieved using the <code>div_euc</code> and <code>mod_euc</code> methods. The <code>%</code> operator has identical behaviour to <code>mod_euc</code> for unsigned integers. However, when using signed integers or floating-point numbers, you should be careful to consider the behaviour you want: often Euclidean modulo will be more appropriate.</p>
-<a class="header" href="2169-euclidean-modulo.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>It is important to have both division and modulo methods, as the two operations are intrinsically linked<a href="https://en.wikipedia.org/wiki/Modulo_operation">[8]</a>, though it is often the modulo operator that is specifically requested.</p>
 <p>A complete implementation of Euclidean modulo would involve adding 8 methods to the integer primitives in <code>libcore/num/mod.rs</code> and 2 methods to the floating-point primitives in <code>libcore/num</code> and <code>libstd</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -216,9 +223,9 @@ fn mod_euc(self, rhs: f64) -&gt; f64 {
 #}</code></pre></pre>
 <p>The unsigned implementations of these methods are trivial.
 The <code>checked_*</code>, <code>overflowing_*</code> and <code>wrapping_*</code> methods would operate analogously to their non-Euclidean <code>*_div</code> and <code>*_rem</code> counterparts that already exist. The edge cases are identical.</p>
-<a class="header" href="2169-euclidean-modulo.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Standard drawbacks of adding methods to primitives apply. However, with the proposed method names, there are unlikely to be conflicts downstream<a href="https://github.com/search?q=div_euc+language%3ARust&amp;type=Code&amp;utf8=%E2%9C%93">[9]</a><a href="https://github.com/search?q=mod_euc+language%3ARust&amp;type=Code&amp;utf8=%E2%9C%93">[10]</a>.</p>
-<a class="header" href="2169-euclidean-modulo.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>Flooring modulo is another variant that also has more useful behaviour with negative dividends than the remainder (truncating modulo). The difference in behaviour between flooring and Euclidean division &amp; modulo come up rarely in practice, but there are arguments in favour of the mathematical properties of Euclidean division and modulo<a href="https://dl.acm.org/citation.cfm?doid=128861.128862">[1]</a>. Alternatively, both methods (flooring <em>and</em> Euclidean) could be made available, though the difference between the two is likely specialised-enough that this would be overkill.</p>
 <p>The functionality could be provided as an operator. However, it is likely that the functionality of remainder and modulo are small enough that it is not worth providing a dedicated operator for the method.</p>
 <p>This functionality could instead reside in a separate crate, such as <code>num</code> (floored division &amp; modulo is already available in this crate). However, there are strong points for inclusion into core itself:</p>
@@ -228,7 +235,7 @@ The <code>checked_*</code>, <code>overflowing_*</code> and <code>wrapping_*</cod
 <li>The previous support for this functionality in core shows that many are keen to have this available.</li>
 <li>The Euclidean or flooring modulo is used (or reimplemented) commonly enough that it is worth having it generally accessible, rather than in a separate crate that must be depended on by each project.</li>
 </ul>
-<a class="header" href="2169-euclidean-modulo.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -274,9 +281,6 @@ The <code>checked_*</code>, <code>overflowing_*</code> and <code>wrapping_*</cod
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

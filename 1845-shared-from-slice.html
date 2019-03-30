@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1845-shared-from-slice - </title>
+        <title>1845-shared-from-slice - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1845">rust-lang/rfcs#1845</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/40475">rust-lang/rust#40475</a></li>
 </ul>
-<a class="header" href="1845-shared-from-slice.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This is an RFC to add the APIs: <code>From&lt;&amp;[T]&gt; for Rc&lt;[T]&gt;</code> where [<code>T: Clone</code>][Clone] or [<code>T: Copy</code>][Copy] as well as <code>From&lt;&amp;str&gt; for Rc&lt;str&gt;</code>. In addition: <code>From&lt;Vec&lt;T&gt;&gt; for Rc&lt;[T]&gt;</code> and <code>From&lt;Box&lt;T: ?Sized&gt;&gt; for Rc&lt;T&gt;</code> will be added.</p>
 <p>Identical APIs will also be added for [<code>Arc</code>][Arc].</p>
-<a class="header" href="1845-shared-from-slice.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="1845-shared-from-slice.html#caching-and-string-interning" id="caching-and-string-interning"><h2>Caching and [string interning]</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#caching-and-string-interning" id="caching-and-string-interning"><h2>Caching and [string interning]</h2></a>
 <p>These, and especially the latter - i.e: <code>From&lt;&amp;str&gt;</code>, trait implementations of [<code>From</code>][From] are useful when dealing with any form of caching of slices.</p>
 <p>This especially applies to <em>controllable</em> [string interning], where you can cheaply cache strings with a construct such as putting [<code>Rc</code>][Rc]s into [<code>HashSet</code>][HashSet]s, i.e: <code>HashSet&lt;Rc&lt;str&gt;&gt;</code>.</p>
 <p>An example of string interning:</p>
@@ -194,17 +201,17 @@ assert!(Rc::ptr_eq(&amp;rc_second, &amp;rc_third));
 <p>Buffer sharing is accomplished through thread-local (non-atomic) reference counting</p>
 </blockquote>
 <p>It is useful to provide an implementation of <code>From&lt;&amp;[T]&gt;</code> as well, and not just for [<code>&amp;str</code>][str], because one might deal with non-utf8 strings, i.e: <code>&amp;[u8]</code>. One could potentially reuse this for [<code>Path</code>][Path], [<code>OsStr</code>][OsStr].</p>
-<a class="header" href="1845-shared-from-slice.html#safe-abstraction-for-unsafe-code" id="safe-abstraction-for-unsafe-code"><h2>Safe abstraction for <code>unsafe</code> code.</h2></a>
+<a class="header" href="#safe-abstraction-for-unsafe-code" id="safe-abstraction-for-unsafe-code"><h2>Safe abstraction for <code>unsafe</code> code.</h2></a>
 <p>Providing these implementations in the current state of Rust requires substantial amount of <code>unsafe</code> code. Therefore, for the sake of confidence in that the implementations are safe - it is best done in the standard library.</p>
-<a class="header" href="1845-shared-from-slice.html#rcboxrcbox-is-not-public" id="rcboxrcbox-is-not-public"><h2>[<code>RcBox</code>][RcBox] is not public</h2></a>
+<a class="header" href="#rcboxrcbox-is-not-public" id="rcboxrcbox-is-not-public"><h2>[<code>RcBox</code>][RcBox] is not public</h2></a>
 <p>Furthermore, since [<code>RcBox</code>][RcBox] is not exposed publically from [<code>std::rc</code>][std::rc], one can't make an implementation outside of the standard library for this without making assumptions about the internal layout of [<code>Rc</code>][Rc]. The alternative is to roll your own implementation of [<code>Rc</code>][Rc] in its entirity - but this in turn requires using a lot of feature gates, which makes using this on stable Rust in the near future unfeasible.</p>
-<a class="header" href="1845-shared-from-slice.html#for-arcarc" id="for-arcarc"><h2>For [<code>Arc</code>][Arc]</h2></a>
+<a class="header" href="#for-arcarc" id="for-arcarc"><h2>For [<code>Arc</code>][Arc]</h2></a>
 <p>For [<code>Arc</code>][Arc] the synchronization overhead of doing <code>.clone()</code> is probably greater than the overhead of doing <code>Arc&lt;Box&lt;str&gt;&gt;</code>. But once the clones have been made, <code>Arc&lt;str&gt;</code> would probably be cheaper to dereference due to locality.</p>
 <p>Most of the motivations for [<code>Rc</code>][Rc] applies to [<code>Arc</code>][Arc] as well, but the use cases might be fewer. Therefore, the case for adding the same API for [<code>Arc</code>][Arc] is less clear. One could perhaps use it for multi threaded interning with a type such as: <code>Arc&lt;Mutex&lt;HashSet&lt;Arc&lt;str&gt;&gt;&gt;&gt;</code>.</p>
 <p>Because of the similarities between the layout of [<code>Rc</code>][Rc] and [<code>Arc</code>][Arc], almost identical implementations could be added for <code>From&lt;&amp;[T]&gt; for Arc&lt;[T]&gt;</code> and <code>From&lt;&amp;str&gt; for Arc&lt;str&gt;</code>. It would also be consistent to do so.</p>
 <p>Taking all of this into account, adding the APIs for [<code>Arc</code>][Arc] is warranted.</p>
-<a class="header" href="1845-shared-from-slice.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1845-shared-from-slice.html#theres-already-an-implementation" id="theres-already-an-implementation"><h2>There's already an implementation</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#theres-already-an-implementation" id="theres-already-an-implementation"><h2>There's already an implementation</h2></a>
 <p>There is <a href="https://doc.rust-lang.org/nightly/src/alloc/rc.rs.html#417-440">already an implementation</a> of sorts [<code>alloc::rc</code>][Rc] for this. But it is hidden under the feature gate <code>rustc_private</code>, which, to the authors knowledge, will never be stabilized. The implementation is, on this day, as follows:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -235,15 +242,15 @@ impl Rc&lt;str&gt; {
 }
 #}</code></pre></pre>
 <p>The idea is to use the bulk of the implementation of that, generalize it to [<code>Vec</code>][Vec]s and [slices][slice], specialize it for [<code>&amp;str</code>][str], provide documentation for both.</p>
-<a class="header" href="1845-shared-from-slice.html#copycopy-and-cloneclone" id="copycopy-and-cloneclone"><h2>[<code>Copy</code>][Copy] and [<code>Clone</code>][Clone]</h2></a>
+<a class="header" href="#copycopy-and-cloneclone" id="copycopy-and-cloneclone"><h2>[<code>Copy</code>][Copy] and [<code>Clone</code>][Clone]</h2></a>
 <p>For the implementation of <code>From&lt;&amp;[T]&gt; for Rc&lt;[T]&gt;</code>, <code>T</code> must be [<code>Copy</code>][Copy] if <code>ptr::copy_nonoverlapping</code> is used because this relies on it being memory safe to simply copy the bits over. If instead, [<code>T::clone()</code>][Clone] is used in a loop, then <code>T</code> can simply be [<code>Clone</code>][Clone] instead. This is however slower than using <code>ptr::copy_nonoverlapping</code>.</p>
-<a class="header" href="1845-shared-from-slice.html#vecvec-and-boxbox" id="vecvec-and-boxbox"><h2>[<code>Vec</code>][Vec] and [<code>Box</code>][Box]</h2></a>
+<a class="header" href="#vecvec-and-boxbox" id="vecvec-and-boxbox"><h2>[<code>Vec</code>][Vec] and [<code>Box</code>][Box]</h2></a>
 <p>For the implementation of <code>From&lt;Vec&lt;T&gt;&gt; for Rc&lt;[T]&gt;</code>, <code>T</code> need not be [<code>Copy</code>][Copy], nor [<code>Clone</code>][Clone]. The input vector already owns valid <code>T</code>s, and these elements are simply copied over bit for bit. After copying all elements, they are no longer
 owned in the vector, which is then deallocated. Unfortunately, at this stage, the memory used by the vector can not be reused - this could potentially be changed in the future.</p>
 <p>This is similar for [<code>Box</code>][Box].</p>
-<a class="header" href="1845-shared-from-slice.html#suggested-implementation" id="suggested-implementation"><h2>Suggested implementation</h2></a>
+<a class="header" href="#suggested-implementation" id="suggested-implementation"><h2>Suggested implementation</h2></a>
 <p>The actual implementations could / will look something like:</p>
-<a class="header" href="1845-shared-from-slice.html#for-rcrc" id="for-rcrc"><h3>For [<code>Rc</code>][Rc]</h3></a>
+<a class="header" href="#for-rcrc" id="for-rcrc"><h3>For [<code>Rc</code>][Rc]</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -558,7 +565,7 @@ impl&lt;T: ?Sized&gt; From&lt;Box&lt;T&gt;&gt; for Rc&lt;T&gt; {
 <p>With more safe abstractions in the future, this can perhaps be rewritten with
 less unsafe code. But this should not change the API itself and thus will never
 cause a breaking change.</p>
-<a class="header" href="1845-shared-from-slice.html#for-arcarc-1" id="for-arcarc-1"><h3>For [<code>Arc</code>][Arc]</h3></a>
+<a class="header" href="#for-arcarc-1" id="for-arcarc-1"><h3>For [<code>Arc</code>][Arc]</h3></a>
 <p>For the sake of brevity, just use the implementation above, and replace:</p>
 <ul>
 <li><code>slice_to_rc</code> with <code>slice_to_arc</code>,</li>
@@ -566,14 +573,14 @@ cause a breaking change.</p>
 <li><code>rcbox_ptr</code> with <code>arcinner_ptr</code>,</li>
 <li><code>Rc</code> with <code>Arc</code>.</li>
 </ul>
-<a class="header" href="1845-shared-from-slice.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>The documentation provided in the <code>impls</code> should be enough.</p>
-<a class="header" href="1845-shared-from-slice.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The main drawback would be increasing the size of the standard library.</p>
-<a class="header" href="1845-shared-from-slice.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ol>
 <li>Only implement this for [<code>T: Copy</code>][Copy] and skip [<code>T: Clone</code>][Clone].</li>
-<li>Let other libraries do this. This has the problems explained in the <a href="1845-shared-from-slice.html#motivation">motivation</a>
+<li>Let other libraries do this. This has the problems explained in the <a href="#motivation">motivation</a>
 section above regarding [<code>RcBox</code>][RcBox] not being publically exposed as well as
 the amount of feature gates needed to roll ones own [<code>Rc</code>][Rc] alternative - for
 little gain.</li>
@@ -605,7 +612,7 @@ impl Arc&lt;str&gt; {
   fn from_str(slice: &amp;str) -&gt; Self;
 }
 #}</code></pre></pre>
-<a class="header" href="1845-shared-from-slice.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Should a special version of [<code>make_mut</code>][make_mut] be added for <code>Rc&lt;[T]&gt;</code>? This could look like:</li>
 </ul>
@@ -686,9 +693,6 @@ impl&lt;T&gt; Rc&lt;[T]&gt; where T: Clone {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1584-macros - </title>
+        <title>1584-macros - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1584">1584</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/39412">39412</a></li>
 </ul>
-<a class="header" href="1584-macros.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Declarative macros 2.0. A replacement for <code>macro_rules!</code>. This is mostly a
 placeholder RFC since many of the issues affecting the new macro system are
 (or will be) addressed in other RFCs. This RFC may be expanded at a later date.</p>
@@ -159,7 +166,7 @@ placeholder RFC since many of the issues affecting the new macro system are
 <li>more ...</li>
 </ul>
 <p>Note this RFC does not involve procedural macros (aka syntax extensions).</p>
-<a class="header" href="1584-macros.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>There are several changes to the declarative macro system which are desirable but
 not backwards compatible (See <a href="https://github.com/rust-lang/rfcs/pull/1561">RFC 1561</a>
 for some changes to macro naming and modularisation, I would also like to
@@ -208,14 +215,14 @@ the two systems other than how macros are named. For macro authors, most macros
 that work in the old system should work in the new system with minimal changes.
 Macros which will need some adjustment are those that exploit holes in the
 current hygiene system.</p>
-<a class="header" href="1584-macros.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>There will be a new system of declarative macros using similar syntax and
 semantics to the current <code>macro_rules!</code> system.</p>
 <p>A declarative macro is declared using the <code>macro</code> keyword. For example, where a
 macro <code>foo</code> is declared today as <code>macro_rules! foo { ... }</code>, it will be declared
 using <code>macro foo { ... }</code>. I leave the syntax of the macro body for later
 specification.</p>
-<a class="header" href="1584-macros.html#nomenclature" id="nomenclature"><h2>Nomenclature</h2></a>
+<a class="header" href="#nomenclature" id="nomenclature"><h2>Nomenclature</h2></a>
 <p>Throughout this RFC, I use 'declarative macro' to refer to a macro declared
 using declarative (and domain specific) syntax (such as the current
 <code>macro_rules!</code> syntax). The 'declarative macros' name is in opposition to
@@ -223,12 +230,12 @@ using declarative (and domain specific) syntax (such as the current
 declarative syntax using pattern matching and templating is often referred to as
 'macros by example'.</p>
 <p>'Pattern macro' has been suggested as an alternative for 'declarative macro'.</p>
-<a class="header" href="1584-macros.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There is a risk that <code>macro_rules!</code> is good enough for most users and there is
 low adoption of the new system. Possibly worse would be that there is high
 adoption but little migration from the old system, leading to us having to
 support two systems forever.</p>
-<a class="header" href="1584-macros.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Make backwards incompatible changes to <code>macro_rules!</code>. This is probably a
 non-starter due to our stability guarantees. We might be able to make something
 work if this was considered desirable.</p>
@@ -239,7 +246,7 @@ breaking backwards compatibility.</p>
 <p>Don't use a keyword - either make <code>macro</code> not a keyword or use a different word
 for declarative macros.</p>
 <p>Live with the existing system.</p>
-<a class="header" href="1584-macros.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>What to do with <code>macro_rules</code>? We will need to maintain it at least until <code>macro</code>
 is stable. Hopefully, we can then deprecate it (some time will be required to
 migrate users to the new system). Eventually, I hope we can remove <code>macro_rules!</code>.
@@ -289,9 +296,6 @@ adhere to our stability guarantees.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

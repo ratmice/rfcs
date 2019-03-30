@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1398-kinds-of-allocators - </title>
+        <title>1398-kinds-of-allocators - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1398">rust-lang/rfcs#1398</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/32838">rust-lang/rust#32838</a></li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add a standard allocator interface and support for user-defined
 allocators, with the following goals:</p>
 <ol>
@@ -163,15 +170,15 @@ themselves with a standardized reflective GC interface, but leave
 specification of such integration for a later RFC. (The design
 describes a way to add such a feature in the future while ensuring
 that clients do not accidentally opt-in and risk unsound behavior.)</p>
-<a class="header" href="1398-kinds-of-allocators.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>As noted in <a href="https://github.com/rust-lang/rfcs/pull/39/files">RFC PR 39</a> (and reiterated in <a href="https://github.com/rust-lang/rfcs/pull/244">RFC PR 244</a>), modern general purpose allocators are good,
 but due to the design tradeoffs they must make, cannot be optimal in
 all contexts.  (It is worthwhile to also read discussion of this claim
 in papers such as
-<a href="1398-kinds-of-allocators.html#reconsidering-custom-memory-allocation">Reconsidering Custom Malloc</a>.)</p>
+<a href="#reconsidering-custom-memory-allocation">Reconsidering Custom Malloc</a>.)</p>
 <p>Therefore, the standard library should allow clients to plug in their
 own allocator for managing memory.</p>
-<a class="header" href="1398-kinds-of-allocators.html#allocators-are-used-in-c-system-programming" id="allocators-are-used-in-c-system-programming"><h2>Allocators are used in C++ system programming</h2></a>
+<a class="header" href="#allocators-are-used-in-c-system-programming" id="allocators-are-used-in-c-system-programming"><h2>Allocators are used in C++ system programming</h2></a>
 <p>The typical reasons given for use of custom allocators in C++ are among the
 following:</p>
 <ol>
@@ -205,26 +212,26 @@ allocator that collects data such as number of allocations,
 or time for requests to be serviced.</p>
 </li>
 </ol>
-<a class="header" href="1398-kinds-of-allocators.html#allocators-should-feel-rustic" id="allocators-should-feel-rustic"><h2>Allocators should feel &quot;rustic&quot;</h2></a>
+<a class="header" href="#allocators-should-feel-rustic" id="allocators-should-feel-rustic"><h2>Allocators should feel &quot;rustic&quot;</h2></a>
 <p>In addition, for Rust we want an allocator API design that leverages
 the core type machinery and language idioms (e.g. using <code>Result</code> to
 propagate dynamic error conditions), and provides
 premade functions for common patterns for allocator clients (such as
 allocating either single instances of a type, or arrays of some types
 of dynamically-determined length).</p>
-<a class="header" href="1398-kinds-of-allocators.html#garbage-collection-integration" id="garbage-collection-integration"><h2>Garbage Collection integration</h2></a>
+<a class="header" href="#garbage-collection-integration" id="garbage-collection-integration"><h2>Garbage Collection integration</h2></a>
 <p>Finally, we want our allocator design to allow for a garbage
 collection (GC) interface to be added in the future.</p>
 <p>At the very least, we do not want to accidentally <em>disallow</em> GC by
 choosing an allocator API that is fundamentally incompatible with it.</p>
 <p>(However, this RFC does not actually propose a concrete solution for
 how to integrate allocators with GC.)</p>
-<a class="header" href="1398-kinds-of-allocators.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1398-kinds-of-allocators.html#the-allocator-trait-at-a-glance" id="the-allocator-trait-at-a-glance"><h2>The <code>Allocator</code> trait at a glance</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#the-allocator-trait-at-a-glance" id="the-allocator-trait-at-a-glance"><h2>The <code>Allocator</code> trait at a glance</h2></a>
 <p>The source code for the <code>Allocator</code> trait prototype is provided in an
-<a href="1398-kinds-of-allocators.html#transcribed-source-for-allocator-trait-api">appendix</a>. But since that section is long, here
+<a href="#transcribed-source-for-allocator-trait-api">appendix</a>. But since that section is long, here
 we summarize the high-level points of the <code>Allocator</code> API.</p>
-<p>(See also the <a href="1398-kinds-of-allocators.html#a-walk-through-the-allocator-trait">walk thru</a> section, which actually links to
+<p>(See also the <a href="#a-walk-through-the-allocator-trait">walk thru</a> section, which actually links to
 individual sections of code.)</p>
 <ul>
 <li>
@@ -304,7 +311,7 @@ through the allocator itself.</p>
 </ul>
 </li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#semantics-of-allocators-and-their-memory-blocks" id="semantics-of-allocators-and-their-memory-blocks"><h2>Semantics of allocators and their memory blocks</h2></a>
+<a class="header" href="#semantics-of-allocators-and-their-memory-blocks" id="semantics-of-allocators-and-their-memory-blocks"><h2>Semantics of allocators and their memory blocks</h2></a>
 <p>In general, an allocator provide access to a memory pool that owns
 some amount of backing storage. The pool carves off chunks of that
 storage and hands it out, via the allocator, as individual blocks of
@@ -314,7 +321,7 @@ parameterized so that it has an <code>A:Allocator</code> type parameter.)</p>
 <p>So, an interaction between a program, a collection library, and an
 allocator might look like this:</p>
 <p><img width="800" src="https://rawgit.com/pnkfelix/pnkfelix.github.com/69230e5f1ea140c0a09c5a9fdd7f0766207cdddd/Svg/allocator-msc.svg">
-If you cannot see the SVG linked here, try the <a href="1398-kinds-of-allocators.html#ascii-art-version-of-allocator-message-sequence-chart">ASCII art version</a> appendix.
+If you cannot see the SVG linked here, try the <a href="#ascii-art-version-of-allocator-message-sequence-chart">ASCII art version</a> appendix.
 Also, if you have suggestions for changes to the SVG, feel free to write them as a comment
 in that appendix; (but be sure to be clear that you are pointing out a suggestion for the SVG).
 </img></p>
@@ -331,7 +338,7 @@ whose associated pool is the low-level <code>#[allocator]</code> crate.</p>
 <li>
 <p>Another allocator that acts as a handle is a <code>&amp;'a Pool</code>, where
 <code>Pool</code> is some structure implementing a sharable backing store.
-The big <a href="1398-kinds-of-allocators.html#example-usage">example</a> section shows an instance of this.</p>
+The big <a href="#example-usage">example</a> section shows an instance of this.</p>
 </li>
 <li>
 <p>An allocator that is its own memory pool would be a type
@@ -355,11 +362,11 @@ can be accepted.</p>
 cannot know which of the above cases it falls in. This has consequences
 in terms of the restrictions that must be met by client code
 interfacing with an allocator, which we discuss in a
-later <a href="1398-kinds-of-allocators.html#allocators-and-lifetimes">section on lifetimes</a>.</p>
-<a class="header" href="1398-kinds-of-allocators.html#example-usage" id="example-usage"><h2>Example Usage</h2></a>
+later <a href="#allocators-and-lifetimes">section on lifetimes</a>.</p>
+<a class="header" href="#example-usage" id="example-usage"><h2>Example Usage</h2></a>
 <p>Lets jump into a demo. Here is a (super-dumb) bump-allocator that uses
 the <code>Allocator</code> trait.</p>
-<a class="header" href="1398-kinds-of-allocators.html#implementing-the-allocator-trait" id="implementing-the-allocator-trait"><h3>Implementing the <code>Allocator</code> trait</h3></a>
+<a class="header" href="#implementing-the-allocator-trait" id="implementing-the-allocator-trait"><h3>Implementing the <code>Allocator</code> trait</h3></a>
 <p>First, the bump-allocator definition itself: each such allocator will
 have its own name (for error reports from OOM), start and limit
 pointers (<code>ptr</code> and <code>end</code>, respectively) to the backing storage it is
@@ -408,7 +415,7 @@ impl DumbBumpPool {
 }
 #}</code></pre></pre>
 <p>Since clients are not allowed to have blocks that outlive their
-associated allocator (see the <a href="1398-kinds-of-allocators.html#allocators-and-lifetimes">lifetimes</a> section),
+associated allocator (see the <a href="#allocators-and-lifetimes">lifetimes</a> section),
 it is sound for us to always drop the backing storage for an allocator
 when the allocator itself is dropped
 (regardless of what sequence of <code>alloc</code>/<code>dealloc</code> interactions occured
@@ -507,7 +514,7 @@ accomplish that while still properly adjusting for alignment; in any
 case, the overall point still holds in cases outside of this specific
 demo.)</p>
 <p>And that is it; we are done with our allocator implementation.</p>
-<a class="header" href="1398-kinds-of-allocators.html#using-an-aallocator-from-the-client-side" id="using-an-aallocator-from-the-client-side"><h3>Using an <code>A:Allocator</code> from the client side</h3></a>
+<a class="header" href="#using-an-aallocator-from-the-client-side" id="using-an-aallocator-from-the-client-side"><h3>Using an <code>A:Allocator</code> from the client side</h3></a>
 <p>We assume that <code>Vec</code> has been extended with a <code>new_in</code> method that
 takes an allocator argument that it uses to satisfy its allocation
 requests.</p>
@@ -581,7 +588,7 @@ fn main() {
 }
 </code></pre></pre>
 <p>And that's all to the demo, folks.</p>
-<a class="header" href="1398-kinds-of-allocators.html#what-about-standard-library-containers" id="what-about-standard-library-containers"><h3>What about standard library containers?</h3></a>
+<a class="header" href="#what-about-standard-library-containers" id="what-about-standard-library-containers"><h3>What about standard library containers?</h3></a>
 <p>The intention of this RFC is that the Rust standard library will be
 extended with parameteric allocator support: <code>Vec</code>, <code>HashMap</code>, etc
 should all eventually be extended with the ability to use an
@@ -594,7 +601,7 @@ with an allocator type parameter, i.e.: <code>Vec&lt;T, A:Allocator&gt;</code> a
 <code>HashMap&lt;K, V, A:Allocator&gt;</code>.</p>
 <p>There are two reasons why such extension is left to later work, after
 this RFC.</p>
-<a class="header" href="1398-kinds-of-allocators.html#default-type-parameter-fallback" id="default-type-parameter-fallback"><h4>Default type parameter fallback</h4></a>
+<a class="header" href="#default-type-parameter-fallback" id="default-type-parameter-fallback"><h4>Default type parameter fallback</h4></a>
 <p>On its own, such a change would be backwards incompatible (i.e. a huge
 breaking change), and also would simply be just plain inconvenient for
 typical use cases. Therefore, the newly added type parameters will
@@ -616,7 +623,7 @@ are a motivating use case), as one can see by reading the following:</p>
 <p>Feature gate defaulted type parameters appearing outside of types: https://github.com/rust-lang/rust/pull/30724</p>
 </li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#fully-general-container-integration-needs-dropck-eyepatch" id="fully-general-container-integration-needs-dropck-eyepatch"><h4>Fully general container integration needs Dropck Eyepatch</h4></a>
+<a class="header" href="#fully-general-container-integration-needs-dropck-eyepatch" id="fully-general-container-integration-needs-dropck-eyepatch"><h4>Fully general container integration needs Dropck Eyepatch</h4></a>
 <p>The previous problem was largely one of programmer
 ergonomics. However, there is also a subtle soundness issue that
 arises due to an current implementation artifact.</p>
@@ -642,12 +649,12 @@ https://github.com/pnkfelix/rfcs/blob/dropck-eyepatch/text/0000-dropck-param-eye
 <p>Nonparametric dropck RFC https://github.com/rust-lang/rfcs/blob/master/text/1238-nonparametric-dropck.md</p>
 </li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#standard-library-containers-conclusion" id="standard-library-containers-conclusion"><h4>Standard library containers conclusion</h4></a>
+<a class="header" href="#standard-library-containers-conclusion" id="standard-library-containers-conclusion"><h4>Standard library containers conclusion</h4></a>
 <p>Rather than wait for the above issues to be resolved, this RFC
 proposes that we at least stabilize the <code>Allocator</code> trait interface;
 then we will at least have a starting point upon which to prototype
 standard library integration.</p>
-<a class="header" href="1398-kinds-of-allocators.html#allocators-and-lifetimes" id="allocators-and-lifetimes"><h2>Allocators and lifetimes</h2></a>
+<a class="header" href="#allocators-and-lifetimes" id="allocators-and-lifetimes"><h2>Allocators and lifetimes</h2></a>
 <p>As mentioned above, allocators provide access to a memory pool. An
 allocator can <em>be</em> the pool (in the sense that the allocator owns the
 backing storage that represents the memory blocks it hands out), or an
@@ -784,18 +791,18 @@ clients would be able to employ the reasoning outlined in the
 outset of this paragraph.)</p>
 </li>
 </ol>
-<a class="header" href="1398-kinds-of-allocators.html#a-walk-through-the-allocator-trait" id="a-walk-through-the-allocator-trait"><h2>A walk through the Allocator trait</h2></a>
-<a class="header" href="1398-kinds-of-allocators.html#role-based-type-aliases" id="role-based-type-aliases"><h3>Role-Based Type Aliases</h3></a>
+<a class="header" href="#a-walk-through-the-allocator-trait" id="a-walk-through-the-allocator-trait"><h2>A walk through the Allocator trait</h2></a>
+<a class="header" href="#role-based-type-aliases" id="role-based-type-aliases"><h3>Role-Based Type Aliases</h3></a>
 <p>Allocation code often needs to deal with values that boil down to a
 <code>usize</code> in the end. But there are distinct roles (e.g. &quot;size&quot;,
 &quot;alignment&quot;) that such values play, and I decided those roles would be
 worth hard-coding into the method signatures.</p>
 <ul>
-<li>Therefore, I made <a href="1398-kinds-of-allocators.html#type-aliases">type aliases</a> for <code>Size</code>, <code>Capacity</code>, <code>Alignment</code>, and <code>Address</code>.</li>
+<li>Therefore, I made <a href="#type-aliases">type aliases</a> for <code>Size</code>, <code>Capacity</code>, <code>Alignment</code>, and <code>Address</code>.</li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#basic-implementation" id="basic-implementation"><h3>Basic implementation</h3></a>
+<a class="header" href="#basic-implementation" id="basic-implementation"><h3>Basic implementation</h3></a>
 <p>An instance of an allocator has many methods, but an implementor of
-the trait need only provide two method bodies: <a href="1398-kinds-of-allocators.html#allocator-core-alloc-and-dealloc">alloc and dealloc</a>.</p>
+the trait need only provide two method bodies: <a href="#allocator-core-alloc-and-dealloc">alloc and dealloc</a>.</p>
 <p>(This is only <em>somewhat</em> analogous to the <code>Iterator</code> trait in Rust. It
 is currently very uncommon to override any methods of <code>Iterator</code> except
 for <code>fn next</code>. However, I expect it will be much more common for
@@ -804,30 +811,30 @@ for <code>fn next</code>. However, I expect it will be much more common for
 <code>dealloc</code> takes such an address as its input. But the client must also
 provide metadata for the allocated block like its size and alignment.
 This is encapsulated in the <code>Layout</code> argument to <code>alloc</code> and <code>dealloc</code>.</p>
-<a class="header" href="1398-kinds-of-allocators.html#memory-layouts" id="memory-layouts"><h3>Memory layouts</h3></a>
+<a class="header" href="#memory-layouts" id="memory-layouts"><h3>Memory layouts</h3></a>
 <p>A <code>Layout</code> just carries the metadata necessary for satisfying an
 allocation request. Its (current, private) representation is just a
 size and alignment.</p>
 <p>The more interesting thing about <code>Layout</code> is the
 family of public methods associated with it for building new layouts via
-composition; these are shown in the <a href="1398-kinds-of-allocators.html#layout-api">layout api</a>.</p>
-<a class="header" href="1398-kinds-of-allocators.html#reallocation-methods" id="reallocation-methods"><h3>Reallocation Methods</h3></a>
+composition; these are shown in the <a href="#layout-api">layout api</a>.</p>
+<a class="header" href="#reallocation-methods" id="reallocation-methods"><h3>Reallocation Methods</h3></a>
 <p>Of course, real-world allocation often needs more than just
 <code>alloc</code>/<code>dealloc</code>: in particular, one often wants to avoid extra
 copying if the existing block of memory can be conceptually expanded
 in place to meet new allocation needs. In other words, we want
 <code>realloc</code>, plus alternatives to it (<code>alloc_excess</code>) that allow clients to avoid
 round-tripping through the allocator API.</p>
-<p>For this, the <a href="1398-kinds-of-allocators.html#allocator-methods-for-memory-reuse">memory reuse</a> family of methods is appropriate.</p>
-<a class="header" href="1398-kinds-of-allocators.html#type-based-helper-methods" id="type-based-helper-methods"><h3>Type-based Helper Methods</h3></a>
+<p>For this, the <a href="#allocator-methods-for-memory-reuse">memory reuse</a> family of methods is appropriate.</p>
+<a class="header" href="#type-based-helper-methods" id="type-based-helper-methods"><h3>Type-based Helper Methods</h3></a>
 <p>Some readers might skim over the <code>Layout</code> API and immediately say &quot;yuck,
 all I wanted to do was allocate some nodes for a tree-structure and
 let my clients choose how the backing memory is chosen! Why do I have
 to wrestle with this <code>Layout</code> business?&quot;</p>
 <p>I agree with the sentiment; that's why the <code>Allocator</code> trait provides
-a family of methods capturing <a href="1398-kinds-of-allocators.html#allocator-convenience-methods-for-common-usage-patterns">common usage patterns</a>,
+a family of methods capturing <a href="#allocator-convenience-methods-for-common-usage-patterns">common usage patterns</a>,
 for example, <code>a.alloc_one::&lt;T&gt;()</code> will return a <code>Unique&lt;T&gt;</code> (or error).</p>
-<a class="header" href="1398-kinds-of-allocators.html#unchecked-variants" id="unchecked-variants"><h2>Unchecked variants</h2></a>
+<a class="header" href="#unchecked-variants" id="unchecked-variants"><h2>Unchecked variants</h2></a>
 <p>Almost all of the methods above return <code>Result</code>, and guarantee some
 amount of input validation. (This is largely because I observed code
 duplication doing such validation on the client side; or worse, such
@@ -836,7 +843,7 @@ validation accidentally missing.)</p>
 without risking undefined behavior, namely by ensuring the method preconditions
 hold via local invariants in their container type).</p>
 <p>For these clients, the <code>Allocator</code> trait provides
-<a href="1398-kinds-of-allocators.html#allocator-unchecked-method-variants">&quot;unchecked&quot; variants</a> of nearly all of its
+<a href="#allocator-unchecked-method-variants">&quot;unchecked&quot; variants</a> of nearly all of its
 methods; so <code>a.alloc_unchecked(layout)</code> will return an <code>Option&lt;Address&gt;</code>
 (where <code>None</code> corresponds to allocation failure).</p>
 <p>The idea here is that <code>Allocator</code> implementors are encouraged
@@ -854,7 +861,7 @@ offered to impl's; but there is no guarantee that an arbitrary impl
 takes advantage of the privilege.)</p>
 </li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#object-oriented-allocators" id="object-oriented-allocators"><h2>Object-oriented Allocators</h2></a>
+<a class="header" href="#object-oriented-allocators" id="object-oriented-allocators"><h2>Object-oriented Allocators</h2></a>
 <p>Finally, we get to object-oriented programming.</p>
 <p>In general, we expect allocator-parametric code to opt <em>not</em> to use
 trait objects to generalize over allocators, but instead to use
@@ -867,9 +874,9 @@ allocators.</p>
 ensure that their presence does not cause the <code>Allocator</code> trait as
 a whole to become non-object-safe.)</li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#why-this-api" id="why-this-api"><h2>Why this API</h2></a>
+<a class="header" href="#why-this-api" id="why-this-api"><h2>Why this API</h2></a>
 <p>Here are some quick points about how this API was selected</p>
-<a class="header" href="1398-kinds-of-allocators.html#why-not-just-freeptr-for-deallocation" id="why-not-just-freeptr-for-deallocation"><h3>Why not just <code>free(ptr)</code> for deallocation?</h3></a>
+<a class="header" href="#why-not-just-freeptr-for-deallocation" id="why-not-just-freeptr-for-deallocation"><h3>Why not just <code>free(ptr)</code> for deallocation?</h3></a>
 <p>As noted in <a href="https://github.com/rust-lang/rfcs/pull/39/files">RFC PR 39</a> (and reiterated in <a href="https://github.com/rust-lang/rfcs/pull/244">RFC PR 244</a>), the basic <code>malloc</code> interface
 {<code>malloc(size) -&gt; ptr</code>, <code>free(ptr)</code>, <code>realloc(ptr, size) -&gt; ptr</code>} is
 lacking in a number of ways: <code>malloc</code> lacks the ability to request a
@@ -884,7 +891,7 @@ immediately available as a compile-time constant).</p>
 <p>Therefore, in the name of (potential best-case) speed, we want to
 require client code to provide the metadata like size and alignment
 to both the allocation and deallocation call sites.</p>
-<a class="header" href="1398-kinds-of-allocators.html#why-not-just-allocdealloc-or-allocdeallocrealloc" id="why-not-just-allocdealloc-or-allocdeallocrealloc"><h3>Why not just <code>alloc</code>/<code>dealloc</code> (or <code>alloc</code>/<code>dealloc</code>/<code>realloc</code>)?</h3></a>
+<a class="header" href="#why-not-just-allocdealloc-or-allocdeallocrealloc" id="why-not-just-allocdealloc-or-allocdeallocrealloc"><h3>Why not just <code>alloc</code>/<code>dealloc</code> (or <code>alloc</code>/<code>dealloc</code>/<code>realloc</code>)?</h3></a>
 <ul>
 <li>
 <p>The <code>alloc_one</code>/<code>dealloc_one</code> and <code>alloc_array</code>/<code>dealloc_array</code>
@@ -903,14 +910,14 @@ callers who can make use of excess memory to avoid unnecessary calls
 to <code>realloc</code>.</p>
 </li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#why-the-layout-abstraction" id="why-the-layout-abstraction"><h3>Why the <code>Layout</code> abstraction?</h3></a>
+<a class="header" href="#why-the-layout-abstraction" id="why-the-layout-abstraction"><h3>Why the <code>Layout</code> abstraction?</h3></a>
 <p>While we do want to require clients to hand the allocator the size and
 alignment, we have found that the code to compute such things follows
 regular patterns. It makes more sense to factor those patterns out
 into a common abstraction; this is what <code>Layout</code> provides: a high-level
 API for describing the memory layout of a composite structure by
 composing the layout of its subparts.</p>
-<a class="header" href="1398-kinds-of-allocators.html#why-return-result-rather-than-a-raw-pointer" id="why-return-result-rather-than-a-raw-pointer"><h3>Why return <code>Result</code> rather than a raw pointer?</h3></a>
+<a class="header" href="#why-return-result-rather-than-a-raw-pointer" id="why-return-result-rather-than-a-raw-pointer"><h3>Why return <code>Result</code> rather than a raw pointer?</h3></a>
 <p>My hypothesis is that the standard allocator API should embrace
 <code>Result</code> as the standard way for describing local error conditions in
 Rust.</p>
@@ -922,7 +929,7 @@ zero-sized error type attached to the trait via an associated
 <code>Error</code> type. But during the RFC process we decided that this
 was not necessary.</li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#why-return-result-rather-than-directly-oom-on-failure" id="why-return-result-rather-than-directly-oom-on-failure"><h3>Why return <code>Result</code> rather than directly <code>oom</code> on failure</h3></a>
+<a class="header" href="#why-return-result-rather-than-directly-oom-on-failure" id="why-return-result-rather-than-directly-oom-on-failure"><h3>Why return <code>Result</code> rather than directly <code>oom</code> on failure</h3></a>
 <p>Again, my hypothesis is that the standard allocator API should embrace
 <code>Result</code> as the standard way for describing local error conditions in
 Rust.</p>
@@ -932,7 +939,7 @@ out-of-memory (OOM) conditions on allocation failure.</p>
 contextual information about <em>which</em> allocator is reporting memory
 exhaustion, I have made <code>oom</code> a method of the <code>Allocator</code> trait, so
 that allocator clients have the option of calling that on error.</p>
-<a class="header" href="1398-kinds-of-allocators.html#why-is-usable_size-ever-needed-why-not-call-layoutsize-directly-as-is-done-in-the-default-implementation" id="why-is-usable_size-ever-needed-why-not-call-layoutsize-directly-as-is-done-in-the-default-implementation"><h3>Why is <code>usable_size</code> ever needed? Why not call <code>layout.size()</code> directly, as is done in the default implementation?</h3></a>
+<a class="header" href="#why-is-usable_size-ever-needed-why-not-call-layoutsize-directly-as-is-done-in-the-default-implementation" id="why-is-usable_size-ever-needed-why-not-call-layoutsize-directly-as-is-done-in-the-default-implementation"><h3>Why is <code>usable_size</code> ever needed? Why not call <code>layout.size()</code> directly, as is done in the default implementation?</h3></a>
 <p><code>layout.size()</code> returns the minimum required size that the client needs.
 In a block-based allocator, this may be less than the <em>actual</em> size
 that the allocator would ever provide to satisfy that kind of
@@ -943,14 +950,14 @@ that<code>layout</code> would be, for a given allocator.</p>
 clients to use <code>alloc_excess</code> and <code>realloc_excess</code> instead, if they
 can, as a way to directly observe the <em>actual</em> amount of slop provided
 by the particular allocator.)</p>
-<a class="header" href="1398-kinds-of-allocators.html#why-is-allocator-an-unsafe-trait" id="why-is-allocator-an-unsafe-trait"><h3>Why is <code>Allocator</code> an <code>unsafe trait</code>?</h3></a>
+<a class="header" href="#why-is-allocator-an-unsafe-trait" id="why-is-allocator-an-unsafe-trait"><h3>Why is <code>Allocator</code> an <code>unsafe trait</code>?</h3></a>
 <p>It just seems like a good idea given how much of the standard library
 is going to assume that allocators are implemented according to their
 specification.</p>
 <p>(I had thought that <code>unsafe fn</code> for the methods would suffice, but
 that is putting the burden of proof (of soundness) in the <em>wrong</em>
 direction...)</p>
-<a class="header" href="1398-kinds-of-allocators.html#the-gc-integration-strategy" id="the-gc-integration-strategy"><h2>The GC integration strategy</h2></a>
+<a class="header" href="#the-gc-integration-strategy" id="the-gc-integration-strategy"><h2>The GC integration strategy</h2></a>
 <p>One of the main reasons that <a href="https://github.com/rust-lang/rfcs/pull/39/files">RFC PR 39</a> was not merged as written
 was because it did not account for garbage collection (GC).</p>
 <p>In particular, assuming that we eventually add support for GC in some
@@ -964,7 +971,7 @@ the team can adapt them as necessary to fit the needs of whatever GC
 designs come around. But the same is not true for user-defined
 allocators: we want to ensure that adding support for them does not
 inadvertantly kill any chance for adding GC later.</p>
-<a class="header" href="1398-kinds-of-allocators.html#the-inspiration-for-layout" id="the-inspiration-for-layout"><h3>The inspiration for Layout</h3></a>
+<a class="header" href="#the-inspiration-for-layout" id="the-inspiration-for-layout"><h3>The inspiration for Layout</h3></a>
 <p>Some aspects of the design of this RFC were selected in the hopes that
 it would make such integration easier. In particular, the introduction
 of the relatively high-level <code>Kind</code> abstraction was developed, in
@@ -978,7 +985,7 @@ confusion with the use of the word &quot;kind&quot; in the context of
 higher-kinded types (HKT).)</p>
 <p>So, this RFC offers the <code>Layout</code> abstraction without promising that it
 solves the GC problem. (It might, or it might not; we don't know yet.)</p>
-<a class="header" href="1398-kinds-of-allocators.html#forwards-compatibility" id="forwards-compatibility"><h3>Forwards-compatibility</h3></a>
+<a class="header" href="#forwards-compatibility" id="forwards-compatibility"><h3>Forwards-compatibility</h3></a>
 <p>So what <em>is</em> the solution for forwards-compatibility?</p>
 <p>It is this: Rather than trying to build GC support into the
 <code>Allocator</code> trait itself, we instead assume that when GC support
@@ -1000,7 +1007,7 @@ claiming them to be GC-compatible will be forbidden from linking with
 crates that require GC support. (In other words, when GC support
 comes, we assume that the linking component of the Rust compiler will
 be extended to check such compatibility requirements.)</p>
-<a class="header" href="1398-kinds-of-allocators.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The API may be over-engineered.</p>
 <p>The core set of methods (the ones without <code>unchecked</code>) return
 <code>Result</code> and potentially impose unwanted input validation overhead.</p>
@@ -1009,9 +1016,9 @@ be extended to check such compatibility requirements.)</p>
 for clients who take care to validate the many preconditions
 themselves in order to minimize the allocation code paths.</li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1398-kinds-of-allocators.html#just-adopt-a-hrefhttpsgithubcomrust-langrfcspull39filesrfc-pr-39a-with-this-rfcs-gc-strategy" id="just-adopt-a-hrefhttpsgithubcomrust-langrfcspull39filesrfc-pr-39a-with-this-rfcs-gc-strategy"><h2>Just adopt <a href="https://github.com/rust-lang/rfcs/pull/39/files">RFC PR 39</a> with this RFC's GC strategy</h2></a>
-<p>The GC-compatibility strategy described here (in <a href="1398-kinds-of-allocators.html#the-gc-integration-strategy">gc integration</a>)
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#just-adopt-a-hrefhttpsgithubcomrust-langrfcspull39filesrfc-pr-39a-with-this-rfcs-gc-strategy" id="just-adopt-a-hrefhttpsgithubcomrust-langrfcspull39filesrfc-pr-39a-with-this-rfcs-gc-strategy"><h2>Just adopt <a href="https://github.com/rust-lang/rfcs/pull/39/files">RFC PR 39</a> with this RFC's GC strategy</h2></a>
+<p>The GC-compatibility strategy described here (in <a href="#the-gc-integration-strategy">gc integration</a>)
 might work with a large number of alternative designs, such as that
 from <a href="https://github.com/rust-lang/rfcs/pull/39/files">RFC PR 39</a>.</p>
 <p>While that is true, it seems like it would be a little short-sighted.
@@ -1022,7 +1029,7 @@ for allowing client code of allocators to accurately describe the
 layout of values they are planning to allocate, which is the main
 ingredient I believe to be necessary for the kind of dynamic
 reflection that a GC will require of a user-defined allocator.</p>
-<a class="header" href="1398-kinds-of-allocators.html#make-layout-an-associated-type-of-allocator-trait" id="make-layout-an-associated-type-of-allocator-trait"><h2>Make <code>Layout</code> an associated type of <code>Allocator</code> trait</h2></a>
+<a class="header" href="#make-layout-an-associated-type-of-allocator-trait" id="make-layout-an-associated-type-of-allocator-trait"><h2>Make <code>Layout</code> an associated type of <code>Allocator</code> trait</h2></a>
 <p>I explored making an <code>AllocLayout</code> bound and then having</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1049,7 +1056,7 @@ one will know how to scan the allocated blocks.</p>
 implement,&quot; and therefore it would be unreasonable to make the <code>Layout</code>
 an associated type of the <code>Allocator</code> trait without having at least a
 few motivating examples that <em>are</em> clearly feasible and useful.</p>
-<a class="header" href="1398-kinds-of-allocators.html#variations-on-the-layout-api" id="variations-on-the-layout-api"><h2>Variations on the <code>Layout</code> API</h2></a>
+<a class="header" href="#variations-on-the-layout-api" id="variations-on-the-layout-api"><h2>Variations on the <code>Layout</code> API</h2></a>
 <ul>
 <li>
 <p>Should <code>Layout</code> offer a <code>fn resize(&amp;self, new_size: usize) -&gt; Layout</code> constructor method?
@@ -1103,7 +1110,7 @@ make it impossible to express certain kinds of patteerns.)</p>
 <p>Should the <code>Layout</code> methods that might &quot;fail&quot; return <code>Result</code> instead of <code>Option</code>?</p>
 </li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#variations-on-the-allocator-api" id="variations-on-the-allocator-api"><h2>Variations on the <code>Allocator</code> API</h2></a>
+<a class="header" href="#variations-on-the-allocator-api" id="variations-on-the-allocator-api"><h2>Variations on the <code>Allocator</code> API</h2></a>
 <ul>
 <li>
 <p>Should the allocator methods take <code>&amp;self</code> or <code>self</code> rather than <code>&amp;mut self</code>.</p>
@@ -1134,7 +1141,7 @@ allocator for <em>more than one</em> allocation, you will need to call
 <code>clone()</code> (or make the allocator parameter implement
 <code>Copy</code>). This means in practice all allocators will need to
 support <code>Clone</code> (and thus support sharing in general, as
-discussed in the <a href="1398-kinds-of-allocators.html#allocators-and-lifetimes">Allocators and lifetimes</a> section).</p>
+discussed in the <a href="#allocators-and-lifetimes">Allocators and lifetimes</a> section).</p>
 <p>(Remember, I'm thinking about allocator-parametric code like
 <code>Vec&lt;T, A:Allocator&gt;</code>, which does not know if the <code>A</code> is a
 <code>&amp;mut</code>-reference. In that context, therefore one cannot assume
@@ -1244,7 +1251,7 @@ on the RFC thread that some forms of static analysis, to prove <code>oom</code> 
 never invoked, would prefer it to be a free function.)</p>
 </li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Since we cannot do <code>RefCell&lt;Pool&gt;</code> (see FIXME above), what is
@@ -1252,7 +1259,7 @@ our standard recommendation for what to do instead?</p>
 </li>
 <li>
 <p>Should <code>Layout</code> be an associated type of <code>Allocator</code> (see
-<a href="1398-kinds-of-allocators.html#alternatives">alternatives</a> section for discussion).
+<a href="#alternatives">alternatives</a> section for discussion).
 (In fact, most of the &quot;Variations correspond to potentially
 unresolved questions.)</p>
 </li>
@@ -1282,7 +1289,7 @@ part of the original input <code>Layout</code> argument? (I have not done this
 mainly because I do not want to introduce a dependency on <code>libstd</code>.)</p>
 </li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#change-history" id="change-history"><h1>Change History</h1></a>
+<a class="header" href="#change-history" id="change-history"><h1>Change History</h1></a>
 <ul>
 <li>
 <p>Changed <code>fn usable_size</code> to return <code>(l, m)</code> rathern than just <code>m</code>.</p>
@@ -1322,27 +1329,27 @@ A given <code>Allocator</code> may or may not support zero-sized layouts.</p>
 rather than using RFC document as a sole reference.</p>
 </li>
 </ul>
-<a class="header" href="1398-kinds-of-allocators.html#appendices" id="appendices"><h1>Appendices</h1></a>
-<a class="header" href="1398-kinds-of-allocators.html#bibliography" id="bibliography"><h2>Bibliography</h2></a>
-<a class="header" href="1398-kinds-of-allocators.html#rfc-pull-request-39-allocator-trait" id="rfc-pull-request-39-allocator-trait"><h3>RFC Pull Request #39: Allocator trait</h3></a>
+<a class="header" href="#appendices" id="appendices"><h1>Appendices</h1></a>
+<a class="header" href="#bibliography" id="bibliography"><h2>Bibliography</h2></a>
+<a class="header" href="#rfc-pull-request-39-allocator-trait" id="rfc-pull-request-39-allocator-trait"><h3>RFC Pull Request #39: Allocator trait</h3></a>
 <p>Daniel Micay, 2014. RFC: Allocator trait. https://github.com/thestinger/rfcs/blob/ad4cdc2662cc3d29c3ee40ae5abbef599c336c66/active/0000-allocator-trait.md</p>
-<a class="header" href="1398-kinds-of-allocators.html#rfc-pull-request-244-allocator-rfc-take-ii" id="rfc-pull-request-244-allocator-rfc-take-ii"><h3>RFC Pull Request #244: Allocator RFC, take II</h3></a>
+<a class="header" href="#rfc-pull-request-244-allocator-rfc-take-ii" id="rfc-pull-request-244-allocator-rfc-take-ii"><h3>RFC Pull Request #244: Allocator RFC, take II</h3></a>
 <p>Felix Klock, 2014, Allocator RFC, take II, https://github.com/pnkfelix/rfcs/blob/d3c6068e823f495ee241caa05d4782b16e5ef5d8/active/0000-allocator.md</p>
-<a class="header" href="1398-kinds-of-allocators.html#dynamic-storage-allocation-a-survey-and-critical-review" id="dynamic-storage-allocation-a-survey-and-critical-review"><h3>Dynamic Storage Allocation: A Survey and Critical Review</h3></a>
+<a class="header" href="#dynamic-storage-allocation-a-survey-and-critical-review" id="dynamic-storage-allocation-a-survey-and-critical-review"><h3>Dynamic Storage Allocation: A Survey and Critical Review</h3></a>
 <p>Paul R. Wilson, Mark S. Johnstone, Michael Neely, and David Boles, 1995. <a href="https://parasol.tamu.edu/%7Erwerger/Courses/689/spring2002/day-3-ParMemAlloc/papers/wilson95dynamic.pdf">Dynamic Storage Allocation: A Survey and Critical Review</a> ftp://ftp.cs.utexas.edu/pub/garbage/allocsrv.ps .  Slightly modified version appears in Proceedings of 1995 International Workshop on Memory Management (IWMM '95), Kinross, Scotland, UK, September 27--29, 1995 Springer Verlag LNCS</p>
-<a class="header" href="1398-kinds-of-allocators.html#reconsidering-custom-memory-allocation" id="reconsidering-custom-memory-allocation"><h3>Reconsidering custom memory allocation</h3></a>
+<a class="header" href="#reconsidering-custom-memory-allocation" id="reconsidering-custom-memory-allocation"><h3>Reconsidering custom memory allocation</h3></a>
 <p>Emery D. Berger, Benjamin G. Zorn, and Kathryn S. McKinley. 2002. <a href="http://dl.acm.org/citation.cfm?id=582421">Reconsidering custom memory allocation</a>. In Proceedings of the 17th ACM SIGPLAN conference on Object-oriented programming, systems, languages, and applications (OOPSLA '02).</p>
-<a class="header" href="1398-kinds-of-allocators.html#the-memory-fragmentation-problem-solved" id="the-memory-fragmentation-problem-solved"><h3>The memory fragmentation problem: solved?</h3></a>
+<a class="header" href="#the-memory-fragmentation-problem-solved" id="the-memory-fragmentation-problem-solved"><h3>The memory fragmentation problem: solved?</h3></a>
 <p>Mark S. Johnstone and Paul R. Wilson. 1998. <a href="http://dl.acm.org/citation.cfm?id=286864">The memory fragmentation problem: solved?</a>. In Proceedings of the 1st international symposium on Memory management (ISMM '98).</p>
-<a class="header" href="1398-kinds-of-allocators.html#eastl-electronic-arts-standard-template-library" id="eastl-electronic-arts-standard-template-library"><h3>EASTL: Electronic Arts Standard Template Library</h3></a>
+<a class="header" href="#eastl-electronic-arts-standard-template-library" id="eastl-electronic-arts-standard-template-library"><h3>EASTL: Electronic Arts Standard Template Library</h3></a>
 <p>Paul Pedriana. 2007. <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2271.html">EASTL</a> -- Electronic Arts Standard Template Library. Document number: N2271=07-0131</p>
-<a class="header" href="1398-kinds-of-allocators.html#towards-a-better-allocator-model" id="towards-a-better-allocator-model"><h3>Towards a Better Allocator Model</h3></a>
+<a class="header" href="#towards-a-better-allocator-model" id="towards-a-better-allocator-model"><h3>Towards a Better Allocator Model</h3></a>
 <p>Pablo Halpern. 2005. <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1850.pdf">Towards a Better Allocator Model</a>. Document number: N1850=05-0110</p>
-<a class="header" href="1398-kinds-of-allocators.html#various-allocators" id="various-allocators"><h3>Various allocators</h3></a>
+<a class="header" href="#various-allocators" id="various-allocators"><h3>Various allocators</h3></a>
 <p><a href="http://www.canonware.com/jemalloc/">jemalloc</a>, <a href="http://goog-perftools.sourceforge.net/doc/tcmalloc.html">tcmalloc</a>, <a href="http://www.hoard.org/">Hoard</a></p>
-<a class="header" href="1398-kinds-of-allocators.html#ascii-art-version-of-allocator-message-sequence-chart" id="ascii-art-version-of-allocator-message-sequence-chart"><h2>ASCII art version of Allocator message sequence chart</h2></a>
+<a class="header" href="#ascii-art-version-of-allocator-message-sequence-chart" id="ascii-art-version-of-allocator-message-sequence-chart"><h2>ASCII art version of Allocator message sequence chart</h2></a>
 <p>This is an ASCII art version of the SVG message sequence chart
-from the <a href="1398-kinds-of-allocators.html#semantics-of-allocators-and-their-memory-blocks">semantics of allocators</a> section.</p>
+from the <a href="#semantics-of-allocators-and-their-memory-blocks">semantics of allocators</a> section.</p>
 <pre><code>Program             Vec&lt;Widget, &amp;mut Allocator&gt;         Allocator
   ||
   ||
@@ -1425,7 +1432,7 @@ from the <a href="1398-kinds-of-allocators.html#semantics-of-allocators-and-thei
    .
    .
 </code></pre>
-<a class="header" href="1398-kinds-of-allocators.html#transcribed-source-for-allocator-trait-api" id="transcribed-source-for-allocator-trait-api"><h2>Transcribed Source for Allocator trait API</h2></a>
+<a class="header" href="#transcribed-source-for-allocator-trait-api" id="transcribed-source-for-allocator-trait-api"><h2>Transcribed Source for Allocator trait API</h2></a>
 <p>Here is the whole source file for my prototype allocator API,
 sub-divided roughly accordingly to functionality.</p>
 <p>(We start with the usual boilerplate...)</p>
@@ -1455,7 +1462,7 @@ use core::nonzero::NonZero;
 use core::ptr::{self, Unique};
 
 #}</code></pre></pre>
-<a class="header" href="1398-kinds-of-allocators.html#type-aliases" id="type-aliases"><h3>Type Aliases</h3></a>
+<a class="header" href="#type-aliases" id="type-aliases"><h3>Type Aliases</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -1474,7 +1481,7 @@ fn size_align&lt;T&gt;() -&gt; (usize, usize) {
 }
 
 #}</code></pre></pre>
-<a class="header" href="1398-kinds-of-allocators.html#layout-api" id="layout-api"><h3>Layout API</h3></a>
+<a class="header" href="#layout-api" id="layout-api"><h3>Layout API</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -1738,7 +1745,7 @@ impl Layout {
 }
 
 #}</code></pre></pre>
-<a class="header" href="1398-kinds-of-allocators.html#allocerr-api" id="allocerr-api"><h3>AllocErr API</h3></a>
+<a class="header" href="#allocerr-api" id="allocerr-api"><h3>AllocErr API</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -1783,7 +1790,7 @@ impl AllocErr {
 pub struct CannotReallocInPlace;
 
 #}</code></pre></pre>
-<a class="header" href="1398-kinds-of-allocators.html#allocator-trait-header" id="allocator-trait-header"><h3>Allocator trait header</h3></a>
+<a class="header" href="#allocator-trait-header" id="allocator-trait-header"><h3>Allocator trait header</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -1815,7 +1822,7 @@ pub struct CannotReallocInPlace;
 pub unsafe trait Allocator {
 
 #}</code></pre></pre>
-<a class="header" href="1398-kinds-of-allocators.html#allocator-core-alloc-and-dealloc" id="allocator-core-alloc-and-dealloc"><h3>Allocator core alloc and dealloc</h3></a>
+<a class="header" href="#allocator-core-alloc-and-dealloc" id="allocator-core-alloc-and-dealloc"><h3>Allocator core alloc and dealloc</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -1860,7 +1867,7 @@ pub unsafe trait Allocator {
         unsafe { ::core::intrinsics::abort() }
     }
 #}</code></pre></pre>
-<a class="header" href="1398-kinds-of-allocators.html#allocator-specific-quantities-and-limits" id="allocator-specific-quantities-and-limits"><h3>Allocator-specific quantities and limits</h3></a>
+<a class="header" href="#allocator-specific-quantities-and-limits" id="allocator-specific-quantities-and-limits"><h3>Allocator-specific quantities and limits</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -1896,7 +1903,7 @@ pub unsafe trait Allocator {
     }
 
 #}</code></pre></pre>
-<a class="header" href="1398-kinds-of-allocators.html#allocator-methods-for-memory-reuse" id="allocator-methods-for-memory-reuse"><h3>Allocator methods for memory reuse</h3></a>
+<a class="header" href="#allocator-methods-for-memory-reuse" id="allocator-methods-for-memory-reuse"><h3>Allocator methods for memory reuse</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -2012,7 +2019,7 @@ pub unsafe trait Allocator {
         Err(CannotReallocInPlace)
     }
 #}</code></pre></pre>
-<a class="header" href="1398-kinds-of-allocators.html#allocator-convenience-methods-for-common-usage-patterns" id="allocator-convenience-methods-for-common-usage-patterns"><h3>Allocator convenience methods for common usage patterns</h3></a>
+<a class="header" href="#allocator-convenience-methods-for-common-usage-patterns" id="allocator-convenience-methods-for-common-usage-patterns"><h3>Allocator convenience methods for common usage patterns</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -2120,7 +2127,7 @@ pub unsafe trait Allocator {
     }
 
 #}</code></pre></pre>
-<a class="header" href="1398-kinds-of-allocators.html#allocator-unchecked-method-variants" id="allocator-unchecked-method-variants"><h3>Allocator unchecked method variants</h3></a>
+<a class="header" href="#allocator-unchecked-method-variants" id="allocator-unchecked-method-variants"><h3>Allocator unchecked method variants</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -2284,9 +2291,6 @@ pub unsafe trait Allocator {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

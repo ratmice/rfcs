@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1210-impl-specialization - </title>
+        <title>1210-impl-specialization - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1210">rust-lang/rfcs#1210</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/31844">rust-lang/rust#31844</a></li>
 </ul>
-<a class="header" href="1210-impl-specialization.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes a design for <em>specialization</em>, which permits multiple <code>impl</code>
 blocks to apply to the same type/trait, so long as one of the blocks is clearly
 &quot;more specific&quot; than the other. The more specific <code>impl</code> block is used in a case
@@ -149,7 +156,7 @@ implementations based on specifics about the types involved.</p>
 for performance and code reuse, and it lays the groundwork for an &quot;efficient
 inheritance&quot; scheme that is largely based on the trait system (described in a
 forthcoming companion RFC).</p>
-<a class="header" href="1210-impl-specialization.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Specialization brings benefits along several different axes:</p>
 <ul>
 <li>
@@ -169,7 +176,7 @@ through the trait system.</p>
 </li>
 </ul>
 <p>The following subsections dive into each of these motivations in more detail.</p>
-<a class="header" href="1210-impl-specialization.html#performance" id="performance"><h2>Performance</h2></a>
+<a class="header" href="#performance" id="performance"><h2>Performance</h2></a>
 <p>The simplest and most longstanding motivation for specialization is
 performance.</p>
 <p>To take a very simple example, suppose we add a trait for overloading the <code>+=</code>
@@ -253,7 +260,7 @@ unsafe trait TrustedSizeHint {}
 #}</code></pre></pre>
 <p>that can allow the optimization to apply to a broader set of types than slices,
 but are still more specific than <code>T: IntoIterator</code>.</p>
-<a class="header" href="1210-impl-specialization.html#reuse" id="reuse"><h2>Reuse</h2></a>
+<a class="header" href="#reuse" id="reuse"><h2>Reuse</h2></a>
 <p>Today's default methods in traits are pretty limited: they can assume only the
 <code>where</code> clauses provided by the trait itself, and there is no way to provide
 conditional or refined defaults that rely on more specific type information.</p>
@@ -317,7 +324,7 @@ default impl&lt;T&gt; Iterator for T where T: ExactSizeIterator {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="1210-impl-specialization.html#supporting-efficient-inheritance" id="supporting-efficient-inheritance"><h2>Supporting efficient inheritance</h2></a>
+<a class="header" href="#supporting-efficient-inheritance" id="supporting-efficient-inheritance"><h2>Supporting efficient inheritance</h2></a>
 <p>Finally, specialization can be seen as a form of inheritance, since methods
 defined within a blanket impl can be overridden in a fine-grained way by a more
 specialized impl. As we will see, this analogy is a useful guide to the design
@@ -337,7 +344,7 @@ story for the &quot;efficient inheritance&quot; goal that many previous RFCs tar
 <p>The author is preparing a companion RFC showing how this can be done with a
 relatively small further extension to the language. But it should be said that
 the design in <em>this</em> RFC is fully motivated independently of its companion RFC.</p>
-<a class="header" href="1210-impl-specialization.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>There's a fair amount of material to cover, so we'll start with a basic overview
 of the design in intuitive terms, and then look more formally at a specification.</p>
 <p>At the simplest level, specialization is about allowing overlap between impl
@@ -370,7 +377,7 @@ specific&quot; or &quot;more concrete&quot; than <code>T where T: Display</code>
 <p>The bulk of the detailed design is aimed at making this intuition more
 precise. But first, we need to explore some problems that arise when you
 introduce specialization in any form.</p>
-<a class="header" href="1210-impl-specialization.html#hazard-interactions-with-type-checking" id="hazard-interactions-with-type-checking"><h2>Hazard: interactions with type checking</h2></a>
+<a class="header" href="#hazard-interactions-with-type-checking" id="hazard-interactions-with-type-checking"><h2>Hazard: interactions with type checking</h2></a>
 <p>Consider the following, somewhat odd example of overlapping impls:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -461,7 +468,7 @@ to begin with, and wait for strong use cases of associated type specialization
 to emerge before stabilizing that.)</p>
 <p>The solution proposed in this RFC is instead to treat specialization of items in
 a trait as a per-item <em>opt in</em>, described in the next section.</p>
-<a class="header" href="1210-impl-specialization.html#the-default-keyword" id="the-default-keyword"><h2>The <code>default</code> keyword</h2></a>
+<a class="header" href="#the-default-keyword" id="the-default-keyword"><h2>The <code>default</code> keyword</h2></a>
 <p>Many statically-typed languages that allow refinement of behavior in some
 hierarchy also come with ways to signal whether or not this is allowed:</p>
 <ul>
@@ -597,8 +604,8 @@ introducing the keyword at a fine-grained level, but leaving the door open to
 adding shorthands (like writing <code>default impl ...</code>) in the future, if need be.</p>
 </li>
 </ul>
-<a class="header" href="1210-impl-specialization.html#overlapping-impls-and-specialization" id="overlapping-impls-and-specialization"><h2>Overlapping impls and specialization</h2></a>
-<a class="header" href="1210-impl-specialization.html#what-is-overlap" id="what-is-overlap"><h3>What is overlap?</h3></a>
+<a class="header" href="#overlapping-impls-and-specialization" id="overlapping-impls-and-specialization"><h2>Overlapping impls and specialization</h2></a>
+<a class="header" href="#what-is-overlap" id="what-is-overlap"><h3>What is overlap?</h3></a>
 <p>Rust today does not allow any &quot;overlap&quot; between impls. Intuitively, this means
 that you cannot write two trait impls that could apply to the same &quot;input&quot;
 types. (An input type is either <code>Self</code> or a type parameter of the trait). For
@@ -678,7 +685,7 @@ impl&lt;'a, T&gt; Bar&lt;&amp;'a T&gt; for T {}
 impl&lt;T&gt; Bar&lt;T&gt; for T {}
 impl&lt;'a, T, U&gt; Bar&lt;T&gt; for &amp;'a U where U: Bar&lt;T&gt; {}
 #}</code></pre></pre>
-<a class="header" href="1210-impl-specialization.html#permitting-overlap" id="permitting-overlap"><h3>Permitting overlap</h3></a>
+<a class="header" href="#permitting-overlap" id="permitting-overlap"><h3>Permitting overlap</h3></a>
 <p>The goal of specialization is to allow overlapping impls, but it's not as simple
 as permitting <em>all</em> overlap. There has to be a way to decide which of two
 overlapping impls to actually use for a given set of input types. The simpler
@@ -758,7 +765,7 @@ impl&lt;'a, T, U&gt; Bar&lt;T&gt; for &amp;'a U
 <p>For many purposes, the above simple patterns are sufficient for working with
 specialization. But to provide a spec, we need a more general, formal way of
 deciding precedence; we'll give one next.</p>
-<a class="header" href="1210-impl-specialization.html#defining-the-precedence-rules" id="defining-the-precedence-rules"><h3>Defining the precedence rules</h3></a>
+<a class="header" href="#defining-the-precedence-rules" id="defining-the-precedence-rules"><h3>Defining the precedence rules</h3></a>
 <p>An impl block <code>I</code> contains basically two pieces of information relevant to
 specialization:</p>
 <ul>
@@ -793,7 +800,7 @@ which impl needs to be written</em> to disambiguate the overlapping portion.</p>
 <p>We'll start with an abstract/high-level formulation, and then build up toward an
 algorithm for deciding specialization by introducing a number of building
 blocks.</p>
-<a class="header" href="1210-impl-specialization.html#abstract-formulation" id="abstract-formulation"><h4>Abstract formulation</h4></a>
+<a class="header" href="#abstract-formulation" id="abstract-formulation"><h4>Abstract formulation</h4></a>
 <p>Recall that the
 <a href="https://github.com/aturon/rfcs/blob/associated-items/active/0000-associated-items.md">input types</a>
 of a trait are the <code>Self</code> type and all trait type parameters. So the following
@@ -868,7 +875,7 @@ impl&lt;'a, T, U&gt; Bar&lt;T&gt; for &amp;'a U where U: Bar&lt;T&gt; {}
 <p>The claim is that <code>apply(I)</code> and <code>apply(J)</code> intersect, but neither contains the
 other. Thus, these two impls are not permitted to coexist according to this
 RFC's design. (We'll revisit this limitation toward the end of the RFC.)</p>
-<a class="header" href="1210-impl-specialization.html#algorithmic-formulation" id="algorithmic-formulation"><h4>Algorithmic formulation</h4></a>
+<a class="header" href="#algorithmic-formulation" id="algorithmic-formulation"><h4>Algorithmic formulation</h4></a>
 <p>The goal in the remainder of this section is to turn the above abstract
 definition of <code>&lt;=</code> into something closer to an algorithm, connected to existing
 mechanisms in the Rust compiler. We'll start by reformulating <code>&lt;=</code> in a way that
@@ -886,7 +893,7 @@ effectively &quot;inlines&quot; <code>apply</code>:</p>
 </ul>
 <p>It turns out that the compiler is already quite capable of answering these
 questions, via &quot;unification&quot; and &quot;skolemization&quot;, which we'll see next.</p>
-<a class="header" href="1210-impl-specialization.html#unification-solving-equations-on-types" id="unification-solving-equations-on-types"><h5>Unification: solving equations on types</h5></a>
+<a class="header" href="#unification-solving-equations-on-types" id="unification-solving-equations-on-types"><h5>Unification: solving equations on types</h5></a>
 <p>Unification is the workhorse of type inference and many other mechanisms in the
 Rust compiler. You can think of it as a way of solving equations on types that
 contain variables. For example, consider the following situation:</p>
@@ -948,7 +955,7 @@ these are concrete types, not variables. (The same happens in algebra; consider
 that <code>2 = 3</code> cannot be solved, but <code>x = y</code> and <code>y = z</code> can be.)  This
 distinction may seem obvious, but we'll next see how to leverage it in a
 somewhat subtle way.</p>
-<a class="header" href="1210-impl-specialization.html#skolemization-asking-forallthere-exists-questions" id="skolemization-asking-forallthere-exists-questions"><h5>Skolemization: asking forall/there exists questions</h5></a>
+<a class="header" href="#skolemization-asking-forallthere-exists-questions" id="skolemization-asking-forallthere-exists-questions"><h5>Skolemization: asking forall/there exists questions</h5></a>
 <p>We've already rephrased <code>&lt;=</code> to start with a &quot;for all, there exists&quot; problem:</p>
 <ul>
 <li>For any way of instantiating <code>I.vars</code>, there is some way of instantiating
@@ -981,7 +988,7 @@ of <code>&lt;=</code> in the following way:</p>
 </ul>
 <p>Note that a successful unification through skolemization gives you the same
 answer as you'd get if you unified without skolemizing.</p>
-<a class="header" href="1210-impl-specialization.html#the-algorithmic-version" id="the-algorithmic-version"><h5>The algorithmic version</h5></a>
+<a class="header" href="#the-algorithmic-version" id="the-algorithmic-version"><h5>The algorithmic version</h5></a>
 <p>One outcome of running unification on two impls as above is that we can
 understand both impl headers in terms of a single set of type variables. For
 example:</p>
@@ -1039,7 +1046,7 @@ impl&lt;T: Trait4&gt; Foo for T {}    // T: Trait4 is more specific than T: Trai
 #fn main() {
 impl&lt;T: Trait4&gt; Foo for T    &lt;    impl&lt;T: Trait3&gt; Foo for T
 #}</code></pre></pre>
-<a class="header" href="1210-impl-specialization.html#key-properties" id="key-properties"><h5>Key properties</h5></a>
+<a class="header" href="#key-properties" id="key-properties"><h5>Key properties</h5></a>
 <p>Remember that for each pair of impls <code>I</code>, <code>J</code>, the compiler will check that
 exactly one of the following holds:</p>
 <ul>
@@ -1059,7 +1066,7 @@ multiple impls apply to concrete input types, those impls must overlap.)</p>
 <p>There are various implementation strategies that avoid having to recalculate the
 ordering during monomorphization, but we won't delve into those details in this
 RFC.</p>
-<a class="header" href="1210-impl-specialization.html#implications-for-coherence" id="implications-for-coherence"><h3>Implications for coherence</h3></a>
+<a class="header" href="#implications-for-coherence" id="implications-for-coherence"><h3>Implications for coherence</h3></a>
 <p>The coherence rules ensure that there is never an ambiguity about which impl to
 use when monomorphizing code. Today, the rules consist of the simple overlap
 check described earlier, and the &quot;orphan&quot; check which limits the crates in which
@@ -1075,7 +1082,7 @@ orphan impls can cause trouble. And a moment's thought reveals why: if two
 sibling crates are unaware of each other, there's no way that they could each
 provide an impl overlapping with the other, yet be sure that one of those impls
 is more specific than the other in the overlapping region.</p>
-<a class="header" href="1210-impl-specialization.html#interaction-with-lifetimes" id="interaction-with-lifetimes"><h3>Interaction with lifetimes</h3></a>
+<a class="header" href="#interaction-with-lifetimes" id="interaction-with-lifetimes"><h3>Interaction with lifetimes</h3></a>
 <p>A hard constraint in the design of the trait system is that <em>dispatch cannot
 depend on lifetime information</em>. In particular, we both cannot, and should not
 allow specialization based on lifetimes:</p>
@@ -1126,7 +1133,7 @@ trait MustBeStatic {}
 impl&lt;T: 'static&gt; MustBeStatic for T {}
 impl&lt;T: 'static + Clone&gt; MustBeStatic for T {}
 #}</code></pre></pre>
-<a class="header" href="1210-impl-specialization.html#going-down-the-rabbit-hole" id="going-down-the-rabbit-hole"><h4>Going down the rabbit hole</h4></a>
+<a class="header" href="#going-down-the-rabbit-hole" id="going-down-the-rabbit-hole"><h4>Going down the rabbit hole</h4></a>
 <p>Unfortunately, we cannot easily rule out the undesirable lifetime-dependent
 specializations, because they can be &quot;hidden&quot; behind innocent-looking trait
 bounds that can even cross crates:</p>
@@ -1191,7 +1198,7 @@ specialization based on a <code>'static</code> lifetime. And the <code>client</c
 even be aware of the existence of the <code>marker</code> crate.</p>
 <p>If we make this kind of situation a hard error, we could easily end up with a
 scenario in which plugging together otherwise-unrelated crates is <em>impossible</em>.</p>
-<a class="header" href="1210-impl-specialization.html#proposal-ask-forgiveness-rather-than-permission" id="proposal-ask-forgiveness-rather-than-permission"><h4>Proposal: ask forgiveness, rather than permission</h4></a>
+<a class="header" href="#proposal-ask-forgiveness-rather-than-permission" id="proposal-ask-forgiveness-rather-than-permission"><h4>Proposal: ask forgiveness, rather than permission</h4></a>
 <p>So what do we do? There seem to be essentially two avenues:</p>
 <ol>
 <li>
@@ -1221,7 +1228,7 @@ split in half.</p>
 <p>To begin with, this lint should be an error by default; we want to get
 feedback as to how often this is happening before any
 stabilization.</p>
-<a class="header" href="1210-impl-specialization.html#what-this-means-for-the-programmer" id="what-this-means-for-the-programmer"><h5>What this means for the programmer</h5></a>
+<a class="header" href="#what-this-means-for-the-programmer" id="what-this-means-for-the-programmer"><h5>What this means for the programmer</h5></a>
 <p>Ultimately, the goal of the &quot;just ignore lifetimes for specialization&quot; approach
 is to reduce the number of knobs in play. The programmer gets to use both
 lifetime bounds and specialization freely.</p>
@@ -1268,7 +1275,7 @@ warning may be hard for the <code>client</code> crate author to understand, sinc
 relevant for specialization -- <code>marker::Marker</code> -- belongs to a crate that
 hasn't even been imported in <code>client</code>. Nevertheless, this approach seems
 friendlier than the alternative (discussed in Alternatives).</p>
-<a class="header" href="1210-impl-specialization.html#an-algorithm-for-ignoring-lifetimes-in-dispatch" id="an-algorithm-for-ignoring-lifetimes-in-dispatch"><h4>An algorithm for ignoring lifetimes in dispatch</h4></a>
+<a class="header" href="#an-algorithm-for-ignoring-lifetimes-in-dispatch" id="an-algorithm-for-ignoring-lifetimes-in-dispatch"><h4>An algorithm for ignoring lifetimes in dispatch</h4></a>
 <p>Although approach (1) may seem simple, there are some subtleties in handling
 cases like the following:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1369,7 +1376,7 @@ impl&lt;T: SometimesDep&gt; Spec for T {}
 #}</code></pre></pre>
 <p>Using <code>Spec</code> on <code>i32</code> will not trigger the lint, because the specialization is
 justified without any lifetime constraints.</p>
-<a class="header" href="1210-impl-specialization.html#default-impls" id="default-impls"><h2>Default impls</h2></a>
+<a class="header" href="#default-impls" id="default-impls"><h2>Default impls</h2></a>
 <p>An interesting consequence of specialization is that impls need not (and in fact
 sometimes <em>cannot</em>) provide all of the items that a trait specifies. Of course,
 this is already the case with defaulted items in a trait -- but as we'll see,
@@ -1487,7 +1494,7 @@ impl that applies, or else the complete impl provides its own definition for
 that item. Such a relaxed approach is much more flexible, probably easier to
 work with, and can enable more code reuse -- but it's also more complicated, and
 backwards-compatible to add on top of the proposed conservative approach.</p>
-<a class="header" href="1210-impl-specialization.html#limitations" id="limitations"><h2>Limitations</h2></a>
+<a class="header" href="#limitations" id="limitations"><h2>Limitations</h2></a>
 <p>One frequent motivation for specialization is broader &quot;expressiveness&quot;, in
 particular providing a larger set of trait implementations than is possible
 today.</p>
@@ -1629,10 +1636,10 @@ intuitive but do manage to handle cases like those above.</p>
 <p>If we allowed &quot;relaxed&quot; partial impls as described above, one could at least use
 that mechanism to avoid having to give a definition directly in most cases. (So
 if you had <code>T: Ord</code> you could write <code>impl PartialOrd for T {}</code>.)</p>
-<a class="header" href="1210-impl-specialization.html#possible-extensions" id="possible-extensions"><h2>Possible extensions</h2></a>
+<a class="header" href="#possible-extensions" id="possible-extensions"><h2>Possible extensions</h2></a>
 <p>It's worth briefly mentioning a couple of mechanisms that one could consider
 adding on top of specialization.</p>
-<a class="header" href="1210-impl-specialization.html#inherent-impls" id="inherent-impls"><h3>Inherent impls</h3></a>
+<a class="header" href="#inherent-impls" id="inherent-impls"><h3>Inherent impls</h3></a>
 <p>It has long been folklore that inherent impls can be thought of as special,
 anonymous traits that are:</p>
 <ul>
@@ -1697,7 +1704,7 @@ semantics would be defined in terms of the folklore desugaring above.</p>
 at the inherent impl level to avoid refactoring the <code>Extend</code> trait as described
 in the Motivation section.)</p>
 <p>There are more details about this idea in the appendix.</p>
-<a class="header" href="1210-impl-specialization.html#super" id="super"><h3>Super</h3></a>
+<a class="header" href="#super" id="super"><h3>Super</h3></a>
 <p>Continuing the analogy between specialization and inheritance, one could imagine
 a mechanism like <code>super</code> to access and reuse less specialized implementations
 when defining more specialized ones. While there's not a strong need for this
@@ -1707,7 +1714,7 @@ approach is at least compatible with <code>super</code>.</p>
 overlapping with this one&quot;, there is always a unique answer to that question,
 because all overlapping impls are totally ordered with respect to each other via
 specialization.</p>
-<a class="header" href="1210-impl-specialization.html#extending-hrtbs" id="extending-hrtbs"><h3>Extending HRTBs</h3></a>
+<a class="header" href="#extending-hrtbs" id="extending-hrtbs"><h3>Extending HRTBs</h3></a>
 <p>In the Motivation we mentioned the need to refactor the <code>Extend</code> trait to take
 advantage of specialization. It's possible to work around that need by using
 specialization on inherent impls (and having the trait impl defer to the
@@ -1750,14 +1757,14 @@ fn use_all&lt;T&gt;(t: T) where for&lt;'a&gt; &amp;'a T: Trait { .. }
 fn needs_extend_all&lt;T&gt;(t: T) where for&lt;I: IntoIterator&lt;Item=u8&gt;&gt; T: Extend&lt;u8, I&gt; { .. }
 #}</code></pre></pre>
 <p>Such a mechanism is out of scope for this RFC.</p>
-<a class="header" href="1210-impl-specialization.html#refining-bounds-on-associated-types" id="refining-bounds-on-associated-types"><h3>Refining bounds on associated types</h3></a>
+<a class="header" href="#refining-bounds-on-associated-types" id="refining-bounds-on-associated-types"><h3>Refining bounds on associated types</h3></a>
 <p>The design with <code>default</code> makes specialization of associated types an
 all-or-nothing affair, but it would occasionally be useful to say that
 all further specializations will at least guarantee some additional
 trait bound on the associated type. This is particularly relevant for
 the &quot;efficient inheritance&quot; use case. Such a mechanism can likely be
 added, if needed, later on.</p>
-<a class="header" href="1210-impl-specialization.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Many of the more minor tradeoffs have been discussed in detail throughout. We'll
 focus here on the big picture.</p>
 <p>As with many new language features, the most obvious drawback of this proposal
@@ -1790,8 +1797,8 @@ trade, favoring simple rules over maximal expressiveness.</p>
 &quot;efficient inheritance&quot; as at least a programming pattern in Rust, the ability
 to use specialization to do so, while also getting all of its benefits, is a net
 simplifier. The full story there, of course, depends on the forthcoming companion RFC.</p>
-<a class="header" href="1210-impl-specialization.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1210-impl-specialization.html#alternatives-to-specialization" id="alternatives-to-specialization"><h2>Alternatives to specialization</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives-to-specialization" id="alternatives-to-specialization"><h2>Alternatives to specialization</h2></a>
 <p>The main alternative to specialization in general is an approach based on
 negative bounds, such as the one outlined in an
 <a href="https://github.com/rust-lang/rfcs/pull/586">earlier RFC</a>. Negative bounds make
@@ -1800,8 +1807,8 @@ Limitations section). But negative bounds are also fundamentally <em>closed</em>
 make it possible to perform a certain amount of specialization up front when
 defining a trait, but don't easily support downstream crates further
 specializing the trait impls.</p>
-<a class="header" href="1210-impl-specialization.html#alternative-specialization-designs" id="alternative-specialization-designs"><h2>Alternative specialization designs</h2></a>
-<a class="header" href="1210-impl-specialization.html#the-lattice-rule" id="the-lattice-rule"><h3>The &quot;lattice&quot; rule</h3></a>
+<a class="header" href="#alternative-specialization-designs" id="alternative-specialization-designs"><h2>Alternative specialization designs</h2></a>
+<a class="header" href="#the-lattice-rule" id="the-lattice-rule"><h3>The &quot;lattice&quot; rule</h3></a>
 <p>The rule proposed in this RFC essentially says that overlapping impls
 must form <em>chains</em>, in which each one is strictly more specific than
 the last.</p>
@@ -1835,14 +1842,14 @@ programmer is not even aware of).</p>
 to the main goals of specialization (as laid out in the Motivation),
 and so, since the lattice rule can be added later, the RFC sticks with
 the simple chain rule for now.</p>
-<a class="header" href="1210-impl-specialization.html#explicit-ordering" id="explicit-ordering"><h3>Explicit ordering</h3></a>
+<a class="header" href="#explicit-ordering" id="explicit-ordering"><h3>Explicit ordering</h3></a>
 <p>Another, perhaps more palatable alternative would be to take the specialization
 rule proposed in this RFC, but have some other way of specifying precedence when
 that rule can't resolve it -- perhaps by explicit priority numbering. That kind
 of mechanism is usually noncompositional, but due to the orphan rule, it's a
 least a crate-local concern. Like the alternative rule above, it could be added
 backwards compatibly if needed, since it only enables new cases.</p>
-<a class="header" href="1210-impl-specialization.html#singleton-non-default-wins" id="singleton-non-default-wins"><h3>Singleton non-default wins</h3></a>
+<a class="header" href="#singleton-non-default-wins" id="singleton-non-default-wins"><h3>Singleton non-default wins</h3></a>
 <p>@pnkfelix suggested the following rule, which allows overlap so long as there is
 a unique non-default item.</p>
 <blockquote>
@@ -1885,7 +1892,7 @@ the direction of C++ templates.</p>
 levels of increasingly-specialized blanket impls.</p>
 </li>
 </ul>
-<a class="header" href="1210-impl-specialization.html#alternative-handling-of-lifetimes" id="alternative-handling-of-lifetimes"><h2>Alternative handling of lifetimes</h2></a>
+<a class="header" href="#alternative-handling-of-lifetimes" id="alternative-handling-of-lifetimes"><h2>Alternative handling of lifetimes</h2></a>
 <p>This RFC proposes a <em>laissez faire</em> approach to lifetimes: we let you
 write whatever impls you like, then warn you if some of them are being
 ignored because the specialization is based purely on lifetimes.</p>
@@ -1973,10 +1980,10 @@ impl&lt;'a, T&gt; Foo for (T, &amp;'a u8) where (T, &amp;'a u8): Tie
 #}</code></pre></pre>
 <p>All told, the proposed <em>laissez faire</em> seems a much better bet in
 practice, but only experience with the feature can tell us for sure.</p>
-<a class="header" href="1210-impl-specialization.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>All questions from the RFC discussion and prototype have been resolved.</p>
-<a class="header" href="1210-impl-specialization.html#appendix" id="appendix"><h1>Appendix</h1></a>
-<a class="header" href="1210-impl-specialization.html#more-details-on-inherent-impls" id="more-details-on-inherent-impls"><h2>More details on inherent impls</h2></a>
+<a class="header" href="#appendix" id="appendix"><h1>Appendix</h1></a>
+<a class="header" href="#more-details-on-inherent-impls" id="more-details-on-inherent-impls"><h2>More details on inherent impls</h2></a>
 <p>One tricky aspect for specializing inherent impls is that, since there is no
 explicit trait definition, there is no general signature that each definition of
 an inherent item must match. Thinking about <code>Vec</code> above, for example, notice
@@ -2087,9 +2094,6 @@ impls); the full details will depend on pending revisions to
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

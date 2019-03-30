@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2386-used - </title>
+        <title>2386-used - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2386">rust-lang/rfcs#2386</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/40289">rust-lang/rust#40289</a></li>
 </ul>
-<a class="header" href="2386-used.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Stabilize the <code>#[used]</code> attribute which is used to force the compiler to keep static variables,
 even if not referenced by any other part of the program, in the output object file.</p>
-<a class="header" href="2386-used.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Bare metal applications, like kernels, bootloaders and other firmware, usually need precise control
 over the memory layout of the program. These programs usually need to place data structures like
 vector (interrupt) tables in certain memory locations for the system to operate properly.</p>
@@ -192,7 +199,7 @@ force the compiler to keep in one of the emitted object files.</p>
 #[link_section = &quot;.vector_table.exceptions&quot;]
 static EXCEPTIONS: [extern &quot;C&quot; fn(); 14] = [/* .. */];
 #}</code></pre></pre>
-<a class="header" href="2386-used.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>We can think of the compilation process performed by <code>rustc</code> as a two stage process. First, <code>rustc</code>
 compiles a crate (source code) into <em>object files</em>, then <code>rustc</code> invokes the linker on those object
 files to produce a single <em>executable</em>, or shared library (e.g. <code>.so</code>) if the crate type was set to
@@ -269,7 +276,7 @@ $ nm -C target/release/foo | grep FOO
 </code></pre>
 <p>If the <code>#[used]</code> attribute is removed from the source code then only &quot;World&quot; is printed to the
 console as the <code>FOO</code> variable will get optimized away by the compiler.</p>
-<a class="header" href="2386-used.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>The <code>#[used]</code> attribute can only be used on static variables. Static variables marked with this
 attribute will be appended to the special <code>@llvm.used</code> global variable when lowered to LLVM IR.</p>
 <pre><pre class="playpen"><code class="language-rust">#[used]
@@ -296,17 +303,17 @@ marked with <code>#[used]</code> look exactly the same as variables that have no
 attribute -- those are the implemented LLVM semantics. Also ELF object files have no mechanism to
 prevent the linker from dropping its symbols if they are not referenced by other object files.</p>
 <p>(*) unless &quot;linker&quot; is actually referring to <code>llvm-link</code> (?)</p>
-<a class="header" href="2386-used.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This is yet another low level feature that alternative <code>rustc</code> implementations would have to
 implement to be 100% compatible with the official LLVM based <code>rustc</code> implementation. Also see
 <code>#[repr(align = &quot;*&quot;)]</code>, <code>#[repr(*)]</code>, <code>#[link_section]</code>, etc.</p>
-<a class="header" href="2386-used.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
-<a class="header" href="2386-used.html#chosen-design" id="chosen-design"><h2>Chosen design</h2></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#chosen-design" id="chosen-design"><h2>Chosen design</h2></a>
 <p>This design pretty much matches how C compilers implement this feature. See prior art section below.</p>
-<a class="header" href="2386-used.html#not-doing-this" id="not-doing-this"><h2>Not doing this</h2></a>
+<a class="header" href="#not-doing-this" id="not-doing-this"><h2>Not doing this</h2></a>
 <p>Not doing this means that people will continue to use the brittle workarounds presented in the
 motivation section.</p>
-<a class="header" href="2386-used.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>Most compilers provide a feature with the exact same semantics: usually in the form of a &quot;used&quot;
 attribute (e.g. <code>__attribute(used)__</code>)  that can be applied to static variables.</p>
 <p>The following C code is an example from the <a href="http://www.keil.com/support/man/docs/armcc/armcc_chr1359124983230.htm">KEIL toolchain documentation</a>:</p>
@@ -314,7 +321,7 @@ attribute (e.g. <code>__attribute(used)__</code>)  that can be applied to static
 static int keep_this __attribute__((used)) = 2;     // retained in object file
 static int keep_this_too __attribute__((used)) = 3; // retained in object file
 </code></pre>
-<a class="header" href="2386-used.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None so far.</p>
 
                     </main>
@@ -360,9 +367,6 @@ static int keep_this_too __attribute__((used)) = 3; // retained in object file
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

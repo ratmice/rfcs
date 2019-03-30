@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1925-optional-match-vert - </title>
+        <title>1925-optional-match-vert - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1925">rust-lang/rfcs#1925</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44101">rust-lang/rust#44101</a></li>
 </ul>
-<a class="header" href="1925-optional-match-vert.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This is a proposal for the rust grammar to support a vert <code>|</code> at the
 beginning of the pattern. Consider the following example:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -159,12 +166,12 @@ match foo {
     | A | B | C | D =&gt; (),
 }
 #}</code></pre></pre>
-<a class="header" href="1925-optional-match-vert.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This is taking a feature which is nice about <code>F#</code> and allowing it by a
 straightforward extension of the current rust language. After having used
 this in <code>F#</code>, it seems limiting to not even support this at the language
 level.</p>
-<a class="header" href="1925-optional-match-vert.html#f-context" id="f-context"><h2><code>F#</code> Context</h2></a>
+<a class="header" href="#f-context" id="f-context"><h2><code>F#</code> Context</h2></a>
 <p>In <code>F#</code>, enumerations (called <code>unions</code>) are declared in the following fashion where
 all of these are equivalent:</p>
 <pre><code class="language-F#">// Normal union
@@ -182,7 +189,7 @@ something which is not possible with current Rust:</p>
     | I -&gt; &quot;&quot;
     | B -&gt; &quot;&quot;
 </code></pre>
-<a class="header" href="1925-optional-match-vert.html#maximizing--alignment" id="maximizing--alignment"><h2>Maximizing <code>|</code> alignment</h2></a>
+<a class="header" href="#maximizing--alignment" id="maximizing--alignment"><h2>Maximizing <code>|</code> alignment</h2></a>
 <p>In Rust, about the best we can do is an inconsistent alignment with one of the
 following two options:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -226,7 +233,7 @@ match foo {
 //  ^ Gained consistency by having a matching vert.
 }
 #}</code></pre></pre>
-<a class="header" href="1925-optional-match-vert.html#flexibility-in-single-line-matches" id="flexibility-in-single-line-matches"><h2>Flexibility in single line matches</h2></a>
+<a class="header" href="#flexibility-in-single-line-matches" id="flexibility-in-single-line-matches"><h2>Flexibility in single line matches</h2></a>
 <p>It would allow these examples which are all equivalent:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -249,9 +256,9 @@ match foo {
 <p>There should be no ambiguity about what either of these means. Preference
 between these should just come down to a choice of style.</p>
 </blockquote>
-<a class="header" href="1925-optional-match-vert.html#benefits-to-macros" id="benefits-to-macros"><h2>Benefits to macros</h2></a>
+<a class="header" href="#benefits-to-macros" id="benefits-to-macros"><h2>Benefits to macros</h2></a>
 <p>This benefits macros. Needs filling in.</p>
-<a class="header" href="1925-optional-match-vert.html#multiple-branches" id="multiple-branches"><h2>Multiple branches</h2></a>
+<a class="header" href="#multiple-branches" id="multiple-branches"><h2>Multiple branches</h2></a>
 <p>All of these matches are equivalent, each written in a different style:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -284,7 +291,7 @@ match foo {
         println!(&quot;Give me C | D!&quot;),
 }
 #}</code></pre></pre>
-<a class="header" href="1925-optional-match-vert.html#comparing-misalignment" id="comparing-misalignment"><h2>Comparing misalignment</h2></a>
+<a class="header" href="#comparing-misalignment" id="comparing-misalignment"><h2>Comparing misalignment</h2></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -308,7 +315,7 @@ match value {
 // a *grammar* should be greatly concerned about.
 }
 #}</code></pre></pre>
-<a class="header" href="1925-optional-match-vert.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>I don't know about the implementation but the grammar could be updated so that
 an optional <code>|</code> is allowed at the beginning. Nothing else in the grammar should
 need updating.</p>
@@ -317,7 +324,7 @@ match_pat : pat [ '|' pat ] * [ &quot;if&quot; expr ] ? ;
 // After
 match_pat : '|' ? pat [ '|' pat ] * [ &quot;if&quot; expr ] ? ;
 </code></pre>
-<a class="header" href="1925-optional-match-vert.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>Adding examples for this are straightforward. You just include an example pointing
 out that leading verts are allowed. Simple examples such as below should be easy
 to add to all different resources.</p>
@@ -351,11 +358,11 @@ fn main() {
     }
 }
 </code></pre></pre>
-<a class="header" href="1925-optional-match-vert.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>N/A</p>
-<a class="header" href="1925-optional-match-vert.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>N/A</p>
-<a class="header" href="1925-optional-match-vert.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>N/A</p>
 
                     </main>
@@ -401,9 +408,6 @@ fn main() {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

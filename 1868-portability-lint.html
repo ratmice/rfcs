@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1868-portability-lint - </title>
+        <title>1868-portability-lint - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1868">rust-lang/rfcs#1868</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/41619">rust-lang/rust#41619</a></li>
 </ul>
-<a class="header" href="1868-portability-lint.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>There has long been a desire to expand the number of platform- and
 architecture-specific APIs in the standard library, and to offer subsets of the
 standard library for working in constrained environments. At the same time, we
@@ -151,8 +158,8 @@ acknowledgment of the portability implications.</p>
 <p>The lint is intended to make the existing <code>std::os</code> module obsolete, to allow
 expansion (and subsetting) of the standard library, and to provide deeper
 checking for portability across the ecosystem.</p>
-<a class="header" href="1868-portability-lint.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="1868-portability-lint.html#background-portability-and-the-standard-library" id="background-portability-and-the-standard-library"><h2>Background: portability and the standard library</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#background-portability-and-the-standard-library" id="background-portability-and-the-standard-library"><h2>Background: portability and the standard library</h2></a>
 <p>One of the goals of the standard library is to provide an interface to hardware
 and system services. In doing so, there were several competing principles that
 we wanted to embrace:</p>
@@ -189,7 +196,7 @@ but <em>still</em> makes some hardware assumptions (e.g. about atomics and float
 point support).</p>
 </li>
 </ul>
-<a class="header" href="1868-portability-lint.html#problems-with-the-status-quo" id="problems-with-the-status-quo"><h2>Problems with the status quo</h2></a>
+<a class="header" href="#problems-with-the-status-quo" id="problems-with-the-status-quo"><h2>Problems with the status quo</h2></a>
 <p>The above strategy has served us fairly well in the first year since Rust 1.0,
 but it's increasingly holding us back from enhancements we'd like to make, and
 even for the needs it covers, it's suboptimal in a few ways.</p>
@@ -252,7 +259,7 @@ architectures. But again, it's not clear how to fit this into the <a href="https
 model without introducing a sprawling, unwieldy collection of crates.</p>
 </li>
 </ul>
-<a class="header" href="1868-portability-lint.html#what-are-our-portability-goals" id="what-are-our-portability-goals"><h2>What are our portability goals?</h2></a>
+<a class="header" href="#what-are-our-portability-goals" id="what-are-our-portability-goals"><h2>What are our portability goals?</h2></a>
 <p>Taking a step back from the specific problems with the status quo, <strong>it's worth
 thinking about what it means for Rust to be &quot;portable&quot;, and what is realistic to
 achieve</strong>. We should be asking this question not just for the standard library,
@@ -293,8 +300,8 @@ that assumption for the average library. In other words, <strong>if we want to g
 Rust code toward at least mainstream portability, we will need to do so in a way
 that doesn't require actually compiling and testing for all mainstream
 scenarios</strong>.</p>
-<a class="header" href="1868-portability-lint.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1868-portability-lint.html#the-basic-idea" id="the-basic-idea"><h2>The basic idea</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#the-basic-idea" id="the-basic-idea"><h2>The basic idea</h2></a>
 <p>The core problem we want to solve is:</p>
 <ul>
 <li>
@@ -430,7 +437,7 @@ pub fn windows_more_specific_mycrate_function() {
 <p>However, any such &quot;missed portability issues&quot; are only possible when already
 using <code>cfg</code>, which means a &quot;speedbump&quot; has already been passed.</p>
 <p>With that overview in mind, let's dig into the details.</p>
-<a class="header" href="1868-portability-lint.html#the-lint-definition" id="the-lint-definition"><h2>The lint definition</h2></a>
+<a class="header" href="#the-lint-definition" id="the-lint-definition"><h2>The lint definition</h2></a>
 <p>The lint is structured somewhat akin to a type and effect system: roughly
 speaking, items that are labeled with a given <code>cfg</code> assumption can only be used
 within code making that same <code>cfg</code> assumption.</p>
@@ -457,7 +464,7 @@ portability of items it references or invokes. For example, <code>bar</code> in 
 could invoke an item with portability <code>unix</code> and/or <code>target_pointer_width = &quot;32&quot;</code>, but not one with portability <code>linux</code>.</p>
 <p>To fully define the lint, though, we need to give more details about what
 &quot;narrower&quot; means, and how referenced item portability is determined.</p>
-<a class="header" href="1868-portability-lint.html#comparing-portabilities" id="comparing-portabilities"><h3>Comparing portabilities</h3></a>
+<a class="header" href="#comparing-portabilities" id="comparing-portabilities"><h3>Comparing portabilities</h3></a>
 <p><strong>What does it mean for a portability to be narrower?</strong> In general, portability
 is a logical expression, using the operators <code>all</code>, <code>any</code>, <code>not</code> on top of
 primitive expressions like <code>unix</code>. Portability <code>P</code> is narrower than portability
@@ -471,7 +478,7 @@ away with a naive SAT implementation, perhaps with a handful of optimiziations
 specific to our use-case. In the limit, there are also many well-known
 techniques for solving SAT efficiently even on very large examples that arise in
 real-world usage.</p>
-<a class="header" href="1868-portability-lint.html#axioms" id="axioms"><h4>Axioms</h4></a>
+<a class="header" href="#axioms" id="axioms"><h4>Axioms</h4></a>
 <p>Another aspect of portability comparison is the relationship between things like
 <code>unix</code> and <code>linux</code>. In logical terms, we want to assume that <code>linux</code> implies
 <code>unix</code>, for example.</p>
@@ -497,7 +504,7 @@ is, to not introduce assumptions like <code>nand(target_os = &quot;unix&quot;, t
 such nonsensical situations. However, the precise details of how these
 implications are specified---and what implications are desired---are left as
 implementation details that need to be worked out with real-world experience.</p>
-<a class="header" href="1868-portability-lint.html#determining-the-portability-of-referenced-items" id="determining-the-portability-of-referenced-items"><h3>Determining the portability of referenced items</h3></a>
+<a class="header" href="#determining-the-portability-of-referenced-items" id="determining-the-portability-of-referenced-items"><h3>Determining the portability of referenced items</h3></a>
 <p><strong>How is the portability of a referenced item determined?</strong> The lint will
 resolve an item to its definition, and use the portability of that definition,
 which will be recorded in metadata. For the case of trait items, however, this
@@ -530,19 +537,19 @@ fn invoke() {
     use_foo::&lt;MyType&gt;();
 }
 #}</code></pre></pre>
-<a class="header" href="1868-portability-lint.html#the-story-for-std" id="the-story-for-std"><h2>The story for <code>std</code></h2></a>
+<a class="header" href="#the-story-for-std" id="the-story-for-std"><h2>The story for <code>std</code></h2></a>
 <p>With these basic mechanisms in hand, let's sketch out how we might apply them to
 the standard library to achieve our initial goals. This part of the RFC should
 not be considered normative; it's left to the implementation to make the final
 determination about how to set up the standard library.</p>
-<a class="header" href="1868-portability-lint.html#the-mainstream-platform" id="the-mainstream-platform"><h3>The mainstream platform</h3></a>
+<a class="header" href="#the-mainstream-platform" id="the-mainstream-platform"><h3>The mainstream platform</h3></a>
 <p>The &quot;mainstream platform&quot; will be expressed via a new primitive <code>cfg</code> pattern
 called <code>std</code>. This is the <strong>default portability of all crates</strong>, unless
 opted-out (see below on &quot;subsetting <code>std</code>&quot;). Likewise, most items in <code>std</code> will
 <em>initially</em> be exported at <code>std</code> portability level (but see subsets
 below). These two facts together mean that existing uses of <code>std</code> will continue
 to work without issuing any warnings.</p>
-<a class="header" href="1868-portability-lint.html#expanding-std" id="expanding-std"><h3>Expanding <code>std</code></h3></a>
+<a class="header" href="#expanding-std" id="expanding-std"><h3>Expanding <code>std</code></h3></a>
 <p>With the above setup, handling extensions to <code>std</code> with APIs like <code>as_raw_fd</code> is
 straightforward. In particular, we can write:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -569,7 +576,7 @@ code from compiling--and can be silenced.</p>
 will also do the right thing for the lint.</p>
 <p>In short, for expansions there's basically nothing to do. You just add the API
 in its natural location, with its natural <code>cfg</code>, and everything works out.</p>
-<a class="header" href="1868-portability-lint.html#subsetting-std" id="subsetting-std"><h3>Subsetting <code>std</code></h3></a>
+<a class="header" href="#subsetting-std" id="subsetting-std"><h3>Subsetting <code>std</code></h3></a>
 <p>What about subsets of <code>std</code>?</p>
 <p><strong>What use case do we want to address?</strong> Going back to the Portability Goals
 discussed earlier, the goal of subsetting <code>std</code> is mostly about helping people
@@ -620,13 +627,13 @@ previous coarse-grained features and the new subsets.</p>
 out of <code>cfg(std)</code>, and use <code>cfg</code> as little as possible, adding features to their
 whitelist only after deciding they're truly needed, or abstracting over them
 (such as using threading for parallelism only when it was available).</p>
-<a class="header" href="1868-portability-lint.html#proposed-rollout" id="proposed-rollout"><h2>Proposed rollout</h2></a>
+<a class="header" href="#proposed-rollout" id="proposed-rollout"><h2>Proposed rollout</h2></a>
 <p>The most pressing problem in <code>std</code> is the desire for expansion, rather than
 subsetting, so we should start there. The <code>cfg</code> needed for expansion is totally
 straightforward, and will allow us to gain experience with the lint.</p>
 <p>Later, we can start exploring subsets of <code>std</code>, which will likely require some
 more thoughtful design to find the right granularity.</p>
-<a class="header" href="1868-portability-lint.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There are several potential drawbacks to the approach of this RFC:</p>
 <ul>
 <li>It adds a significant level of pedanticness about portability to Rust.</li>
@@ -644,7 +651,7 @@ concerned to be until we try it.</p>
 <p>While the fact that it's a lint gives us more leeway to experiment, it's also a
 lint that could produce widespread warnings throughout the ecosystem, so we need
 to exercise care.</p>
-<a class="header" href="1868-portability-lint.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The main alternatives are:</p>
 <ul>
 <li>
@@ -664,7 +671,7 @@ downside is that you get much less help making sure that your APIs are
 properly labeled in place.</p>
 </li>
 </ul>
-<a class="header" href="1868-portability-lint.html#how-we-teach-this" id="how-we-teach-this"><h1>How we teach this</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How we teach this</h1></a>
 <p>For people simply using libraries, this feature &quot;teaches itself&quot; by generating
 warnings. Those warnings should make clear what to do to fix the problem, and
 ideally provide extended error information that describes the system in more
@@ -672,26 +679,26 @@ detail.</p>
 <p>For library authors, the documentation for <code>cfg</code> and <code>match_cfg</code> would explain
 the implications for the lint, and walk through several examples illustrating
 the scenarios that arise in practice.</p>
-<a class="header" href="1868-portability-lint.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="1868-portability-lint.html#extensions-to-cfg-itself" id="extensions-to-cfg-itself"><h3>Extensions to <code>cfg</code> itself</h3></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#extensions-to-cfg-itself" id="extensions-to-cfg-itself"><h3>Extensions to <code>cfg</code> itself</h3></a>
 <p>If we allow <code>cfg</code> to go beyond simple key-value pairs, for example to talk about
 ranges, we will need to accommodate that somehow in the lint. One plausible
 approach would be to use something more like SMT solving, which incorporates
 reasoning about things like ordering constraints in addition to basic SAT
 questions.</p>
-<a class="header" href="1868-portability-lint.html#external-libraries" id="external-libraries"><h3>External libraries</h3></a>
+<a class="header" href="#external-libraries" id="external-libraries"><h3>External libraries</h3></a>
 <p>It's not clear what the story should be for a library like <code>libc</code>, which
 currently involves intricate uses of <code>cfg</code>. We should have some idea for how to
 approach such cases before landing the RFC.</p>
-<a class="header" href="1868-portability-lint.html#the-standard-library" id="the-standard-library"><h3>The standard library</h3></a>
+<a class="header" href="#the-standard-library" id="the-standard-library"><h3>The standard library</h3></a>
 <p>To what extent does this proposal obviate the need for the <code>std</code> facade? Might
 it be possible to deprecate <code>libcore</code> in favor of the &quot;subsetting <code>std</code>&quot; approach?</p>
-<a class="header" href="1868-portability-lint.html#cargo-features" id="cargo-features"><h3>Cargo features</h3></a>
+<a class="header" href="#cargo-features" id="cargo-features"><h3>Cargo features</h3></a>
 <p>It's unclear whether, or how, to extend this approach to deal with Cargo
 features. In particular, features are namespaced per crate, so there's no way to
 use the <code>cfg</code> system today to talk about upstream features.</p>
-<a class="header" href="1868-portability-lint.html#appendix-possible-extensions" id="appendix-possible-extensions"><h1>Appendix: possible extensions</h1></a>
-<a class="header" href="1868-portability-lint.html#match_cfg" id="match_cfg"><h2><code>match_cfg</code></h2></a>
+<a class="header" href="#appendix-possible-extensions" id="appendix-possible-extensions"><h1>Appendix: possible extensions</h1></a>
+<a class="header" href="#match_cfg" id="match_cfg"><h2><code>match_cfg</code></h2></a>
 <p>The original version of this RFC was more expansive, and proposed a <code>match_cfg</code>
 macro that provided some additional checking.</p>
 <p>The <code>match_cfg</code> macro takes a sequence of <code>cfg</code> patterns, followed by <code>=&gt;</code> and
@@ -786,9 +793,6 @@ to cover.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

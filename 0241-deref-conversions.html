@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0241-deref-conversions - </title>
+        <title>0241-deref-conversions - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/241">rust-lang/rfcs#241</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/21432">rust-lang/rust#21432</a></li>
 </ul>
-<a class="header" href="0241-deref-conversions.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add the following coercions:</p>
 <ul>
 <li>From <code>&amp;T</code> to <code>&amp;U</code> when <code>T: Deref&lt;U&gt;</code>.</li>
@@ -147,7 +154,7 @@
 </ul>
 <p>These coercions eliminate the need for &quot;cross-borrowing&quot; (things like <code>&amp;**v</code>)
 and calls to <code>as_slice</code>.</p>
-<a class="header" href="0241-deref-conversions.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Rust currently supports a conservative set of <em>implicit coercions</em> that are used
 when matching the types of arguments against those given for a function's
 parameters. For example, if <code>T: Trait</code> then <code>&amp;T</code> is implicitly coerced to
@@ -177,9 +184,9 @@ a more general way later on.</p>
 valuable lessons in the interim and (2) there is a quite conservative kind of
 coercion we can add that dramatically improves today's ergonomic state of
 affairs.</p>
-<a class="header" href="0241-deref-conversions.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0241-deref-conversions.html#design-principles" id="design-principles"><h2>Design principles</h2></a>
-<a class="header" href="0241-deref-conversions.html#the-centrality-of-ownership-and-borrowing" id="the-centrality-of-ownership-and-borrowing"><h3>The centrality of ownership and borrowing</h3></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#design-principles" id="design-principles"><h2>Design principles</h2></a>
+<a class="header" href="#the-centrality-of-ownership-and-borrowing" id="the-centrality-of-ownership-and-borrowing"><h3>The centrality of ownership and borrowing</h3></a>
 <p>As Rust has evolved,
 <a href="http://blog.rust-lang.org/2014/09/15/Rust-1.0.html">a theme has emerged</a>:
 <em>ownership</em> and <em>borrowing</em> are the focal point of Rust's design, and the key
@@ -216,11 +223,11 @@ sort(a); // not only does this not move `a`, but it mutates it!
 <p>Having to include an extra <code>&amp;</code> or <code>&amp;mut</code> for arguments is a slight
 inconvenience, but it makes it much easier to track ownership at a glance.
 (Note that ownership is not <em>entirely</em> explicit, due to <code>self</code> and macros; see
-the <a href="0241-deref-conversions.html#appendix-ownership-in-rust-today">appendix</a>.)</p>
+the <a href="#appendix-ownership-in-rust-today">appendix</a>.)</p>
 <p>This RFC takes as a basic principle: <strong>Coercions should never implicitly borrow from owned data</strong>.</p>
 <p>This is a key difference from the
 <a href="https://github.com/rust-lang/rfcs/pull/226">cross-borrowing RFC</a>.</p>
-<a class="header" href="0241-deref-conversions.html#limit-implicit-execution-of-arbitrary-code" id="limit-implicit-execution-of-arbitrary-code"><h3>Limit implicit execution of arbitrary code</h3></a>
+<a class="header" href="#limit-implicit-execution-of-arbitrary-code" id="limit-implicit-execution-of-arbitrary-code"><h3>Limit implicit execution of arbitrary code</h3></a>
 <p>Another positive aspect of Rust's current design is that a function call like
 <code>foo(bar, baz)</code> does not invoke arbitrary code (general implicit coercions, as
 found in e.g. Scala). It simply executes <code>foo</code>.</p>
@@ -251,7 +258,7 @@ a consequence, you generally know when you're working with a type implementing
 <code>Deref</code>.</p>
 <p>This RFC takes as a basic principle: <strong>Coercions should narrowly limit the code they execute</strong>.</p>
 <p>Coercions through <code>Deref</code> are considered narrow enough.</p>
-<a class="header" href="0241-deref-conversions.html#the-proposal" id="the-proposal"><h2>The proposal</h2></a>
+<a class="header" href="#the-proposal" id="the-proposal"><h2>The proposal</h2></a>
 <p>The idea is to introduce a coercion corresponding to <code>Deref</code>/<code>DerefMut</code>, but
 <em>only</em> for already-borrowed values:</p>
 <ul>
@@ -282,7 +289,7 @@ The general <code>HasCoercion(T, U)</code> procedure would work as follows:</p>
 levels of deref from the given argument, just as method resolution searches for
 applicable methods at increasing levels of deref.</p>
 <p>Unlike method resolution, however, this coercion does <em>not</em> automatically borrow.</p>
-<a class="header" href="0241-deref-conversions.html#benefits-of-the-design" id="benefits-of-the-design"><h3>Benefits of the design</h3></a>
+<a class="header" href="#benefits-of-the-design" id="benefits-of-the-design"><h3>Benefits of the design</h3></a>
 <p>Under this coercion design, we'd see the following ergonomic improvements for
 &quot;cross-borrowing&quot;:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -326,7 +333,7 @@ fn use_vec_ref(v: &amp;Vec&lt;u8&gt;) {
     use_slice(v);               // what you'd be able to write
 }
 #}</code></pre></pre>
-<a class="header" href="0241-deref-conversions.html#characteristics-of-the-design" id="characteristics-of-the-design"><h3>Characteristics of the design</h3></a>
+<a class="header" href="#characteristics-of-the-design" id="characteristics-of-the-design"><h3>Characteristics of the design</h3></a>
 <p>The design satisfies both of the principles laid out in the Motivation:</p>
 <ul>
 <li>
@@ -346,7 +353,7 @@ operator, and richer coercions are available between borrowed types. This
 perspective is in opposition to viewing <code>&amp;</code> primarily as adding a layer of
 indirection -- a view that, given compiler optimizations, is often inaccurate
 anyway.</p>
-<a class="header" href="0241-deref-conversions.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>As with any mechanism that implicitly invokes code, deref coercions make it more
 complex to fully understand what a given piece of code is doing. The RFC argued
 inline that the design conserves local reasoning in practice.</p>
@@ -355,7 +362,7 @@ surrounding <code>&amp;</code>, and in particular somewhat muddies the idea that
 pointer. This change could make Rust more difficult to learn (though note that
 it puts <em>more</em> attention on ownership), though it would make it more convenient
 to use in the long run.</p>
-<a class="header" href="0241-deref-conversions.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The main alternative that addresses the same goals as this RFC is the
 <a href="https://github.com/rust-lang/rfcs/pull/226">cross-borrowing RFC</a>, which
 proposes a more aggressive form of deref coercion: it would allow converting
@@ -371,7 +378,7 @@ bar(v); // is v still available?
 #}</code></pre></pre>
 <p>Knowing whether <code>v</code> is moved in the call to <code>foo</code> requires knowing <code>foo</code>'s
 signature, since the coercion would <em>implicitly borrow</em> from the vector.</p>
-<a class="header" href="0241-deref-conversions.html#appendix-ownership-in-rust-today" id="appendix-ownership-in-rust-today"><h1>Appendix: ownership in Rust today</h1></a>
+<a class="header" href="#appendix-ownership-in-rust-today" id="appendix-ownership-in-rust-today"><h1>Appendix: ownership in Rust today</h1></a>
 <p>In today's Rust, ownership transfer/borrowing is explicit for all
 function/method arguments. It is implicit only for:</p>
 <ul>
@@ -428,9 +435,6 @@ invocations can appear to move when they actually borrow.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

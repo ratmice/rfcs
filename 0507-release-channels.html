@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0507-release-channels - </title>
+        <title>0507-release-channels - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/507">rust-lang/rfcs#507</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/20445">rust-lang/rust#20445</a></li>
 </ul>
-<a class="header" href="0507-release-channels.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC describes changes to the Rust release process, primarily the
 division of Rust's time-based releases into 'release channels',
 following the 'release train' model used by e.g. Firefox and Chrome;
@@ -154,14 +161,14 @@ system for the greater cargo ecosystem to annotate feature stability.</p>
 <p>Finally, it discusses how Cargo may leverage feature gates to
 determine compatibility of Rust crates with specific revisions of the
 Rust language.</p>
-<a class="header" href="0507-release-channels.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>We soon intend to <a href="http://blog.rust-lang.org/2014/10/30/Stability.html">provide stable releases</a> of Rust that offer
 backwards compatibility with previous stable releases. Still, we
 expect to continue developing new features at a rapid pace for some
 time to come. We need to be able to provide these features to users
 for testing as they are developed while also proving strong stability
 guarantees to users.</p>
-<a class="header" href="0507-release-channels.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The Rust release process moves to a 'release train' model, in which
 there are three 'release channels' through which the official Rust
 binaries are published: 'nightly', 'beta', and 'stable', and these
@@ -194,7 +201,7 @@ contain only features which are complete and backwards-compatible
 train, particularly with regard to feature staging. A more detailed
 description of the impact on the development process is [available
 elsewhere][3].</p>
-<a class="header" href="0507-release-channels.html#versioning-and-releases" id="versioning-and-releases"><h2>Versioning and releases</h2></a>
+<a class="header" href="#versioning-and-releases" id="versioning-and-releases"><h2>Versioning and releases</h2></a>
 <p>The nature of development and releases differs between channels, as
 each serves a specific purpose: nightly is for active development,
 beta is for testing and bugfixing, and stable is for final releases.</p>
@@ -233,7 +240,7 @@ both with just a bare version number, e.g. '1.0.0'.  They are
 published at the beginning of each development cycle and once
 published are never refreshed or overwritten. Provisions for stable
 point releases will be made at a future time.</p>
-<a class="header" href="0507-release-channels.html#exceptions-for-the-100-beta-period" id="exceptions-for-the-100-beta-period"><h2>Exceptions for the 1.0.0 beta period</h2></a>
+<a class="header" href="#exceptions-for-the-100-beta-period" id="exceptions-for-the-100-beta-period"><h2>Exceptions for the 1.0.0 beta period</h2></a>
 <p>Under the release train model version numbers are incremented
 automatically each release cycle on a predetermined schedule.  Six
 weeks after 1.0.0 is released 1.1.0 will be released, and six weeks
@@ -250,7 +257,7 @@ channel as 1.0.0 and beginning the release train process in full.</p>
 <p>During the beta cycles, as with the normal release cycles, primary
 development will be on the nightly branch, with only bugfixes on the
 beta branch.</p>
-<a class="header" href="0507-release-channels.html#feature-staging" id="feature-staging"><h2>Feature staging</h2></a>
+<a class="header" href="#feature-staging" id="feature-staging"><h2>Feature staging</h2></a>
 <p>In builds of Rust distributed through the 'beta' and 'stable' release
 channels, it is impossible to turn on unstable features
 by writing the <code>#[feature(...)]</code> attribute. This is accomplished
@@ -289,7 +296,7 @@ prelude, and phase, to import the standard <code>macro_rules!</code> macros. In
 the short term this will be worked-around with hacks in the
 compiler. It's likely that these hacks can be removed before 1.0 if
 globs and <code>macro_rules!</code> imports become stable.</p>
-<a class="header" href="0507-release-channels.html#merging-stability-attributes-and-feature-gates" id="merging-stability-attributes-and-feature-gates"><h2>Merging stability attributes and feature gates</h2></a>
+<a class="header" href="#merging-stability-attributes-and-feature-gates" id="merging-stability-attributes-and-feature-gates"><h2>Merging stability attributes and feature gates</h2></a>
 <p>In addition to the feature gates that, in conjuction with the
 aforementioned <code>unstable_features</code> lint, manage the stable evolution
 of <em>language</em> features, Rust <em>additionally</em> has another independent
@@ -365,7 +372,7 @@ linkage to language versions and release channels. There is though no
 mechanism to explicitly forbid their use outside of the standard
 distribution. A general mechanism for indicating API stability
 will be reconsidered in the future.</p>
-<a class="header" href="0507-release-channels.html#api-lifecycle" id="api-lifecycle"><h3>API lifecycle</h3></a>
+<a class="header" href="#api-lifecycle" id="api-lifecycle"><h3>API lifecycle</h3></a>
 <p>These attributes alter the process of how new APIs are added to the
 standard library slightly. First an API will be proposed via the RFC
 process, and a name for the API feature being added will be assigned
@@ -383,7 +390,7 @@ the <code>since</code> parameter.</p>
 <p>(Occassionally unstable APIs may be deprecated for the sake of easing
 user transitions, in which case they receive both the <code>staged_stable</code>
 and <code>staged_deprecated</code> attributes at once.)</p>
-<a class="header" href="0507-release-channels.html#checking-feature" id="checking-feature"><h3>Checking <code>#[feature]</code></h3></a>
+<a class="header" href="#checking-feature" id="checking-feature"><h3>Checking <code>#[feature]</code></h3></a>
 <p>The names of features will no longer be a hardcoded list in the compiler
 due to the free-form nature of the <code>#[staged_unstable]</code> feature names.
 Instead, the compiler will perform the following steps when inspecting
@@ -404,7 +411,7 @@ will generate an error in this case unconditionally.</li>
 </ol>
 <p>These steps ensure that the <code>#[feature]</code> attribute is used exhaustively
 and will check unstable language and library features.</p>
-<a class="header" href="0507-release-channels.html#features-cargo-and-version-detection" id="features-cargo-and-version-detection"><h2>Features, Cargo and version detection</h2></a>
+<a class="header" href="#features-cargo-and-version-detection" id="features-cargo-and-version-detection"><h2>Features, Cargo and version detection</h2></a>
 <p>Over time, it has become clear that with an ever-growing number of Rust
 releases that crates will want to be able to manage what versions of
 rust they indicate they can be compiled with. Some specific use cases are:</p>
@@ -464,7 +471,7 @@ version of the language.</p>
 candidates based on the version of the available compiler. This will
 enable authors to publish crates which rely on the current beta channel
 while not interfering with users taking advantage of the stable channel.</p>
-<a class="header" href="0507-release-channels.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Adding multiple release channels and reducing the release cycle from
 12 to 6 weeks both increase the amount of release engineering work
 required.</p>
@@ -501,14 +508,14 @@ looks best, and accepting that since this is a feature that is not
 intended for general use the discrepancy is not a major problem.</p>
 <p>Having Cargo do version detection through feature analysis is known
 not to be foolproof, and may present further unknown obstacles.</p>
-<a class="header" href="0507-release-channels.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Leave feature gates and unstable APIs exposed to the stable
 channel, as precedented by Haskell, web vendor prefixes, and node.js.</p>
 <p>Make the beta channel a compromise between the nightly and stable
 channels, allowing some set of unstable features and APIs. This
 would allow more projects to use a 'more stable' release, but would
 make beta no longer representative of the pending stable release.</p>
-<a class="header" href="0507-release-channels.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>The exact method for working around the prelude's use of feature gates
 is undetermined. Fixing <a href="https://github.com/rust-lang/rust/issues/18102">#18102</a> will complicate the situation as the
 prelude relies on a bug in lint checking to work at all.</p>
@@ -520,7 +527,7 @@ be possible to just stop running lints in rustdoc.</p>
 applicable.</p>
 <p>What mechanism ensures that all API's have stability coverage? Probably
 the will just default to unstable with some 'default' feature name.</p>
-<a class="header" href="0507-release-channels.html#see-also" id="see-also"><h1>See Also</h1></a>
+<a class="header" href="#see-also" id="see-also"><h1>See Also</h1></a>
 <ul>
 <li><a href="http://blog.rust-lang.org/2014/10/30/Stability.html">Stability as a deliverable</a></li>
 <li>[Prior work week discussion][2]</li>
@@ -572,9 +579,6 @@ the will just default to unstable with some 'default' feature name.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

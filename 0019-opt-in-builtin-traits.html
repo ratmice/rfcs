@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0019-opt-in-builtin-traits - </title>
+        <title>0019-opt-in-builtin-traits - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/19">rust-lang/rfcs#19</a>, <a href="https://github.com/rust-lang/rfcs/pull/127">rust-lang/rfcs#127</a></li>
 <li>Rust Issue #: <a href="https://github.com/rust-lang/rust/issues/13231">rust-lang/rust#13231</a></li>
 </ul>
-<a class="header" href="0019-opt-in-builtin-traits.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>The high-level idea is to add language features that simultaneously
 achieve three goals:</p>
 <ol>
@@ -190,7 +197,7 @@ therefore, which contains an unsafe pointer would be confined (by
 default) to a single thread. Safe wrappers around those types, like
 <code>Arc</code>, <code>Atomic</code>, or <code>Mutex</code>, can then opt back in by explicitly
 implementing <code>Send</code> (these impls would have to be designed as unsafe).</p>
-<a class="header" href="0019-opt-in-builtin-traits.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Since proposing opt-in builtin traits, I have become increasingly
 concerned about the notion of having <code>Send</code> and <code>Share</code> be strictly
 opt-in. There are two main reasons for my concern:</p>
@@ -256,8 +263,8 @@ makes them <em>less</em> built-in, but still requires custom logic in the
 specicially understood by the compiler are <code>Copy</code> and <code>Sized</code>. I
 consider this acceptable, since those two traits are intimately tied
 to the core Rust type system, unlike <code>Send</code> and <code>Share</code>.</p>
-<a class="header" href="0019-opt-in-builtin-traits.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0019-opt-in-builtin-traits.html#unsafe-traits" id="unsafe-traits"><h2>Unsafe traits</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#unsafe-traits" id="unsafe-traits"><h2>Unsafe traits</h2></a>
 <p>Certain traits like <code>Send</code> and <code>Share</code> are critical to memory safety.
 Nonetheless, it is not feasible to check the thread-safety of all
 types that implement <code>Send</code> and <code>Share</code>. Therefore, we introduce a
@@ -280,7 +287,7 @@ safe:</p>
 </code></pre>
 <p>It is also safe to <em>opt out</em> of an unsafe trait (as discussed in the
 next section).</p>
-<a class="header" href="0019-opt-in-builtin-traits.html#default-and-negative-impls" id="default-and-negative-impls"><h2>Default and negative impls</h2></a>
+<a class="header" href="#default-and-negative-impls" id="default-and-negative-impls"><h2>Default and negative impls</h2></a>
 <p>We add a notion of a <em>default impl</em>, written:</p>
 <pre><code>impl Trait for .. { }
 </code></pre>
@@ -328,7 +335,7 @@ not supported. Here is an example of such a type:</p>
 <p>The difference between <code>Foo</code> and <code>List</code> above is that <code>Foo&lt;A&gt;</code>
 references <code>Foo&lt;Vec&lt;A&gt;&gt;</code>, which will then in turn reference
 <code>Foo&lt;Vec&lt;Vec&lt;A&gt;&gt;&gt;</code> and so on.</p>
-<a class="header" href="0019-opt-in-builtin-traits.html#modeling-send-and-share-using-default-traits" id="modeling-send-and-share-using-default-traits"><h2>Modeling Send and Share using default traits</h2></a>
+<a class="header" href="#modeling-send-and-share-using-default-traits" id="modeling-send-and-share-using-default-traits"><h2>Modeling Send and Share using default traits</h2></a>
 <p>The <code>Send</code> and <code>Share</code> traits will be modeled entirely in the library
 as follows. First, we declare the two traits as follows:</p>
 <pre><code>unsafe trait Send { }
@@ -359,11 +366,11 @@ converts a type <code>T</code> from being <code>Sendable</code> to something <co
 <pre><code>unsafe impl&lt;T:Send&gt; Send for Mutex&lt;T&gt; { }
 unsafe impl&lt;T:Send&gt; Share for Mutex&lt;T&gt; { }
 </code></pre>
-<a class="header" href="0019-opt-in-builtin-traits.html#the-copy-and-sized-traits" id="the-copy-and-sized-traits"><h2>The <code>Copy</code> and <code>Sized</code> traits</h2></a>
+<a class="header" href="#the-copy-and-sized-traits" id="the-copy-and-sized-traits"><h2>The <code>Copy</code> and <code>Sized</code> traits</h2></a>
 <p>The final two builtin traits are <code>Copy</code> and <code>Share</code>. This RFC does not
 propose any changes to those two traits but rather relies on the
-specification from <a href="0003-opt-in-builtin-traits.md">the original opt-in RFC</a>.</p>
-<a class="header" href="0019-opt-in-builtin-traits.html#controlling-copy-vs-move-with-the-copy-trait" id="controlling-copy-vs-move-with-the-copy-trait"><h3>Controlling copy vs move with the <code>Copy</code> trait</h3></a>
+specification from <a href="0003-opt-in-builtin-traits.html">the original opt-in RFC</a>.</p>
+<a class="header" href="#controlling-copy-vs-move-with-the-copy-trait" id="controlling-copy-vs-move-with-the-copy-trait"><h3>Controlling copy vs move with the <code>Copy</code> trait</h3></a>
 <p>The <code>Copy</code> trait is &quot;opt-in&quot; for user-declared structs and enums. A
 struct or enum type is considered to implement the <code>Copy</code> trait only
 if it implements the <code>Copy</code> trait.  This means that structs and enums
@@ -398,12 +405,12 @@ points.</li>
 </ol>
 <p>What is nice about this change is that when a type is defined, the
 user makes an <em>explicit choice</em> between these three options.</p>
-<a class="header" href="0019-opt-in-builtin-traits.html#determining-whether-a-type-is-sized" id="determining-whether-a-type-is-sized"><h3>Determining whether a type is <code>Sized</code></h3></a>
+<a class="header" href="#determining-whether-a-type-is-sized" id="determining-whether-a-type-is-sized"><h3>Determining whether a type is <code>Sized</code></h3></a>
 <p>Per the DST specification, the array types <code>[T]</code> and object types like
 <code>Trait</code> are unsized, as are any structs that embed one of those
 types. The <code>Sized</code> trait can never be explicitly implemented and
 membership in the trait is always automatically determined.</p>
-<a class="header" href="0019-opt-in-builtin-traits.html#matching-and-coherence-for-the-builtin-types-copy-and-sized" id="matching-and-coherence-for-the-builtin-types-copy-and-sized"><h3>Matching and coherence for the builtin types <code>Copy</code> and <code>Sized</code></h3></a>
+<a class="header" href="#matching-and-coherence-for-the-builtin-types-copy-and-sized" id="matching-and-coherence-for-the-builtin-types-copy-and-sized"><h3>Matching and coherence for the builtin types <code>Copy</code> and <code>Sized</code></h3></a>
 <p>In general, determining whether a type implements a builtin trait can
 follow the existing trait matching algorithm, but it will have to be
 somewhat specialized. The problem is that we are somewhat limited in
@@ -429,14 +436,14 @@ fixed-length arrays baked in, the only impls that end users are
 permitted to write are impls for struct and enum types that they
 define themselves. Although this rule is in the general spirit of the
 coherence checks, it will have to be written specially.</p>
-<a class="header" href="0019-opt-in-builtin-traits.html#design-discussion" id="design-discussion"><h1>Design discussion</h1></a>
-<a class="header" href="0019-opt-in-builtin-traits.html#why-unsafe-traits" id="why-unsafe-traits"><h4>Why unsafe traits</h4></a>
+<a class="header" href="#design-discussion" id="design-discussion"><h1>Design discussion</h1></a>
+<a class="header" href="#why-unsafe-traits" id="why-unsafe-traits"><h4>Why unsafe traits</h4></a>
 <p>Without unsafe traits, it would be possible to
 create data races without using the <code>unsafe</code> keyword:</p>
 <pre><code>struct MyStruct { foo: Cell&lt;int&gt; }
 impl Share for MyStruct { }
 </code></pre>
-<a class="header" href="0019-opt-in-builtin-traits.html#balancing-abstraction-safety-and-convenience" id="balancing-abstraction-safety-and-convenience"><h4>Balancing abstraction, safety, and convenience.</h4></a>
+<a class="header" href="#balancing-abstraction-safety-and-convenience" id="balancing-abstraction-safety-and-convenience"><h4>Balancing abstraction, safety, and convenience.</h4></a>
 <p>In general, the existence of default traits is <em>anti-abstraction</em>, in
 the sense that it exposes implementation details a library might
 prefer to hide. Specifically, adding new private fields can cause your
@@ -464,7 +471,7 @@ does not implement <code>Untainted</code> (nor can it, without either library A
 or libary B knowing about one another). Similar problems arise for any
 trait, of course, due to our coherence rules, but often they can be
 overcome with new types. Not so with <code>Send</code> and <code>Share</code>.</p>
-<a class="header" href="0019-opt-in-builtin-traits.html#other-use-cases" id="other-use-cases"><h4>Other use cases</h4></a>
+<a class="header" href="#other-use-cases" id="other-use-cases"><h4>Other use cases</h4></a>
 <p>Part of the design involves making space for other use cases. I'd like
 to skech out how some of those use cases can be implemented briefly.
 This is not included in the <em>Detailed design</em> section of the RFC
@@ -522,7 +529,7 @@ impl&lt;T:Drop&gt; !GcSafe for T { }
 // But guardians are, even if `T` has drop.
 impl&lt;T&gt; GcSafe for Guardian&lt;T&gt; { }
 </code></pre>
-<a class="header" href="0019-opt-in-builtin-traits.html#why-are-copy-and-sized-different" id="why-are-copy-and-sized-different"><h4>Why are <code>Copy</code> and <code>Sized</code> different?</h4></a>
+<a class="header" href="#why-are-copy-and-sized-different" id="why-are-copy-and-sized-different"><h4>Why are <code>Copy</code> and <code>Sized</code> different?</h4></a>
 <p>The <code>Copy</code> and <code>Sized</code> traits remain builtin to the compiler. This
 makes sense because they are intimately tied to analyses the compiler
 performs. For example, the running of destructors and tracking of
@@ -545,7 +552,7 @@ have data but represent permissions. This can be done today using
 markers but it is awkward. It becomes much more natural under this
 proposal.</li>
 </ul>
-<a class="header" href="0019-opt-in-builtin-traits.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p><strong>API stability.</strong> The main drawback of this approach over the
 existing opt-in approach seems to be that a type may be &quot;accidentally&quot;
 sendable or sharable. I discuss this above under the heading of
@@ -554,7 +561,7 @@ like to add here, as it specifically pertains to API stability, is
 that a library may, if they choose, opt out of <code>Send</code> and <code>Share</code>
 pre-emptively, in order to &quot;reserve the right&quot; to add non-sendable
 things in the future.</p>
-<a class="header" href="0019-opt-in-builtin-traits.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>The existing opt-in design is of course an alternative.</p>
@@ -572,7 +579,7 @@ assumptions could be invalidated, but no compilation errors will
 result (the impl was already declared as unsafe, after all).</p>
 </li>
 </ul>
-<a class="header" href="0019-opt-in-builtin-traits.html#phasing" id="phasing"><h1>Phasing</h1></a>
+<a class="header" href="#phasing" id="phasing"><h1>Phasing</h1></a>
 <p>Many of the mechanisms described in this RFC are not needed
 immediately.  Therefore, we would like to implement a minimal
 &quot;forwards compatible&quot; set of changes now and then leave the remaining
@@ -588,7 +595,7 @@ and <code>unsafe impl</code> concept.</p>
 <p>What this means in practice is that using <code>*const T</code>, <code>*mut T</code>, and
 <code>UnsafeCell</code> will make a type <code>T</code> non-sendable and non-sharable, and
 <code>T</code> must then explicitly implement <code>Send</code> or <code>Share</code>.</p>
-<a class="header" href="0019-opt-in-builtin-traits.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>The terminology of &quot;unsafe trait&quot; seems somewhat misleading, since
 it seems to suggest that &quot;using&quot; the trait is unsafe, rather than
@@ -650,9 +657,6 @@ plan dictates that builtin traits remain special until after 1.0.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

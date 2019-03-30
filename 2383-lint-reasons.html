@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2383-lint-reasons - </title>
+        <title>2383-lint-reasons - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2383">rust-lang/rfcs#2383</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/54503">rust-lang/rust#54503</a></li>
 </ul>
-<a class="header" href="2383-lint-reasons.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Rust has a number of code lints, both built into the compiler and provided
 through external tools, which provide guidelines for code style. The linter
 behavior can be customized by attaching attributes to regions of code to allow,
@@ -148,7 +155,7 @@ warn, or forbid, certain lint checks.</p>
 occasionally placed in a comment above the attribute or, more often, left
 unstated. This RFC proposes adding syntax to the lint attributes to encode the
 documented reason for a lint configuration choice.</p>
-<a class="header" href="2383-lint-reasons.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The style guide for a project, team, or company can cover far more than just
 syntax layout. Rules for the semantic shape of a codebase are documented in
 natural language and often in automated checking programs, such as the Rust
@@ -192,7 +199,7 @@ and practices.</p>
 <p>I expect Clippy will be a significant benefactor of this RFC, as Clippy lints
 are far more specific and plentiful than the compiler lints, and from personal
 experience much more likely to want explanation for their use or disuse.</p>
-<a class="header" href="2383-lint-reasons.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>When a linting tool such as the compiler or Clippy encounter a code span that
 they determine breaks one of their rules, they emit a message indicating the
 problem and, often, how to fix it. These messages explain how to make the linter
@@ -272,7 +279,7 @@ note: lint level defined here
   |                  ^^^^^^^^^^^^^^^^
   = help: for further information visit ...
 </code></pre>
-<a class="header" href="2383-lint-reasons.html#expect-lint-attribute" id="expect-lint-attribute"><h2><code>expect</code> Lint Attribute</h2></a>
+<a class="header" href="#expect-lint-attribute" id="expect-lint-attribute"><h2><code>expect</code> Lint Attribute</h2></a>
 <p>This RFC adds an <code>expect</code> lint attribute that functions identically to <code>allow</code>,
 but will cause a lint to be emitted when the code it decorates <strong><em>does not</em></strong>
 raise a lint warning. This lint was inspired by Yehuda Katz:</p>
@@ -327,7 +334,7 @@ reason: Everything is mut until I get this figured out
   |
   = note: #[warn(expectation_missing)] on by default
 </code></pre>
-<a class="header" href="2383-lint-reasons.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>This RFC adds a <code>reason = STRING</code> element to the three lint attributes. The
 diagnostic emitter in the compiler and other lint tools such as Clippy will need
 to be made aware of this element so that they can emit it in diagnostic text.</p>
@@ -341,7 +348,7 @@ to suppress expectation failures, lint when no expectation failures occur, or
 fail the build when one occurs. The default setting is
 <code>#![warn(expectation_missing)]</code>.</p>
 <p>That’s pretty much it, for technical details.</p>
-<a class="header" href="2383-lint-reasons.html#optional--yet-another-comment-syntax" id="optional--yet-another-comment-syntax"><h2>OPTIONAL — Yet Another Comment Syntax</h2></a>
+<a class="header" href="#optional--yet-another-comment-syntax" id="optional--yet-another-comment-syntax"><h2>OPTIONAL — Yet Another Comment Syntax</h2></a>
 <p>A sugar for lint text MAY be the line comment <code>//#</code> or the block comment
 <code>/*# #*/</code> with <code>U+0023 # NUMBER SIGN</code> as the signifying character. These
 comments MUST be placed immediately above a lint attribute. They are collected
@@ -378,10 +385,10 @@ single string that is then inserted as <code>reason = STRING</code> into the att
 author does not expect it to be included in the main RFC at all, and is writing
 it solely to be a published prior art in case of future desire for such a
 feature.</p>
-<a class="header" href="2383-lint-reasons.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Why should we <em>not</em> do this?</p>
 <p>Possibly low value add for the effort.</p>
-<a class="header" href="2383-lint-reasons.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <ul>
 <li>
 <p>Why is this design the best in the space of possible designs?</p>
@@ -397,10 +404,10 @@ choosing them?</p>
 <p>None.</p>
 </li>
 </ul>
-<a class="header" href="2383-lint-reasons.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>The <code>stable</code> and <code>unstable</code> attributes both take descriptive text parameters
 that appear in diagnostic and documentation output.</p>
-<a class="header" href="2383-lint-reasons.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>What parts of the design do you expect to resolve through the RFC process
@@ -464,9 +471,6 @@ would do with them.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

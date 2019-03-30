@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1504-int128 - </title>
+        <title>1504-int128 - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,15 +146,15 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1504">rust-lang/rfcs#1504</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/35118">rust-lang/rust#35118</a></li>
 </ul>
-<a class="header" href="1504-int128.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC adds the <code>i128</code> and <code>u128</code> primitive types to Rust.</p>
-<a class="header" href="1504-int128.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Some algorithms need to work with very large numbers that don't fit in 64 bits, such as certain cryptographic algorithms. One possibility would be to use a BigNum library, but these use heap allocation and tend to have high overhead. LLVM has support for very efficient 128-bit integers, which are exposed by Clang in C as the <code>__int128</code> type.</p>
-<a class="header" href="1504-int128.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1504-int128.html#compiler-support" id="compiler-support"><h2>Compiler support</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#compiler-support" id="compiler-support"><h2>Compiler support</h2></a>
 <p>The first step for implementing this feature is to add support for the <code>i128</code>/<code>u128</code> primitive types to the compiler. This will requires changes to many parts of the compiler, from libsyntax to trans.</p>
 <p>The compiler will need to be bootstrapped from an older compiler which does not support <code>i128</code>/<code>u128</code>, but rustc will want to use these types internally for things like literal parsing and constant propagation. This can be solved by using a &quot;software&quot; implementation of these types, similar to the one in the <a href="https://github.com/kennytm/extprim">extprim</a> crate. Once stage1 is built, stage2 can be compiled using the native LLVM <code>i128</code>/<code>u128</code> types.</p>
-<a class="header" href="1504-int128.html#runtime-library-support" id="runtime-library-support"><h2>Runtime library support</h2></a>
+<a class="header" href="#runtime-library-support" id="runtime-library-support"><h2>Runtime library support</h2></a>
 <p>The LLVM code generator supports 128-bit integers on all architectures, however it will lower some operations to runtime library calls. This similar to how we currently handle <code>u64</code> and <code>i64</code> on 32-bit platforms: &quot;complex&quot; operations such as multiplication or division are lowered by LLVM backends into calls to functions in the <code>compiler-rt</code> runtime library.</p>
 <p>Here is a rough breakdown of which operations are handled natively instead of through a library call:</p>
 <ul>
@@ -184,7 +191,7 @@ fn __udivti3(a: u128, b: u128) -&gt; u128;
 fn __umodti3(a: u128, b: u128) -&gt; u128;
 #}</code></pre></pre>
 <p>Implementations of these functions will be written in Rust and will be included in libcore. Note that it is not possible to write these functions in C or use the existing implementations in <code>compiler-rt</code> since the <code>__int128</code> type is not available in C on 32-bit platforms.</p>
-<a class="header" href="1504-int128.html#modifications-to-libcore" id="modifications-to-libcore"><h2>Modifications to libcore</h2></a>
+<a class="header" href="#modifications-to-libcore" id="modifications-to-libcore"><h2>Modifications to libcore</h2></a>
 <p>Several changes need to be done to libcore:</p>
 <ul>
 <li><code>src/libcore/num/i128.rs</code>: Define <code>MIN</code> and <code>MAX</code>.</li>
@@ -200,24 +207,24 @@ fn __umodti3(a: u128, b: u128) -&gt; u128;
 <li><code>src/libcore/hash/mod.rs</code>: Implement <code>Hash</code> for <code>u128</code> and <code>i128</code> and add <code>write_i128</code> and <code>write_u128</code> to <code>Hasher</code>.</li>
 <li><code>src/libcore/lib.rs</code>: Add the <code>u128</code> and <code>i128</code> modules.</li>
 </ul>
-<a class="header" href="1504-int128.html#modifications-to-libstd" id="modifications-to-libstd"><h2>Modifications to libstd</h2></a>
+<a class="header" href="#modifications-to-libstd" id="modifications-to-libstd"><h2>Modifications to libstd</h2></a>
 <p>A few minor changes are required in libstd:</p>
 <ul>
 <li><code>src/libstd/lib.rs</code>: Re-export <code>core::{i128, u128}</code>.</li>
 <li><code>src/libstd/primitive_docs.rs</code>: Add documentation for <code>i128</code> and <code>u128</code>.</li>
 </ul>
-<a class="header" href="1504-int128.html#modifications-to-other-crates" id="modifications-to-other-crates"><h2>Modifications to other crates</h2></a>
+<a class="header" href="#modifications-to-other-crates" id="modifications-to-other-crates"><h2>Modifications to other crates</h2></a>
 <p>A few external crates will need to be updated to support the new types:</p>
 <ul>
 <li><code>rustc-serialize</code>: Add the ability to serialize <code>i128</code> and <code>u128</code>.</li>
 <li><code>serde</code>: Add the ability to serialize <code>i128</code> and <code>u128</code>.</li>
 <li><code>rand</code>: Add the ability to generate random <code>i128</code>s and <code>u128</code>s.</li>
 </ul>
-<a class="header" href="1504-int128.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>One possible issue is that a <code>u128</code> can hold a very large number that doesn't fit in a <code>f32</code>. We need to make sure this doesn't lead to any <code>undef</code>s from LLVM. See <a href="https://github.com/rust-lang/rust/issues/10185#issuecomment-110955148">this comment</a>, and <a href="https://gist.github.com/Amanieu/f87da5f0599b343c5500">this example code</a>.</p>
-<a class="header" href="1504-int128.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>There have been several attempts to create <code>u128</code>/<code>i128</code> wrappers based on two <code>u64</code> values, but these can't match the performance of LLVM's native 128-bit integers. For example LLVM is able to lower a 128-bit add into just 2 instructions on 64-bit platforms and 4 instructions on 32-bit platforms.</p>
-<a class="header" href="1504-int128.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None</p>
 
                     </main>
@@ -263,9 +270,6 @@ fn __umodti3(a: u128, b: u128) -&gt; u128;
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0048-traits - </title>
+        <title>0048-traits - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/48">rust-lang/rfcs#48</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/5527">rust-lang/rust#5527</a></li>
 </ul>
-<a class="header" href="0048-traits.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Cleanup the trait, method, and operator semantics so that they are
 well-defined and cover more use cases. A high-level summary of the
 changes is as follows:</p>
@@ -152,12 +159,12 @@ orphans more carefully.</li>
 </ol>
 <p>This RFC excludes discussion of associated types and multidimensional
 type classes, which will be the subject of a follow-up RFC.</p>
-<a class="header" href="0048-traits.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The current trait system is ill-specified and inadequate. Its
 implementation dates from a rather different language. It should be
 put onto a surer footing.</p>
-<a class="header" href="0048-traits.html#use-cases" id="use-cases"><h2>Use cases</h2></a>
-<a class="header" href="0048-traits.html#poor-interaction-with-overloadable-deref-and-index-a-nameoverload" id="poor-interaction-with-overloadable-deref-and-index-a-nameoverload"><h3>Poor interaction with overloadable deref and index <a name=overload></h3></a>
+<a class="header" href="#use-cases" id="use-cases"><h2>Use cases</h2></a>
+<a class="header" href="#poor-interaction-with-overloadable-deref-and-index-a-nameoverload" id="poor-interaction-with-overloadable-deref-and-index-a-nameoverload"><h3>Poor interaction with overloadable deref and index <a name=overload></h3></a>
 <p><em>Addressed by:</em> New method resolution algorithm.</p>
 <p>The deref operator <code>*</code> is a flexible one. Imagine a pointer <code>p</code> of
 type <code>~T</code>. This same <code>*</code> operator can be used for three distinct
@@ -190,7 +197,7 @@ dereference is not inferred. For the time being, the sense can be
 manually specified by making the receiver type fully explicit: <code>(&amp;mut *p).foo()</code> vs <code>(&amp;*p).foo()</code>. I expect in a follow-up RFC to possibly
 address this problem, as well as the question of how to handle copies
 and moves of the referent (use #3 in my list above).</p>
-<a class="header" href="0048-traits.html#lack-of-backtracking-a-namebacktrack" id="lack-of-backtracking-a-namebacktrack"><h3>Lack of backtracking <a name=backtrack></h3></a>
+<a class="header" href="#lack-of-backtracking-a-namebacktrack" id="lack-of-backtracking-a-namebacktrack"><h3>Lack of backtracking <a name=backtrack></h3></a>
 <p><em>Addressed by:</em> New method resolution algorithm.</p>
 <p>Issue #XYZ. When multiple traits define methods with the same name, it
 is ambiguous which trait is being used:</p>
@@ -213,7 +220,7 @@ doesn't &quot;recurse&quot; and check additional dependencies when deciding if
 an <code>impl</code> is applicable. So it will decide, in this case, that the
 type <code>T</code> could implement <code>Foo</code> and then record for later that <code>T</code> must
 implement <code>Base</code>.  This will lead to weird errors.</p>
-<a class="header" href="0048-traits.html#overly-conservative-coherence" id="overly-conservative-coherence"><h3>Overly conservative coherence</h3></a>
+<a class="header" href="#overly-conservative-coherence" id="overly-conservative-coherence"><h3>Overly conservative coherence</h3></a>
 <p><em>Addressed by:</em> Expanded coherence rules.</p>
 <p>The job of coherence is to ensure that, for any given set of type
 parameters, a given trait is implemented <em>at most once</em> (it may of
@@ -281,7 +288,7 @@ to add &quot;negative bounds&quot;, which might be nice, we'd lose that
 property.  And the popularity and usefulness of blanket impls cannot
 be denied.  Therefore, I think this property (&quot;always being able to
 add impls&quot;) is not especially useful or important.</p>
-<a class="header" href="0048-traits.html#hokey-implementation-a-namehokey" id="hokey-implementation-a-namehokey"><h3>Hokey implementation <a name=hokey></h3></a>
+<a class="header" href="#hokey-implementation-a-namehokey" id="hokey-implementation-a-namehokey"><h3>Hokey implementation <a name=hokey></h3></a>
 <p><em>Addressed by:</em> Gradual vtable resolution algorithm</p>
 <p>In an effort to improve inference, the current implementation has a
 rather ad-hoc two-pass scheme. When performing a method call, it will
@@ -317,7 +324,7 @@ example. Specifically, we must never <em>infer</em> the value of the <code>Self<
 type parameter based on the impls in scope. This is because it would
 cause <em>crate concatentation</em> to potentially lead to compilation errors
 in the form of inference failure.</p>
-<a class="header" href="0048-traits.html#properties" id="properties"><h2>Properties</h2></a>
+<a class="header" href="#properties" id="properties"><h2>Properties</h2></a>
 <p>There are important properties I would like to guarantee:</p>
 <ul>
 <li><strong>Coherence</strong> <em>or</em> <strong>No Overlapping Instances:</strong> Given a trait and
@@ -344,13 +351,13 @@ exceeded. This counter can be adjusted by the user on a
 crate-by-crate basis if some bizarre impl pattern happens to require
 a deeper depth to be resolved.</li>
 </ul>
-<a class="header" href="0048-traits.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>In general, I won't give a complete algorithmic specification.
 Instead, I refer readers to the <a href="https://github.com/nikomatsakis/trait-matching-algorithm">prototype implementation</a>. I would
 like to write out a declarative and non-algorithmic specification for
 the rules too, but that is work in progress and beyond the scope of
 this RFC. Instead, I'll try to explain in &quot;plain English&quot;.</p>
-<a class="header" href="0048-traits.html#method-self-type-syntax" id="method-self-type-syntax"><h2>Method self-type syntax</h2></a>
+<a class="header" href="#method-self-type-syntax" id="method-self-type-syntax"><h2>Method self-type syntax</h2></a>
 <p>Currently methods must be declared using the explicit-self shorthands:</p>
 <pre><code>fn foo(self, ...)
 fn foo(&amp;self, ...)
@@ -369,7 +376,7 @@ fn foo(self: &amp;Self, ...)     // equivalent to `fn foo(&amp;self, ...)
 though it seems like it would be useful to permit it. It's also
 possible we can simply make <code>self</code> not be a keyword (that would be my
 personal preference, if we can achieve it).</p>
-<a class="header" href="0048-traits.html#coherence" id="coherence"><h2>Coherence</h2></a>
+<a class="header" href="#coherence" id="coherence"><h2>Coherence</h2></a>
 <p>The coherence rules fall into two categories: the <em>orphan</em> restriction
 and the <em>overlapping implementations</em> restriction.</p>
 <p><a name=orphan></p>
@@ -431,7 +438,7 @@ concoct scenarios in which coherence can neither confirm nor deny the
 possibility that two impls are overlapping. One way for this to happen
 is when there are two traits which the user knows are mutually
 exclusive; mutual exclusion is not currently expressible in the type
-system [<a href="0048-traits.html#7">7</a>] however, and hence the coherence check will report
+system [<a href="#7">7</a>] however, and hence the coherence check will report
 errors. For example:</p>
 <pre><code>trait Even { } // Naturally can't be Even and Odd at once!
 trait Odd { }
@@ -447,10 +454,10 @@ impl&lt;A:Bar&gt; Foo for A { ... }
 <p>In such cases, the recursion bound is exceeded and an error is
 conservatively reported. (Note that recursion is not always so easily
 detected.)</p>
-<a class="header" href="0048-traits.html#method-resolution" id="method-resolution"><h2>Method resolution</h2></a>
+<a class="header" href="#method-resolution" id="method-resolution"><h2>Method resolution</h2></a>
 <p>Let us assume the method call is <code>r.m(...)</code> and the type of the
 receiver <code>r</code> is <code>R</code>. We will resolve the call in two phases. The first
-phase checks for inherent methods [<a href="0048-traits.html#4">4</a>] and the second phase for
+phase checks for inherent methods [<a href="#4">4</a>] and the second phase for
 trait methods. Both phases work in a similar way, however. We will
 just describe how <em>trait method search</em> works and then express the
 <em>inherent method search</em> in terms of traits.</p>
@@ -478,7 +485,7 @@ searching for some type that implements a trait that offers the method
 autodereferences. (There exists the possibility of a cycle in the
 <code>Deref</code> chain, so we will only autoderef so many times before
 reporting an error.)</p>
-<a class="header" href="0048-traits.html#receiver-reconciliation" id="receiver-reconciliation"><h3>Receiver reconciliation</h3></a>
+<a class="header" href="#receiver-reconciliation" id="receiver-reconciliation"><h3>Receiver reconciliation</h3></a>
 <p>Once we find a trait that is implemented for the (adjusted) receiver
 type <code>R</code> and which offers the method <code>m</code>, we must <em>reconcile</em> the
 receiver with the self type declared in <code>m</code>. Let me explain by
@@ -551,11 +558,11 @@ that both cases 1 and 2 fail and we wind up at case 3, the test for
 which succeeds. Now we get to this statement: &quot;adjust <code>R</code> for mutable
 borrow&quot;.</p>
 <p>At issue here is the
-<a href="0048-traits.html#overload">overloading of the deref operator that was discussed earlier</a>.
+<a href="#overload">overloading of the deref operator that was discussed earlier</a>.
 In this case, the end result we want is <code>Mob::hit_points(&amp;mut *victim)</code>, which means that <code>*</code> is being used for a <em>mutable borrow</em>,
 which is indicated by the <code>DerefMut</code> trait.  However, while doing the
 autoderef loop, we always searched for impls of the <code>Deref</code> trait,
-since we did not yet know which trait we wanted. [<a href="0048-traits.html#2">2</a>] We need to
+since we did not yet know which trait we wanted. [<a href="#2">2</a>] We need to
 patch this up. So this loop will check whether the type <code>&amp;mut Monster</code>
 implements <code>DerefMut</code>, in addition to just <code>Deref</code> (it does).</p>
 <p>This check for case 3 could fail if, e.g., <code>victim</code> had a type like
@@ -601,21 +608,21 @@ more adjustments to unwind and we never found a type
 <code>Gc&lt;Monster&gt;</code>. Therefore, we report an error like &quot;the method
 <code>move_to_room()</code> expects a <code>Gc&lt;Monster&gt;</code> but was invoked with an
 <code>&amp;Monster</code>&quot;.</p>
-<a class="header" href="0048-traits.html#inherent-methods" id="inherent-methods"><h3>Inherent methods</h3></a>
+<a class="header" href="#inherent-methods" id="inherent-methods"><h3>Inherent methods</h3></a>
 <p>Inherent methods can be &quot;desugared&quot; into traits by assuming a trait
 per struct or enum. Each impl like <code>impl Foo</code> is effectively an
 implementation of that trait, and all those traits are assumed to be
 imported and in scope.</p>
-<a class="header" href="0048-traits.html#differences-from-today" id="differences-from-today"><h3>Differences from today</h3></a>
+<a class="header" href="#differences-from-today" id="differences-from-today"><h3>Differences from today</h3></a>
 <p>Today's algorithm isn't really formally defined, but it works very
 differently from this one. For one thing, it is based purely on
 subtyping checks, and does not rely on the generic trait
 matching. This is a crucial limitation that prevents cases like those
-described in <a href="0048-traits.html#backtrack">lack of backtracking</a> from working. It also
+described in <a href="#backtrack">lack of backtracking</a> from working. It also
 results in a lot of code duplication and a general mess.</p>
-<a class="header" href="0048-traits.html#interaction-with-vtables-and-type-inference" id="interaction-with-vtables-and-type-inference"><h2>Interaction with vtables and type inference</h2></a>
+<a class="header" href="#interaction-with-vtables-and-type-inference" id="interaction-with-vtables-and-type-inference"><h2>Interaction with vtables and type inference</h2></a>
 <p>One of the goals of this proposal is to remove the
-<a href="0048-traits.html#hokey">hokey distinction between early and late resolution</a>. The way
+<a href="#hokey">hokey distinction between early and late resolution</a>. The way
 that this will work now is that, as we execute, we'll accumulate a
 list of <em>pending trait obligations</em>. Each obligation is the
 combination of a trait and set of types. It is called an obligation
@@ -635,7 +642,7 @@ function.  At those times, we can go ahead and try to do
 resolution. If, after type checking the function in its entirety,
 there are <em>still</em> obligations that cannot be definitely resolved,
 that's an error.</p>
-<a class="header" href="0048-traits.html#ensuring-crate-concatenation" id="ensuring-crate-concatenation"><h2>Ensuring crate concatenation</h2></a>
+<a class="header" href="#ensuring-crate-concatenation" id="ensuring-crate-concatenation"><h2>Ensuring crate concatenation</h2></a>
 <p>To ensure <em>crate concentanability</em>, we must only consider the <code>Self</code>
 type parameter when deciding when a trait has been implemented (more
 generally, we must know the precise set of <em>input</em> type parameters; I
@@ -684,8 +691,8 @@ crate, then inference would fail where it worked before.</p>
 it's even plausible that the type <code>Real</code> would have been valid in some
 sense. So the inferencer is influencing program execution to some
 extent.</p>
-<a class="header" href="0048-traits.html#implementation-details" id="implementation-details"><h1>Implementation details</h1></a>
-<a class="header" href="0048-traits.html#the-resolve-algorithm" id="the-resolve-algorithm"><h2>The &quot;resolve&quot; algorithm</h2></a>
+<a class="header" href="#implementation-details" id="implementation-details"><h1>Implementation details</h1></a>
+<a class="header" href="#the-resolve-algorithm" id="the-resolve-algorithm"><h2>The &quot;resolve&quot; algorithm</h2></a>
 <p>The basis for the coherence check, method lookup, and vtable lookup
 algoritms is the same function, called <em>RESOLVE</em>. The basic idea is
 that it takes a set of obligations and tries to resolve them. The result
@@ -695,7 +702,7 @@ is four sets:</p>
 a specific impl.</li>
 <li><em>NO-IMPL</em>: Obligations which we know can NEVER be satisfied, because
 there is no specific impl. The only reason that we can ever say this
-for certain is due to the <a href="0048-traits.html#orphan">orphan check</a>.</li>
+for certain is due to the <a href="#orphan">orphan check</a>.</li>
 <li><em>DEFERRED</em>: Obligations that we could not definitely link to an
 impl, perhaps because of insufficient type information.</li>
 <li><em>UNDECIDABLE</em>: Obligations that were not decidable due to excessive
@@ -705,8 +712,8 @@ recursion.</li>
 probably an error. DEFERRED obligations are ok until we reach the end
 of the function. For details, please refer to the
 <a href="https://github.com/nikomatsakis/trait-matching-algorithm">prototype</a>.</p>
-<a class="header" href="0048-traits.html#alternatives-and-downsides-a-namealternatives" id="alternatives-and-downsides-a-namealternatives"><h1>Alternatives and downsides <a name=alternatives></h1></a>
-<a class="header" href="0048-traits.html#autoderef-and-ambiguity-a-nameambig" id="autoderef-and-ambiguity-a-nameambig"><h2>Autoderef and ambiguity <a name=ambig></h2></a>
+<a class="header" href="#alternatives-and-downsides-a-namealternatives" id="alternatives-and-downsides-a-namealternatives"><h1>Alternatives and downsides <a name=alternatives></h1></a>
+<a class="header" href="#autoderef-and-ambiguity-a-nameambig" id="autoderef-and-ambiguity-a-nameambig"><h2>Autoderef and ambiguity <a name=ambig></h2></a>
 <p>The addition of a <code>Deref</code> trait makes autoderef complicated, because
 we may encounter situations where the smart pointer <em>and</em> its
 reference both implement a trait, and we cannot know what the user
@@ -725,7 +732,7 @@ in my mind) effect of quelling the over-eager use of <code>Deref</code> for type
 that are not smart pointers.</p>
 <p>This idea appeals to me but I think belongs in a separate RFC. It
 needs to be evaluated.</p>
-<a class="header" href="0048-traits.html#footnotes" id="footnotes"><h1>Footnotes</h1></a>
+<a class="header" href="#footnotes" id="footnotes"><h1>Footnotes</h1></a>
 <p><a name=1></p>
 <p><strong>Note 1:</strong> when combining with DST, the <code>in</code> keyword goes
 first, and then any other qualifiers. For example, <code>in unsized RHS</code> or
@@ -739,8 +746,8 @@ immutable derefs.</p>
 <p><strong>Note 3:</strong> The restriction that inputs must precede outputs
 is not strictly necessary. I added it to keep options open concerning
 associated types and so forth. See the
-<a href="0048-traits.html#alternatives">Alternatives section</a>, specifically the section on
-<a href="0048-traits.html#assoc">associated types</a>.</p>
+<a href="#alternatives">Alternatives section</a>, specifically the section on
+<a href="#assoc">associated types</a>.</p>
 <p><a name=4></p>
 <p><strong>Note 4:</strong> The prioritization of inherent methods could be
 reconsidered after DST has been implemented. It is currently needed to
@@ -750,7 +757,7 @@ make impls like <code>impl Trait for ~Trait</code> work.</p>
 as those that are imported by name. PR #37 proposes possible changes
 to this rule.</p>
 <p><a name=6></p>
-<p><strong>Note 6:</strong> In the section on <a href="0048-traits.html#ambig">autoderef and ambiguity</a>, I
+<p><strong>Note 6:</strong> In the section on <a href="#ambig">autoderef and ambiguity</a>, I
 discuss alternate rules that might allow us to lift the requirement
 that the receiver be named <code>self</code>.</p>
 <p><a name=7></p>
@@ -800,9 +807,6 @@ RFC that could be used to express mutual exclusion of traits.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2657-roadmap-2019 - </title>
+        <title>2657-roadmap-2019 - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -133,14 +140,14 @@
 
                 <div id="content" class="content">
                     <main>
-                        <a class="header" href="2657-roadmap-2019.html#a2019-roadmap" id="a2019-roadmap"><h1>2019 Roadmap</h1></a>
+                        <a class="header" href="#2019-roadmap" id="2019-roadmap"><h1>2019 Roadmap</h1></a>
 <ul>
 <li>Feature Name: N/A</li>
 <li>Start Date: 2019-03-07</li>
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2657">rust-lang/rfcs#2657</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="2657-roadmap-2019.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes the <em>2019 Rust Roadmap</em>, in accordance with <a href="https://github.com/rust-lang/rfcs/blob/26197104b7bb9a5a35db243d639aee6e46d35d75/text/1728-north-star.md">RFC 1728</a>. The
 goal of the roadmap is to lay out a vision for where the Rust project should
 be in a year's time.</p>
@@ -150,7 +157,7 @@ Rust All Hands. Thanks to everyone who helped with this effort!</p>
 <p>In short, 2019 will be a year of <strong>rejuvenation and maturation</strong> for the Rust
 project. Much of the focus is on <strong>strengthening our foundations</strong> and
 <strong>paying down debt</strong>, both technical and organizational.</p>
-<a class="header" href="2657-roadmap-2019.html#detailed-description" id="detailed-description"><h1>Detailed description</h1></a>
+<a class="header" href="#detailed-description" id="detailed-description"><h1>Detailed description</h1></a>
 <p>In 2018, the Rust team came together around a shared vision: Rust 2018, our
 first real edition. We not only decided to develop Rust 2018, but also the
 idea of editions themselves, all in one year. 2018 was also a fantastic year
@@ -244,13 +251,13 @@ all, you can over at <a href="https://readrust.net/rust-2019/">Read Rust</a>. An
 course, these themes are not <em>universally</em> shared among Rust developers, but
 there is a common theme in many of them: slow down, pay off debt, finish what
 we've started.</p>
-<a class="header" href="2657-roadmap-2019.html#by-team" id="by-team"><h1>By team</h1></a>
+<a class="header" href="#by-team" id="by-team"><h1>By team</h1></a>
 <p>With this general theme in mind, here are the high-level plans from each of
 the teams for the upcoming year, in alphabetical order. These summaries are
 based on discussions had at the All Hands; each team may also post a more
 detailed individual roadmap. The summaries are meant to show plans in broad
 strokes and how they fit together for the project.</p>
-<a class="header" href="2657-roadmap-2019.html#cargo" id="cargo"><h2>Cargo</h2></a>
+<a class="header" href="#cargo" id="cargo"><h2>Cargo</h2></a>
 <p>The <a href="https://gist.github.com/nrc/6f0fb3b66d3b043aace30217128f3af9">cargo team 2019 roadmap</a> identifies a few major themes:</p>
 <ul>
 <li><strong>Better support for cross compilation:</strong>
@@ -283,7 +290,7 @@ strokes and how they fit together for the project.</p>
 </ul>
 </li>
 </ul>
-<a class="header" href="2657-roadmap-2019.html#community" id="community"><h2>Community</h2></a>
+<a class="header" href="#community" id="community"><h2>Community</h2></a>
 <p>The community team has decided to make &quot;solidifying&quot; the theme of the year.
 While it has a lot of ideas of what could be done, a lot of existing projects
 are useful and would be more so with more time and investment. Projects like
@@ -296,7 +303,7 @@ team to grow out of its current locations. It's hard to contribute to the
 community team if you are in timezones incompatible with meetings in US/EU
 timezones and the community team wants to change that.</p>
 <p>Previously a mainly outwards-focused team, the team also plans to assist other teams more in communicating better with the wider community and be more helpful to the project internally. For that, new reporting structures are planned.</p>
-<a class="header" href="2657-roadmap-2019.html#compiler" id="compiler"><h2>Compiler</h2></a>
+<a class="header" href="#compiler" id="compiler"><h2>Compiler</h2></a>
 <p>The compiler team has five main themes of work for this year:</p>
 <ul>
 <li><strong>Improving &quot;core strength&quot;</strong> by lowering raw compilation times and also generating better code (which in turn can help with compilation times)</li>
@@ -326,11 +333,11 @@ extracting libraries, such as <a href="https://github.com/rust-lang-nursery/chal
 borrow checker), and a new library focusing on name resolution. Eventually,
 we will merge this new front-end with the remaining bits of back-end from
 rustc.</p>
-<a class="header" href="2657-roadmap-2019.html#cratesio" id="cratesio"><h2>Crates.io</h2></a>
+<a class="header" href="#cratesio" id="cratesio"><h2>Crates.io</h2></a>
 <p>One of the newer teams, the Crates.io Team is going to be focused on growing
 itself, paying down technical debt in the codebase, and establishing themes
 for long-term priorities.</p>
-<a class="header" href="2657-roadmap-2019.html#dev-tools" id="dev-tools"><h2>Dev Tools</h2></a>
+<a class="header" href="#dev-tools" id="dev-tools"><h2>Dev Tools</h2></a>
 <p>The Dev Tools team has a few core functions:</p>
 <ul>
 <li>liaising with the wider project</li>
@@ -343,11 +350,11 @@ for ways to improve their internal processes.</p>
 <p>Individual devtools subteams may be coming up with their own roadmaps, you
 can see the one of Cargo above, the IDE team
 <a href="https://github.com/rust-dev-tools/dev-tools-team/blob/master/roadmaps/ides-and-editors-2019.md">here</a>, and the rustdoc team <a href="https://github.com/rust-dev-tools/dev-tools-team/blob/master/roadmaps/rustdoc-2019.md">here</a>.</p>
-<a class="header" href="2657-roadmap-2019.html#documentation" id="documentation"><h2>Documentation</h2></a>
+<a class="header" href="#documentation" id="documentation"><h2>Documentation</h2></a>
 <p>The documentation team is going to be completely reformulating itself, and
 possibly re-naming itself as the &quot;learning team.&quot; They're working on an RFC
 to do so, and that will lay out the roadmap. Stay tuned!</p>
-<a class="header" href="2657-roadmap-2019.html#language" id="language"><h2>Language</h2></a>
+<a class="header" href="#language" id="language"><h2>Language</h2></a>
 <p>The language team has four areas of interest this year:</p>
 <ul>
 <li><strong>Organizational:</strong>
@@ -373,7 +380,7 @@ to do so, and that will lay out the roadmap. Stay tuned!</p>
 </ul>
 </li>
 </ul>
-<a class="header" href="2657-roadmap-2019.html#library" id="library"><h2>Library</h2></a>
+<a class="header" href="#library" id="library"><h2>Library</h2></a>
 <p>The library team will be focusing on maintaining the standard library. The
 team will handle specialized tasks such as overseeing and reviewing ports of
 the standard library to new platforms, as well as typical bug fixes and
@@ -382,13 +389,13 @@ performance improvements.</p>
 new features for the standard library, but is specifically planning to
 develop a plan of attack for custom allocators associated with instances of
 collections (e.g. <code>Vec&lt;T, A: Alloc&gt;</code>).</p>
-<a class="header" href="2657-roadmap-2019.html#working-groups" id="working-groups"><h1>Working Groups</h1></a>
+<a class="header" href="#working-groups" id="working-groups"><h1>Working Groups</h1></a>
 <p>In addition to the Rust teams, we also have a number of active <strong>working
 groups</strong> that report to the core team. These groups are tasked with exploring
 a particular domain and making recommendations to other Rust teams with
 decision-making power. This section contains the 2019 priorities for each of
 these working groups.</p>
-<a class="header" href="2657-roadmap-2019.html#async-foundations-and-async-ecosystem" id="async-foundations-and-async-ecosystem"><h2>Async Foundations and Async Ecosystem</h2></a>
+<a class="header" href="#async-foundations-and-async-ecosystem" id="async-foundations-and-async-ecosystem"><h2>Async Foundations and Async Ecosystem</h2></a>
 <p>The 2018 roadmap comissioned a &quot;Networking Services&quot; domain working group.
 Since then, that working group has <a href="https://blog.yoshuawuyts.com/async-ecosystem-wg/">split into two
 parts</a>:</p>
@@ -396,7 +403,7 @@ parts</a>:</p>
 <li><strong>The &quot;Async Foundations&quot; effort</strong>, which is being led by the language design team, will focus on building the 'core building blocks' that belong to the language itself, such as the <code>Future</code> trait and <code>async</code>-<code>await</code> syntax.</li>
 <li><strong>The &quot;Async Ecosystem&quot; working group</strong>, meanwhile, will focus on nurturing the budding ecosystem built on top of those layers. The plan for 2019 is to focus on the <a href="https://docs.rs/tide/0.0.5/tide/">Tide web framework</a>, and help expand the ecosystem around async/await.</li>
 </ul>
-<a class="header" href="2657-roadmap-2019.html#cli-apps" id="cli-apps"><h2>CLI apps</h2></a>
+<a class="header" href="#cli-apps" id="cli-apps"><h2>CLI apps</h2></a>
 <p>The CLI working group's <a href="https://paper.dropbox.com/doc/0lRnShqsfMlfS6ylXrX9h">2019
 roadmap</a> focuses on
 three main themes:</p>
@@ -405,7 +412,7 @@ three main themes:</p>
 <li>working on the <strong>testing crates</strong>, such as <a href="https://crates.io/crates/assert_cli"><code>assert_cli</code></a>, <a href="https://crates.io/crates/assert_fs"><code>assert_fs</code></a>, and <a href="https://crates.io/crates/assert_cmd"><code>assert_cmd</code></a></li>
 <li>improving the <strong>organizational structure</strong> of the WG through meetings, organization, and branding</li>
 </ul>
-<a class="header" href="2657-roadmap-2019.html#webassembly" id="webassembly"><h2>WebAssembly</h2></a>
+<a class="header" href="#webassembly" id="webassembly"><h2>WebAssembly</h2></a>
 <p>The <a href="https://github.com/rustwasm/rfcs/pull/7">2019 WebAssembly WG roadmap</a>
 adopts the overall theme of <strong>practicality</strong>. The intent is to focus on these
 areas:</p>
@@ -416,7 +423,7 @@ areas:</p>
 <li>Polish our toolchain and developer workflow, culminating in a 1.0 version of <code>wasm-pack</code>.</li>
 <li>Invest in monitoring, testing, and profiling infrastructure to keep our tools and libraries snappy, stable and production-ready.</li>
 </ul>
-<a class="header" href="2657-roadmap-2019.html#embedded-bare-metal-devices" id="embedded-bare-metal-devices"><h2>Embedded &quot;bare metal&quot; devices</h2></a>
+<a class="header" href="#embedded-bare-metal-devices" id="embedded-bare-metal-devices"><h2>Embedded &quot;bare metal&quot; devices</h2></a>
 <p>The Embedded WG's <a href="https://paper.dropbox.com/doc/ZmUYvRp4PjX1jqq6LSxcZ">2019
 Roadmap</a> designates
 <strong>productivity</strong> as their theme for 2019. They plan to focus on three main
@@ -426,7 +433,7 @@ points:</p>
 <li>Maturing the ecosystem: growing existing libraries and highlighting projects to serve as examples</li>
 <li>Filling the gaps: getting toolchain bugs fixed and polishing existing tools</li>
 </ul>
-<a class="header" href="2657-roadmap-2019.html#secure-code" id="secure-code"><h2>Secure code</h2></a>
+<a class="header" href="#secure-code" id="secure-code"><h2>Secure code</h2></a>
 <p>The <a href="https://github.com/rust-secure-code/wg">Secure code working group</a> is a
 newer working group focused on making it easy to write secure code in Rust.
 The <a href="https://medium.com/@shnatsel/security-as-rust-2019-goal-6a060116ba39">2019
@@ -474,9 +481,6 @@ for the Secure Code working group focuses on four areas of improvement:</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

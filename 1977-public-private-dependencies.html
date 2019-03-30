@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1977-public-private-dependencies - </title>
+        <title>1977-public-private-dependencies - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1977">rust-lang/rfcs#1977</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44663">rust-lang/rust#44663</a></li>
 </ul>
-<a class="header" href="1977-public-private-dependencies.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce a public/private distinction to crate dependencies.</p>
-<a class="header" href="1977-public-private-dependencies.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The crates ecosystem has greatly expanded since Rust 1.0. With that, a few patterns for
 dependencies have evolved that challenge the currently existing dependency declaration
 system in Cargo and Rust. The most common problem is that a crate <code>A</code> depends on another
@@ -198,7 +205,7 @@ A: It is already the case that changing your own dependencies would require a se
 for your own library because your API contract to the outside world changes. This RFC,
 however, makes it possible to only have this requirement for public dependencies and would
 permit Cargo to prevent new crate releases with semver violations.</p>
-<a class="header" href="1977-public-private-dependencies.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>There are a few areas that need to be changed for this RFC:</p>
 <ul>
 <li>The compiler needs to be extended to understand when crate dependencies are
@@ -216,7 +223,7 @@ of crates that have undeclared public dependencies</li>
 check that the minimal version specified in <code>Cargo.toml</code> is correct.</li>
 <li>Crates.io should show public dependencies more prominently than private ones.</li>
 </ul>
-<a class="header" href="1977-public-private-dependencies.html#compiler-changes" id="compiler-changes"><h2>Compiler Changes</h2></a>
+<a class="header" href="#compiler-changes" id="compiler-changes"><h2>Compiler Changes</h2></a>
 <p>The main change to the compiler will be to accept a new parameter that Cargo
 supplies which is a list of public dependencies. The flag will be called
 <code>--extern-public</code>. The compiler then emits warnings if it encounters private
@@ -229,7 +236,7 @@ part of the public API. In that case one can permit this with
 paired with <code>#[doc(hidden)]</code> and other already existing hacks.</p>
 <p>This most likely will also be necessary for the more complex relationship of
 <code>libcore</code> and <code>libstd</code> in Rust itself.</p>
-<a class="header" href="1977-public-private-dependencies.html#changes-to-cargotoml" id="changes-to-cargotoml"><h2>Changes to <code>Cargo.toml</code></h2></a>
+<a class="header" href="#changes-to-cargotoml" id="changes-to-cargotoml"><h2>Changes to <code>Cargo.toml</code></h2></a>
 <p>The <code>Cargo.toml</code> file will be amended to support the new <code>public</code> parameter on
 dependencies. Old Cargo versions will emit a warning when this key is encountered
 but otherwise continue. Since the default for a dependency to be private only,
@@ -243,7 +250,7 @@ the compiler changes noted above.</p>
 <pre><code class="language-toml">[dependencies]
 url = { version = &quot;1.4.0&quot;, public = true }
 </code></pre>
-<a class="header" href="1977-public-private-dependencies.html#changes-to-the-cargo-index" id="changes-to-the-cargo-index"><h2>Changes to the Cargo Index</h2></a>
+<a class="header" href="#changes-to-the-cargo-index" id="changes-to-the-cargo-index"><h2>Changes to the Cargo Index</h2></a>
 <p>The <a href="https://github.com/rust-lang/crates.io-index">Cargo index</a> used by Cargo when
 resolving versions will contain the <code>public</code> attribute on dependencies as specified
 in <code>Cargo.toml</code>. For example, an index line for a crate named <code>example</code> that
@@ -265,7 +272,7 @@ publicly depends on the <code>url</code> crate would look like (JSON prettified 
     ]
 }
 </code></pre>
-<a class="header" href="1977-public-private-dependencies.html#changes-to-cargo-version-resolution" id="changes-to-cargo-version-resolution"><h2>Changes to Cargo Version Resolution</h2></a>
+<a class="header" href="#changes-to-cargo-version-resolution" id="changes-to-cargo-version-resolution"><h2>Changes to Cargo Version Resolution</h2></a>
 <p>Cargo will specifically reject graphs that contain two different versions of the
 same crate being publicly depended upon and reachable from each other. This will
 prevent the strange errors possible today at version resolution time rather than at
@@ -295,13 +302,13 @@ subgraphs from above</em> and those subgraphs contain two different versions of 
 same crate, we consider that an error. This basically means that if you privately
 depend on Hyper 0.3 and Hyper 0.4, that's an error.</li>
 </ul>
-<a class="header" href="1977-public-private-dependencies.html#changes-to-cargo-publish-warnings" id="changes-to-cargo-publish-warnings"><h2>Changes to Cargo Publish: Warnings</h2></a>
+<a class="header" href="#changes-to-cargo-publish-warnings" id="changes-to-cargo-publish-warnings"><h2>Changes to Cargo Publish: Warnings</h2></a>
 <p>When a new crate version is published, Cargo will warn about types and traits that
 the compiler determined to be public but did not come from a public dependency. For
 now, it should be possible to publish anyways but in some period in the future it
 will be necessary to explicitly mark all public dependencies as such or explicitly
 mark them with <code>#[allow(external_private_dependency)]</code>.</p>
-<a class="header" href="1977-public-private-dependencies.html#changes-to-cargo-publish-lowest-version-resolution" id="changes-to-cargo-publish-lowest-version-resolution"><h2>Changes to Cargo Publish: Lowest Version Resolution</h2></a>
+<a class="header" href="#changes-to-cargo-publish-lowest-version-resolution" id="changes-to-cargo-publish-lowest-version-resolution"><h2>Changes to Cargo Publish: Lowest Version Resolution</h2></a>
 <p>A very common situation today is that people write the initial version of a
 dependency in their Cargo.toml, but never bother to update it as they take advantage
 of new features in newer versions. This works out okay because (1) Cargo will
@@ -345,7 +352,7 @@ in Cargo.toml.</p>
 <p>To attempt to surface this problem earlier, <code>cargo publish</code> will attempt to resolve
 the graph while picking the smallest versions compatible with constraints. If the
 crate fails to build with this resolution graph, the publish will fail.</p>
-<a class="header" href="1977-public-private-dependencies.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>From the user's perspective, the initial scope of the RFC will be quite transparent,
 but it will definitely show up for users as a question of what the new restrictions
 mean. In particular, a common way to leak out types from APIs that most crates do is
@@ -375,8 +382,8 @@ negative opinions initially. As such, it would be a good idea to make a run with
 cargobomb/crater to see what the actual impact of the new linter warnings is and
 how far away we are from making them errors.</p>
 <p>Crates.io should be updated to render public and private dependencies separately.</p>
-<a class="header" href="1977-public-private-dependencies.html#end-user-experience" id="end-user-experience"><h1>End user experience</h1></a>
-<a class="header" href="1977-public-private-dependencies.html#author-of-a-crate-with-one-dependency" id="author-of-a-crate-with-one-dependency"><h2>Author of a crate with one dependency</h2></a>
+<a class="header" href="#end-user-experience" id="end-user-experience"><h1>End user experience</h1></a>
+<a class="header" href="#author-of-a-crate-with-one-dependency" id="author-of-a-crate-with-one-dependency"><h2>Author of a crate with one dependency</h2></a>
 <p>Assume today that an author of a library crate <code>onedep</code> has a
 dependency on the <code>url</code> crate and the <code>url::Url</code> type is exposed in
 <code>onedep</code>'s public API.</p>
@@ -451,7 +458,7 @@ the compilation failure, and that the author should investigate the versions of
 their dependencies in <code>Cargo.toml</code> to see if they should be updated. This command
 should change the Cargo.lock so that running <code>cargo build</code> will reproduce the error
 for the author to fix.</p>
-<a class="header" href="1977-public-private-dependencies.html#author-of-a-crate-with-multiple-dependencies" id="author-of-a-crate-with-multiple-dependencies"><h2>Author of a crate with multiple dependencies</h2></a>
+<a class="header" href="#author-of-a-crate-with-multiple-dependencies" id="author-of-a-crate-with-multiple-dependencies"><h2>Author of a crate with multiple dependencies</h2></a>
 <p><code>twodep</code>'s <code>Cargo.toml</code>:</p>
 <pre><code class="language-toml">[package]
 name = &quot;twodep&quot;
@@ -499,10 +506,10 @@ public dependency on url now has a lower bound of 1.5.1, the only valid graphs t
 Cargo will generate will be with url 1.5.1 or greater, which is also compatible with
 the url 1.0.0 direct dependency. Publish will work without any errors or further
 changes.</p>
-<a class="header" href="1977-public-private-dependencies.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>I believe that there are no drawbacks if implemented well (this assumes good
 linters and error messages).</p>
-<a class="header" href="1977-public-private-dependencies.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>For me, the biggest alternative to this RFC would be a variation of it where type
 and trait aliasing becomes immediately part of it. This would mean that a crate
 can have a private dependency and re-export it as its own type, hiding where it
@@ -511,7 +518,7 @@ rid of a few &quot;cul-de-sac&quot; situations users can end up in where their o
 out is to introduce a public dependency for now. The assumption is that if trait
 and type aliasing is available, the <code>external_public_dependency</code> would not need to
 exist.</p>
-<a class="header" href="1977-public-private-dependencies.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>There are a few open questions about how to best hook into the compiler and Cargo
 infrastructure:</p>
 <ul>
@@ -566,9 +573,6 @@ versions that violate that constraint.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

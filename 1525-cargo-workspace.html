@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1525-cargo-workspace - </title>
+        <title>1525-cargo-workspace - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1525">rust-lang/rfcs#1525</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/cargo/issues/2122">rust-lang/cargo#2122</a></li>
 </ul>
-<a class="header" href="1525-cargo-workspace.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Improve Cargo's story around multi-crate single-repo project management by
 introducing the concept of workspaces. All packages in a workspace will share
 <code>Cargo.lock</code> and an output directory for artifacts.</p>
-<a class="header" href="1525-cargo-workspace.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>A common method to organize a multi-crate project is to have one
 repository which contains all of the crates. Each crate has a corresponding
 subdirectory along with a <code>Cargo.toml</code> describing how to build it. There are a
@@ -166,7 +173,7 @@ isn't always convenient to set.</p>
 <p>Solving these two problems should help ease the development of large Rust
 projects by ensuring that all dependencies remain in sync and builds by default
 use already-built artifacts if available.</p>
-<a class="header" href="1525-cargo-workspace.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Cargo will grow the concept of a <strong>workspace</strong> for managing repositories of
 multiple crates. Workspaces will then have the properties:</p>
 <ul>
@@ -184,7 +191,7 @@ crates in the workspace.</li>
 section. Next, however, workspaces need to be defined. In the spirit of much of
 the rest of Cargo's configuration today this will largely be automatic for
 conventional project layouts but will have explicit controls for configuration.</p>
-<a class="header" href="1525-cargo-workspace.html#new-manifest-keys" id="new-manifest-keys"><h3>New manifest keys</h3></a>
+<a class="header" href="#new-manifest-keys" id="new-manifest-keys"><h3>New manifest keys</h3></a>
 <p>First, let's look at the new manifest keys which will be added to <code>Cargo.toml</code>:</p>
 <pre><code class="language-toml">[workspace]
 members = [&quot;relative/path/to/child1&quot;, &quot;../child2&quot;]
@@ -205,7 +212,7 @@ Cargo.toml of root crate, that this package is a member of.</p>
 <em>either</em> specify <code>package.workspace</code> or specify <code>[workspace]</code>. That is, a
 crate cannot both be a root crate in a workspace (contain <code>[workspace]</code>) and
 also be a member crate of another workspace (contain <code>package.workspace</code>).</p>
-<a class="header" href="1525-cargo-workspace.html#virtual-cargotoml" id="virtual-cargotoml"><h3>&quot;Virtual&quot; <code>Cargo.toml</code></h3></a>
+<a class="header" href="#virtual-cargotoml" id="virtual-cargotoml"><h3>&quot;Virtual&quot; <code>Cargo.toml</code></h3></a>
 <p>A good number of projects do not necessarily have a &quot;root <code>Cargo.toml</code>&quot; which is
 an appropriate root for a workspace. To accommodate these projects and allow for
 the output of a workspace to be configured regardless of where crates are
@@ -217,7 +224,7 @@ for example <code>cargo build</code> will be rejected. Arguments that take a pac
 however, such as <code>cargo test -p foo</code> will be allowed. Workspaces can eventually
 get extended with <code>--all</code> flags so in a workspace root you could execute
 <code>cargo build --all</code> to compile all crates.</p>
-<a class="header" href="1525-cargo-workspace.html#validating-a-workspace" id="validating-a-workspace"><h3>Validating a workspace</h3></a>
+<a class="header" href="#validating-a-workspace" id="validating-a-workspace"><h3>Validating a workspace</h3></a>
 <p>A workspace is valid if these two properties hold:</p>
 <ol>
 <li>A workspace has only one root crate (that with <code>[workspace]</code> in
@@ -239,7 +246,7 @@ builds no matter where they're executed in the workspace.</p>
 above do not hold for any crate attempting to be part of a workspace. For
 example, if the <code>package.workspace</code> key is specified, but the crate is not a
 workspace root or doesn't point back to the original crate an error is emitted.</p>
-<a class="header" href="1525-cargo-workspace.html#implicit-relations" id="implicit-relations"><h3>Implicit relations</h3></a>
+<a class="header" href="#implicit-relations" id="implicit-relations"><h3>Implicit relations</h3></a>
 <p>The combination of the <code>package.workspace</code> key and <code>[workspace]</code> table is enough
 to specify any workspace in Cargo. Having to annotate all crates with a
 <code>package.workspace</code> parent or a <code>workspace.members</code> list can get quite tedious,
@@ -255,7 +262,7 @@ dependencies (and recursively their own <code>path</code> dependencies) will inh
 become the default value for <code>workspace.members</code>.</p>
 <p>Note that these implicit relations will be subject to the same validations
 mentioned above for all of the explicit configuration as well.</p>
-<a class="header" href="1525-cargo-workspace.html#workspaces-in-practice" id="workspaces-in-practice"><h3>Workspaces in practice</h3></a>
+<a class="header" href="#workspaces-in-practice" id="workspaces-in-practice"><h3>Workspaces in practice</h3></a>
 <p>Many Rust projects today already have <code>Cargo.toml</code> at the root of a repository,
 and with the small addition of <code>[workspace]</code> in the root <code>Cargo.toml</code>, a
 workspace will be ready for all crates in that repository. For example:</p>
@@ -365,7 +372,7 @@ workspace = &quot;../../root&quot;
 The <code>rust</code> repo conceptually has two workspaces, the standard library and the
 compiler, and these would need to be manually configured with
 <code>workspace.members</code> and <code>package.workspace</code> keys amongst all crates.</p>
-<a class="header" href="1525-cargo-workspace.html#lockfile-and-override-interactions" id="lockfile-and-override-interactions"><h3>Lockfile and override interactions</h3></a>
+<a class="header" href="#lockfile-and-override-interactions" id="lockfile-and-override-interactions"><h3>Lockfile and override interactions</h3></a>
 <p>One of the main features of a workspace is that only one <code>Cargo.lock</code> is
 generated for the entire workspace. This lock file can be affected, however,
 with both <a href="https://github.com/rust-lang/cargo/pull/2385"><code>[replace]</code> overrides</a> as well as <code>paths</code> overrides.</p>
@@ -388,7 +395,7 @@ incompatible with older versions of Cargo. This will require projects that wish
 to work with workspaces and multiple versions of Cargo to check in multiple
 <code>Cargo.lock</code> files, but if projects avoid workspaces then Cargo will remain
 forwards and backwards compatible.</p>
-<a class="header" href="1525-cargo-workspace.html#future-extensions" id="future-extensions"><h3>Future Extensions</h3></a>
+<a class="header" href="#future-extensions" id="future-extensions"><h3>Future Extensions</h3></a>
 <p>Once Cargo understands a workspace of crates, we could easily extend various
 subcommands with a <code>--all</code> flag to perform tasks such as:</p>
 <ul>
@@ -400,7 +407,7 @@ subcommands with a <code>--all</code> flag to perform tasks such as:</p>
 version numbers, URL information, authorship, etc.</p>
 <p>This support isn't proposed to be added in this RFC specifically, but simply to
 show that workspaces can be used to solve other existing issues in Cargo.</p>
-<a class="header" href="1525-cargo-workspace.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>As proposed there is no method to disable implicit actions taken by Cargo.
@@ -411,7 +418,7 @@ It's unclear what the use case for this is, but it could in theory arise.</p>
 Existing crates must opt-in with a <code>[workspace]</code> key somewhere at least.</p>
 </li>
 </ul>
-<a class="header" href="1525-cargo-workspace.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>The <code>workspace.members</code> key could support globs to define a number of
@@ -430,7 +437,7 @@ unfortunately, isn't always efficient to do and it would be unfortunate to
 have to unconditionally do this.</p>
 </li>
 </ul>
-<a class="header" href="1525-cargo-workspace.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Does this approach scale well to repositories with a large number of crates?
 For example does the winapi-rs repository experience a slowdown on standard
@@ -480,9 +487,6 @@ For example does the winapi-rs repository experience a slowdown on standard
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

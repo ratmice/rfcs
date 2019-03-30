@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2307-concrete-nonzero-types - </title>
+        <title>2307-concrete-nonzero-types - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2307">rust-lang/rfcs#2307</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/49137">rust-lang/rust#49137</a></li>
 </ul>
-<a class="header" href="2307-concrete-nonzero-types.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add <code>std::num::NonZeroU32</code> and eleven other concrete types (one for each primitive integer type)
 to replace and deprecate <code>core::nonzero::NonZero&lt;T&gt;</code>.
 (Non-zero/non-null raw pointers are available through
 <a href="https://doc.rust-lang.org/nightly/std/ptr/struct.NonNull.html"><code>std::ptr::NonNull&lt;U&gt;</code></a>.)</p>
-<a class="header" href="2307-concrete-nonzero-types.html#background" id="background"><h1>Background</h1></a>
+<a class="header" href="#background" id="background"><h1>Background</h1></a>
 <p>The <code>&amp;T</code> and <code>&amp;mut T</code> types are represented in memory as pointers,
 and the type system ensures that they’re always valid.
 In particular, they can never be NULL.
@@ -182,7 +189,7 @@ impl Zeroable for /* {{i,u}{8, 16, 32, 64, 128, size}, *{const,mut} T where T: ?
 <p><a href="https://doc.rust-lang.org/nightly/std/ptr/struct.NonNull.html"><code>std::ptr::NonNull</code></a>
 was stabilized in <a href="https://github.com/rust-lang/rust/pull/46952">in Rust 1.25</a>,
 wrapping <code>NonZero</code> further for raw pointers and adding pointer-specific APIs.</p>
-<a class="header" href="2307-concrete-nonzero-types.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>With <code>NonNull</code> covering pointers, the remaining use cases for <code>NonZero</code> are integers.</p>
 <p>One problem of the current API is that
 it is unclear what happens or what <em>should</em> happen to <code>NonZero&lt;T&gt;</code> or <code>Option&lt;NonZero&lt;T&gt;&gt;</code>
@@ -193,7 +200,7 @@ since it is a public trait.</p>
 this RFC proposes replacing the generic type and trait with twelve concrete types in <code>std::num</code>,
 one for each primitive integer type.
 This is similar to the existing atomic integer types like <code>std::sync::atomic::AtomicU32</code>.</p>
-<a class="header" href="2307-concrete-nonzero-types.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>When an integer value can never be zero because of the way an algorithm works,
 this fact can be encoded in the type system
 by using for example the <code>NonZeroU32</code> type instead of <code>u32</code>.</p>
@@ -202,7 +209,7 @@ for example that dividing by this value will not cause a <code>attempt to divide
 This may also enable the compiler to make some memory optimizations,
 for example <code>Option&lt;NonZeroU32&gt;</code> might take no more space than <code>u32</code>
 (with <code>None</code> represented as zero).</p>
-<a class="header" href="2307-concrete-nonzero-types.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>A new private <code>macro_rules!</code> macro is defined and used in <code>core::num</code> that expands to
 twelve sets of items like below, one for each of:</p>
 <ul>
@@ -260,9 +267,9 @@ This RFC does <strong>not</strong> propose extending this guarantee to these new
 For example, <code>size_of::&lt;Option&lt;NonZeroU32&gt;&gt;() == size_of::&lt;NonZeroU32&gt;()</code> may or may not be true.
 It happens to be in current rustc,
 but an alternative Rust implementation could define <code>num::NonZero*</code> purely as library types.</p>
-<a class="header" href="2307-concrete-nonzero-types.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This adds to the ever-expanding API surface of the standard library.</p>
-<a class="header" href="2307-concrete-nonzero-types.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <ul>
 <li>
 <p>Memory layout optimization for non-zero integers mostly exist in rustc today
@@ -315,7 +322,7 @@ but every use of non-zero integers the author has seen so far has been with unsi
 This would cut the number of new types from 12 to 6.</p>
 </li>
 </ul>
-<a class="header" href="2307-concrete-nonzero-types.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Should the memory layout of e.g. <code>Option&lt;NonZeroU32&gt;</code> be a language guarantee?</p>
 <p>Discussion of the design of a new language feature
 for integer types restricted to an arbitrary sub-range (see second unresolved question)
@@ -366,9 +373,6 @@ as a reason <strong>not</strong> to add non-zero integer types is in scope.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

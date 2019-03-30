@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1543-integer_atomics - </title>
+        <title>1543-integer_atomics - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1543">rust-lang/rfcs#1543</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/32976">rust-lang/rust#32976</a></li>
 </ul>
-<a class="header" href="1543-integer_atomics.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC basically changes <code>core::sync::atomic</code> to look like this:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -173,13 +180,13 @@ struct AtomicUsize {}
 #[cfg(target_has_atomic = &quot;ptr&quot;)]
 struct AtomicPtr&lt;T&gt; {}
 #}</code></pre></pre>
-<a class="header" href="1543-integer_atomics.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Many lock-free algorithms require a two-value <code>compare_exchange</code>, which is effectively twice the size of a <code>usize</code>. This would be implemented by atomically swapping a struct containing two members.</p>
 <p>Another use case is to support Linux's futex API. This API is based on atomic <code>i32</code> variables, which currently aren't available on x86_64 because <code>AtomicIsize</code> is 64-bit.</p>
-<a class="header" href="1543-integer_atomics.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1543-integer_atomics.html#new-atomic-types" id="new-atomic-types"><h2>New atomic types</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#new-atomic-types" id="new-atomic-types"><h2>New atomic types</h2></a>
 <p>The <code>AtomicI8</code>, <code>AtomicI16</code>, <code>AtomicI32</code>, <code>AtomicI64</code> and <code>AtomicI128</code> types are added along with their matching <code>AtomicU*</code> type. These have the same API as the existing <code>AtomicIsize</code> and <code>AtomicUsize</code> types. Note that support for 128-bit atomics is dependent on the <a href="https://github.com/rust-lang/rfcs/pull/1504">i128/u128 RFC</a> being accepted.</p>
-<a class="header" href="1543-integer_atomics.html#target-support" id="target-support"><h2>Target support</h2></a>
+<a class="header" href="#target-support" id="target-support"><h2>Target support</h2></a>
 <p>One problem is that it is hard for a user to determine if a certain type <code>T</code> can be placed inside an <code>Atomic&lt;T&gt;</code>. After a quick survey of the LLVM and Clang code, architectures can be classified into 3 categories:</p>
 <ul>
 <li>The architecture does not support any form of atomics (mainly microcontroller architectures).</li>
@@ -201,17 +208,17 @@ static COUNTER: AtomicU64 = AtomicU64::new(0);
 static COUTNER: AtomicU32 = AtomicU32::new(0);
 #}</code></pre></pre>
 <p>Note that it is not necessary for an architecture to natively support atomic operations for all sizes (<code>i8</code>, <code>i16</code>, etc) as long as it is able to perform a <code>compare_exchange</code> operation with a larger size. All smaller operations can be emulated using that. For example a byte atomic can be emulated by using a <code>compare_exchange</code> loop that only modifies a single byte of the value. This is actually how LLVM implements byte-level atomics on MIPS, which only supports word-sized atomics native. Note that the out-of-bounds read is fine here because atomics are aligned and will never cross a page boundary. Since this transformation is performed transparently by LLVM, we do not need to do any extra work to support this.</p>
-<a class="header" href="1543-integer_atomics.html#changes-to-atomicptr-atomicisize-and-atomicusize" id="changes-to-atomicptr-atomicisize-and-atomicusize"><h2>Changes to <code>AtomicPtr</code>, <code>AtomicIsize</code> and <code>AtomicUsize</code></h2></a>
+<a class="header" href="#changes-to-atomicptr-atomicisize-and-atomicusize" id="changes-to-atomicptr-atomicisize-and-atomicusize"><h2>Changes to <code>AtomicPtr</code>, <code>AtomicIsize</code> and <code>AtomicUsize</code></h2></a>
 <p>These types will have a <code>#[cfg(target_has_atomic = &quot;ptr&quot;)]</code> bound added to them. Although these types are stable, this isn't a breaking change because all targets currently supported by Rust will have this type available. This would only affect custom targets, which currently fail to link due to missing compiler-rt symbols anyways.</p>
-<a class="header" href="1543-integer_atomics.html#changes-to-atomicbool" id="changes-to-atomicbool"><h2>Changes to <code>AtomicBool</code></h2></a>
+<a class="header" href="#changes-to-atomicbool" id="changes-to-atomicbool"><h2>Changes to <code>AtomicBool</code></h2></a>
 <p>This type will be changes to use an <code>AtomicU8</code> internally instead of an <code>AtomicUsize</code>, which will allow it to be safely transmuted to a <code>bool</code>. This will make it more consistent with the other atomic types that have the same layout as their underlying type. (For example futex code will assume that a <code>&amp;AtomicI32</code> can be passed as a <code>&amp;i32</code> to the system call)</p>
-<a class="header" href="1543-integer_atomics.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Having certain atomic types get enabled/disable based on the target isn't very nice, but it's unavoidable because support for atomic operations is very architecture-specific.</p>
 <p>This approach doesn't directly support for atomic operations on user-defined structs, but this can be emulated using transmutes.</p>
-<a class="header" href="1543-integer_atomics.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>One alternative that was discussed in a <a href="https://github.com/rust-lang/rfcs/pull/1505">previous RFC</a> was to add a generic <code>Atomic&lt;T&gt;</code> type. However the consensus was that having unsupported atomic types either fail at monomorphization time or fall back to lock-based implementations was undesirable.</p>
 <p>Several other designs have been suggested <a href="https://internals.rust-lang.org/t/pre-rfc-extended-atomic-types/3068">here</a>.</p>
-<a class="header" href="1543-integer_atomics.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None</p>
 
                     </main>
@@ -257,9 +264,6 @@ static COUTNER: AtomicU32 = AtomicU32::new(0);
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

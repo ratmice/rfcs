@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2011-generic-assert - </title>
+        <title>2011-generic-assert - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2011">rust-lang/rfcs#2011</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44838">rust-lang/rust#44838</a></li>
 </ul>
-<a class="header" href="2011-generic-assert.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Make the <code>assert!</code> macro recognize more expressions (utilizing the power of procedural macros), and extend the readability of debug dumps.</p>
-<a class="header" href="2011-generic-assert.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>While clippy warns about <code>assert!</code> usage that should be replaced by <code>assert_eq!</code>, it's quite annoying to migrate around.</p>
 <p>Unit test frameworks like <a href="https://github.com/philsquared/Catch">Catch</a> for C++ does cool message printing already by using macros.</p>
-<a class="header" href="2011-generic-assert.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>We're going to parse AST and break up them by operators (excluding <code>.</code> (dot, member access operator)). Function calls and bracket surrounded blocks are considered as one block and don't get expanded. The exact expanding rules should be determined when implemented, but an example is provided for reference.</p>
 <p>On assertion failure, the expression itself is stringified, and another line with intermediate values are printed out. The values should be printed with <code>Debug</code>, and a plain text fallback if the following conditions fail:</p>
 <ul>
@@ -153,7 +160,7 @@
 </ul>
 <p>To make sure that there's no side effects involved (e.g. running <code>next()</code> twice on <code>Iterator</code>), each value should be stored as temporaries and dumped on assertion failure.</p>
 <p>The new assert messages are likely to generate longer code, and it may be simplified for release builds (if benchmarks confirm the slowdown).</p>
-<a class="header" href="2011-generic-assert.html#examples" id="examples"><h2>Examples</h2></a>
+<a class="header" href="#examples" id="examples"><h2>Examples</h2></a>
 <p>These examples are purely for reference. The implementor is free to change the rules.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -224,29 +231,29 @@ assert!(a == b);
 Expected: a == b
 With expansion: (a) == (b)'
 </code></pre>
-<a class="header" href="2011-generic-assert.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <ul>
 <li>Port the documentation (and optionally compiler source) to use <code>assert!</code>.</li>
 <li>Mark the old macros (<code>assert_{eq,ne}!</code>) as deprecated.</li>
 </ul>
-<a class="header" href="2011-generic-assert.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>This will generate a wave of deprecation warnings, which will be some cost for users to migrate. However, this doesn't mean that this is backward-incompatible, as long as the deprecated macros aren't removed.</li>
 <li>This has a potential performance degradation on complex expressions, due to creating more temporaries on stack (or register). However, if this had clear impacts confirmed through benchmarks, we should use some kind of alternative implementation for release builds.</li>
 </ul>
-<a class="header" href="2011-generic-assert.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>Defining via <code>macro_rules!</code> was considered, but the recursive macro can often reach the recursion limit.</li>
 <li>Negating the operator (<code>!=</code> to <code>==</code>) was considered, but this isn't suitable for all cases as not all types are total ordering.</li>
 </ul>
-<a class="header" href="2011-generic-assert.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>These questions should be settled during the implementation process.</p>
-<a class="header" href="2011-generic-assert.html#error-messages" id="error-messages"><h2>Error messages</h2></a>
+<a class="header" href="#error-messages" id="error-messages"><h2>Error messages</h2></a>
 <ul>
 <li>Should we dump the AST as a formatted one?</li>
 <li>How are we going to handle multi-line expressions?</li>
 </ul>
-<a class="header" href="2011-generic-assert.html#operators" id="operators"><h2>Operators</h2></a>
+<a class="header" href="#operators" id="operators"><h2>Operators</h2></a>
 <ul>
 <li>Should we handle non-comparison operators?</li>
 </ul>
@@ -294,9 +301,6 @@ With expansion: (a) == (b)'
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

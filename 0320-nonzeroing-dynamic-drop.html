@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0320-nonzeroing-dynamic-drop - </title>
+        <title>0320-nonzeroing-dynamic-drop - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,19 +146,19 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/320">rust-lang/rfcs#320</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/5016">rust-lang/rust#5016</a></li>
 </ul>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Remove drop flags from values implementing <code>Drop</code>, and remove
 automatic memory zeroing associated with dropping values.</p>
 <p>Keep dynamic drop semantics, by having each function maintain a
 (potentially empty) set of auto-injected boolean flags for the drop
 obligations for the function that need to be tracked dynamically
 (which we will call &quot;dynamic drop obligations&quot;).</p>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, implementing <code>Drop</code> on a struct (or enum) injects a hidden
 bit, known as the &quot;drop-flag&quot;, into the struct (and likewise, each of
 the enum variants).  The drop-flag, in tandem with Rust's implicit
 zeroing of dropped values, tracks whether a value has already been
-moved to another owner or been dropped.  (See the <a href="0320-nonzeroing-dynamic-drop.html#how-dynamic-drop-semantics-works">&quot;How dynamic drop
+moved to another owner or been dropped.  (See the <a href="#how-dynamic-drop-semantics-works">&quot;How dynamic drop
 semantics works&quot;</a> appendix for more
 details if you are unfamiliar with this part of Rust's current
 implementation.)</p>
@@ -224,8 +231,8 @@ change at all from today, apart from the caveat in the previous
 bullet.</p>
 </li>
 </ul>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#drop-obligations" id="drop-obligations"><h2>Drop obligations</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#drop-obligations" id="drop-obligations"><h2>Drop obligations</h2></a>
 <p>No struct or enum has an implicit drop-flag.  When a local variable is
 initialized, that establishes a set of &quot;drop obligations&quot;: a set of
 structural paths (e.g. a local <code>a</code>, or a path to a field <code>b.f.y</code>) that
@@ -264,7 +271,7 @@ But the overall code transformation is clearer if one keeps
 the dynamic drop obligations in the set of drop obligations.)</p>
 </li>
 </ul>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#stack-local-drop-flags" id="stack-local-drop-flags"><h2>Stack-local drop flags</h2></a>
+<a class="header" href="#stack-local-drop-flags" id="stack-local-drop-flags"><h2>Stack-local drop flags</h2></a>
 <p>For every dynamic drop obligation induced by a merge point, the compiler
 is responsible for ensure that its drop code is run at some point.
 If necessary, it will inject and maintain boolean flag analogous to</p>
@@ -276,7 +283,7 @@ enum NeedsDropFlag { NeedsLocalDrop, DoNotDrop }
 <p>Some compiler analysis may be able to identify dynamic drop
 obligations that do not actually need to be tracked.  Therefore, we do
 not specify the precise set of boolean flags that are injected.</p>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#example-of-code-with-dynamic-drop-obligations" id="example-of-code-with-dynamic-drop-obligations"><h2>Example of code with dynamic drop obligations</h2></a>
+<a class="header" href="#example-of-code-with-dynamic-drop-obligations" id="example-of-code-with-dynamic-drop-obligations"><h2>Example of code with dynamic drop obligations</h2></a>
 <p>The function <code>f2</code> below was copied from the static drop <a href="https://github.com/rust-lang/rfcs/pull/210">RFC PR #210</a>;
 it has differing sets of drop obligations at a merge point,
 necessitating a potential injection of a <code>NeedsDropFlag</code>.</p>
@@ -486,7 +493,7 @@ invocation.</p>
 #fn main() {
        let temp = lookup_closure()({ _drop_pDD_dot_y = DoNotDrop; pDD.y });
 #}</code></pre></pre>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#control-flow-sensitivity" id="control-flow-sensitivity"><h2>Control-flow sensitivity</h2></a>
+<a class="header" href="#control-flow-sensitivity" id="control-flow-sensitivity"><h2>Control-flow sensitivity</h2></a>
 <p>Note that the dynamic drop obligations are based on a control-flow
 analysis, <em>not</em> just the lexical nesting structure of the code.</p>
 <p>In particular: If control flow splits at a point like an if-expression,
@@ -587,14 +594,14 @@ or the end of a <code>loop</code> block.</p>
 #}</code></pre></pre>
 <p>Likewise, a <code>return</code> statement represents another control flow jump,
 to the end of the function.</p>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#remove-implicit-memory-zeroing" id="remove-implicit-memory-zeroing"><h2>Remove implicit memory zeroing</h2></a>
+<a class="header" href="#remove-implicit-memory-zeroing" id="remove-implicit-memory-zeroing"><h2>Remove implicit memory zeroing</h2></a>
 <p>With the above in place, the remainder is relatively trivial.
 The compiler can be revised to no longer inject a drop flag into
 structs and enums that implement <code>Drop</code>, and likewise memory zeroing can
 be removed.</p>
 <p>Beyond that, the libraries will obviously need to be audited for
 dependence on implicit memory zeroing.</p>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The only reasons not do this are:</p>
 <ol>
 <li>
@@ -606,7 +613,7 @@ dependence on implicit memory zeroing.</p>
 </ol>
 <p>At this point Felix thinks the Rust community has made a strong
 argument in favor of keeping dynamic drop semantics.</p>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>Static drop semantics <a href="https://github.com/rust-lang/rfcs/pull/210">RFC PR #210</a> has been referenced frequently
@@ -618,8 +625,8 @@ would drop values immediately after their final use.  This would
 probably invalidate a number of RAII style coding patterns.</p>
 </li>
 </ul>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#optional-extensions" id="optional-extensions"><h1>Optional Extensions</h1></a>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#a-lint-identifying-dynamic-drop-obligations" id="a-lint-identifying-dynamic-drop-obligations"><h2>A lint identifying dynamic drop obligations</h2></a>
+<a class="header" href="#optional-extensions" id="optional-extensions"><h1>Optional Extensions</h1></a>
+<a class="header" href="#a-lint-identifying-dynamic-drop-obligations" id="a-lint-identifying-dynamic-drop-obligations"><h2>A lint identifying dynamic drop obligations</h2></a>
 <p>Add a lint (set by default to <code>allow</code>) that reports potential dynamic
 drop obligations, so that end-user code can opt-in to having them
 reported.  The expected benefits of this are:</p>
@@ -633,8 +640,8 @@ all paths within a function, and,</p>
 flags are potentially being injected into their code.</p>
 </li>
 </ol>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#how-to-handle-moves-out-of-arrayindex_expr" id="how-to-handle-moves-out-of-arrayindex_expr"><h2>How to handle moves out of <code>array[index_expr]</code></h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#how-to-handle-moves-out-of-arrayindex_expr" id="how-to-handle-moves-out-of-arrayindex_expr"><h2>How to handle moves out of <code>array[index_expr]</code></h2></a>
 <p>Niko pointed out to me today that my prototype was not addressing
 moves out of <code>array[index_expr]</code> properly.  I was assuming
 that we would just make such an expression illegal (or that they
@@ -684,7 +691,7 @@ listed in the flag.&quot;  (If it is only moved out of on one branch and
 not another, then we would either use an <code>Option&lt;uint&gt;</code>, or still use
 <code>uint</code> and just represent unmoved case via some value that is not
 valid index, such as the length of the array).</p>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#should-we-keep-unsafe_no_drop_flag-" id="should-we-keep-unsafe_no_drop_flag-"><h2>Should we keep <code>#[unsafe_no_drop_flag]</code> ?</h2></a>
+<a class="header" href="#should-we-keep-unsafe_no_drop_flag-" id="should-we-keep-unsafe_no_drop_flag-"><h2>Should we keep <code>#[unsafe_no_drop_flag]</code> ?</h2></a>
 <p>Currently there is an <code>unsafe_no_drop_flag</code> attribute that is used to
 indicate that no drop flag should be associated with a struct/enum,
 and instead the user-written drop code will be run multiple times (and
@@ -698,8 +705,8 @@ following: <em>Never</em> inject a dynamic stack-local drop-flag for this
 value.  Just run the drop code multiple times, just like today.</p>
 <p>In any case, since the semantics of this attribute are unstable, we
 will feature-gate it (with feature name <code>unsafe_no_drop_flag</code>).</p>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#appendices" id="appendices"><h1>Appendices</h1></a>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#how-dynamic-drop-semantics-works" id="how-dynamic-drop-semantics-works"><h2>How dynamic drop semantics works</h2></a>
+<a class="header" href="#appendices" id="appendices"><h1>Appendices</h1></a>
+<a class="header" href="#how-dynamic-drop-semantics-works" id="how-dynamic-drop-semantics-works"><h2>How dynamic drop semantics works</h2></a>
 <p>(This section is just presenting background information on the
 semantics of <code>drop</code> and the drop-flag as it works in Rust today; it
 does not contain any discussion of the changes being proposed by this
@@ -731,7 +738,7 @@ must assume that it will be called more than once.  (However, every
 call to <code>drop</code> after the first will be given zeroed memory.)</p>
 </li>
 </ul>
-<a class="header" href="0320-nonzeroing-dynamic-drop.html#program-illustrating-semantic-impact-of-hidden-drop-flag" id="program-illustrating-semantic-impact-of-hidden-drop-flag"><h3>Program illustrating semantic impact of hidden drop flag</h3></a>
+<a class="header" href="#program-illustrating-semantic-impact-of-hidden-drop-flag" id="program-illustrating-semantic-impact-of-hidden-drop-flag"><h3>Program illustrating semantic impact of hidden drop flag</h3></a>
 <pre><pre class="playpen"><code class="language-rust">#![feature(macro_rules)]
 
 use std::fmt;
@@ -901,9 +908,6 @@ fn main() {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

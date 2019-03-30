@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0501-consistent_no_prelude_attributes - </title>
+        <title>0501-consistent_no_prelude_attributes - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,11 +145,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/501">rust-lang/rfcs#501</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/20561">rust-lang/rust#20561</a></li>
 </ul>
-<a class="header" href="0501-consistent_no_prelude_attributes.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Make name and behavior of the <code>#![no_std]</code> and <code>#![no_implicit_prelude]</code> attributes
 consistent by renaming the latter to <code>#![no_prelude]</code> and having it only apply to the current
 module.</p>
-<a class="header" href="0501-consistent_no_prelude_attributes.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, Rust automatically inserts an implicit <code>extern crate std;</code> in the crate root that can be
 disabled with the <code>#[no_std]</code> attribute.</p>
 <p>It also automatically inserts an implicit <code>use std::prelude::*;</code> in every module that can be
@@ -179,7 +186,7 @@ in the submodules, it seems like just making the attribute behave as expected is
 <p>Of course, for the cases where you want the prelude disabled for a whole sub tree of modules, it
 would now become necessary to add a <code>#[no_prelude]</code> attribute in each of them - but that
 is consistent with imports in general.</p>
-<a class="header" href="0501-consistent_no_prelude_attributes.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p><code>libsyntax</code> needs to be changed to accept both the name <code>no_implicit_prelude</code> and <code>no_prelude</code> for
 the attribute. Then the attributes effect on the AST needs to be changed to not deeply remove all
 imports, and all fallout of this change needs to be fixed in order for the new semantic to
@@ -187,12 +194,12 @@ bootstrap.</p>
 <p>Then a snapshot needs to be made, and all uses of <code>#[no_implicit_prelude]</code> can be
 changed to <code>#[no_prelude]</code> in both the main code base, and user code.</p>
 <p>Finally, the old attribute name should emit a deprecated warning, and be removed in time.</p>
-<a class="header" href="0501-consistent_no_prelude_attributes.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>The attribute is a rare use case to begin with, so any effort put into this would
 distract from more important stabilization work.</li>
 </ul>
-<a class="header" href="0501-consistent_no_prelude_attributes.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>Keep the current behavior</li>
 <li>Remove the <code>#[no_implicit_prelude]</code> attribute all together, instead forcing users to use
@@ -243,9 +250,6 @@ distract from more important stabilization work.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

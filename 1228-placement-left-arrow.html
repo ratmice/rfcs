@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1228-placement-left-arrow - </title>
+        <title>1228-placement-left-arrow - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,14 +146,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1228">rust-lang/rfcs#1228</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27779">rust-lang/rust#27779</a></li>
 </ul>
-<a class="header" href="1228-placement-left-arrow.html#this-rfc-has-been-unapproved" id="this-rfc-has-been-unapproved"><h1>This RFC has been <strong>unapproved</strong></h1></a>
+<a class="header" href="#this-rfc-has-been-unapproved" id="this-rfc-has-been-unapproved"><h1>This RFC has been <strong>unapproved</strong></h1></a>
 <p>For details see the <a href="https://github.com/rust-lang/rust/issues/27779#issuecomment-378416911">summary comment</a>.</p>
-<a class="header" href="1228-placement-left-arrow.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Rather than trying to find a clever syntax for placement-new that leverages
 the <code>in</code> keyword, instead use the syntax <code>PLACE_EXPR &lt;- VALUE_EXPR</code>.</p>
 <p>This takes advantage of the fact that <code>&lt;-</code> was reserved as a token via
 historical accident (that for once worked out in our favor).</p>
-<a class="header" href="1228-placement-left-arrow.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>One sentence: the syntax <code>a &lt;- b</code> is short, can be parsed without
 ambiguity, and is strongly connotated already with assignment.</p>
 <p>Further text (essentially historical background):</p>
@@ -214,7 +221,7 @@ let ref_2 = arena &lt;- value_expression;
 let ref_1 = in arena { value_expression };
 let ref_2 = in arena { value_expression };
 #}</code></pre></pre>
-<a class="header" href="1228-placement-left-arrow.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Extend the parser to parse <code>EXPR &lt;- EXPR</code>. The left arrow operator is
 right-associative and has precedence higher than assignment and
 binop-assignment, but lower than other binary operators.</p>
@@ -255,7 +262,7 @@ At least, it seems like many people use the RFC's as a reference source
 even when they are later outdated.
 (An easier option though may be to just add a forward reference to this
 RFC from <a href="https://github.com/rust-lang/rfcs/pull/809">RFC 809</a>, if this RFC is accepted.)</p>
-<a class="header" href="1228-placement-left-arrow.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The only drawback I am aware of is this <a href="https://github.com/rust-lang/rfcs/pull/809#issuecomment-73903777">comment from nikomataskis</a></p>
 <blockquote>
 <p>the intent is less clear than with a devoted keyword.</p>
@@ -264,7 +271,7 @@ RFC from <a href="https://github.com/rust-lang/rfcs/pull/809">RFC 809</a>, if th
 overloading of the <code>=</code> operator (at least that is my understanding).</p>
 <p>I think the use of the <code>&lt;-</code> operator can be considered sufficiently
 &quot;devoted&quot; (i.e. separate) syntax to placate the above concern.</p>
-<a class="header" href="1228-placement-left-arrow.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>See <a href="https://github.com/pnkfelix/rfcs/blob/fsk-placement-box-rfc/text/0000-placement-box.md#same-semantics-but-different-surface-syntax">different surface syntax</a> from the alternatives from <a href="https://github.com/rust-lang/rfcs/pull/809">RFC 809</a>.</p>
 <p>Also, if we want to try to make it clear that this is not <em>just</em>
 an assignment, we could combine <code>in</code> and <code>&lt;-</code>, yielding e.g.:</p>
@@ -274,7 +281,7 @@ an assignment, we could combine <code>in</code> and <code>&lt;-</code>, yielding
 let ref_1 = in arena &lt;- value_expression;
 let ref_2 = in arena &lt;- value_expression;
 #}</code></pre></pre>
-<a class="header" href="1228-placement-left-arrow.html#precedence" id="precedence"><h2>Precedence</h2></a>
+<a class="header" href="#precedence" id="precedence"><h2>Precedence</h2></a>
 <p>Finally, precedence of this operator may be defined to be anything from being
 less than assignment/binop-assignment (set of right associative operators with
 lowest precedence) to highest in the language. The most prominent choices are:</p>
@@ -306,14 +313,14 @@ we want to force people enclose both sides of the operator into parentheses
 most of the time. This option would get <code>x &lt;- y &lt;- z * a</code> parsed as <code>(x &lt;- (y &lt;- z)) * a</code>.</p>
 </li>
 </ol>
-<a class="header" href="1228-placement-left-arrow.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p><strong>What should the precedence of the <code>&lt;-</code> operator be?</strong> In particular,
 it may make sense for it to have the same precedence of <code>=</code>, as argued
 in <a href="https://github.com/rust-lang/rfcs/pull/1319#issuecomment-206627750">these</a> <a href="https://github.com/rust-lang/rfcs/pull/1319#issuecomment-207090495">comments</a>. The ultimate answer here will
 probably depend on whether the result of <code>a &lt;- b</code> is commonly composed
 and how, so it was decided to hold off on a final decision until there
 was more usage in the wild.</p>
-<a class="header" href="1228-placement-left-arrow.html#change-log" id="change-log"><h1>Change log</h1></a>
+<a class="header" href="#change-log" id="change-log"><h1>Change log</h1></a>
 <p><strong>2016.04.22.</strong> Amended by <a href="https://github.com/rust-lang/rfcs/pull/1319">rust-lang/rfcs#1319</a>
 to adjust the precedence.</p>
 
@@ -360,9 +367,6 @@ to adjust the precedence.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

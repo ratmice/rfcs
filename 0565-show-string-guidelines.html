@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0565-show-string-guidelines - </title>
+        <title>0565-show-string-guidelines - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/565">rust-lang/rfcs#565</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/21436">rust-lang/rust#21436</a></li>
 </ul>
-<a class="header" href="0565-show-string-guidelines.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>A <a href="https://github.com/rust-lang/rfcs/pull/504">recent RFC</a> split what was
 previously <code>fmt::Show</code> into two traits, <code>fmt::Show</code> and <code>fmt::String</code>, with
 format specifiers <code>{:?}</code> and <code>{}</code> respectively.</p>
@@ -147,12 +154,12 @@ which of the traits, nor what is expected from the output.  That's what this RFC
 seeks to do.</p>
 <p>It turns out that, due to the suggested conventions and other
 concerns, renaming the traits is also desirable.</p>
-<a class="header" href="0565-show-string-guidelines.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Part of the reason for splitting up <code>Show</code> in the first place was some tension
 around the various use cases it was trying to cover, and the fact that it could
 not cover them all simultaneously. Now that the trait has been split, this RFC
 aims to provide clearer guidelines about their use.</p>
-<a class="header" href="0565-show-string-guidelines.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The design of the conventions stems from two basic desires:</p>
 <ol>
 <li>
@@ -174,7 +181,7 @@ consumption, the output needs to be quite tailored, and interpolation via
 <li>Rename <code>fmt::Show</code> to <code>fmt::Debug</code>, and</li>
 <li>Rename <code>fmt::String</code> to <code>fmt::Display</code>.</li>
 </ol>
-<a class="header" href="0565-show-string-guidelines.html#debugging-fmtdebug" id="debugging-fmtdebug"><h2>Debugging: <code>fmt::Debug</code></h2></a>
+<a class="header" href="#debugging-fmtdebug" id="debugging-fmtdebug"><h2>Debugging: <code>fmt::Debug</code></h2></a>
 <p>The <code>fmt::Debug</code> trait is intended for debugging. It should:</p>
 <ul>
 <li>Be implemented on every type, usually via <code>#[derive(Debug)]</code>.</li>
@@ -207,7 +214,7 @@ source. This is in general not possible in the presence of private
 fields and other abstractions. However, when it is feasible to do so,
 debugging output <em>should</em> match Rust syntax; doing so makes it easier
 to copy debug output into unit tests, for example.</p>
-<a class="header" href="0565-show-string-guidelines.html#user-facing-fmtdisplay" id="user-facing-fmtdisplay"><h2>User-facing: <code>fmt::Display</code></h2></a>
+<a class="header" href="#user-facing-fmtdisplay" id="user-facing-fmtdisplay"><h2>User-facing: <code>fmt::Display</code></h2></a>
 <p>The <code>fmt::Display</code> trait is intended for user-facing output. It should:</p>
 <ul>
 <li>Be implemented for scalars, strings, and other basic types.</li>
@@ -242,7 +249,7 @@ impl MyInterestingType {
 impl&lt;'a&gt; fmt::Display for ForHtml&lt;'a, MyInterestingType&gt; { ... }
 impl&lt;'a&gt; fmt::Display for ForCli&lt;'a, MyInterestingType&gt; { ... }
 #}</code></pre></pre>
-<a class="header" href="0565-show-string-guidelines.html#rationale-for-format-specifiers" id="rationale-for-format-specifiers"><h2>Rationale for format specifiers</h2></a>
+<a class="header" href="#rationale-for-format-specifiers" id="rationale-for-format-specifiers"><h2>Rationale for format specifiers</h2></a>
 <p>Given the above conventions, it should be clear that <code>fmt::Debug</code> is
 much more commonly <em>implemented</em> on types than <code>fmt::Display</code>. Why,
 then, use <code>{}</code> for <code>fmt::Display</code> and <code>{:?}</code> for <code>fmt::Debug</code>? Aren't
@@ -269,7 +276,7 @@ format!(&quot;{}, {}!&quot;, &quot;hello&quot;, &quot;world&quot;)
 <p>In other words, although more types implement <code>fmt::Debug</code>, most
 meaningful uses of interpolation (other than in such implementations)
 will use <code>fmt::Display</code>, making <code>{}</code> the right choice.</p>
-<a class="header" href="0565-show-string-guidelines.html#use-in-errors" id="use-in-errors"><h2>Use in errors</h2></a>
+<a class="header" href="#use-in-errors" id="use-in-errors"><h2>Use in errors</h2></a>
 <p>Right now, the (unstable) <code>Error</code> trait comes equipped with a <code>description</code>
 method yielding an <code>Option&lt;String&gt;</code>. This RFC proposes to drop this method an
 instead inherit from <code>fmt::Display</code>. It likewise proposes to make <code>unwrap</code> in
@@ -279,12 +286,12 @@ terms of debugging, the messages they result in are often presented directly to
 the user and should thus be tailored. Tying them to <code>fmt::Display</code> makes it
 easier to remember and add such tailoring, and less likely to spew a lot of
 unwanted internal representation.</p>
-<a class="header" href="0565-show-string-guidelines.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We've already explored an alternative where <code>Show</code> tries to play both of the
 roles above, and found it to be problematic. There may, however, be alternative
 conventions for a multi-trait world. The RFC author hopes this will emerge from
 the discussion thread.</p>
-<a class="header" href="0565-show-string-guidelines.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>(Previous questions here have been resolved in an RFC update).</p>
 
                     </main>
@@ -330,9 +337,6 @@ the discussion thread.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

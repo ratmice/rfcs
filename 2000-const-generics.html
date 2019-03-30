@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2000-const-generics - </title>
+        <title>2000-const-generics - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2000">rust-lang/rfcs#2000</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44580">rust-lang/rust#44580</a></li>
 </ul>
-<a class="header" href="2000-const-generics.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Allow types to be generic over constant values; among other things this will
 allow users to write impls which are abstract over all array types.</p>
-<a class="header" href="2000-const-generics.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Rust currently has one type which is parametric over constants: the built-in
 array type <code>[T; LEN]</code>. However, because const generics are not a first class
 feature, users cannot define their own types which are generic over constant
@@ -163,7 +170,7 @@ typecheck time. By limiting which values a trait is implemented over, the
 orphan rules can enable a crate to ensure that only some safe values are used,
 with the check performed at compile time (this is especially relevant to
 cryptographic libraries for example).</p>
-<a class="header" href="2000-const-generics.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Today, types in Rust can be parameterized by two kinds: types and lifetimes. We
 will additionally allow types to be parameterized by values, so long as those
 values can be computed at compile time. A single constant parameter must be of
@@ -174,7 +181,7 @@ requirements laid out later in this RFC.</p>
 RFC. For our purposes we assume that integers and their basic arithmetic
 operations can be computed at compile time, and we will use them in all
 examples.)</p>
-<a class="header" href="2000-const-generics.html#glossary" id="glossary"><h2>Glossary</h2></a>
+<a class="header" href="#glossary" id="glossary"><h2>Glossary</h2></a>
 <ul>
 <li>
 <p><strong>Const (constant, const value):</strong> A Rust value which is guaranteed to be
@@ -222,7 +229,7 @@ except by substituting it with names in scope. This includes all literals as
 well all idents - e.g. <code>3</code>, <code>&quot;Hello, world&quot;</code>, <code>foo_bar</code>.</p>
 </li>
 </ul>
-<a class="header" href="2000-const-generics.html#declaring-a-const-parameter" id="declaring-a-const-parameter"><h2>Declaring a const parameter</h2></a>
+<a class="header" href="#declaring-a-const-parameter" id="declaring-a-const-parameter"><h2>Declaring a const parameter</h2></a>
 <p>In any sequence of type parameter declarations (such as in the definition of a
 type or on the <code>impl</code> header of an impl block) const parameters can also be
 declared. Const parameters declarations take the form <code>const $ident: $ty</code>:</p>
@@ -239,7 +246,7 @@ must be of the type ascribed to it. Which types can be ascribed to const
 parameters is restricted later in this RFC.</p>
 <p>The const parameter is in scope for the entire body of the item (type, impl,
 function, method, etc) in which it is declared.</p>
-<a class="header" href="2000-const-generics.html#applying-a-const-as-a-parameter" id="applying-a-const-as-a-parameter"><h2>Applying a const as a parameter</h2></a>
+<a class="header" href="#applying-a-const-as-a-parameter" id="applying-a-const-as-a-parameter"><h2>Applying a const as a parameter</h2></a>
 <p>Any const expression of the type ascribed to a const parameter can be applied
 as that parameter. When applying an expression as const parameter (except for
 arrays), which is not an identity expression, the expression must be contained
@@ -253,11 +260,11 @@ const X: usize = 7;
 let x: RectangularArray&lt;i32, 2, 4&gt;;
 let y: RectangularArray&lt;i32, X, {2 * 2}&gt;;
 #}</code></pre></pre>
-<a class="header" href="2000-const-generics.html#arrays" id="arrays"><h3>Arrays</h3></a>
+<a class="header" href="#arrays" id="arrays"><h3>Arrays</h3></a>
 <p>Arrays have a special construction syntax: <code>[T; CONST]</code>. In array syntax,
 braces are not needed around any const expressions; <code>[i32; N * 2]</code> is a
 syntactically valid type.</p>
-<a class="header" href="2000-const-generics.html#when-a-const-variable-can-be-used" id="when-a-const-variable-can-be-used"><h2>When a const variable can be used</h2></a>
+<a class="header" href="#when-a-const-variable-can-be-used" id="when-a-const-variable-can-be-used"><h2>When a const variable can be used</h2></a>
 <p>A const variable can be used as a const in any of these contexts:</p>
 <ol>
 <li>As an applied const to any type which forms a part of the signature of
@@ -289,14 +296,14 @@ fn foo&lt;const X: usize&gt;() {
 in types constructed in the body of functions - all of these declarations,
 though private to this item, must be independent of it, and do not have any
 of its parameters in scope.</p>
-<a class="header" href="2000-const-generics.html#theory-of-equality-for-type-equality-of-two-consts" id="theory-of-equality-for-type-equality-of-two-consts"><h2>Theory of equality for type equality of two consts</h2></a>
+<a class="header" href="#theory-of-equality-for-type-equality-of-two-consts" id="theory-of-equality-for-type-equality-of-two-consts"><h2>Theory of equality for type equality of two consts</h2></a>
 <p>During unification and the overlap check, it is essential to determine when two
 types are equivalent or not. Because types can now be dependent on consts, we
 must define how we will compare the equality of two constant expressions.</p>
 <p>For most cases, the equality of two consts follows the same reasoning you would
 expect - two constant values are equal if they are equal to one another. But
 there are some particular caveats.</p>
-<a class="header" href="2000-const-generics.html#structural-equality" id="structural-equality"><h3>Structural equality</h3></a>
+<a class="header" href="#structural-equality" id="structural-equality"><h3>Structural equality</h3></a>
 <p>Const equality is determined according to the definition of structural equality
 defined in <a href="https://github.com/rust-lang/rfcs/blob/master/text/1445-restrict-constants-in-patterns.md">RFC 1445</a>. Only types which have the &quot;structural match&quot;
 property can be used as const parameters. This would exclude floats, for
@@ -314,7 +321,7 @@ definition of equality used by match today is good enough for our purposes.</p>
 cannot be enforced for a type variable, it is not possible to introduce a const
 parameter which is ascribed to a type variable (<code>Foo&lt;T, const N: T&gt;</code> is not
 valid).</p>
-<a class="header" href="2000-const-generics.html#equality-of-two-abstract-const-expressions" id="equality-of-two-abstract-const-expressions"><h3>Equality of two abstract const expressions</h3></a>
+<a class="header" href="#equality-of-two-abstract-const-expressions" id="equality-of-two-abstract-const-expressions"><h3>Equality of two abstract const expressions</h3></a>
 <p>When comparing the equality of two abstract const expressions (that is, those
 that depend on a variable) we cannot compare the equality of their values
 because their values are determined by a const variable, the value of which is
@@ -353,7 +360,7 @@ fn foo&lt;const N: usize&gt;() -&gt; Foo&lt;N&gt; {
     x
 }
 #}</code></pre></pre>
-<a class="header" href="2000-const-generics.html#future-extensions" id="future-extensions"><h4>Future extensions</h4></a>
+<a class="header" href="#future-extensions" id="future-extensions"><h4>Future extensions</h4></a>
 <p>Someday we could introduce knowledge of the basic properties of some operations</p>
 <ul>
 <li>such as the commutativity of addition and multiplication - to begin making
@@ -361,7 +368,7 @@ smarter judgments on the equality of const projections. However, this RFC does
 not proposing building any knowledge of that sort into the language and doing
 so would require a future RFC.</li>
 </ul>
-<a class="header" href="2000-const-generics.html#specialization-on-const-parameters" id="specialization-on-const-parameters"><h2>Specialization on const parameters</h2></a>
+<a class="header" href="#specialization-on-const-parameters" id="specialization-on-const-parameters"><h2>Specialization on const parameters</h2></a>
 <p>It is also necessary for specialization that const parameters have a defined
 ordering of specificity. For this purpose, literals are defined as more
 specific than other expressions, otherwise expressions have an indeterminate
@@ -373,14 +380,14 @@ specificity. For example, given the type <code>(i32, i32)</code>, we could deter
 of understanding that <code>(i32, U)</code> is more specific than the type <code>(T, U)</code>. We
 could also someday support intersectional and other more advanced definitions
 of specialization on constants.</p>
-<a class="header" href="2000-const-generics.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>Const generics is a large feature, and will require significant educational
 materials - it will need to be documented in both the book and the reference,
 and will probably need its own section in the book. Documenting const generics
 will be a big project in itself.</p>
 <p>However, const generics should be treated as an advanced feature, and it should
 not be something we expose to new users early in their use of Rust.</p>
-<a class="header" href="2000-const-generics.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This feature adds a significant amount of complexity to the type system,
 allowing types to be determined by constants. It requires determining the rules
 around abstract const equality, which result in surprising edge cases. It adds
@@ -389,7 +396,7 @@ don't adopt this feature.</p>
 <p>However, we have already introduced a type which is determined by a constant -
 the array type. Generalizing this feature seems natural and even inevitable
 given that early decision.</p>
-<a class="header" href="2000-const-generics.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>There are not really alternatives other than not doing this, or staging it
 differently.</p>
 <p>We could limit const generics to the type <code>usize</code>, but this would not make the
@@ -398,7 +405,7 @@ implementation simpler.</p>
 but this would make the implementation more complex up front.</p>
 <p>We could choose a slightly different syntax, such as separating consts from
 types with a semicolon.</p>
-<a class="header" href="2000-const-generics.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li><strong>Unification of abstract const expressions:</strong> This RFC performs the most
 minimal unification of abstract const expressions possible - it essentially
@@ -461,9 +468,6 @@ of the grammar.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0369-num-reform - </title>
+        <title>0369-num-reform - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/369">rust-lang/rfcs#369</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/18640">rust-lang/rust#18640</a></li>
 </ul>
-<a class="header" href="0369-num-reform.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC is preparation for API stabilization for the <code>std::num</code> module.  The
 proposal is to finish the simplification efforts started in
 <a href="https://github.com/rust-lang/rust/issues/10387">@bjz's reversal of the numerics hierarcy</a>.</p>
@@ -150,8 +157,8 @@ should be provided separately through the Cargo ecosystem.</p>
 <p>Thus, this RFC proposes to flatten or remove most of the traits
 currently provided by <code>std::num</code>, and generally to simplify the module
 as much as possible in preparation for API stabilization.</p>
-<a class="header" href="0369-num-reform.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="0369-num-reform.html#history" id="history"><h2>History</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#history" id="history"><h2>History</h2></a>
 <p>Starting in early 2013, there was
 <a href="https://github.com/rust-lang/rust/issues/4819">an effort</a> to design a
 comprehensive &quot;numeric hierarchy&quot; for Rust: a collection of traits classifying a
@@ -177,7 +184,7 @@ this is
 <p>Along side this effort, there are already external numerics packages like
 <a href="https://github.com/bjz/num-rs">@bjz's num-rs</a>.</p>
 <p>But we're not finished yet.</p>
-<a class="header" href="0369-num-reform.html#the-current-state-of-affairs" id="the-current-state-of-affairs"><h2>The current state of affairs</h2></a>
+<a class="header" href="#the-current-state-of-affairs" id="the-current-state-of-affairs"><h2>The current state of affairs</h2></a>
 <p>The <code>std::num</code> module still contains quite a few traits that subdivide out
 various features of numbers:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -287,7 +294,7 @@ special handling for overflow and other numeric errors.</p>
 <p>In addition to these traits, the <code>std::num</code> module includes a couple
 dozen free functions, most of which duplicate methods available though
 traits.</p>
-<a class="header" href="0369-num-reform.html#where-we-want-to-go-a-summary" id="where-we-want-to-go-a-summary"><h2>Where we want to go: a summary</h2></a>
+<a class="header" href="#where-we-want-to-go-a-summary" id="where-we-want-to-go-a-summary"><h2>Where we want to go: a summary</h2></a>
 <p>The goal of this RFC is to refactor the <code>std::num</code> hierarchy with the
 following goals in mind:</p>
 <ul>
@@ -310,8 +317,8 @@ should ultimately provide choices of sophisticated numeric
 hierarchies, and <code>std::num</code> should not get in the way.</p>
 </li>
 </ul>
-<a class="header" href="0369-num-reform.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0369-num-reform.html#overview-the-new-hierarchy" id="overview-the-new-hierarchy"><h2>Overview: the new hierarchy</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#overview-the-new-hierarchy" id="overview-the-new-hierarchy"><h2>Overview: the new hierarchy</h2></a>
 <p>This RFC proposes to collapse the trait hierarchy in <code>std::num</code> to
 just the following traits:</p>
 <ul>
@@ -337,7 +344,7 @@ suggests a level of generic programming that these traits aren't
 intended to support.</p>
 <p>The main reason to pull out <code>Signed</code> into its own trait is so that it
 can be added to the prelude. (Further discussion below.)</p>
-<a class="header" href="0369-num-reform.html#detailed-definitions" id="detailed-definitions"><h2>Detailed definitions</h2></a>
+<a class="header" href="#detailed-definitions" id="detailed-definitions"><h2>Detailed definitions</h2></a>
 <p>Below is the full definition of these traits. The functionality
 remains largely as it is today, just organized into fewer traits:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -443,7 +450,7 @@ pub trait FloatMath: Float {
     // Exactly the methods defined in today's version
 }
 #}</code></pre></pre>
-<a class="header" href="0369-num-reform.html#float-constants-float-math-and-cmath" id="float-constants-float-math-and-cmath"><h2>Float constants, float math, and <code>cmath</code></h2></a>
+<a class="header" href="#float-constants-float-math-and-cmath" id="float-constants-float-math-and-cmath"><h2>Float constants, float math, and <code>cmath</code></h2></a>
 <p>This RFC proposes to:</p>
 <ul>
 <li>
@@ -458,9 +465,9 @@ are intended to allow.</p>
 <code>libstd</code> depends on <code>cmath</code> but <code>libcore</code> does not.</p>
 </li>
 </ul>
-<a class="header" href="0369-num-reform.html#free-functions" id="free-functions"><h2>Free functions</h2></a>
+<a class="header" href="#free-functions" id="free-functions"><h2>Free functions</h2></a>
 <p>All of the free functions defined in <code>std::num</code> are deprecated.</p>
-<a class="header" href="0369-num-reform.html#the-prelude" id="the-prelude"><h2>The prelude</h2></a>
+<a class="header" href="#the-prelude" id="the-prelude"><h2>The prelude</h2></a>
 <p>The prelude will only include the <code>Signed</code> trait, as the operations it
 provides are widely expected to be available when they apply.</p>
 <p>The reason for removing the rest of the traits is two-fold:</p>
@@ -477,7 +484,7 @@ of methods and associated items remain available for external
 numerics libraries in the Cargo ecosystem.</p>
 </li>
 </ul>
-<a class="header" href="0369-num-reform.html#strconv-fromstr-tostr-fromstrradix-tostrradix" id="strconv-fromstr-tostr-fromstrradix-tostrradix"><h2><code>strconv</code>, <code>FromStr</code>, <code>ToStr</code>, <code>FromStrRadix</code>, <code>ToStrRadix</code></h2></a>
+<a class="header" href="#strconv-fromstr-tostr-fromstrradix-tostrradix" id="strconv-fromstr-tostr-fromstrradix-tostrradix"><h2><code>strconv</code>, <code>FromStr</code>, <code>ToStr</code>, <code>FromStrRadix</code>, <code>ToStrRadix</code></h2></a>
 <p>Currently, traits for converting from <code>&amp;str</code> and to <code>String</code> are both
 included, in their own modules, in <code>libstd</code>. This is largely due to
 the desire to provide <code>impl</code>s for numeric types, which in turn relies
@@ -493,7 +500,7 @@ migrated to <code>fmt</code> and been deprecated in <code>strconv</code>.)</li>
 <li>Move the <code>FromStrRadix</code> into <code>core::num</code>.</li>
 <li>Remove <code>ToStrRadix</code>, which is already deprecated in favor of <code>fmt</code>.</li>
 </ul>
-<a class="header" href="0369-num-reform.html#fromprimitive-and-friends" id="fromprimitive-and-friends"><h2><code>FromPrimitive</code> and friends</h2></a>
+<a class="header" href="#fromprimitive-and-friends" id="fromprimitive-and-friends"><h2><code>FromPrimitive</code> and friends</h2></a>
 <p>Ideally, the <code>FromPrimitive</code>, <code>ToPrimitive</code>, <code>Primitive</code>, <code>NumCast</code>
 traits would all be removed in favor of a more principled way of
 working with C-like enums. However, such a replacement is outside of
@@ -504,12 +511,12 @@ for now. A follow-up RFC proposing a better solution should appear soon.</p>
 the discussion on
 <a href="https://github.com/rust-lang/rust/issues/10272">this issue</a> about
 <code>Ordinal</code> for the rough direction forward.</p>
-<a class="header" href="0369-num-reform.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This RFC somewhat reduces the potential for writing generic numeric
 code with <code>std::num</code> traits. This is intentional, however: the new
 design represents &quot;just enough&quot; generics to cover differently-sized
 built-in types, without any attempt at general algebraic abstraction.</p>
-<a class="header" href="0369-num-reform.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The status quo is clearly not ideal, and as explained above there was
 a long attempt at providing a more complete numeric hierarchy in <code>std</code>.
 So <em>some</em> collapse of the hierarchy seems desirable.</p>
@@ -534,7 +541,7 @@ generic programming at that level (and generic programming across
 integer and floating-point types is likely to be extremely rare)</p>
 <p>The signed and unsigned operations could be offered on more types,
 allowing removal of more traits but a less clear-cut semantics.</p>
-<a class="header" href="0369-num-reform.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>This RFC does not propose a replacement for
 <code>#[deriving(FromPrimitive)]</code>, leaving the relevant traits in limbo
 status. (See
@@ -586,9 +593,6 @@ the discussion on
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

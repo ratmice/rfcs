@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0587-fn-return-should-be-an-associated-type - </title>
+        <title>0587-fn-return-should-be-an-associated-type - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,9 +145,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/587">rust-lang/rfcs#587</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/21527">rust-lang/rust#21527</a></li>
 </ul>
-<a class="header" href="0587-fn-return-should-be-an-associated-type.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>The <code>Fn</code> traits should be modified to make the return type an associated type.</p>
-<a class="header" href="0587-fn-return-should-be-an-associated-type.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The strongest reason is because it would permit impls like the following
 (example from @alexcrichton):</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -194,7 +201,7 @@ impl&lt;I,F&gt; Iterator for Map&lt;I,F&gt;,
 #}</code></pre></pre>
 <p>This example highlights one subtle point about the <code>()</code> notation,
 which is covered below.</p>
-<a class="header" href="0587-fn-return-should-be-an-associated-type.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The design has been implemented. You can see it in <a href="https://github.com/rust-lang/rust/pull/21019">this pull
 request</a>. The <code>Fn</code> trait is modified to read as follows:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -206,7 +213,7 @@ trait Fn&lt;A&gt; {
 }
 #}</code></pre></pre>
 <p>The other traits are modified in an analogous fashion.</p>
-<a class="header" href="0587-fn-return-should-be-an-associated-type.html#parentheses-notation" id="parentheses-notation"><h3>Parentheses notation</h3></a>
+<a class="header" href="#parentheses-notation" id="parentheses-notation"><h3>Parentheses notation</h3></a>
 <p>The shorthand <code>Foo(...)</code> expands to <code>Foo&lt;(...), Output=()&gt;</code>. The
 shorthand <code>Foo(..) -&gt; B</code> expands to <code>Foo&lt;(...), Output=B&gt;</code>. This
 implies that if you use the parenthetical notation, you must supply a
@@ -250,8 +257,8 @@ impl&lt;B,I,F&gt; Iterator for Map&lt;I,F&gt;,
 #}</code></pre></pre>
 <p>Note that this final option is not legal without this change, because
 the type parameter <code>B</code> on the impl woudl be unconstrained.</p>
-<a class="header" href="0587-fn-return-should-be-an-associated-type.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
-<a class="header" href="0587-fn-return-should-be-an-associated-type.html#cannot-overload-based-on-return-type-alone" id="cannot-overload-based-on-return-type-alone"><h3>Cannot overload based on return type alone</h3></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#cannot-overload-based-on-return-type-alone" id="cannot-overload-based-on-return-type-alone"><h3>Cannot overload based on return type alone</h3></a>
 <p>This change means that you cannot overload indexing to &quot;model&quot; a trait
 like <code>Default</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -281,8 +288,8 @@ call notation is already less general than full traits in various ways
 panics; that is, the <code>!</code> notation is not a type and hence something
 like <code>FnMut() -&gt; !</code> is not legal). The ability to overload based on return type
 is not removed, it is simply not something you can model using overloaded operators.</p>
-<a class="header" href="0587-fn-return-should-be-an-associated-type.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0587-fn-return-should-be-an-associated-type.html#special-syntax-to-represent-the-lack-of-an-output-binding" id="special-syntax-to-represent-the-lack-of-an-output-binding"><h3>Special syntax to represent the lack of an <code>Output</code> binding</h3></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#special-syntax-to-represent-the-lack-of-an-output-binding" id="special-syntax-to-represent-the-lack-of-an-output-binding"><h3>Special syntax to represent the lack of an <code>Output</code> binding</h3></a>
 <p>Rather than having people use angle-brackets to omit the <code>Output</code>
 binding, we could introduce some special syntax for this purpose.  For
 example, <code>FnMut() -&gt; ?</code> could desugar to <code>FnMut&lt;()&gt;</code> (whereas
@@ -290,7 +297,7 @@ example, <code>FnMut() -&gt; ?</code> could desugar to <code>FnMut&lt;()&gt;</co
 suggestion that is commonly made is <code>FnMut() -&gt; _</code>, but that has an
 existing meaning in a function context (where <code>_</code> represents a fresh
 type variable).</p>
-<a class="header" href="0587-fn-return-should-be-an-associated-type.html#change-meaning-of-fnmut-to-not-bind-the-output" id="change-meaning-of-fnmut-to-not-bind-the-output"><h3>Change meaning of <code>FnMut()</code> to not bind the output</h3></a>
+<a class="header" href="#change-meaning-of-fnmut-to-not-bind-the-output" id="change-meaning-of-fnmut-to-not-bind-the-output"><h3>Change meaning of <code>FnMut()</code> to not bind the output</h3></a>
 <p>We could make <code>FnMut()</code> desugar to <code>FnMut&lt;()&gt;</code>, and hence require an
 explicit <code>FnMut() -&gt; ()</code> to bind the return type to unit.  This feels
 suprising and inconsistent.</p>
@@ -338,9 +345,6 @@ suprising and inconsistent.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

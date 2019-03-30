@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2195-really-tagged-unions - </title>
+        <title>2195-really-tagged-unions - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2195">rust-lang/rfcs#2195</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="2195-really-tagged-unions.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Formally define the enum <code>#[repr(u32, i8, etc..)]</code> and <code>#[repr(C)]</code> attributes to force a non-C-like enum to have a defined layouts. This serves two purposes: allowing low-level Rust code to independently initialize the tag and payload, and allowing C(++) to safely manipulate these types.</p>
-<a class="header" href="2195-really-tagged-unions.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Enums that contain data are very good and useful. Unfortunately, their layout is currently purposefully unspecified, which makes these kinds of enums unusable for FFI and for low-level code. To demonstrate this, this RFC will look at two examples from firefox development where this has been a problem.</p>
-<a class="header" href="2195-really-tagged-unions.html#c-ffi" id="c-ffi"><h2>C(++) FFI</h2></a>
+<a class="header" href="#c-ffi" id="c-ffi"><h2>C(++) FFI</h2></a>
 <p>Consider a native Rust API for drawing a line, that uses a C-like LineStyle enum:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -259,7 +266,7 @@ enum LineStyle {
 }
 #}</code></pre></pre>
 <p>This produces a worse API for everyone, while also throwing away the type-safety benefits of enums. This trick also doesn't scale: if you have many nested enums, the combinatorics eventually become completely intractable.</p>
-<a class="header" href="2195-really-tagged-unions.html#in-place-construction" id="in-place-construction"><h2>In-Place Construction</h2></a>
+<a class="header" href="#in-place-construction" id="in-place-construction"><h2>In-Place Construction</h2></a>
 <p>Popular deserialization APIs in Rust generally have a signature like <code>deserialize&lt;T&gt;() -&gt; Result&lt;T, Error&gt;</code>. This works well for small values, but optimizes very poorly for large values, as Rust ends up copying the <code>T</code> many times. Further, in many cases we just want to overwrite an old value that we no longer care about.</p>
 <p>In those cases, we could potentially use an API like <code>deserialize_from&lt;T&gt;(&amp;mut T) -&gt; Result&lt;(), Error&gt;</code>. However Rust currently requires enums to be constructed &quot;atomically&quot;, so we can't actually take advantage of this API if our large value is an enum.</p>
 <p>That is, we must do something like:</p>
@@ -291,7 +298,7 @@ if let A(ref mut payload_dest) = *dest {
 #}</code></pre></pre>
 <p>because enum optimizations make it unsound to put <code>mem::uninitialized</code> in an enum. That is, checking if <code>dest = A</code> can require inspecting the payload.</p>
 <p>To accomplish this task, we need dedicated support from the language.</p>
-<a class="header" href="2195-really-tagged-unions.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>An enum can currently be adorned with <code>#[repr(Int)]</code> where <code>Int</code> is one of Rust's integer types (u8, isize, etc). For C-like enums -- enums which have no variants with associated data -- this specifies that the enum should have the ABI of that integer type (size, alignment, and calling convention). <code>#[repr(C)]</code> currently just tells Rust to try to pick whatever integer type that a C compiler for the target platform would use for an enum.</p>
 <p>With this RFC, two new guaranteed, C(++)-compatible enum layouts will be added.</p>
 <p><code>#[repr(Int)]</code> on a non-C-like enum will now mean: the enum must be represented as a C-union of C-structs that each start with a C-like enum with <code>#[repr(Int)]</code>. The other fields of the structs are the payloads of the variants. This is a mouthful, so let's look at an example. This definition:</p>
@@ -496,27 +503,27 @@ fn parse_my_enum_from&lt;'a&gt;(dest: &amp;'a mut MyEnum, input: &amp;mut &amp;[
 <li>repr(packed) on an enum</li>
 <li>repr(simd) on an enum</li>
 </ul>
-<a class="header" href="2195-really-tagged-unions.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>Since the whole point of this proposal is to enable low-level control, the guide-level explanation should cover all the relevant corner-cases and details in sufficient detail. All that remains is to discuss implementation details.</p>
 <p>It was <a href="https://github.com/rust-lang/rust/issues/40029">informally decided earilier this year</a> that <code>repr(Int)</code>should have the behaviour this RFC proposes, as it was being partially relied on (in that it supressed dangerous optimizations) and it made sense to the developers. There is even a test in the rust-lang repo that was added to ensure that this behaviour doesn't regress. So this part of the proposal is already implemented and somewhat tested on stable Rust. This RFC just seeks to codify that this won't break in the future.</p>
 <p>However <code>repr(C, Int)</code> currently doesn't do anything different from <code>repr(Int)</code>. Changing this is a relatively minor tweak to the code that lowers Rust code to a particular ABI. Anyone relying on <code>repr(C, Int)</code> being the same as <code>repr(Int)</code> is relying on unspecified behaviour, but a cargo bomb run should still be done just to check.</p>
 <p>A PR <a href="https://github.com/rust-lang/rust/pull/46123">has been submitted</a> to implement this, along with several tests.</p>
-<a class="header" href="2195-really-tagged-unions.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Half of this proposal is already implemented, and the other half has an implementation submitted (~20 line patch). The existence of this proposal can also be completely ignored by anyone who doesn't care about it, as they can keep using the default Rust repr. This is simply making things that exist sort-of-by-accident do something useful, which is basically a pure win considering the implementation/maintenance burden is minimal.</p>
 <p>One minor issue with this proposal is that there's no way to request the <code>repr(Int)</code> layout with the <code>repr(C)</code> tag size. To be blunt, this doesn't seem very important. It's unclear if developers should even use bare <code>repr(C)</code> on tagged unions, as the default C enum size is actually quite large for a tag. This is also consistent with the Rust philosophy of trying to minimize unecessary platform-specific details. Also, a desperate Rust programmer could acquire the desired behaviour with platform-specific cfgs (Rust has to basically guess at the type of a <code>repr(C)</code> enum anyway).</p>
 <p>The remaining drawbacks amount to &quot;what if this is the <em>wrong</em> interpretation&quot;, which shall be adressed in the alternatives.</p>
-<a class="header" href="2195-really-tagged-unions.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>There are a few alternative interpretations of <code>repr(Int)</code> on a non-C-like enum.</p>
-<a class="header" href="2195-really-tagged-unions.html#it-should-do-nothing" id="it-should-do-nothing"><h2>It should do nothing</h2></a>
+<a class="header" href="#it-should-do-nothing" id="it-should-do-nothing"><h2>It should do nothing</h2></a>
 <p>In which case it should probably become an error/warning. This isn't particularly desirable, as was discussed <a href="https://github.com/rust-lang/rust/issues/40029">when we decided to maintain this behaviour</a>.</p>
-<a class="header" href="2195-really-tagged-unions.html#the-tag-should-come-after-the-union-andor-order-should-be-manually-specified" id="the-tag-should-come-after-the-union-andor-order-should-be-manually-specified"><h2>The tag should come after the union, and/or order should be manually specified</h2></a>
+<a class="header" href="#the-tag-should-come-after-the-union-andor-order-should-be-manually-specified" id="the-tag-should-come-after-the-union-andor-order-should-be-manually-specified"><h2>The tag should come after the union, and/or order should be manually specified</h2></a>
 <p>With the <code>repr(C)</code> layout, there isn't a particularly compelling reason to move the tag around because of how padding and alignment are handled: you can't actually save space by putting the tag after, as long as your tag is a reasonable size.</p>
 <p>It's possible positioning the tag afterwards could be desirable to interoperate with a definition that is provided by a third party (hardware spec or some existing C library). However there are tons of other tag packing strategies that we also can't handle, so we'd probably want a more robust solution for those kinds of cases anyway.</p>
 <p>With the <code>repr(Int)</code> layout, this could potentially save space (for instance, with a variant like <code>A(u16, u8)</code>). However the benefits are relatively minimal compared to the increased complexity. If that complexity is desirable, it can be adressed with a future extension.</p>
-<a class="header" href="2195-really-tagged-unions.html#compound-variants-shouldnt-automatically-be-marked-as-reprc" id="compound-variants-shouldnt-automatically-be-marked-as-reprc"><h2>Compound variants shouldn't automatically be marked as <code>repr(C)</code></h2></a>
+<a class="header" href="#compound-variants-shouldnt-automatically-be-marked-as-reprc" id="compound-variants-shouldnt-automatically-be-marked-as-reprc"><h2>Compound variants shouldn't automatically be marked as <code>repr(C)</code></h2></a>
 <p>With the <code>repr(Int)</code> layout this isn't really possible, because the tag needs a deterministic position, and we can't &quot;partially&quot; <code>repr(C)</code> a struct.</p>
 <p>With either layout, one can make the payload be a single repr(Rust) struct, and that will have its layout agressively optimized, because <code>repr(C)</code> isn't infectious. So this is just a matter of &quot;what is a good default&quot;. The FFI case clearly wants fully defined layouts, while the pure-Rust case seems like a toss up. It seems like <code>repr(C)</code> is therefore the better default.</p>
-<a class="header" href="2195-really-tagged-unions.html#opaque-tags" id="opaque-tags"><h2>Opaque Tags</h2></a>
+<a class="header" href="#opaque-tags" id="opaque-tags"><h2>Opaque Tags</h2></a>
 <p>This code isn't valid under the main proposal:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -528,9 +535,9 @@ if let Some(ref mut inner) = x {
 #}</code></pre></pre>
 <p>It relies on the fact that the Some-ness of an Option (or the tag of any <code>repr(Rust)</code> enum) can't rely on the tag of a <code>repr(C/Int)</code> enum. Or in other words, <code>repr(C/Int)</code> enums have opaque tags. The cost of making this work is that <code>Option&lt;MyEnum&gt;</code> would have to be larger than <code>MyEnum</code>.</p>
 <p>It would be <em>nice</em> for this to work, but if you really need it, you can just define <code>#[repr(u8)] COption&lt;T&gt; { ... }</code> and use that.</p>
-<a class="header" href="2195-really-tagged-unions.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Currently None. 🎉</p>
-<a class="header" href="2195-really-tagged-unions.html#future-extensions" id="future-extensions"><h1>Future Extensions</h1></a>
+<a class="header" href="#future-extensions" id="future-extensions"><h1>Future Extensions</h1></a>
 <p>Here's some quick sketches of future extensions which could be done to this design.</p>
 <ul>
 <li>A field/method for the tag/payload (my_enum.tag, my_enum.payload)
@@ -591,9 +598,6 @@ if let Some(ref mut inner) = x {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

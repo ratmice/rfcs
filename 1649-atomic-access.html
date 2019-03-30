@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1649-atomic-access - </title>
+        <title>1649-atomic-access - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1649">rust-lang/rfcs#1649</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/35603">rust-lang/rust#35603</a></li>
 </ul>
-<a class="header" href="1649-atomic-access.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC adds the following methods to atomic types:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -150,24 +157,24 @@ impl AtomicT {
 }
 #}</code></pre></pre>
 <p>It also specifies that the layout of an <code>AtomicT</code> type is always the same as the underlying <code>T</code> type. So, for example, <code>AtomicI32</code> is guaranteed to be transmutable to and from <code>i32</code>.</p>
-<a class="header" href="1649-atomic-access.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="1649-atomic-access.html#get_mut-and-into_inner" id="get_mut-and-into_inner"><h2><code>get_mut</code> and <code>into_inner</code></h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#get_mut-and-into_inner" id="get_mut-and-into_inner"><h2><code>get_mut</code> and <code>into_inner</code></h2></a>
 <p>These methods are useful for accessing the value inside an atomic object directly when there are no other threads accessing it. This is guaranteed by the mutable reference and the move, since it means there can be no other live references to the atomic.</p>
 <p>A normal load/store is different from a <code>load(Relaxed)</code> or <code>store(Relaxed)</code> because it has much weaker synchronization guarantees, which means that the compiler can produce more efficient code. In particular, LLVM currently treats all atomic operations (even relaxed ones) as volatile operations, which means that it does not perform any optimizations on them. For example, it will not eliminate a <code>load(Relaxed)</code> even if the results of the load is not used anywhere.</p>
 <p><code>get_mut</code> in particular is expected to be useful in <code>Drop</code> implementations where you have a <code>&amp;mut self</code> and need to read the value of an atomic. <code>into_inner</code> somewhat overlaps in functionality with <code>get_mut</code>, but it is included to allow extracting the value without requiring the atomic object to be mutable. These methods mirror <code>Mutex::get_mut</code> and <code>Mutex::into_inner</code>.</p>
-<a class="header" href="1649-atomic-access.html#atomic-type-layout" id="atomic-type-layout"><h2>Atomic type layout</h2></a>
+<a class="header" href="#atomic-type-layout" id="atomic-type-layout"><h2>Atomic type layout</h2></a>
 <p>The layout guarantee is mainly intended to be used for FFI, where a variable of a non-atomic type needs to be modified atomically. The most common example of this is the Linux <code>futex</code> system call which takes an <code>int*</code> parameter pointing to an integer that is atomically modified by both userspace and the kernel.</p>
 <p>Rust code invoking the <code>futex</code> system call so far has simply passed the address of the atomic object directly to the system call. However this makes the assumption that the atomic type has the same layout as the underlying integer type, which is not currently guaranteed by the documentation.</p>
 <p>This also allows the reverse operation by casting a pointer: it allows Rust code to atomically modify a value that was not declared as a atomic type. This is useful when dealing with FFI structs that are shared with a thread managed by a C library. Another example would be to atomically modify a value in a memory mapped file that is shared with another process.</p>
-<a class="header" href="1649-atomic-access.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The actual implementations of these functions are mostly trivial since they are based on <code>UnsafeCell::get</code>.</p>
 <p>The existing implementations of atomic types already have the same layout as the underlying types (even <code>AtomicBool</code> and <code>bool</code>), so no change is needed here apart from the documentation.</p>
-<a class="header" href="1649-atomic-access.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The functionality of <code>into_inner</code> somewhat overlaps with <code>get_mut</code>.</p>
 <p>We lose the ability to change the layout of atomic types, but this shouldn't be necessary since these types map directly to hardware primitives.</p>
-<a class="header" href="1649-atomic-access.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The functionality of <code>get_mut</code> and <code>into_inner</code> can be implemented using <code>load(Relaxed)</code>, however the latter can result in worse code because it is poorly handled by the optimizer.</p>
-<a class="header" href="1649-atomic-access.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None</p>
 
                     </main>
@@ -213,9 +220,6 @@ impl AtomicT {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0141-lifetime-elision - </title>
+        <title>0141-lifetime-elision - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/141">rust-lang/rfcs#141</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/15552">rust-lang/rust#15552</a></li>
 </ul>
-<a class="header" href="0141-lifetime-elision.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes to</p>
 <ol>
 <li>Expand the rules for eliding lifetimes in <code>fn</code> definitions, and</li>
@@ -146,7 +153,7 @@
 </ol>
 <p>By doing so, we can avoid writing lifetime annotations ~87% of the time that
 they are currently required, based on a survey of the standard library.</p>
-<a class="header" href="0141-lifetime-elision.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>In today's Rust, lifetime annotations make code more verbose, both for methods</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -165,8 +172,8 @@ pattern.</p>
 can avoid writing any lifetimes in ~87% of the cases where they are currently
 required.</p>
 <p>Doing so is a clear ergonomic win.</p>
-<a class="header" href="0141-lifetime-elision.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0141-lifetime-elision.html#todays-lifetime-elision-rules" id="todays-lifetime-elision-rules"><h2>Today's lifetime elision rules</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#todays-lifetime-elision-rules" id="todays-lifetime-elision-rules"><h2>Today's lifetime elision rules</h2></a>
 <p>Rust currently supports eliding lifetimes in functions, so that you can write</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -193,8 +200,8 @@ fn get_str() -&gt; &amp;'static str;
 <p>Returning <code>'static</code> is relatively rare, and it has been proposed to make leaving
 off the lifetime in output position an error for this reason.</p>
 <p>Moreover, lifetimes cannot be elided in <code>impl</code> headers.</p>
-<a class="header" href="0141-lifetime-elision.html#the-proposed-rules" id="the-proposed-rules"><h2>The proposed rules</h2></a>
-<a class="header" href="0141-lifetime-elision.html#overview" id="overview"><h3>Overview</h3></a>
+<a class="header" href="#the-proposed-rules" id="the-proposed-rules"><h2>The proposed rules</h2></a>
+<a class="header" href="#overview" id="overview"><h3>Overview</h3></a>
 <p>This RFC proposes two changes to the lifetime elision rules:</p>
 <ol>
 <li>
@@ -205,7 +212,7 @@ under today's elision rules, interpret it in a different and more useful way.</p
 <p>Interpret elided lifetimes for <code>impl</code> headers analogously to <code>fn</code> definitions.</p>
 </li>
 </ol>
-<a class="header" href="0141-lifetime-elision.html#lifetime-positions" id="lifetime-positions"><h3>Lifetime positions</h3></a>
+<a class="header" href="#lifetime-positions" id="lifetime-positions"><h3>Lifetime positions</h3></a>
 <p>A <em>lifetime position</em> is anywhere you can write a lifetime in a type:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -232,7 +239,7 @@ include the lifetimes that occur in the method's <code>impl</code> header
 receiving the <code>impl</code>, while output refers to the trait, if any. So <code>impl&lt;'a&gt; Foo&lt;'a&gt;</code> has <code>'a</code> in input position, while <code>impl&lt;'a, 'b, 'c&gt; SomeTrait&lt;'b, 'c&gt; for Foo&lt;'a, 'c&gt;</code> has <code>'a</code> in input position, <code>'b</code>
 in output position, and <code>'c</code> in both input and output positions.</li>
 </ul>
-<a class="header" href="0141-lifetime-elision.html#the-rules" id="the-rules"><h3>The rules</h3></a>
+<a class="header" href="#the-rules" id="the-rules"><h3>The rules</h3></a>
 <ul>
 <li>
 <p>Each elided lifetime in input position becomes a distinct lifetime
@@ -252,7 +259,7 @@ is assigned to <em>all</em> elided output lifetimes.</p>
 </ul>
 <p>Notice that the <em>actual</em> signature of a <code>fn</code> or <code>impl</code> is based on the expansion
 rules above; the elided form is just a shorthand.</p>
-<a class="header" href="0141-lifetime-elision.html#examples" id="examples"><h3>Examples</h3></a>
+<a class="header" href="#examples" id="examples"><h3>Examples</h3></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -318,14 +325,14 @@ impl Bar for &amp;str {
 }
 
 #}</code></pre></pre>
-<a class="header" href="0141-lifetime-elision.html#error-messages" id="error-messages"><h2>Error messages</h2></a>
+<a class="header" href="#error-messages" id="error-messages"><h2>Error messages</h2></a>
 <p>Since the shorthand described above should eliminate most uses of explicit
 lifetimes, there is a potential &quot;cliff&quot;. When a programmer first encounters a
 situation that requires explicit annotations, it is important that the compiler
 gently guide them toward the concept of lifetimes.</p>
 <p>An error can arise with the above shorthand only when the program elides an
 output lifetime and neither of the rules can determine how to annotate it.</p>
-<a class="header" href="0141-lifetime-elision.html#for-fn" id="for-fn"><h3>For <code>fn</code></h3></a>
+<a class="header" href="#for-fn" id="for-fn"><h3>For <code>fn</code></h3></a>
 <p>The error message should guide the programmer toward the concept of lifetime by
 talking about borrowed values:</p>
 <blockquote>
@@ -337,7 +344,7 @@ e.g. [generated example]. See [url] for an introduction to lifetimes.</p>
 <p>This message is slightly inaccurate, since the presence of a lifetime parameter
 does not necessarily imply the presence of a borrowed value, but there are no
 known use-cases of phantom lifetime parameters.</p>
-<a class="header" href="0141-lifetime-elision.html#for-impl" id="for-impl"><h3>For <code>impl</code></h3></a>
+<a class="header" href="#for-impl" id="for-impl"><h3>For <code>impl</code></h3></a>
 <p>The error case on <code>impl</code> is exceedingly rare: it requires (1) that the <code>impl</code> is
 for a trait with a lifetime argument, which is uncommon, and (2) that the <code>Self</code>
 type has multiple lifetime arguments.</p>
@@ -350,7 +357,7 @@ already understand lifetimes.</p>
 lifetime parameters of TypeName to use. Mark the parameters explicitly,
 e.g. [generated example]. See [url] for an introduction to lifetimes.</p>
 </blockquote>
-<a class="header" href="0141-lifetime-elision.html#the-impact" id="the-impact"><h2>The impact</h2></a>
+<a class="header" href="#the-impact" id="the-impact"><h2>The impact</h2></a>
 <p>To assess the value of the proposed rules, we conducted a survey of the code
 defined <em>in</em> <code>libstd</code> (as opposed to the code it reexports). This corpus is
 large and central enough to be representative, but small enough to easily
@@ -361,8 +368,8 @@ analyze.</p>
 already elided with today's rules.</em></p>
 <p>The detailed data is available at:
 https://gist.github.com/aturon/da49a6d00099fdb0e861</p>
-<a class="header" href="0141-lifetime-elision.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
-<a class="header" href="0141-lifetime-elision.html#learning-lifetimes" id="learning-lifetimes"><h2>Learning lifetimes</h2></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#learning-lifetimes" id="learning-lifetimes"><h2>Learning lifetimes</h2></a>
 <p>The main drawback of this change is pedagogical. If lifetime annotations are
 rarely used, newcomers may encounter error messages about lifetimes long before
 encountering lifetimes in signatures, which may be confusing. Counterpoints:</p>
@@ -389,7 +396,7 @@ reasonably gentle path toward using and understanding explicit lifetimes.</p>
 <p>Programmers learn lifetimes once, but will use them many times. Better to favor
 long-term ergonomics, if a simple elision rule can cover 87% of current lifetime
 uses (let alone the currently elided cases).</p>
-<a class="header" href="0141-lifetime-elision.html#subtlety-for-non--types" id="subtlety-for-non--types"><h2>Subtlety for non-<code>&amp;</code> types</h2></a>
+<a class="header" href="#subtlety-for-non--types" id="subtlety-for-non--types"><h2>Subtlety for non-<code>&amp;</code> types</h2></a>
 <p>While the rules are quite simple and regular, they can be subtle when applied to
 types with lifetime positions. To determine whether the signature</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -401,7 +408,7 @@ fn foo(r: Bar) -&gt; Bar
 <code>Bar</code> has a lifetime parameter. But this subtlety already exists with the
 current elision rules. The benefit is that library types like <code>Ref&lt;'a, T&gt;</code> get
 the same status and ergonomics as built-ins like <code>&amp;'a T</code>.</p>
-<a class="header" href="0141-lifetime-elision.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>Do not include <em>output</em> lifetime elision for <code>impl</code>. Since traits with lifetime
@@ -417,15 +424,15 @@ mentioned above. Doing so would impose an ergonomic penalty on abstractions,
 though: <code>Ref</code> would be more painful to use than <code>&amp;</code>.</p>
 </li>
 </ul>
-<a class="header" href="0141-lifetime-elision.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>The <code>fn</code> and <code>impl</code> cases tackled above offer the biggest bang for the buck for
 lifetime elision. But we may eventually want to consider other opportunities.</p>
-<a class="header" href="0141-lifetime-elision.html#double-lifetimes" id="double-lifetimes"><h2>Double lifetimes</h2></a>
+<a class="header" href="#double-lifetimes" id="double-lifetimes"><h2>Double lifetimes</h2></a>
 <p>Another pattern that sometimes arises is types like <code>&amp;'a Foo&lt;'a&gt;</code>. We could
 consider an additional elision rule that expands <code>&amp;Foo</code> to <code>&amp;'a Foo&lt;'a&gt;</code>.</p>
 <p>However, such a rule could be easily added later, and it is unclear how common
 the pattern is, so it seems best to leave that for a later RFC.</p>
-<a class="header" href="0141-lifetime-elision.html#lifetime-elision-in-structs" id="lifetime-elision-in-structs"><h2>Lifetime elision in <code>struct</code>s</h2></a>
+<a class="header" href="#lifetime-elision-in-structs" id="lifetime-elision-in-structs"><h2>Lifetime elision in <code>struct</code>s</h2></a>
 <p>We may want to allow lifetime elision in <code>struct</code>s, but the cost/benefit
 analysis is much less clear. In particular, it could require chasing an
 arbitrary number of (potentially private) <code>struct</code> fields to discover the source
@@ -476,9 +483,6 @@ treat elided lifetimes in <code>struct</code>s as <code>'static</code>.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

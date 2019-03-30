@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1200-cargo-install - </title>
+        <title>1200-cargo-install - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1200">rust-lang/rfcs#1200</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1200-cargo-install.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add a new subcommand to Cargo, <code>install</code>, which will install <code>[[bin]]</code>-based
 packages onto the local system in a Cargo-specific directory.</p>
-<a class="header" href="1200-cargo-install.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>There has <a href="https://github.com/rust-lang/cargo/issues/37">almost always been a desire</a> to be able to install Cargo
 packages locally, but it's been somewhat unclear over time what the precise
 meaning of this is. Now that we have crates.io and lots of experience with
@@ -155,7 +162,7 @@ dependencies and versions itself to make the process as seamless as possible.</p
 <p>Put another way, enabling easily sharing code is one of Cargo's fundamental
 design goals, and expanding into binaries is simply an extension of Cargo's core
 functionality.</p>
-<a class="header" href="1200-cargo-install.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The following new subcommand will be added to Cargo:</p>
 <pre><code>Install a crate onto the local system
 
@@ -201,7 +208,7 @@ be used as well.
 
 The `--list` option will list all installed packages (and their versions).
 </code></pre>
-<a class="header" href="1200-cargo-install.html#installing-crates" id="installing-crates"><h2>Installing Crates</h2></a>
+<a class="header" href="#installing-crates" id="installing-crates"><h2>Installing Crates</h2></a>
 <p>Cargo attempts to be as flexible as possible in terms of installing crates from
 various locations and specifying what should be installed. All binaries will be
 stored in a <strong>cargo-local</strong> directory, and more details on where exactly this is
@@ -211,13 +218,13 @@ located can be found below.</p>
 <p>To use installed crates one just needs to add the binary path to their <code>PATH</code>
 environment variable. This will be recommended when <code>cargo install</code> is run if
 <code>PATH</code> does not already look like it's configured.</p>
-<a class="header" href="1200-cargo-install.html#crate-sources" id="crate-sources"><h4>Crate Sources</h4></a>
+<a class="header" href="#crate-sources" id="crate-sources"><h4>Crate Sources</h4></a>
 <p>The <code>cargo install</code> command will be able to install crates from any source that
 Cargo already understands. For example it will start off being able to install
 from crates.io, git repositories, and local paths. Like with normal
 dependencies, downloads from crates.io can specify a version, git repositories
 can specify branches, tags, or revisions.</p>
-<a class="header" href="1200-cargo-install.html#sources-with-multiple-crates" id="sources-with-multiple-crates"><h4>Sources with multiple crates</h4></a>
+<a class="header" href="#sources-with-multiple-crates" id="sources-with-multiple-crates"><h4>Sources with multiple crates</h4></a>
 <p>Sources like git repositories and paths can have multiple crates inside them,
 and Cargo needs a way to figure out which one is being installed. If there is
 more than one crate in a repo (or path), then Cargo will apply the following
@@ -228,24 +235,24 @@ heuristics to select a crate, in order:</p>
 <li>If only one crate has examples, use that crate.</li>
 <li>Print an error suggesting the <code>-p</code> flag.</li>
 </ol>
-<a class="header" href="1200-cargo-install.html#multiple-binaries-in-a-crate" id="multiple-binaries-in-a-crate"><h4>Multiple binaries in a crate</h4></a>
+<a class="header" href="#multiple-binaries-in-a-crate" id="multiple-binaries-in-a-crate"><h4>Multiple binaries in a crate</h4></a>
 <p>Once a crate has been selected, Cargo will by default build all binaries and
 install them. This behavior can be modified with the <code>--bin</code> or <code>--example</code>
 flags to configure what's installed on the local system.</p>
-<a class="header" href="1200-cargo-install.html#building-a-binary" id="building-a-binary"><h4>Building a Binary</h4></a>
+<a class="header" href="#building-a-binary" id="building-a-binary"><h4>Building a Binary</h4></a>
 <p>The <code>cargo install</code> command has some standard build options found on <code>cargo build</code> and friends, but a key difference is that <code>--release</code> is the default for
 installed binaries so a <code>--debug</code> flag is present to switch this back to
 debug-mode. Otherwise the <code>--features</code> flag can be specified to activate various
 features of the crate being installed.</p>
 <p>The <code>--target</code> option is omitted as <code>cargo install</code> is not intended for creating
 cross-compiled binaries to ship to other platforms.</p>
-<a class="header" href="1200-cargo-install.html#conflicting-crates" id="conflicting-crates"><h4>Conflicting Crates</h4></a>
+<a class="header" href="#conflicting-crates" id="conflicting-crates"><h4>Conflicting Crates</h4></a>
 <p>Cargo will not namespace the installation directory for crates, so conflicts may
 arise in terms of binary names. For example if crates A and B both provide a
 binary called <code>foo</code> they cannot be both installed at once. Cargo will reject
 these situations and recommend that a binary is selected via <code>--bin</code> or the
 conflicting crate is uninstalled.</p>
-<a class="header" href="1200-cargo-install.html#placing-output-artifacts" id="placing-output-artifacts"><h4>Placing output artifacts</h4></a>
+<a class="header" href="#placing-output-artifacts" id="placing-output-artifacts"><h4>Placing output artifacts</h4></a>
 <p>The <code>cargo install</code> command can be customized where it puts its output artifacts
 to install packages in a custom location. The root directory of the installation
 will be determined in a hierarchical fashion, choosing the first of the
@@ -261,11 +268,11 @@ hierarchical fashion).</li>
 <code>$INSTALL_ROOT/bin</code> folder. Cargo will also reserve the right to retain some
 metadata in this folder in order to keep track of what's installed and what
 binaries belong to which package.</p>
-<a class="header" href="1200-cargo-install.html#managing-installations" id="managing-installations"><h2>Managing Installations</h2></a>
+<a class="header" href="#managing-installations" id="managing-installations"><h2>Managing Installations</h2></a>
 <p>If Cargo gives access to installing packages, it should surely provide the
 ability to manage what's installed! The first part of this is just discovering
 what's installed, and this is provided via <code>cargo install --list</code>.</p>
-<a class="header" href="1200-cargo-install.html#removing-crates" id="removing-crates"><h2>Removing Crates</h2></a>
+<a class="header" href="#removing-crates" id="removing-crates"><h2>Removing Crates</h2></a>
 <p>To remove an installed crate, another subcommand will be added to Cargo:</p>
 <pre><code>Remove a locally installed crate
 
@@ -285,7 +292,7 @@ only uninstall particular binaries.
 </code></pre>
 <p>Cargo won't remove the source for uninstalled crates, just the binaries that
 were installed by Cargo itself.</p>
-<a class="header" href="1200-cargo-install.html#non-binary-artifacts" id="non-binary-artifacts"><h2>Non-binary artifacts</h2></a>
+<a class="header" href="#non-binary-artifacts" id="non-binary-artifacts"><h2>Non-binary artifacts</h2></a>
 <p>Cargo will not currently attempt to manage anything other than a binary artifact
 of <code>cargo build</code>. For example the following items will not be available to
 installed crates:</p>
@@ -299,12 +306,12 @@ the source code is.</li>
 installation stage of a package. There is often a desire for a &quot;pre-install
 script&quot; which runs various house-cleaning tasks. This is left as a future
 extension to Cargo.</p>
-<a class="header" href="1200-cargo-install.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Beyond the standard &quot;this is more surface area&quot; and &quot;this may want to
 aggressively include more features initially&quot; concerns there are no known
 drawbacks at this time.</p>
-<a class="header" href="1200-cargo-install.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1200-cargo-install.html#system-package-managers" id="system-package-managers"><h3>System Package Managers</h3></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#system-package-managers" id="system-package-managers"><h3>System Package Managers</h3></a>
 <p>The primary alternative to putting effort behind <code>cargo install</code> is to instead
 put effort behind system-specific package managers. For example the line between
 a system package manager and <code>cargo install</code> is a little blurry, and the
@@ -332,7 +339,7 @@ binaries.</p>
 distribution through standard package managers, and Cargo will certainly have
 room to help out with this, but it doesn't obsolete the need for
 <code>cargo install</code>.</p>
-<a class="header" href="1200-cargo-install.html#installing-libraries" id="installing-libraries"><h3>Installing Libraries</h3></a>
+<a class="header" href="#installing-libraries" id="installing-libraries"><h3>Installing Libraries</h3></a>
 <p>Another possibility for <code>cargo install</code> is to not only be able to install
 binaries, but also libraries. The meaning of this however, is pretty nebulous
 and it's not clear that it's worthwhile. For example all Cargo builds will not
@@ -347,7 +354,7 @@ instead of recompiling it. This job, however, seems best left to <code>cargo bui
 as it will automatically handle when the compiler version changes, for example.
 It may also be more appropriate to add the caching layer at the <code>cargo build</code>
 layer instead of <code>cargo install</code>.</p>
-<a class="header" href="1200-cargo-install.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None yet</p>
 
                     </main>
@@ -393,9 +400,6 @@ layer instead of <code>cargo install</code>.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

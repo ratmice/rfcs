@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0339-statically-sized-literals - </title>
+        <title>0339-statically-sized-literals - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,10 +145,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/339">rust-lang/rfcs#339</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/18465">rust-lang/rust#18465</a></li>
 </ul>
-<a class="header" href="0339-statically-sized-literals.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Change the types of byte string literals to be references to statically sized types.
 Ensure the same change can be performed backward compatibly for string literals in the future.</p>
-<a class="header" href="0339-statically-sized-literals.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently byte string and string literals have types <code>&amp;'static [u8]</code> and <code>&amp;'static str</code>.
 Therefore, although the sizes of the literals are known at compile time, they are erased from their types and inaccessible until runtime.
 This RFC suggests to change the type of byte string literals to <code>&amp;'static [u8, ..N]</code>.
@@ -168,10 +175,10 @@ static FR_FILE: FixedString&lt;_&gt; = LANG_DIR + *&quot;fr&quot;;
 // Future without CTE: runtime &quot;heapless&quot; string concatenation
 let DE_FILE = LANG_DIR + *&quot;de&quot;; // Performed at runtime if not optimized
 </code></pre>
-<a class="header" href="0339-statically-sized-literals.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Change the type of byte string literals from <code>&amp;'static [u8]</code> to <code>&amp;'static [u8, ..N]</code>.
 Leave the door open for a backward compatible change of the type of string literals from <code>&amp;'static str</code> to <code>&amp;'static FixedString&lt;N&gt;</code>.</p>
-<a class="header" href="0339-statically-sized-literals.html#strings-of-fixed-size" id="strings-of-fixed-size"><h3>Strings of fixed size</h3></a>
+<a class="header" href="#strings-of-fixed-size" id="strings-of-fixed-size"><h3>Strings of fixed size</h3></a>
 <p>If <code>str</code> is moved to the library today, then strings of fixed size can be implemented like this:</p>
 <pre><code>struct str&lt;Sized? T = [u8]&gt;(T);
 </code></pre>
@@ -187,24 +194,24 @@ pub type FixedString&lt;const N: uint&gt; = __StrImpl&lt;[u8, ..N]&gt;; // strin
 // &amp;FixedString&lt;N&gt; -&gt; &amp;str : OK, including &amp;'static FixedString&lt;N&gt; -&gt; &amp;'static str for string literals
 </code></pre>
 <p>So, we don't propose to make these changes today and suggest to wait until generic parameterization on integers is added to the language.</p>
-<a class="header" href="0339-statically-sized-literals.html#precedents" id="precedents"><h3>Precedents</h3></a>
+<a class="header" href="#precedents" id="precedents"><h3>Precedents</h3></a>
 <p>C and C++ string literals are lvalue <code>char</code> arrays of fixed size with static duration.
 C++ library proposal for strings of fixed size (<a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4121.pdf">link</a>), the paper also contains some discussion and motivation.</p>
-<a class="header" href="0339-statically-sized-literals.html#rejected-alternatives-and-discussion" id="rejected-alternatives-and-discussion"><h1>Rejected alternatives and discussion</h1></a>
-<a class="header" href="0339-statically-sized-literals.html#array-literals" id="array-literals"><h2>Array literals</h2></a>
+<a class="header" href="#rejected-alternatives-and-discussion" id="rejected-alternatives-and-discussion"><h1>Rejected alternatives and discussion</h1></a>
+<a class="header" href="#array-literals" id="array-literals"><h2>Array literals</h2></a>
 <p>The types of array literals potentially can be changed from <code>[T, ..N]</code> to <code>&amp;'a [T, ..N]</code> for consistency with the other literals and ergonomics.
 The major blocker for this change is the inability to move out from a dereferenced array literal if <code>T</code> is not <code>Copy</code>.</p>
 <pre><code>let mut a = *[box 1i, box 2, box 3]; // Wouldn't work without special-casing of array literals with regard to moving out from dereferenced borrowed pointer
 </code></pre>
 <p>Despite that array literals as references have better usability, possible <code>static</code>ness and consistency with other literals.</p>
-<a class="header" href="0339-statically-sized-literals.html#usage-statistics-for-array-literals" id="usage-statistics-for-array-literals"><h3>Usage statistics for array literals</h3></a>
+<a class="header" href="#usage-statistics-for-array-literals" id="usage-statistics-for-array-literals"><h3>Usage statistics for array literals</h3></a>
 <p>Array literals can be used both as slices, when a view to array is sufficient to perform the task, and as values when arrays themselves should be copied or modified.
 The exact estimation of the frequencies of both uses is problematic, but some regex search in the Rust codebase gives the next statistics:
 In approximately <em>70%</em> of cases array literals are used as slices (explicit <code>&amp;</code> on array literals, immutable bindings).
 In approximately <em>20%</em> of cases array literals are used as values (initialization of struct fields, mutable bindings,   boxes).
 In the rest <em>10%</em> of cases the usage is unclear.</p>
 <p>So, in most cases the change to the types of array literals will lead to shorter notation.</p>
-<a class="header" href="0339-statically-sized-literals.html#static-lifetime" id="static-lifetime"><h3>Static lifetime</h3></a>
+<a class="header" href="#static-lifetime" id="static-lifetime"><h3>Static lifetime</h3></a>
 <p>Although all the literals under consideration are similar and are essentially arrays of fixed size, array literals are different from byte string and string literals with regard to lifetimes.
 While byte string and string literals can always be placed into static memory and have static lifetime, array literals can depend on local variables and can't have static lifetime in general case.
 The chosen design potentially allows to trivially enhance <em>some</em> array literals with static lifetime in the future to allow use like</p>
@@ -212,9 +219,9 @@ The chosen design potentially allows to trivially enhance <em>some</em> array li
     [1, 2, 3]
 }
 </code></pre>
-<a class="header" href="0339-statically-sized-literals.html#alternatives" id="alternatives"><h2>Alternatives</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h2>Alternatives</h2></a>
 <p>The alternative design is to make the literals the values and not the references.</p>
-<a class="header" href="0339-statically-sized-literals.html#the-changes" id="the-changes"><h3>The changes</h3></a>
+<a class="header" href="#the-changes" id="the-changes"><h3>The changes</h3></a>
 <ol>
 <li></li>
 </ol>
@@ -250,7 +257,7 @@ static FR_FILE: FixedString&lt;_&gt; = LANG_DIR + &quot;fr&quot;;
 // Future without CTE: runtime &quot;heapless&quot; string concatenation
 let DE_FILE = LANG_DIR + &quot;de&quot;; // Performed at runtime if not optimized
 </code></pre>
-<a class="header" href="0339-statically-sized-literals.html#drawbacks-of-the-alternative-design" id="drawbacks-of-the-alternative-design"><h3>Drawbacks of the alternative design</h3></a>
+<a class="header" href="#drawbacks-of-the-alternative-design" id="drawbacks-of-the-alternative-design"><h3>Drawbacks of the alternative design</h3></a>
 <p>Special rules about (byte) string literals being static lvalues add a bit of unnecessary complexity to the specification.</p>
 <p>In theory <code>let s = &quot;abcd&quot;;</code> copies the string from static memory to stack, but the copy is unobservable an can, probably, be elided in most cases.</p>
 <p>The set of additional autocoercions has to exist for ergonomic purpose (and for backward compatibility).
@@ -267,9 +274,9 @@ f(&amp;&quot;Hello&quot;);
     f(s); // Will require explicit slicing f(s[]) or implicit DST coersion from reference f(&amp;s)
 }
 </code></pre>
-<a class="header" href="0339-statically-sized-literals.html#status-quo" id="status-quo"><h3>Status quo</h3></a>
+<a class="header" href="#status-quo" id="status-quo"><h3>Status quo</h3></a>
 <p>Status quo (or partial application of the changes) is always an alternative.</p>
-<a class="header" href="0339-statically-sized-literals.html#drawbacks-of-status-quo" id="drawbacks-of-status-quo"><h3>Drawbacks of status quo</h3></a>
+<a class="header" href="#drawbacks-of-status-quo" id="drawbacks-of-status-quo"><h3>Drawbacks of status quo</h3></a>
 <p>Examples:</p>
 <pre><code>// Today: can't use byte string literals in some cases
 let mut arr: [u8, ..3] = [b'a', b'b', b'c']; // Have to use array literals
@@ -287,9 +294,9 @@ static FR_FILE: FixedString&lt;_&gt; = LANG_DIR + &quot;fr&quot;.to_fixed();
 // &quot;Heapless&quot;/compile-time string operations aren't possible, or performed with &quot;magic&quot; like extended concat! or recursive macros.
 </code></pre>
 <p>Note, that in the &quot;Future&quot; scenario the return <em>type</em> of <code>to_fixed</code> depends on the <em>value</em> of <code>self</code>, so it requires sufficiently advanced CTE, for example C++14 with its powerful <code>constexpr</code> machinery still doesn't allow to write such a function.</p>
-<a class="header" href="0339-statically-sized-literals.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>None.</p>
-<a class="header" href="0339-statically-sized-literals.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -335,9 +342,6 @@ static FR_FILE: FixedString&lt;_&gt; = LANG_DIR + &quot;fr&quot;.to_fixed();
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

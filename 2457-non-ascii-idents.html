@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2457-non-ascii-idents - </title>
+        <title>2457-non-ascii-idents - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2457">rust-lang/rfcs#2457</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/55467">rust-lang/rust#55467</a></li>
 </ul>
-<a class="header" href="2457-non-ascii-idents.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Allow non-ASCII letters (such as accented characters, Cyrillic, Greek, Kanji, etc.) in Rust identifiers.</p>
-<a class="header" href="2457-non-ascii-idents.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Writing code using domain-specific terminology simplifies implementation and discussion as opposed to translating words from the project requirements. When the code is only intended for a limited audience such as with in-house projects or in teaching it can be beneficial to write code in the group's language as it boosts communication and helps people not fluent in English to participate and write Rust code themselves.</p>
 <p>The rationale from <a href="https://www.python.org/dev/peps/pep-3131/">PEP 3131</a> nicely explains it:</p>
 <blockquote>
@@ -149,7 +156,7 @@
 <p>For some languages, common transliteration systems exist (in particular, for the Latin-based writing systems). For other languages, users have larger difficulties to use Latin to write their native words.</p>
 </blockquote>
 <p>Additionally some math oriented projects may want to use identifiers closely resembling mathematical writing.</p>
-<a class="header" href="2457-non-ascii-idents.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>Identifiers include variable names, function and trait names and module names. They start with a letter or an underscore and may be followed by more letters, digits and some connecting punctuation.</p>
 <p>Examples of valid identifiers are:</p>
 <ul>
@@ -171,11 +178,11 @@
 #fn main() {
 #}</code></pre></pre>
 <p>Some Unicode character look confusingly similar to each other or even identical like the Latin <strong>A</strong> and the Cyrillic <strong>А</strong>. The compiler may warn you about names that are easy to confuse with keywords, names from the same crate and imported items. If needed (but not recommended) this warning can be silenced with a <code>#[allow(confusable_idents)]</code> annotation on the enclosing function or module.</p>
-<a class="header" href="2457-non-ascii-idents.html#usage-notes" id="usage-notes"><h2>Usage notes</h2></a>
+<a class="header" href="#usage-notes" id="usage-notes"><h2>Usage notes</h2></a>
 <p>All code written in the Rust Language Organization (<em>rustc</em>, tools, std, common crates) will continue to only use ASCII identifiers and the English language.</p>
 <p>For open source crates it is suggested to write them in English and use ASCII-only. An exception can be made if the application domain (e.g. math) benefits from Unicode and the target audience (e.g. for a crate interfacing with Russian passports) is comfortable with the used language and characters. Additionally crates should consider to provide an ASCII-only API.</p>
 <p>Private projects can use any script and language the developer(s) desire. It is still a good idea (as with any language feature) not to overdo it.</p>
-<a class="header" href="2457-non-ascii-idents.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>Identifiers in Rust are based on the <a href="http://www.unicode.org/reports/tr31/">Unicode® Standard Annex #31 Unicode Identifier and Pattern Syntax</a>.</p>
 <p>Note: The supported Unicode version should be stated in the documentation.</p>
 <p>The lexer defines identifiers as:</p>
@@ -190,7 +197,7 @@ IDENTIFIER_OR_KEYWORD <sub><em>Except a [strict] or [reserved] keyword</em></sub
 <p><code>XID_Start</code> and <code>XID_Continue</code> are used as defined in the aforementioned standard. The definition of identifiers is forward compatible with each successive release of Unicode as only appropriate new characters are added to the classes but none are removed. We effectively are using UAX 31's default definition of valid identifier, with a tailoring that underscores are included with <code>XID_Start</code>. (Note that this allows bare underscores to be identifiers, that is currently also the case with <code>_</code> in identifier contexts being a reserved keyword)</p>
 <p>Parsers for Rust syntax normalize identifiers to <a href="https://www.unicode.org/reports/tr15/">NFC</a>. Every API accepting raw identifiers (such as <code>proc_macro::Ident::new</code> normalizes them to NFC and APIs returning them as strings (like <code>proc_macro::Ident::to_string</code>) return the normalized form. This means two identifiers are equal if their NFC forms are equal.</p>
 <p>A <code>non_ascii_idents</code> lint is added to the compiler. This lint is <code>allow</code> by default. The lint checks if any identifier in the current context contains a codepoint with a value equal to or greater than 0x80 (outside ASCII range). Not only locally defined identifiers are checked but also those imported from other crates and modules into the current context.</p>
-<a class="header" href="2457-non-ascii-idents.html#remaining-ascii-only-names" id="remaining-ascii-only-names"><h2>Remaining ASCII-only names</h2></a>
+<a class="header" href="#remaining-ascii-only-names" id="remaining-ascii-only-names"><h2>Remaining ASCII-only names</h2></a>
 <p>Only ASCII identifiers are allowed within an external block and in the signature of a function declared <code>#[no_mangle]</code>.
 Otherwise an error is reported.</p>
 <p>Note: These functions interface with other programming languages
@@ -201,14 +208,14 @@ A future RFC may lift the restriction.</p>
 The allowed character set for names on crates.io is not changed.</p>
 <p>Note: This is to avoid dealing with file systems on different systems <em>right now</em>.
 A future RFC may allow non-ASCII characters after the file system issues are resolved.</p>
-<a class="header" href="2457-non-ascii-idents.html#confusable-detection" id="confusable-detection"><h2>Confusable detection</h2></a>
+<a class="header" href="#confusable-detection" id="confusable-detection"><h2>Confusable detection</h2></a>
 <p>Rust compilers should detect confusingly similar Unicode identifiers and warn the user about it.</p>
 <p>Note: This is <em>not</em> a mandatory for all Rust compilers as it requires considerable implementation effort and is not related to the core function of the compiler. It rather is a tool to detect accidental misspellings and intentional homograph attacks.</p>
 <p>A new <code>confusable_idents</code> lint is added to the compiler. The default setting is <code>warn</code>.</p>
 <p>Note: The confusable detection is set to <code>warn</code> instead of <code>deny</code> to enable forward compatibility. The list of confusable characters will be extended in the future and programs that were once valid would fail to compile.</p>
 <p>The confusable detection algorithm is based on <a href="https://www.unicode.org/reports/tr39/#Confusable_Detection">Unicode® Technical Standard #39 Unicode Security Mechanisms Section 4 Confusable Detection</a>. For every distinct identifier X execute the function <code>skeleton(X)</code>. If there exist two distinct identifiers X and Y in the same crate where <code>skeleton(X) = skeleton(Y)</code> report it. The compiler uses the same mechanism to check if an identifier is too similar to a keyword.</p>
 <p>Note: A fast way to implement this is to compute <code>skeleton</code> for each identifier once and place the result in a hashmap as a key. If one tries to insert a key that already exists check if the two identifiers differ from each other. If so report the two confusable identifiers.</p>
-<a class="header" href="2457-non-ascii-idents.html#exotic-codepoint-detection" id="exotic-codepoint-detection"><h2>Exotic codepoint detection</h2></a>
+<a class="header" href="#exotic-codepoint-detection" id="exotic-codepoint-detection"><h2>Exotic codepoint detection</h2></a>
 <p>A new <code>less_used_codepoints</code> lint is added to the compiler. The default setting is to <code>warn</code>.</p>
 <p>The lint is triggered by identifiers that contain a codepoint that is not part of the set of &quot;Allowed&quot; codepoints as described by <a href="https://www.unicode.org/reports/tr39/#General_Security_Profile">Unicode® Technical Standard #39 Unicode Security Mechanisms Section 3.1 General Security Profile for Identifiers</a>.</p>
 <p>Note: New Unicode versions update the set of allowed codepoints. Additionally the compiler authors may decide to allow more codepoints or warn about those that have been found to cause confusion.</p>
@@ -218,7 +225,7 @@ A future RFC may allow non-ASCII characters after the file system issues are res
 <li><code>less_used_codepoints</code> will warn on U+200C ZERO WIDTH NON-JOINER and U+200D ZERO WIDTH JOINER, despite these being useful in the  Perso-Arabic and some Indic scripts. In Indic scripts these characters force different visual forms, which is not very necessary for programming. These have further semantic meaning in Arabic where they can be used to mark prefixes or mixed-script words, which will not crop up so often in programming (we're not able to use <code>-</code> in identifiers for marking pre/suffixes in Latin-script identifiers and it's fine). Persian seems to make the most use of these, with some compound words requiring use of these. For now this RFC does not attempt to deal with this and follows the recommendation of the specification, if there is a need for it in the future we can add this for Persian users.</li>
 <li><code>less_used_codepoints</code> will not warn about U+02BB MODIFIER LETTER TURNED COMMA or U+02BC MODIFIER LETTER APOSTROPHE. These look somewhat like punctuation relevant to Rust's syntax, so they're a bit tricky. However, these code points are important in Ukranian, Hawaiian, and a bunch of other languages (U+02BB is considered a full-fledged letter in Hawaiian). For now this RFC follows the recommendation of the specification and allows these, however we can change this in the future. The hope is that syntax highlighting is enough to deal with confusions caused by such characters.</li>
 </ul>
-<a class="header" href="2457-non-ascii-idents.html#adjustments-to-the-bad-style-lints" id="adjustments-to-the-bad-style-lints"><h2>Adjustments to the &quot;bad style&quot; lints</h2></a>
+<a class="header" href="#adjustments-to-the-bad-style-lints" id="adjustments-to-the-bad-style-lints"><h2>Adjustments to the &quot;bad style&quot; lints</h2></a>
 <p>Rust <a href="http://rust-lang.github.io/rfcs/0430-finalizing-naming-conventions.html">RFC 0430</a> establishes naming conventions for Rust ASCII identifiers. The <em>rustc</em> compiler includes lints to promote these recommendations.</p>
 <p>The following names refer to Unicode character categories:</p>
 <ul>
@@ -232,14 +239,14 @@ A future RFC may allow non-ASCII characters after the file system issues are res
 <li>SCREAMING_SNAKE_CASE/<code>non_upper_case_globals</code>: Must not contain <code>Ll</code> codepoints.</li>
 </ul>
 <p>Note: Scripts with upper- and lowercase variants (&quot;bicameral scripts&quot;) behave similar to ASCII. Scripts without this distinction (&quot;unicameral scripts&quot;) are also usable but all identifiers look the same regardless if they refer to a type, variable or constant. Underscores can be used to separate words in unicameral scripts even in UpperCamelCase contexts.</p>
-<a class="header" href="2457-non-ascii-idents.html#mixed-script-confusables-lint" id="mixed-script-confusables-lint"><h2>Mixed script confusables lint</h2></a>
+<a class="header" href="#mixed-script-confusables-lint" id="mixed-script-confusables-lint"><h2>Mixed script confusables lint</h2></a>
 <p>We keep track of the script groups in use in a document using the comparison heuristics in <a href="https://www.unicode.org/reports/tr39/#Restriction_Level_Detection">Unicode® Technical Standard #39 Unicode Security Mechanisms Section 5.2 Restriction-Level Detection</a>.</p>
 <p>We identify lists of code points which are <code>Allowed</code> by <a href="https://www.unicode.org/reports/tr39/#General_Security_Profile">UTS 39 section 3.1</a> (i.e., code points not already linted by <code>less_used_codepoints</code>) and are &quot;exact&quot; confusables between code points from other <code>Allowed</code> scripts. This is stuff like Cyrillic <code>о</code> (confusable with Latin <code>o</code>), but does not include things like Hebrew <code>ס</code> which is somewhat distinguishable from Latin <code>o</code>. This list of exact confusables can be modified in the future.</p>
 <p>We expect most of these to be between Cyrillic-Latin-Greek and some in Ethiopic-Armenian, but a proper review can be done before stabilization. There are also confusable modifiers between many script.</p>
 <p>In a code base, if the <em>only</em> code points from a given script group (aside from <code>Latin</code>, <code>Common</code>, and <code>Inherited</code>) are such exact confusables, lint about it with <code>mixed_script_confusables</code> (lint name can be finalized later).</p>
 <p>As an implementation note, it may be worth dealing with confusable modifiers via a separate lint check -- if a modifier is from a different (non-<code>Common</code>/<code>Inherited</code>) script group from the thing preceding it. This has some behaviorial differences but should not increase the chance of false positives.</p>
 <p>The exception for <code>Latin</code> is made because the standard library is Latin-script. It could potentially be removed since a code base using the standard library (or any Latin-using library) is likely to be using enough of it that there will be non-confusable characters in use. (This is in unresolved questions)</p>
-<a class="header" href="2457-non-ascii-idents.html#reusability" id="reusability"><h2>Reusability</h2></a>
+<a class="header" href="#reusability" id="reusability"><h2>Reusability</h2></a>
 <p>The code used for implementing the various lints and checks will be released to crates.io. This includes:</p>
 <ul>
 <li>Testing validity of an identifier</li>
@@ -248,7 +255,7 @@ A future RFC may allow non-ASCII characters after the file system issues are res
 <li><code>skeleton(X)</code> algorithm for confusable detection (<a href="https://www.unicode.org/reports/tr39/#Confusable_Detection">UTS #39 Section 4</a>)</li>
 </ul>
 <p>Confusables detection works well when there are other identifiers to compare against, but in some cases there's only one instance of an identifier in the code, and it's compared with user-supplied strings. For example we have crates that use proc macros to expose command line options or REST endpoints. Crates that do things like these can use such algorithms to ensure better error handling; for example if we accidentally end up having an <code>/арр</code> endpoint (in Cyrillic) because of a <code>#[annotation] fn арр()</code>, visiting <code>/app</code> (in Latin) may show a comprehensive error (or pass-through, based on requirements)</p>
-<a class="header" href="2457-non-ascii-idents.html#conformance-statement" id="conformance-statement"><h2>Conformance Statement</h2></a>
+<a class="header" href="#conformance-statement" id="conformance-statement"><h2>Conformance Statement</h2></a>
 <ul>
 <li>UAX31-C1: The Rust language conforms to the Unicode® Standard Annex #31 for Unicode Version 10.0.0.</li>
 <li>UAX31-C2: It observes the following requirements:
@@ -266,7 +273,7 @@ A future RFC may allow non-ASCII characters after the file system issues are res
 </ul>
 </li>
 </ul>
-<a class="header" href="2457-non-ascii-idents.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>&quot;ASCII is enough for anyone.&quot; As source code should be written in English and in English only (source: various people) no characters outside the ASCII range are needed to express identifiers. Therefore support for Unicode identifiers introduces unnecessary complexity to the compiler.</li>
 <li>&quot;Foreign characters are hard to type.&quot; Usually computer keyboards provide access to the US-ASCII printable characters and the local language characters. Characters from other scripts are difficult to type, require entering numeric codes or are not available at all. These characters either need to be copy-pasted or entered with an alternative input method.</li>
@@ -274,8 +281,8 @@ A future RFC may allow non-ASCII characters after the file system issues are res
 <li>&quot;My favorite terminal/text editor/web browser&quot; has incomplete Unicode support.&quot; Even in 2018 some characters are not widely supported in all places where source code is usually displayed.</li>
 <li>Homoglyph attacks are possible. Without confusable detection identifiers can be distinct for the compiler but visually the same. Even with confusable detection there are still similar looking characters that may be confused by the casual reader.</li>
 </ul>
-<a class="header" href="2457-non-ascii-idents.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
-<p>As stated in <a href="2457-non-ascii-idents.html#motivation">Motivation</a> allowing Unicode identifiers outside the ASCII range improves Rusts accessibility for developers not working in English. Especially in teaching and when the application domain vocabulary is not in English it can be beneficial to use names from the native language. To facilitate this it is necessary to allow a wide range of Unicode character in identifiers. The proposed implementation based on the Unicode TR31 is already used by other programming languages and is implemented behind the <code>non_ascii_idents</code> in <em>rustc</em> but lacks the NFC normalization proposed.</p>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<p>As stated in <a href="#motivation">Motivation</a> allowing Unicode identifiers outside the ASCII range improves Rusts accessibility for developers not working in English. Especially in teaching and when the application domain vocabulary is not in English it can be beneficial to use names from the native language. To facilitate this it is necessary to allow a wide range of Unicode character in identifiers. The proposed implementation based on the Unicode TR31 is already used by other programming languages and is implemented behind the <code>non_ascii_idents</code> in <em>rustc</em> but lacks the NFC normalization proposed.</p>
 <p>NFC normalization was chosen over NFKC normalization for the following reasons:</p>
 <ul>
 <li><a href="https://github.com/rust-lang/rfcs/pull/2457#issuecomment-394928432">Mathematicians want to use symbols mapped to the same NFKC form</a> like π and ϖ in the same context.</li>
@@ -293,16 +300,16 @@ A future RFC may allow non-ASCII characters after the file system issues are res
 <p>An alternative design would use <a href="http://unicode.org/reports/tr31/#Alternative_Identifier_Syntax">Immutable Identifiers</a> as done in <a href="https://en.cppreference.com/w/cpp/language/identifiers">C++</a>. In this case a list of Unicode codepoints is reserved for syntax (ASCII operators, braces, whitespace) and all other codepoints (including currently unassigned codepoints) are allowed in identifiers. The advantages are that the compiler does not need to know the Unicode character classes XID_Start and XID_Continue for each character and that the set of allowed identifiers never changes. It is disadvantageous that all not explicitly excluded characters at the time of creation can be used in identifiers. This allows developers to create identifiers that can't be recognized as such. It also impedes other uses of Unicode in Rust syntax like custom operators if they were not initially reserved.</p>
 <p>It always a possibility to do nothing and limit identifiers to ASCII.</p>
 <p>It has been suggested that Unicode identifiers should be opt-in instead of opt-out. The proposal chooses opt-out to benefit the international Rust community. New Rust users should not need to search for the configuration option they may not even know exists. Additionally it simplifies tutorials in other languages as they can omit an annotation in every code snippet.</p>
-<a class="header" href="2457-non-ascii-idents.html#confusable-detection-1" id="confusable-detection-1"><h2>Confusable detection</h2></a>
+<a class="header" href="#confusable-detection-1" id="confusable-detection-1"><h2>Confusable detection</h2></a>
 <p>The current design was chosen because the algorithm and list of similar characters are already provided by the Unicode Consortium. A different algorithm and list of characters could be created. I am not aware of any other programming language implementing confusable detection. The confusable detection was primarily included because homoglyph attacks are a huge concern for some members of the community.</p>
 <p>Instead of offering confusable detection the lint <code>forbid(non_ascii_idents)</code> is sufficient to protect a project written in English from homoglyph attacks. Projects using different languages are probably either written by students, by a small group or inside a regional company. These projects are not threatened as much as large open source projects by homoglyph attacks but still benefit from the easier debugging of typos.</p>
-<a class="header" href="2457-non-ascii-idents.html#alternative-mixed-script-lints" id="alternative-mixed-script-lints"><h2>Alternative mixed script lints</h2></a>
+<a class="header" href="#alternative-mixed-script-lints" id="alternative-mixed-script-lints"><h2>Alternative mixed script lints</h2></a>
 <p>These are previously-proposed lints attempting to prevent problems caused by mixing scripts, which were ultimately replaced by the current mixed script confusables lint.</p>
-<a class="header" href="2457-non-ascii-idents.html#mixed-script-detection" id="mixed-script-detection"><h3>Mixed script detection</h3></a>
+<a class="header" href="#mixed-script-detection" id="mixed-script-detection"><h3>Mixed script detection</h3></a>
 <p>A new <code>mixed_script_idents</code> lint would be added to the compiler. The default setting is to <code>warn</code>.</p>
 <p>The lint is triggered by identifiers that do not qualify for the &quot;Moderately Restrictive&quot; identifier profile specified in <a href="https://www.unicode.org/reports/tr39/#Restriction_Level_Detection">Unicode® Technical Standard #39 Unicode Security Mechanisms Section 5.2 Restriction-Level Detection</a>.</p>
 <p>Note: The definition of &quot;Moderately Restrictive&quot; can be changed by future versions of the Unicode standard to reflect changes in the natural languages used or for other reasons.</p>
-<a class="header" href="2457-non-ascii-idents.html#global-mixed-script-detection-with-confusables" id="global-mixed-script-detection-with-confusables"><h3>Global mixed script detection with confusables</h3></a>
+<a class="header" href="#global-mixed-script-detection-with-confusables" id="global-mixed-script-detection-with-confusables"><h3>Global mixed script detection with confusables</h3></a>
 <p>As an additional measure, we would try to detect cases where a codebase primarily using a certain script has identifiers from a different script confusable with that script.</p>
 <p>During <code>mixed_script_idents</code> computation, keep track of how often identifiers from various script groups crop up. If an identifier is from a less-common script group (say, &lt;1% of identifiers), <em>and</em> it is entirely confusable with the majority script in use (e.g. the string <code>&quot;арр&quot;</code> or <code>&quot;роре&quot;</code> in Cyrillic)</p>
 <p>This can trigger <code>confusable_idents</code>, <code>mixed_script_idents</code>, or a new lint.</p>
@@ -310,13 +317,13 @@ A future RFC may allow non-ASCII characters after the file system issues are res
 <p>The main confusable script pairs we have to worry about are Cyrillic/Latin/Greek, Armenian/Ethiopic, and a couple Armenian characters mapping to Greek/Latin. We can implement this lint conservatively at first by dealing with a blacklist of known confusables for these script pairs, and expand it if there is a need.</p>
 <p>There are many confusables <em>within</em> scripts -- Arabic has a bunch of these as does Han (both with other Han characters and with kana), but since these are within the same language group this is outside the scope of this RFC. Such confusables are equivalent to <code>l</code> vs <code>I</code> being confusable in some fonts.</p>
 <p>For reference, a list of all possible Rust identifier characters that do not trip <code>less_used_codepoints</code> but have confusables can be found <a href="https://unicode.org/cldr/utility/list-unicodeset.jsp?a=%5B%5B%3AIdentifier_Status%CE%B2%3DAllowed%3A%5D%26%5B%3AXID_Continue%3DYes%3A%5D%26%5B%3AConfMA%CE%B2%3A%5D%5D&amp;g=&amp;i=ConfMA%CE%B2%2CScript_Extensions">here</a>, with their confusable skeleton and script group mentioned on the right. Note that in many cases the confusables are visually distinguishable, or are diacritic marks.</p>
-<a class="header" href="2457-non-ascii-idents.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>&quot;<a href="https://www.python.org/dev/peps/pep-3131/">Python PEP 3131</a>: Supporting Non-ASCII Identifiers&quot; is the Python equivalent to this proposal. The proposed identifier grammar <strong>XID_Start XID_Continue<sup>*</sup></strong> is identical to the one used in Python 3. While Python uses KC normalization this proposes to use normalization form C.</p>
 <p><a href="http://www.ecma-international.org/ecma-262/6.0/#sec-names-and-keywords">JavaScript</a> supports Unicode identifiers based on the same Default Identifier Syntax but does not apply normalization.</p>
 <p>The <a href="https://en.cppreference.com/w/cpp/language/identifiers">CPP reference</a> describes the allowed Unicode identifiers it is based on the immutable identifier principle.</p>
 <p><a href="https://docs.oracle.com/javase/specs/jls/se10/html/jls-3.html#jls-3.8">Java</a> also supports Unicode identifiers. Character must belong to a number of Unicode character classes similar to XID_start and XID_continue used in Python. Unlike in Python no normalization is performed.</p>
 <p>The <a href="https://golang.org/ref/spec#Identifiers">Go language</a> allows identifiers in the form <strong>Letter (Letter | Number)*</strong> where <strong>Letter</strong> is a Unicode letter and <strong>Number</strong> is a Unicode decimal number. This is more restricted than the proposed design mainly as is does not allow combining characters needed to write some languages such as Hindi.</p>
-<a class="header" href="2457-non-ascii-idents.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Which context is adequate for confusable detection: file, current scope, crate?</li>
 <li>Should <a href="https://www.unicode.org/reports/tr31/#Layout_and_Format_Control_Characters">ZWNJ and ZWJ be allowed in identifiers</a>?</li>
@@ -375,9 +382,6 @@ Can we improve precision of linting here?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

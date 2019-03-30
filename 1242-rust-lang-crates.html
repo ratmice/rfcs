@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1242-rust-lang-crates - </title>
+        <title>1242-rust-lang-crates - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1242">rust-lang/rfcs#1242</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1242-rust-lang-crates.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes a policy around the crates under the rust-lang github
 organization that are not part of the Rust distribution (compiler or standard
 library). At a high level, it proposes that these crates be:</p>
@@ -148,7 +155,7 @@ library). At a high level, it proposes that these crates be:</p>
 <li>Maintained at a similar level to the standard library, including platform support;</li>
 <li>Carefully curated for quality.</li>
 </ul>
-<a class="header" href="1242-rust-lang-crates.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>There are three main motivations behind this RFC.</p>
 <p><strong>Keeping <code>std</code> small</strong>. There is a widespread desire to keep the standard
 library reasonably small, and for good reason: the stability promises made in
@@ -188,8 +195,8 @@ eventual migration path into <code>std</code>.</p>
 was moved out into external crates hosted under the rust-lang github
 organization. The quality and future prospects of these crates varies widely,
 and we would like to begin to organize and clean them up.</p>
-<a class="header" href="1242-rust-lang-crates.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1242-rust-lang-crates.html#the-lifecycle-of-a-rust-lang-crate" id="the-lifecycle-of-a-rust-lang-crate"><h2>The lifecycle of a rust-lang crate</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#the-lifecycle-of-a-rust-lang-crate" id="the-lifecycle-of-a-rust-lang-crate"><h2>The lifecycle of a rust-lang crate</h2></a>
 <p>First, two additional github organizations are proposed:</p>
 <ul>
 <li>rust-lang-nursery</li>
@@ -237,7 +244,7 @@ though such changes should go through the RFC process. While the library subteam
 is responsible for major decisions about the library after 1.0, its original
 author(s) will of course wield a great deal of influence, and their objections
 will be given due weight in the consensus process.</p>
-<a class="header" href="1242-rust-lang-crates.html#relation-to-std" id="relation-to-std"><h3>Relation to <code>std</code></h3></a>
+<a class="header" href="#relation-to-std" id="relation-to-std"><h3>Relation to <code>std</code></h3></a>
 <p>In many cases, the above description of the crate lifecycle is complete. But
 some rust-lang crates are destined for std. Usually this will be clear up front.</p>
 <p>When a std-destined crate has reached sufficient maturity, the libs subteam can
@@ -254,7 +261,7 @@ highly-desired feature on its own).</li>
 compatibility between users of the library externally and in <code>std</code>. In
 particular, traits and types defined in the crate are compatible across either
 way of importing them.</p>
-<a class="header" href="1242-rust-lang-crates.html#deprecation" id="deprecation"><h3>Deprecation</h3></a>
+<a class="header" href="#deprecation" id="deprecation"><h3>Deprecation</h3></a>
 <p>At some point a library may become stale -- either because it failed to make it
 out of the nursery, or else because it was supplanted by a superior library.
 Nursery and rust-lang crates can be deprecated only through an RFC. This is
@@ -262,7 +269,7 @@ expected to be a rare occurrence.</p>
 <p>Deprecated crates move to rust-lang-deprecated and are subsequently minimally
 maintained. Alternatively, if someone volunteers to maintain the crate,
 ownership can be transferred externally.</p>
-<a class="header" href="1242-rust-lang-crates.html#advertising" id="advertising"><h2>Advertising</h2></a>
+<a class="header" href="#advertising" id="advertising"><h2>Advertising</h2></a>
 <p>Part of the reason for having rust-lang crates is to have a clear, short list of
 libraries that are broadly useful, vetted and maintained. But where should this
 list appear?</p>
@@ -279,17 +286,17 @@ we should include the nursery crates as well.)</p>
 scope for this RFC.</p>
 </li>
 </ul>
-<a class="header" href="1242-rust-lang-crates.html#plan-for-existing-crates" id="plan-for-existing-crates"><h2>Plan for existing crates</h2></a>
+<a class="header" href="#plan-for-existing-crates" id="plan-for-existing-crates"><h2>Plan for existing crates</h2></a>
 <p>There are already a number of non-<code>std</code> crates in rust-lang. Below, we give the
 full list along with recommended actions:</p>
-<a class="header" href="1242-rust-lang-crates.html#transfer-ownership" id="transfer-ownership"><h3>Transfer ownership</h3></a>
+<a class="header" href="#transfer-ownership" id="transfer-ownership"><h3>Transfer ownership</h3></a>
 <p>Please volunteer if you're interested in taking one of these on!</p>
 <ul>
 <li>rlibc</li>
 <li>semver</li>
 <li>threadpool</li>
 </ul>
-<a class="header" href="1242-rust-lang-crates.html#move-to-rust-lang-nursery" id="move-to-rust-lang-nursery"><h3>Move to rust-lang-nursery</h3></a>
+<a class="header" href="#move-to-rust-lang-nursery" id="move-to-rust-lang-nursery"><h3>Move to rust-lang-nursery</h3></a>
 <ul>
 <li>bitflags</li>
 <li>getopts</li>
@@ -302,7 +309,7 @@ full list along with recommended actions:</p>
 <li>tempdir (destined for <code>std</code> after reworking)</li>
 <li>uuid</li>
 </ul>
-<a class="header" href="1242-rust-lang-crates.html#move-to-rust-lang-deprecated" id="move-to-rust-lang-deprecated"><h3>Move to rust-lang-deprecated</h3></a>
+<a class="header" href="#move-to-rust-lang-deprecated" id="move-to-rust-lang-deprecated"><h3>Move to rust-lang-deprecated</h3></a>
 <ul>
 <li>fourcc: highly niche</li>
 <li>hexfloat: niche</li>
@@ -311,7 +318,7 @@ full list along with recommended actions:</p>
 <li>time: needs total overhaul destined for std</li>
 <li>url: replaced by https://github.com/servo/rust-url</li>
 </ul>
-<a class="header" href="1242-rust-lang-crates.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The drawbacks of this RFC are largely social:</p>
 <ul>
 <li>
@@ -327,7 +334,7 @@ policy design, and the vastly increased visibility of libraries is likely a
 strong enough incentive to overcome this downside.</p>
 </li>
 </ul>
-<a class="header" href="1242-rust-lang-crates.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The main alternative would be to not maintain other crates under the rust-lang
 umbrella, and to offer some other means of curation (the latter of which is
 needed in any case).</p>
@@ -335,7 +342,7 @@ needed in any case).</p>
 model has been very successful so far, and given our minimalistic plans for the
 standard library, it is very appealing to have <em>some</em> other way to apply the
 full Rust community in taking care of additional crates.</p>
-<a class="header" href="1242-rust-lang-crates.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Part of the maintenance standard for Rust is the CI infrastructure, including
 bors/homu. What level of CI should we provide for these crates, and how do we do it?</p>
 
@@ -382,9 +389,6 @@ bors/homu. What level of CI should we provide for these crates, and how do we do
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

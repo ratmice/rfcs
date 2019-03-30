@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2052-epochs - </title>
+        <title>2052-epochs - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2052">rust-lang/rfcs#2052</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44581">rust-lang/rust#44581</a></li>
 </ul>
-<a class="header" href="2052-epochs.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Rust's ecosystem, tooling, documentation, and compiler are constantly improving. To make it easier to follow development, and to provide a clear, coherent &quot;rallying point&quot; for this work, this RFC proposes that we declare a <em>epoch</em> every two or three years. Epochs are designated by the year in which they occur, and represent a release in which several elements come together:</p>
 <ul>
 <li>A significant, coherent set of new features and APIs have been stabilized since the previous epoch.</li>
@@ -155,8 +162,8 @@
 <li>A new edition of the Rust Cookbook has been prepared, providing an updated set of guidance for which crates to use for various tasks.</li>
 </ul>
 <p>Sometimes a feature we want to make available in a new epoch would require backwards-incompatible changes, like introducing a new keyword. In that case, the feature is only available by explicitly opting in to the new epoch. Existing code continues to compile, and crates can freely mix dependencies using different epochs.</p>
-<a class="header" href="2052-epochs.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="2052-epochs.html#the-status-quo" id="the-status-quo"><h2>The status quo</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#the-status-quo" id="the-status-quo"><h2>The status quo</h2></a>
 <p>Today, Rust evolution happens steadily through a combination of several mechanisms:</p>
 <ul>
 <li>
@@ -180,7 +187,7 @@ breaking existing code.</p>
 <p>All told, the tools work together quite nicely to allow Rust to change and grow
 over time, while keeping old code working (with only occasional, very minor
 adjustments to account for things like changes to type inference.)</p>
-<a class="header" href="2052-epochs.html#whats-missing" id="whats-missing"><h2>What's missing</h2></a>
+<a class="header" href="#whats-missing" id="whats-missing"><h2>What's missing</h2></a>
 <p>So, what's the problem?</p>
 <p>There are a few desires that the current process doesn't have a good story for:</p>
 <ul>
@@ -222,8 +229,8 @@ incredible boon for Rust, and we don't want to give up those existing mechanisms
 or their benefits.</p>
 <p>This RFC proposes <em>epochs</em> as a mechanism we can layer on top of our existing
 release process, keeping its guarantees while addressing its gaps.</p>
-<a class="header" href="2052-epochs.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="2052-epochs.html#the-basic-idea" id="the-basic-idea"><h2>The basic idea</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#the-basic-idea" id="the-basic-idea"><h2>The basic idea</h2></a>
 <p>To make it easier to follow Rust's evolution, and to provide a clear, coherent
 &quot;rallying point&quot; for the community, the project declares a <em>epoch</em> every
 two or three years. Epochs are designated by the year in which they occur,
@@ -270,7 +277,7 @@ compiler release) will compile without errors on the next epoch (modulo the
 compiler releases indefinitely, but your code may not have access to new
 features that require new keywords and the like. New features that <em>are</em>
 backwards compatible, however, will be available on older epochs.</p>
-<a class="header" href="2052-epochs.html#epoch-timing-stabilizations-and-the-roadmap-process" id="epoch-timing-stabilizations-and-the-roadmap-process"><h2>Epoch timing, stabilizations, and the roadmap process</h2></a>
+<a class="header" href="#epoch-timing-stabilizations-and-the-roadmap-process" id="epoch-timing-stabilizations-and-the-roadmap-process"><h2>Epoch timing, stabilizations, and the roadmap process</h2></a>
 <p>As mentioned above, we want to retain our rapid release model, in which new
 features and other improvements are shipped on the stable release channel as
 soon as they are ready. So, to be clear, <strong>we do not hold features back until
@@ -302,7 +309,7 @@ project.</p>
 <p>In short, epochs are striking a delicate balance: they're not a cutoff for
 stabilization, which continues every six weeks, but they still provide a strong
 impetus for coming together as a community and putting together a polished product.</p>
-<a class="header" href="2052-epochs.html#the-preview-period" id="the-preview-period"><h3>The preview period</h3></a>
+<a class="header" href="#the-preview-period" id="the-preview-period"><h3>The preview period</h3></a>
 <p>There's an important tension around stabilization and epochs:</p>
 <ul>
 <li>
@@ -328,7 +335,7 @@ other artifacts that go into the full epoch release). This is the <em>preview
 period</em> for the epoch, which ends when a release is produced that
 synchronizes all of the elements that go into an epoch and the epoch is
 formally announced.</p>
-<a class="header" href="2052-epochs.html#a-broad-policy-on-epoch-changes" id="a-broad-policy-on-epoch-changes"><h2>A broad policy on epoch changes</h2></a>
+<a class="header" href="#a-broad-policy-on-epoch-changes" id="a-broad-policy-on-epoch-changes"><h2>A broad policy on epoch changes</h2></a>
 <p>There are numerous reasons to limit the scope of changes for new epochs, among them:</p>
 <ul>
 <li>
@@ -342,7 +349,7 @@ formally announced.</p>
 </li>
 </ul>
 <p>These lead to some hard and soft constraints.</p>
-<a class="header" href="2052-epochs.html#hard-constraints" id="hard-constraints"><h3>Hard constraints</h3></a>
+<a class="header" href="#hard-constraints" id="hard-constraints"><h3>Hard constraints</h3></a>
 <p><strong>TL;DR: Warning-free code on epoch N must compile on epoch N+1 and have the
 same behavior.</strong></p>
 <p>There are only two things a new epoch can do that a normal release cannot:</p>
@@ -356,17 +363,17 @@ same behavior.</strong></p>
 </ul>
 <p>The second option is to be preferred whenever possible. Note that warning-free code in one epoch might produce warnings in the next epoch, but it should still compile successfully.</p>
 <p>The Rust compiler supports multiple epochs, but <strong>must only support a single version of &quot;core Rust&quot;</strong>. We identify &quot;core Rust&quot; as being, roughly, MIR and the core trait system; this specification will be made more precise over time.  The implication is that the &quot;epoch modes&quot; boil down to keeping around multiple desugarings into this core Rust, which greatly limits the complexity and technical debt involved. Similar, core Rust encompasses the core <em>conceptual</em> model of the language, and this constraint guarantees that, even when working with multiple epochs, those core concepts remain fixed.</p>
-<a class="header" href="2052-epochs.html#soft-constraints" id="soft-constraints"><h3>Soft constraints</h3></a>
+<a class="header" href="#soft-constraints" id="soft-constraints"><h3>Soft constraints</h3></a>
 <p><strong>TL;DR: <em>Most</em> code <em>with</em> warnings on epoch N should, after running <code>rustfix</code>, compile on epoch N+1 and have the same behavior.</strong></p>
 <p>The core epoch design avoids an ecosystem split, which is very important. But it's <em>also</em> important that upgrading your own code to a new epoch is minimally disruptive. The basic principle is that <strong>changes that cannot be automated must be required only in a small minority of crates, and even there not require extensive work</strong>. This principle applies not just to epochs, but also to cases where we'd like to make a widespread deprecation.</p>
 <p>Note that a <code>rustfix</code> tool will never be perfect, because of conditional compilation and code generation. So it's important that, in the cases it inevitably fails, the manual fixes are not too onerous.</p>
 <p>In addition, migrations that affect a large percentage of code must be &quot;small tweaks&quot; (e.g. clarifying syntax), and as above, must keep the old form intact (though they can enact a deny-by-default lint on it).</p>
 <p>These are &quot;soft constraints&quot; because they use terms like &quot;small minority&quot; and &quot;small tweaks&quot;, which are open for interpretation. More broadly, the more disruption involved, the higher the bar for the change.</p>
-<a class="header" href="2052-epochs.html#positive-examples-what-epoch-opt-ins-can-do" id="positive-examples-what-epoch-opt-ins-can-do"><h3>Positive examples: What epoch opt-ins can do</h3></a>
+<a class="header" href="#positive-examples-what-epoch-opt-ins-can-do" id="positive-examples-what-epoch-opt-ins-can-do"><h3>Positive examples: What epoch opt-ins can do</h3></a>
 <p>Given those principles, let's look in more detail at a few examples of the kinds of
 changes epoch opt-ins enable. <strong>These are just examples---this RFC doesn't
 entail any commitment to these language changes</strong>.</p>
-<a class="header" href="2052-epochs.html#example-new-keywords" id="example-new-keywords"><h4>Example: new keywords</h4></a>
+<a class="header" href="#example-new-keywords" id="example-new-keywords"><h4>Example: new keywords</h4></a>
 <p>We've taken as a running example introducing new keywords, which sometimes
 cannot be done backwards compatibly (because a contextual keyword isn't
 possible). Let's see how this works out for the case of <code>catch</code>, assuming that
@@ -421,7 +428,7 @@ code will fail to compile due to <code>catch</code> being a keyword.</p>
 use libraries that opt in to the <code>2019</code> epoch</strong> with no problem.</p>
 </li>
 </ul>
-<a class="header" href="2052-epochs.html#example-repurposing-corner-cases" id="example-repurposing-corner-cases"><h4>Example: repurposing corner cases</h4></a>
+<a class="header" href="#example-repurposing-corner-cases" id="example-repurposing-corner-cases"><h4>Example: repurposing corner cases</h4></a>
 <p>A similar story plays out for more complex modifications that repurpose existing
 usages. For example, some suggested module system improvements deduce the module
 hierarchy from the filesystem. But there is a corner case today of providing
@@ -431,7 +438,7 @@ well with the new feature.</p>
 then make it an error during the preview period. The module system change could then
 be made available (and ultimately stabilized) within the preview period, before
 fully shipping on the next epoch.</p>
-<a class="header" href="2052-epochs.html#example-repurposing-syntax" id="example-repurposing-syntax"><h4>Example: repurposing syntax</h4></a>
+<a class="header" href="#example-repurposing-syntax" id="example-repurposing-syntax"><h4>Example: repurposing syntax</h4></a>
 <p>A more radical example: changing the syntax for trait objects and <code>impl Trait</code>. In particular, we have
 sometimes <a href="https://github.com/rust-lang/rfcs/pull/1603">discussed</a>:</p>
 <ul>
@@ -450,7 +457,7 @@ favor of it.</li>
 <p>Of course, this RFC isn't suggesting that such a course of action is a <em>good</em>
 one, just that it is <em>possible</em> to do without breakage. The policy around such
 changes is left as an open question.</p>
-<a class="header" href="2052-epochs.html#example-type-inference-changes" id="example-type-inference-changes"><h4>Example: type inference changes</h4></a>
+<a class="header" href="#example-type-inference-changes" id="example-type-inference-changes"><h4>Example: type inference changes</h4></a>
 <p>There are a number of details about type inference that seem suboptimal:</p>
 <ul>
 <li>Currently multi-parameter traits like <code>AsRef&lt;T&gt;</code> will infer the value of one
@@ -464,11 +471,11 @@ may cause other programs to stop compiling.</li>
 enough effort, we could probably deprecate cases where type inference rules
 might change and request explicit type annotations, and then—in the new
 epoch—tweak those rules.</p>
-<a class="header" href="2052-epochs.html#negative-examples-what-epoch-opt-ins-cant-do" id="negative-examples-what-epoch-opt-ins-cant-do"><h3>Negative examples: What epoch opt-ins can't do</h3></a>
+<a class="header" href="#negative-examples-what-epoch-opt-ins-cant-do" id="negative-examples-what-epoch-opt-ins-cant-do"><h3>Negative examples: What epoch opt-ins can't do</h3></a>
 <p>There are also changes that epochs don't help with, due to the constraints
 we impose. These limitations are extremely important for keeping the compiler
 maintainable, the language understandable, and the ecosystem compatible.</p>
-<a class="header" href="2052-epochs.html#example-changes-to-coherence-rules" id="example-changes-to-coherence-rules"><h4>Example: changes to coherence rules</h4></a>
+<a class="header" href="#example-changes-to-coherence-rules" id="example-changes-to-coherence-rules"><h4>Example: changes to coherence rules</h4></a>
 <p>Trait coherence rules, like the &quot;orphan&quot; rule, provide a kind of protocol about
 which crates can provide which <code>impl</code>s. It's not possible to change protocol
 incompatibly, because existing code will assume the current protocol and provide
@@ -477,7 +484,7 @@ impls accordingly, and there's no way to work around that fact via deprecation.<
 language that are applicable <em>crate-locally</em>; they cannot impose new
 requirements or semantics on external crates, since we want to retain
 compatibility with the existing ecosystem.</p>
-<a class="header" href="2052-epochs.html#example-error-trait-downcasting" id="example-error-trait-downcasting"><h4>Example: <code>Error</code> trait downcasting</h4></a>
+<a class="header" href="#example-error-trait-downcasting" id="example-error-trait-downcasting"><h4>Example: <code>Error</code> trait downcasting</h4></a>
 <p>See <a href="https://github.com/mozilla/rust/issues/35943">rust-lang/rust#35943</a>. Due to
 a silly oversight, you can’t currently downcast the “cause” of an error to
 introspect what it is. We can’t make the trait have stricter requirements; it
@@ -486,7 +493,7 @@ because we must be compatible with the older one, meaning that we cannot rely on
 downcasting.</p>
 <p>This is essentially another example of a non-crate-local change.</p>
 <p>More generally, breaking changes to the standard library are not possible.</p>
-<a class="header" href="2052-epochs.html#the-full-mechanics" id="the-full-mechanics"><h2>The full mechanics</h2></a>
+<a class="header" href="#the-full-mechanics" id="the-full-mechanics"><h2>The full mechanics</h2></a>
 <p>We'll wrap up with the full details of the mechanisms at play.</p>
 <ul>
 <li><code>rustc</code> will take a new flag, <code>--epoch</code>, which can specify the epoch to
@@ -503,7 +510,7 @@ use. This flag will default to epoch 2015.
 <li><code>cargo new</code> will produce a <code>Cargo.toml</code> with the latest <code>epoch</code> value
 (including an epoch currently in its preview period).</li>
 </ul>
-<a class="header" href="2052-epochs.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>First and foremost, if we accept this RFC, we should publicize the plan widely,
 including on the main Rust blog, in a style simlar to <a href="https://blog.rust-lang.org/2014/10/30/Stability.html">previous posts</a> about our
 release policy. This will require extremely careful messaging, to make clear
@@ -519,7 +526,7 @@ minimum hassle) when upgrading the compiler.</li>
 require minimum hassle.</li>
 <li>Best practices about upgrading epochs (TBD).</li>
 </ul>
-<a class="header" href="2052-epochs.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There are several drawbacks to this proposal:</p>
 <ul>
 <li>
@@ -561,8 +568,8 @@ for an earlier epochs and explain the situation.</p>
 <p>These downsides are most problematic in cases that involve &quot;breakage&quot; if they
 were done without opt in. They indicate that, even if we do adopt epochs, we
 should use them judiciously.</p>
-<a class="header" href="2052-epochs.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="2052-epochs.html#within-the-basic-epoch-structure" id="within-the-basic-epoch-structure"><h2>Within the basic epoch structure</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#within-the-basic-epoch-structure" id="within-the-basic-epoch-structure"><h2>Within the basic epoch structure</h2></a>
 <p>There was a significant amount of discussion on the RFC thread about using &quot;2.0&quot;
 rather than &quot;2019&quot;. It's difficult to concisely summarize this discussion, but
 in a nutshell, some feel that 2.0 (with a guarantee of backwards compatibility)
@@ -628,7 +635,7 @@ shipped.</li>
 </ul>
 </li>
 </ul>
-<a class="header" href="2052-epochs.html#alternatives-to-epochs" id="alternatives-to-epochs"><h2>Alternatives to epochs</h2></a>
+<a class="header" href="#alternatives-to-epochs" id="alternatives-to-epochs"><h2>Alternatives to epochs</h2></a>
 <p>The larger alternatives include, of course, not trying to solve the problems
 laid out in the motivation, and instead finding creative alternatives.</p>
 <ul>
@@ -653,7 +660,7 @@ of Rust. Even if we provide a perfect <code>rustfix</code>, the message is signi
 over what those changes should be.</p>
 </li>
 </ul>
-<a class="header" href="2052-epochs.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>What impact is there, if any, on breakage permitted today for bug fixing or
@@ -719,9 +726,6 @@ from multiple epochs?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

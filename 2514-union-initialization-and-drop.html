@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2514-union-initialization-and-drop - </title>
+        <title>2514-union-initialization-and-drop - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,14 +146,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2514">rust-lang/rfcs#2514</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/55149">rust-lang/rust#55149</a></li>
 </ul>
-<a class="header" href="2514-union-initialization-and-drop.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Unions do not allow fields of types that require drop glue (the code that is
 automatically run when a variables goes out of scope: recursively dropping the
 variable and all its fields), but they may still <code>impl Drop</code> themselves.  We
 specify when one may move out of a union field and when the union's <code>drop</code> is
 called.  To avoid undesired implicit calls of drop, we also restrict the use of
 <code>DerefMut</code> when unions are involved.</p>
-<a class="header" href="2514-union-initialization-and-drop.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, it is unstable to have a non-<code>Copy</code> field in the union.  The main
 reason for this is that having fields which need drop glue raises some hard
 questions about whether to call that drop glue when assigning a union field, and
@@ -154,8 +161,8 @@ how to make programming with such unions less of a time bomb (triggered by
 accidentally dropping data one meant to just overwrite).  Not much progress has
 been made on stabilizing the unstable union features.  This RFC proposes a route
 forwards that side-steps the time bomb: Do not allow fields with drop glue.</p>
-<a class="header" href="2514-union-initialization-and-drop.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
-<a class="header" href="2514-union-initialization-and-drop.html#union-definition" id="union-definition"><h2>Union Definition</h2></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#union-definition" id="union-definition"><h2>Union Definition</h2></a>
 <p>When defining a union, it is a hard error to use a field type that requires drop glue.
 Examples:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -201,7 +208,7 @@ unsafe code when you might not expect that to happen.  (However, see below for
 some pitfalls that remain.)</p>
 <p>Reading from a union field and creating a reference remain unsafe: We cannot
 guarantee that the field contains valid data.</p>
-<a class="header" href="2514-union-initialization-and-drop.html#union-initialization-and-drop" id="union-initialization-and-drop"><h2>Union initialization and <code>Drop</code></h2></a>
+<a class="header" href="#union-initialization-and-drop" id="union-initialization-and-drop"><h2>Union initialization and <code>Drop</code></h2></a>
 <p>In two cases, the compiler cares about whether a (field of a) variable is
 initialized: When deciding whether a move from the field/variable is allowed
 (for cases where the type is not <code>Copy</code>), and when deciding whether or not the
@@ -301,7 +308,7 @@ let _x = u.f3; // copying out is allowed
     // drop does NOT get called
 }
 #}</code></pre></pre>
-<a class="header" href="2514-union-initialization-and-drop.html#potential-pitfalls-around-derefmut" id="potential-pitfalls-around-derefmut"><h2>Potential pitfalls around <code>DerefMut</code></h2></a>
+<a class="header" href="#potential-pitfalls-around-derefmut" id="potential-pitfalls-around-derefmut"><h2>Potential pitfalls around <code>DerefMut</code></h2></a>
 <p>There is still a potential pitfall left around assigning to union fields: If the
 assignment implicitly happens through a <code>DerefMut</code>, it may call drop glue.  For
 example:</p>
@@ -324,8 +331,8 @@ its fields.  However, note that manually dereferencing is still possible, so
 can never happen when no <code>*</code> is involved, and hopefully dereferencing an element
 of a union is a clear enough signal that the union better be initialized
 properly for this to make sense.</p>
-<a class="header" href="2514-union-initialization-and-drop.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2514-union-initialization-and-drop.html#union-definition-1" id="union-definition-1"><h2>Union definition</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#union-definition-1" id="union-definition-1"><h2>Union definition</h2></a>
 <p>When defining a union, it is a hard error to use a field type that requires drop glue.
 This is checked as follows:</p>
 <ul>
@@ -337,7 +344,7 @@ to not have drop glue no matter the choice of <code>T</code>.</li>
 <p>Note: Currently, union fields with drop glue are allowed on nightly with an
 unstable feature.  This RFC proposes to remove support for that entirely; code using
 nightly might have to be changed.</p>
-<a class="header" href="2514-union-initialization-and-drop.html#writing-to-union-fields" id="writing-to-union-fields"><h2>Writing to union fields</h2></a>
+<a class="header" href="#writing-to-union-fields" id="writing-to-union-fields"><h2>Writing to union fields</h2></a>
 <p>Writing to union fields is currently unsafe when the field has drop glue.  This
 check is no longer needed, because union fields will never have drop glue.
 Moreover, writing to a nested field (e.g., <code>u.f1.x = 0;</code>) is currently unsafe as
@@ -346,7 +353,7 @@ i.e., after auto-derefs are inserted) consists <em>only of field projections, no
 deref's</em>.  Note that this is sound only because <code>ManuallyDrop</code>'s only field is
 private (so, in fact, this is <em>not</em> sound inside the module that defines
 <code>ManuallyDrop</code>).</p>
-<a class="header" href="2514-union-initialization-and-drop.html#union-initialization-tracking" id="union-initialization-tracking"><h2>Union initialization tracking</h2></a>
+<a class="header" href="#union-initialization-tracking" id="union-initialization-tracking"><h2>Union initialization tracking</h2></a>
 <p>A &quot;fragment&quot; is a place of the form <code>local_var.field.field.field</code>, without any
 implicit derefs.  A fragment can be either <em>initialized</em> or <em>uninitialized</em>.
 This state is approximated statically: The type system will only allow accesses
@@ -381,7 +388,7 @@ feature gate, so the effects of this on unions cannot currently be observed on
 stable compilers.</p>
 <p>(This closely follows a
 <a href="https://github.com/petrochenkov/rfcs/blob/e5266bd105f592f7408b8592c5c3deaccba7f1ec/text/1444-union.md#initialization-state">previously proposed RFC by @petrochenkov</a>.)</p>
-<a class="header" href="2514-union-initialization-and-drop.html#potential-pitfalls-around-derefmut-1" id="potential-pitfalls-around-derefmut-1"><h2>Potential pitfalls around <code>DerefMut</code></h2></a>
+<a class="header" href="#potential-pitfalls-around-derefmut-1" id="potential-pitfalls-around-derefmut-1"><h2>Potential pitfalls around <code>DerefMut</code></h2></a>
 <p>When adding auto-derefs on the left-hand side of an assignment, as we traverse
 the path, once we hit a <code>union</code>, we stop adding further auto-derefs.  So with
 <code>s: Struct</code> and <code>u: Union</code>, when encountering <code>s.u.f.x</code>, auto-deref <em>does</em>
@@ -389,7 +396,7 @@ happen on <code>s</code>, but not on <code>s.u</code> or any of the later compon
 <p>Notice that this relies crucially on the only field of <code>ManuallyDrop</code> being
 private!  If we could project directly through that field, no <code>DerefMut</code> would
 be needed to reproduce the problematic example from the &quot;guide&quot; section.</p>
-<a class="header" href="2514-union-initialization-and-drop.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This makes working with unions involving types that may have drop glue slightly
 more verbose than today: One has to write <code>ManuallyDrop</code> more often than one may
 want to.</p>
@@ -402,7 +409,7 @@ compiler fundamentally cannot know what part of the union is properly
 initialized.  Unfortunately, not having any initialization tracking is not an
 option when non-<code>Copy</code> fields are involved: We have to decide if moving out of a
 union field is allowed.</p>
-<a class="header" href="2514-union-initialization-and-drop.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>Ruling out fields with drop glue does not, in fact, reduce the expressiveness of
 unions because one can use <code>ManuallyDrop&lt;T&gt;</code> to obtain a drop-glue-free version
 of <code>T</code>.  If anything, having the <code>ManuallyDrop</code> in the union definition should
@@ -437,12 +444,12 @@ which has drop glue, so this does not restrict expressiveness.  However, this
 seems unnecessarily cumbersome, and it does not seem to help avoid any
 surprises.  State tracking around unions that <code>impl Drop</code> is pretty much as
 simple as it gets.</p>
-<a class="header" href="2514-union-initialization-and-drop.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>I do not know of any language combining initialization tracking and destructors
 with unions: C++ <a href="https://en.cppreference.com/w/cpp/language/union">never runs destructors for fields of unions</a>,
 and it does not track whether fields of a data structures are initialized to
 (dis)allow references or moves.</p>
-<a class="header" href="2514-union-initialization-and-drop.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Should we even try to avoid the <code>DerefMut</code>-related pitfall?  And if yes, should
 we maybe try harder, e.g. lint against using <code>*</code> below a union type when
 describing a place?  That would make people write <code>let v = &amp;mut u.f; *v = Vec::new();</code>.  It is not clear that this helps in terms of pointing out that an
@@ -497,9 +504,6 @@ desired <code>Drop</code>.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

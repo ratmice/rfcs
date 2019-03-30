@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2250-finalize-impl-dyn-syntax - </title>
+        <title>2250-finalize-impl-dyn-syntax - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,15 +146,15 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2250">rust-lang/rfcs#2250</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/34511">rust-lang/rust#34511</a></li>
 </ul>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Finalize syntax of <code>impl Trait</code> and <code>dyn Trait</code> with multiple bounds before
 stabilization of these features.</p>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Current priority of <code>+</code> in <code>impl Trait1 + Trait2</code> / <code>dyn Trait1 + Trait2</code> brings
 inconsistency in the type grammar.
 This RFC outlines possible syntactic
 alternatives and suggests one of them for stabilization.</p>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>&quot;Alternative 2&quot; (see reference-level explanation) is selected for stabilization.</p>
 <p><code>impl Trait1 + Trait2</code> / <code>dyn Trait1 + Trait2</code> now require parentheses in all
 contexts where they are used inside of unary operators <code>&amp;(impl Trait1 + Trait2)</code>
@@ -159,8 +166,8 @@ For example, <code>Fn() -&gt; impl A + B</code> can be interpreted as both
 <code>(Fn() -&gt; impl A) + B</code> (low priority plus) or <code>Fn() -&gt; (impl A + B)</code> (high
 priority plus), so we are refusing to disambiguate and require explicit
 parentheses.</p>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#current-situation" id="current-situation"><h2>Current situation</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#current-situation" id="current-situation"><h2>Current situation</h2></a>
 <p>In the current implementation when we see <code>impl</code> or <code>dyn</code> we start parsing
 following bounds separated by <code>+</code>s greedily regardless of context, so <code>+</code>
 effectively gets the strongest priority.</p>
@@ -186,7 +193,7 @@ not <code>for&lt;'a&gt; (A&lt;'a&gt; + B)</code></li>
 <p>In general, binary operations like <code>+</code> have lower priority than unary operations
 in all contexts - expressions, patterns, types. So the priorities as implemented
 bring inconsistency and may break intuition.</p>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#alternative-1-high-priority--status-quo" id="alternative-1-high-priority--status-quo"><h2>Alternative 1: high priority <code>+</code> (status quo)</h2></a>
+<a class="header" href="#alternative-1-high-priority--status-quo" id="alternative-1-high-priority--status-quo"><h2>Alternative 1: high priority <code>+</code> (status quo)</h2></a>
 <p>Pros:</p>
 <ul>
 <li>The greedy parsing with high priority of <code>+</code> after <code>impl</code> / <code>dyn</code>
@@ -205,7 +212,7 @@ it needs to be done like this <code>(impl A + B)</code>, and not <code>impl (A +
 variant is a parsing error, but some people find it surprising and expect it to
 work, as if <code>impl</code> were an unary operator.</li>
 </ul>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#alternative-2-low-priority-" id="alternative-2-low-priority-"><h2>Alternative 2: low priority <code>+</code></h2></a>
+<a class="header" href="#alternative-2-low-priority-" id="alternative-2-low-priority-"><h2>Alternative 2: low priority <code>+</code></h2></a>
 <p>Basically, <code>impl A + B</code> is parsed using same rules as <code>A + B</code>.</p>
 <p>If <code>impl A + B</code> is located inside a higher priority operator like <code>&amp;</code> it has
 to be parenthesized.
@@ -250,7 +257,7 @@ function definitions as well).</li>
 <li><code>impl</code> / <code>dyn</code> is still a somewhat weird prefix construction and <code>dyn (A + B)</code>
 is not a valid syntax.</li>
 </ul>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#alternative-3-unary-operator" id="alternative-3-unary-operator"><h2>Alternative 3: Unary operator</h2></a>
+<a class="header" href="#alternative-3-unary-operator" id="alternative-3-unary-operator"><h2>Alternative 3: Unary operator</h2></a>
 <p><code>impl</code> and <code>dyn</code> can become usual unary operators in type grammar like <code>&amp;</code> or
 <code>*const</code>.
 Their application to any other types except for (possibly parenthesized) paths
@@ -278,12 +285,12 @@ Parentheses are noise, there may be even less desire to use <code>dyn</code> in 
 objects now, if something like <code>Box&lt;Write + Send&gt;</code> turns into
 <code>Box&lt;dyn(Write + Send)&gt;</code>.</li>
 </ul>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#other-alternatives" id="other-alternatives"><h2>Other alternatives</h2></a>
+<a class="header" href="#other-alternatives" id="other-alternatives"><h2>Other alternatives</h2></a>
 <p>Two separate grammars can be used depending on context
 (https://github.com/rust-lang/rfcs/pull/2250#issuecomment-352435687) -
 Alternative 1/2 in lists of arguments like <code>Box&lt;dyn A + B&gt;</code> or
 <code>Fn(impl A + B, impl A + B)</code>, and Alternative 3 otherwise (<code>&amp;dyn (A + B)</code>).</p>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#compatibility" id="compatibility"><h2>Compatibility</h2></a>
+<a class="header" href="#compatibility" id="compatibility"><h2>Compatibility</h2></a>
 <p>The alternatives are ordered by strictness from the most relaxed Alternative 1
 to the strictest Alternative 3, but switching from more strict alternatives to
 less strict is not exactly backward-compatible.</p>
@@ -305,7 +312,7 @@ As an immediate solution we refuse to disambiguate this case and treat
 interpret <code>Fn() -&gt; impl A + B</code> (and maybe even <code>Fn() -&gt; A + B</code> after long
 deprecation period) as <code>Fn() -&gt; (impl A + B)</code> (and <code>Fn() -&gt; (A + B)</code>,
 respectively).</p>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#experimental-check" id="experimental-check"><h2>Experimental check</h2></a>
+<a class="header" href="#experimental-check" id="experimental-check"><h2>Experimental check</h2></a>
 <p>An application of all the alternatives to rustc and libstd codebase can be found
 in <a href="https://github.com/petrochenkov/rust/commits/impldyntest">this branch</a>.
 The first commit is the baseline (Alternative 1) and the next commits show
@@ -317,11 +324,11 @@ unnecessary, but required by Alternative 3.
 The number of parenthesis required by Alternative 2 is limited and they seem
 appropriate because they follow &quot;normal&quot; priorities for unary and binary
 operators.</p>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>See above.</p>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>See above.</p>
-<a class="header" href="2250-finalize-impl-dyn-syntax.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -367,9 +374,6 @@ operators.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

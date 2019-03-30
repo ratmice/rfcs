@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2113-dyn-trait-syntax - </title>
+        <title>2113-dyn-trait-syntax - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +146,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2113">rust-lang/rfcs#2113</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44662">rust-lang/rust#44662</a></li>
 </ul>
-<a class="header" href="2113-dyn-trait-syntax.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce a new <code>dyn Trait</code> syntax for trait objects using a contextual <code>dyn</code> keyword, and deprecate &quot;bare trait&quot; syntax for trait objects. In a future epoch, <code>dyn</code> will become a proper keyword and a lint against bare trait syntax will become deny-by-default.</p>
-<a class="header" href="2113-dyn-trait-syntax.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="2113-dyn-trait-syntax.html#in-a-nutshell" id="in-a-nutshell"><h3>In a nutshell</h3></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#in-a-nutshell" id="in-a-nutshell"><h3>In a nutshell</h3></a>
 <p>The current syntax is often ambiguous and confusing, even to veterans, and favors a feature that is not more frequently used than its alternatives, is sometimes slower, and often cannot be used at all when its alternatives can. By itself, that's not enough to make a breaking change to syntax that's already been stabilized. Now that we have epochs, it won't have to be a breaking change, but it will still cause significant churn. However, impl Trait is going to require a significant shift in idioms and teaching materials all on its own, and &quot;dyn Trait vs impl Trait&quot; is much nicer for teaching and ergonomics than &quot;bare trait vs impl Trait&quot;, so this author believes it is worthwhile to change trait object syntax too.</p>
 <p>Motivation is the key issue for this RFC, so let's expand on some of those claims:</p>
-<a class="header" href="2113-dyn-trait-syntax.html#the-current-syntax-is-often-ambiguous-and-confusing" id="the-current-syntax-is-often-ambiguous-and-confusing"><h3>The current syntax is often ambiguous and confusing</h3></a>
+<a class="header" href="#the-current-syntax-is-often-ambiguous-and-confusing" id="the-current-syntax-is-often-ambiguous-and-confusing"><h3>The current syntax is often ambiguous and confusing</h3></a>
 <p>Because it makes traits and trait objects appear indistinguishable. Some specific examples of this:</p>
 <ul>
 <li>This author has seen multiple people write <code>impl SomeTrait for AnotherTrait</code> when they wanted <code>impl&lt;T&gt; SomeTrait for T where T: AnotherTrait</code>.</li>
@@ -153,29 +160,29 @@
 <li>Function types and function traits only differ in the capitalization of one letter. This leads to function pointers <code>&amp;fn ...</code> and function trait objects <code>&amp;Fn ...</code> differing only in one letter, making it very easy to mistake one for the other.</li>
 </ul>
 <p>Making one of these mistakes typically leads to an error about the trait not implementing Sized, which is at best misleading and unhelpful. It may be possible to produce better error messages today, but the compiler can only do so much when most of this &quot;obviously wrong&quot; syntax is technically legal.</p>
-<a class="header" href="2113-dyn-trait-syntax.html#favors-a-feature-that-is-not-more-frequently-used-than-its-alternatives" id="favors-a-feature-that-is-not-more-frequently-used-than-its-alternatives"><h3>favors a feature that is not more frequently used than its alternatives</h3></a>
+<a class="header" href="#favors-a-feature-that-is-not-more-frequently-used-than-its-alternatives" id="favors-a-feature-that-is-not-more-frequently-used-than-its-alternatives"><h3>favors a feature that is not more frequently used than its alternatives</h3></a>
 <p>When you want to store multiple types within a single value or a single container of values, an enum is often a better choice than a trait object.</p>
 <p>When you want to return a type implementing a trait without writing out the type's name--either because it can't be written, or it's too unergonomic to write--you should typically use impl Trait (once it stabilizes).</p>
 <p>When you want a function to accept any type of value that implements a certain trait, you should typically use generics.</p>
 <p>There are many cases where trait objects are the best solution, but they're not more common than all of the above. Usually trait objects become the best solution when you want to do two or more of the things listed above, e.g. you have an API that accepts values of types defined by external code, and it has to deal with more than one of those types at a time.</p>
-<a class="header" href="2113-dyn-trait-syntax.html#favors-a-feature-that--is-sometimes-slower" id="favors-a-feature-that--is-sometimes-slower"><h3>favors a feature that ... is sometimes slower</h3></a>
+<a class="header" href="#favors-a-feature-that--is-sometimes-slower" id="favors-a-feature-that--is-sometimes-slower"><h3>favors a feature that ... is sometimes slower</h3></a>
 <p>Trait objects typically require allocating memory and doing virtual dispatch at runtime. They also prevent the compiler from knowing the concrete type of a value, which may inhibit other optimizations. Sometimes these costs are unnoticeable in practice, or even optimized away entirely, but sometimes they have a significant impact on performance.</p>
 <p>enums and impl Trait simply don't have these costs. It's strange that the more concise syntax gives you a feature that is often slower and rarely faster than its alternatives.</p>
-<a class="header" href="2113-dyn-trait-syntax.html#favors-a-feature-that--often-cannot-be-used-at-all-when-its-alternatives-can" id="favors-a-feature-that--often-cannot-be-used-at-all-when-its-alternatives-can"><h3>favors a feature that ... often cannot be used at all when its alternatives can</h3></a>
+<a class="header" href="#favors-a-feature-that--often-cannot-be-used-at-all-when-its-alternatives-can" id="favors-a-feature-that--often-cannot-be-used-at-all-when-its-alternatives-can"><h3>favors a feature that ... often cannot be used at all when its alternatives can</h3></a>
 <p>Many traits simply can't have trait objects at all, because they don't meet the object safety rules.</p>
 <p>In contrast, impl Trait and generics work with any trait. It's strange that the more concise syntax gives you the feature that's least likely to compile.</p>
-<a class="header" href="2113-dyn-trait-syntax.html#impl-trait-is-going-to-require-a-significant-shift-in-idioms-and-teaching-materials-all-on-its-own" id="impl-trait-is-going-to-require-a-significant-shift-in-idioms-and-teaching-materials-all-on-its-own"><h3>impl Trait is going to require a significant shift in idioms and teaching materials all on its own</h3></a>
+<a class="header" href="#impl-trait-is-going-to-require-a-significant-shift-in-idioms-and-teaching-materials-all-on-its-own" id="impl-trait-is-going-to-require-a-significant-shift-in-idioms-and-teaching-materials-all-on-its-own"><h3>impl Trait is going to require a significant shift in idioms and teaching materials all on its own</h3></a>
 <p>Today, when you want to return a type implementing a trait without writing out the type's name, you typically <code>Box</code> a trait object and accept the potential runtime cost. This includes most functions that return closures, iterators, futures, or combinations thereof. Most of those functions should switch to impl Trait once that syntax stabilizes and becomes the preferred idiomatic way of doing this, including many public API methods.</p>
 <p>The way we teach the trait system will also have to change to describe impl Trait alongside all the existing ways of using traits via generics and trait objects, and explain when impl Trait is preferable to those and other options like enums. Moreover, the way we teach closures, iterators and futures will likely need to mention why impl Trait is useful for those types and use impl Trait in many examples, as well as when impl Trait isn't enough and you do need dyn Trait after all.</p>
 <p>Ideally, introducing dyn Trait won't create much additional churn on top of impl Trait, since these idiom shifts and documentation rewrites can account for both of those changes together.</p>
-<a class="header" href="2113-dyn-trait-syntax.html#dyn-trait-vs-impl-trait-is-much-nicer-for-teaching-and-ergonomics-than-bare-trait-vs-impl-trait" id="dyn-trait-vs-impl-trait-is-much-nicer-for-teaching-and-ergonomics-than-bare-trait-vs-impl-trait"><h3>&quot;dyn Trait vs impl Trait&quot; is much nicer for teaching and ergonomics than &quot;bare trait vs impl Trait&quot;</h3></a>
+<a class="header" href="#dyn-trait-vs-impl-trait-is-much-nicer-for-teaching-and-ergonomics-than-bare-trait-vs-impl-trait" id="dyn-trait-vs-impl-trait-is-much-nicer-for-teaching-and-ergonomics-than-bare-trait-vs-impl-trait"><h3>&quot;dyn Trait vs impl Trait&quot; is much nicer for teaching and ergonomics than &quot;bare trait vs impl Trait&quot;</h3></a>
 <p>There's a natural parallel between the impl/dyn keywords and static/dynamic dispatch that we'll likely mention in The Book. Having a keyword for both kinds of dispatch correctly implies that both are important and choosing between the two is often non-trivial, while today's syntax may give the incorrect impression that trait objects are the default and impl Trait is a more niche feature.</p>
 <p>After impl Trait stabilizes, it will become more common to accidentally write a trait object without realizing it by forgetting the impl keyword. This often leads to unhelpful and cryptic errors about your trait not implementing Sized. With a switch to dyn Trait, these errors could become as simple and self-evident as &quot;expected a type, found a trait, did you mean to write impl Trait?&quot;.</p>
-<a class="header" href="2113-dyn-trait-syntax.html#explanation" id="explanation"><h1>Explanation</h1></a>
+<a class="header" href="#explanation" id="explanation"><h1>Explanation</h1></a>
 <p>The functionality of <code>dyn Trait</code> is identical to today's trait object syntax.</p>
 <p><code>Box&lt;Trait&gt;</code> becomes <code>Box&lt;dyn Trait&gt;</code>.</p>
 <p><code>&amp;Trait</code> and <code>&amp;mut Trait</code> become <code>&amp;dyn Trait</code> and <code>&amp;mut dyn Trait</code>.</p>
-<a class="header" href="2113-dyn-trait-syntax.html#migration" id="migration"><h3>Migration</h3></a>
+<a class="header" href="#migration" id="migration"><h3>Migration</h3></a>
 <p>On the current epoch:</p>
 <ul>
 <li>The <code>dyn</code> keyword will be added, and will be a contextual keyword</li>
@@ -187,7 +194,7 @@
 <li>The bare trait syntax lint is raised to deny-by-default</li>
 </ul>
 <p>This follows the policy laid out in the epochs RFC, where a hard error is &quot;only available when the deprecation is expected to hit a relatively small percentage of code.&quot; Adding the <code>dyn</code> keyword is unlikely to affect much code, but removing bare trait syntax will clearly affect a lot of code, so only the latter change is implemented as a deny-by-default lint.</p>
-<a class="header" href="2113-dyn-trait-syntax.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>Yet another (temporarily contextual) keyword.</p>
@@ -202,12 +209,12 @@
 <p>In general, favoring generics over trait objects makes Rust code take longer to compile, and this change may encourage more of that.</p>
 </li>
 </ul>
-<a class="header" href="2113-dyn-trait-syntax.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
 <p>We could use a different keyword such as <code>obj</code> or <code>virtual</code>. There wasn't very much discussion of these options on the original RFC thread, since the motivation was a far bigger concern than the proposed syntax, so it wouldn't be fair to say there's a consensus for or against any particular keyword.</p>
 <p>This author believes that <code>dyn</code> is a better choice because the notion of &quot;dynamic&quot; typing is familiar to a wide variety of programmers and unlikely to mislead them. <code>obj</code> is likely to incorrectly imply an &quot;object&quot; in the OOP sense, which is very different from a trait object. <code>virtual</code> is a term that may be unfamiliar to programmers whose preferred languages don't have a <code>virtual</code> keyword or don't even expose the notion of virtual/dynamic dispatch to the programmer, and the languages that do have a <code>virtual</code> keyword usually use it to mean &quot;this method can be overridden&quot;, not &quot;this value uses dynamic dispatch&quot;.</p>
 <p>We could also use a more radical syntax for trait objects. <code>Object&lt;Trait&gt;</code> was suggested on the original RFC thread but didn't gain much traction, presumably because it adds more &quot;noise&quot; than a keyword and is arguably misleading.</p>
 <p>Finally, we could repurpose bare trait syntax for something other than trait objects. It's been frequently suggested in the past that impl Trait would be a far better candidate for bare trait syntax than trait objects. Even this RFC's motivation section indirectly argues for this, e.g. impl Trait does work with all traits and does not carry a runtime cost, unlike trait objects. However, this RFC does not propose repurposing bare trait syntax yet, only deprecating and removing it. This author believes dyn Trait is worth adding even if we never repurpose bare trait, and repurposing it has some significant downsides that dyn Trait does not (such as creating the possibility of code that compiles in two different epochs with radically different semantics). This author believes the repurposing debate should come later, probably after impl Trait and dyn Trait have been stabilized.</p>
-<a class="header" href="2113-dyn-trait-syntax.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>How common are trait objects in real code? There were some requests for hard data on this in the original RFC thread, but none was ever provided.</p>
@@ -263,9 +270,6 @@
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

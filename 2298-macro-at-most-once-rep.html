@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2298-macro-at-most-once-rep - </title>
+        <title>2298-macro-at-most-once-rep - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2298">rust-lang/rfcs#2298</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/48075">rust-lang/rust#48075</a></li>
 </ul>
-<a class="header" href="2298-macro-at-most-once-rep.html#summary" id="summary"><h2>Summary</h2></a>
+<a class="header" href="#summary" id="summary"><h2>Summary</h2></a>
 <p>Add a repetition specifier to macros to repeat a pattern at most once: <code>$(pat)?</code>. Here, <code>?</code> behaves like <code>+</code> or <code>*</code> but represents at most one repetition of <code>pat</code>.</p>
-<a class="header" href="2298-macro-at-most-once-rep.html#motivation" id="motivation"><h2>Motivation</h2></a>
+<a class="header" href="#motivation" id="motivation"><h2>Motivation</h2></a>
 <p>There are two specific use cases in mind.</p>
-<a class="header" href="2298-macro-at-most-once-rep.html#macro-rules-with-optional-parts" id="macro-rules-with-optional-parts"><h2>Macro rules with optional parts</h2></a>
+<a class="header" href="#macro-rules-with-optional-parts" id="macro-rules-with-optional-parts"><h2>Macro rules with optional parts</h2></a>
 <p>Currently, you just have to write two rules and possibly have one &quot;desugar&quot; to the other.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -169,7 +176,7 @@ macro_rules! foo {
   }
 }
 #}</code></pre></pre>
-<a class="header" href="2298-macro-at-most-once-rep.html#trailing-commas" id="trailing-commas"><h2>Trailing commas</h2></a>
+<a class="header" href="#trailing-commas" id="trailing-commas"><h2>Trailing commas</h2></a>
 <p>Currently, the best way to make a rule tolerate trailing commas is to create another identical rule that has a comma at the end:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -201,7 +208,7 @@ macro_rules! foo {
   }
 }
 #}</code></pre></pre>
-<a class="header" href="2298-macro-at-most-once-rep.html#guide-level-explanation" id="guide-level-explanation"><h2>Guide-level explanation</h2></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h2>Guide-level explanation</h2></a>
 <p>In Rust macros, you specify some &quot;rules&quot; which define how the macro is used and what it transforms to. For each rule, there is a pattern and a body:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -243,16 +250,16 @@ macro_rules! foo {
 #}</code></pre></pre>
 <p>The same can be done for <code>+</code> and <code>?</code>.</p>
 <p>The <code>?</code> operator is particularly useful for making macro rules with optional components in the invocation or for making macros tolerate trailing commas.</p>
-<a class="header" href="2298-macro-at-most-once-rep.html#reference-level-explanation" id="reference-level-explanation"><h2>Reference-level explanation</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h2>Reference-level explanation</h2></a>
 <p><code>?</code> is identical to <code>+</code> and <code>*</code> in use except that it represents &quot;at most once&quot; repetition.</p>
 <p>Introducing <code>?</code> into the grammar for macro repetition introduces an easily fixable ambiguity, as noted by @kennytm <a href="https://internals.rust-lang.org/t/pre-rfc-at-most-one-repetition-macro-patterns/6557/2?u=mark-i-m">here</a>:</p>
 <blockquote>
 <p>There is ambiguity: $($x:ident)?+ today matches a?b?c and not a+. Fortunately this is easy to resolve: you just look one more token ahead and always treat ?* and ?+ to mean separate by the question mark token.</p>
 </blockquote>
-<a class="header" href="2298-macro-at-most-once-rep.html#drawbacks" id="drawbacks"><h2>Drawbacks</h2></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h2>Drawbacks</h2></a>
 <p>While there are grammar ambiguities, they can be easily fixed.</p>
 <p>Also, for patterns that use <code>*</code>, <code>?</code> is not a perfect solution: <code>$(pat),* $(,)?</code> still allows <code>,</code> which is a bit weird. However, this is still an improvement over <code>$(pat),* $(,)*</code> which allows <code>,,,,,</code>.</p>
-<a class="header" href="2298-macro-at-most-once-rep.html#rationale-and-alternatives" id="rationale-and-alternatives"><h2>Rationale and Alternatives</h2></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h2>Rationale and Alternatives</h2></a>
 <p>The implementation of <code>?</code> ought to be very similar to <code>+</code> and <code>*</code>. Only the parser needs to change; to the author's knowledge, it would not be technically difficult to implement, nor would it add much complexity to the compiler.</p>
 <p>The <code>?</code> character is chosen because</p>
 <ul>
@@ -284,7 +291,7 @@ foo! {
 <p>We could use another symbol other than <code>?</code>, but it's not clear what other options might be better. <code>?</code> has the advantage of already being known in common regex syntax as &quot;optional&quot;.</p>
 <p>It has also been suggested to add <code>{M, N}</code> (at least <code>M</code> but no more than <code>N</code>) either in addition to or as an alternative to <code>?</code>. Like <code>?</code>, <code>{M, N}</code> is common regex syntax and has the same implementation difficulty level. However, it's not clear how useful such a pattern would be. In particular, we can't think of any other language to include this sort of &quot;partially-variadic&quot; argument list. It is also questionable why one would want to <em>syntactically</em> repeat some piece of code between <code>M</code> and <code>N</code> times. Thus, this RFC does not propose to add <code>{M, N}</code> at this time (though we note that it is forward-compatible).</p>
 <p>Finally, we could do nothing and wait for macros 2.0. However, it will be a while (possibly years) before that lands in stable rust. The current implementation and proposals are not very well-defined yet. Having something until that time would be nice to fix this paper cut. This proposal does not add a lot of complexity, but does nicely fill the gap.</p>
-<a class="header" href="2298-macro-at-most-once-rep.html#unresolved-questions" id="unresolved-questions"><h2>Unresolved Questions</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h2>Unresolved Questions</h2></a>
 <ul>
 <li>Should the <code>?</code> Kleene operator accept a separator? Adding a separator is completely meaningless (since we don't accept trailing separators, and <code>?</code> can accept &quot;at most one&quot; repetition), but allowing it is consistent with <code>+</code> and <code>*</code>. Currently, we allow a separator. We could also make it an error or lint.</li>
 </ul>
@@ -332,9 +339,6 @@ foo! {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

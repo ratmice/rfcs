@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1561-macro-naming - </title>
+        <title>1561-macro-naming - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1561">rust-lang/rfcs#1561</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/35896">rust-lang/rust#35896</a></li>
 </ul>
-<a class="header" href="1561-macro-naming.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Naming and modularisation for macros.</p>
 <p>This RFC proposes making macros a first-class citizen in the Rust module system.
 Both macros by example (<code>macro_rules</code> macros) and procedural macros (aka syntax
@@ -150,7 +157,7 @@ larger effort to reform procedural macros. For macros by example, this would be
 part of a macros 2.0 feature, the rest of which will be described in a separate
 RFC. This RFC depends on the changes to name resolution described in
 <a href="https://github.com/rust-lang/rfcs/pull/1560">RFC 1560</a>.</p>
-<a class="header" href="1561-macro-naming.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, procedural macros are not modularised at all (beyond the crate
 level). Macros by example have a <a href="https://github.com/rust-lang/rfcs/blob/master/text/0453-macro-reform.md">custom modularisation
 scheme</a>
@@ -159,8 +166,8 @@ attributes which are not used for other items. Macros cannot be imported or
 named using the usual syntax. It is confusing that macros use their own system
 for modularisation. It would be far nicer if they were a more regular feature of
 Rust in this respect.</p>
-<a class="header" href="1561-macro-naming.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1561-macro-naming.html#defining-macros" id="defining-macros"><h2>Defining macros</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#defining-macros" id="defining-macros"><h2>Defining macros</h2></a>
 <p>This RFC does not propose changes to macro definitions. It is envisaged that
 definitions of procedural macros will change, see <a href="http://ncameron.org/blog/macro-plans-syntax/">this blog post</a>
 for some rough ideas. I'm assuming that procedural macros will be defined in
@@ -181,7 +188,7 @@ naming scheme).</p>
 <code>bar</code> may be expanded before <code>foo</code>. Ordering is only guaranteed as far as it is
 necessary. E.g., if <code>bar</code> is only defined by expanding <code>foo</code>, then <code>foo</code> must be
 expanded before <code>bar</code>.</p>
-<a class="header" href="1561-macro-naming.html#function-like-macro-uses" id="function-like-macro-uses"><h2>Function-like macro uses</h2></a>
+<a class="header" href="#function-like-macro-uses" id="function-like-macro-uses"><h2>Function-like macro uses</h2></a>
 <p>A function-like macro use (c.f., attribute-like macro use) is a macro use which
 uses <code>foo!(...)</code> or <code>foo! ident (...)</code> syntax (where <code>()</code> may also be <code>[]</code> or <code>{}</code>).</p>
 <p>Macros may be named by using a <code>::</code>-separated path. Naming follows the same
@@ -198,12 +205,12 @@ now parse <code>path &quot;!&quot;</code>. I don't think this introduces any iss
 <p>Name lookup follows the same name resolution rules as other items. See <a href="https://github.com/rust-lang/rfcs/pull/1560">RFC
 1560</a> for details on how name
 resolution could be adapted to support this.</p>
-<a class="header" href="1561-macro-naming.html#attribute-like-macro-uses" id="attribute-like-macro-uses"><h2>Attribute-like macro uses</h2></a>
+<a class="header" href="#attribute-like-macro-uses" id="attribute-like-macro-uses"><h2>Attribute-like macro uses</h2></a>
 <p>Attribute macros may also be named using a <code>::</code>-separated path. Other than
 appearing in an attribute, these also follow the usual Rust naming rules.</p>
 <p>E.g., <code>#[::foo::bar::baz(...)]</code> and <code>#[bar::baz(...)]</code> are uses of absolute and
 relative paths, respectively.</p>
-<a class="header" href="1561-macro-naming.html#importing-macros" id="importing-macros"><h2>Importing macros</h2></a>
+<a class="header" href="#importing-macros" id="importing-macros"><h2>Importing macros</h2></a>
 <p>Importing macros is done using <code>use</code> in the same way as other items. An <code>!</code> is
 not necessary in an import item. Macros are imported into their own namespace
 and do not shadow or overlap items with the same name in the type or value
@@ -216,18 +223,18 @@ definitions, the names of those macros are also imported. E.g., <code>use foo::b
 <p>Where macros are defined in a separate crate, these are imported in the same way
 as other items by an <code>extern crate</code> item.</p>
 <p>No <code>#[macro_use]</code> or <code>#[macro_export]</code> annotations are required.</p>
-<a class="header" href="1561-macro-naming.html#shadowing" id="shadowing"><h2>Shadowing</h2></a>
+<a class="header" href="#shadowing" id="shadowing"><h2>Shadowing</h2></a>
 <p>Macro names follow the same shadowing rules as other names. For example, an
 explicitly declared macro would shadow a glob-imported macro with the same name.
 Note that since macros are in a different namespace from types and values, a
 macro cannot shadow a type or value or vice versa.</p>
-<a class="header" href="1561-macro-naming.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>If the new macro system is not well adopted by users, we could be left with two
 very different schemes for naming macros depending on whether a macro is defined
 by example or procedurally. That would be inconsistent and annoying. However, I
 hope we can make the new macro system appealing enough and close enough to the
 existing system that migration is both desirable and easy.</p>
-<a class="header" href="1561-macro-naming.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could adopt the proposed scheme for procedural macros only and keep the
 existing scheme for macros by example.</p>
 <p>We could adapt the current macros by example scheme to procedural macros.</p>
@@ -236,22 +243,22 @@ I don't think this is necessary or helpful.</p>
 <p>We could continue to require <code>macro_export</code> annotations on top of this scheme.
 However, I prefer moving to a scheme using the same privacy system as the rest
 of Rust, see below.</p>
-<a class="header" href="1561-macro-naming.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="1561-macro-naming.html#privacy-for-macros" id="privacy-for-macros"><h2>Privacy for macros</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#privacy-for-macros" id="privacy-for-macros"><h2>Privacy for macros</h2></a>
 <p>I would like that macros follow the same rules for privacy as other Rust items,
 i.e., they are private by default and may be marked as <code>pub</code> to make them
 public. This is not as straightforward as it sounds as it requires parsing <code>pub macro! foo</code> as a macro definition, etc. I leave this for a separate RFC.</p>
-<a class="header" href="1561-macro-naming.html#scoped-attributes" id="scoped-attributes"><h2>Scoped attributes</h2></a>
+<a class="header" href="#scoped-attributes" id="scoped-attributes"><h2>Scoped attributes</h2></a>
 <p>It would be nice for tools to use scoped attributes as well as procedural
 macros, e.g., <code>#[rustfmt::skip]</code> or <code>#[rust::new_attribute]</code>. I believe this
 should be straightforward syntactically, but there are open questions around
 when attributes are ignored or seen by tools and the compiler. Again, I leave it
 for a future RFC.</p>
-<a class="header" href="1561-macro-naming.html#inline-procedural-macros" id="inline-procedural-macros"><h2>Inline procedural macros</h2></a>
+<a class="header" href="#inline-procedural-macros" id="inline-procedural-macros"><h2>Inline procedural macros</h2></a>
 <p>Some day, I hope that procedural macros may be defined in the same crate in
 which they are used. I leave the details of this for later, however, I don't
 think this affects the design of naming - it should all Just Work.</p>
-<a class="header" href="1561-macro-naming.html#applying-to-existing-macros" id="applying-to-existing-macros"><h2>Applying to existing macros</h2></a>
+<a class="header" href="#applying-to-existing-macros" id="applying-to-existing-macros"><h2>Applying to existing macros</h2></a>
 <p>This RFC is framed in terms of a new macro system. There are various ways that
 some parts of it could be applied to existing macros (<code>macro_rules!</code>) to
 backwards compatibly make existing macros usable under the new naming system.</p>
@@ -302,9 +309,6 @@ that we can try to decide how much of that is also desirable.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

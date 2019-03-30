@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1857-stabilize-drop-order - </title>
+        <title>1857-stabilize-drop-order - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1857">rust-lang/rfcs#1857</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/43034">rust-lang/rust#43034</a></li>
 </ul>
-<a class="header" href="1857-stabilize-drop-order.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>I propose we specify and stabilize drop order in Rust, instead of treating
 it as an implementation detail. The stable drop order should be based on the
 current implementation. This results in avoiding breakage and still allows
 alternative, opt-in, drop orders to be introduced in the future.</p>
-<a class="header" href="1857-stabilize-drop-order.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>After lots of discussion on <a href="https://github.com/rust-lang/rfcs/issues/744">issue 744</a>,
 there seems to be consensus about the need for a stable drop order. See, for instance,
 <a href="https://github.com/rust-lang/rfcs/issues/744#issuecomment-231215181">this</a> and
@@ -178,10 +185,10 @@ probably outweight the current complexity of having a non-intuitive drop order.<
 <p>Finally, in case people really dislike the current drop order, it may still
 be possible to introduce alternative, opt-in, drop orders in a backwards
 compatible way. However, that is not covered in this RFC.</p>
-<a class="header" href="1857-stabilize-drop-order.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The design is the same as currently implemented in rustc and is described
 below. This behavior will be enforced by run-pass tests.</p>
-<a class="header" href="1857-stabilize-drop-order.html#tuples-structs-and-enum-variants" id="tuples-structs-and-enum-variants"><h3>Tuples, structs and enum variants</h3></a>
+<a class="header" href="#tuples-structs-and-enum-variants" id="tuples-structs-and-enum-variants"><h3>Tuples, structs and enum variants</h3></a>
 <p>Struct fields are dropped in the same order as they are declared. Consider,
 for instance, the struct below:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -213,7 +220,7 @@ seem counterintuitive at first but makes sense when you consider that the
 initialized fields are actually temporary variables. Note that the drop order
 depends on the order of the fields in the <em>initializer</em> and not in the struct
 declaration.</p>
-<a class="header" href="1857-stabilize-drop-order.html#slices-and-vec" id="slices-and-vec"><h3>Slices and Vec</h3></a>
+<a class="header" href="#slices-and-vec" id="slices-and-vec"><h3>Slices and Vec</h3></a>
 <p>Slices and vectors show the same behavior as structs and enums. This behavior
 can be illustrated by the code below, where the first elements are dropped
 first.</p>
@@ -231,7 +238,7 @@ Consider the following example:</p>
 let xs = [X, Y, panic!()];
 #}</code></pre></pre>
 <p>Here, <code>Y</code> will be dropped first and <code>X</code> second.</p>
-<a class="header" href="1857-stabilize-drop-order.html#allowed-unspecified-behavior" id="allowed-unspecified-behavior"><h3>Allowed unspecified behavior</h3></a>
+<a class="header" href="#allowed-unspecified-behavior" id="allowed-unspecified-behavior"><h3>Allowed unspecified behavior</h3></a>
 <p>Besides the previous constructs, there are other ones that do not need
 a stable drop order (at least, there is not yet evidence that it would be
 useful). It is the case of <code>vec![expr; n]</code> and closure captures.</p>
@@ -252,7 +259,7 @@ at best (the same effect can be achieved with much less obscure methods, like pa
 a struct as an argument).</p>
 <p>Note: we ignore slices initialized with <code>[expr; n]</code> syntax, since they may only
 contain <code>Copy</code> types, which in turn cannot implement <code>Drop</code>.</p>
-<a class="header" href="1857-stabilize-drop-order.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>When mentioning destructors in the Rust book, Reference and other documentation,
 we should also mention the overall picture for a type that implements <code>Drop</code>.
 In particular, if a <code>struct</code>/<code>enum</code> implements Drop, then when it is dropped we will
@@ -263,18 +270,18 @@ executed, you can make the fields into <code>Option</code> and have a custom dro
 (or else wrap your type in a union with a single member and implement <code>Drop</code> such that
 it invokes <code>ptr::read()</code> or something similar).</p>
 <p>It is also important to mention that <code>union</code> types never drop their contents.</p>
-<a class="header" href="1857-stabilize-drop-order.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>The counter-intuitive drop order is here to stay.</li>
 </ul>
-<a class="header" href="1857-stabilize-drop-order.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>Figure out how to let rustc know the language version targeted by a given program.
 This way we could introduce a new drop order without breaking code.</li>
 <li>Introduce a new drop order anyway, try to minimize breakage by running crater
 and hope for the best.</li>
 </ul>
-<a class="header" href="1857-stabilize-drop-order.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Where do we draw the line between the constructs where drop order should be stabilized
 and the rest? Should the drop order of closure captures be specified? And the drop order
@@ -324,9 +331,6 @@ of <code>vec![expr; n]</code>?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

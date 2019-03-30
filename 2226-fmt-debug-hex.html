@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2226-fmt-debug-hex - </title>
+        <title>2226-fmt-debug-hex - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2226">rust-lang/rfcs#2226</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/48584">rust-lang/rust#48584</a></li>
 </ul>
-<a class="header" href="2226-fmt-debug-hex.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add support for formatting integers as hexadecimal with the <code>fmt::Debug</code> trait,
 including when they occur within larger types.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -149,7 +156,7 @@ println!(&quot;{:02X?}&quot;, b&quot;AZaz\0&quot;)
 #}</code></pre></pre>
 <pre><code>[41, 5A, 61, 7A, 00]
 </code></pre>
-<a class="header" href="2226-fmt-debug-hex.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Sometimes the bits that make up an integer are more meaningful than its purely numerical value.
 For example, an RGBA color encoded in <code>u32</code> with 8 bits per channel is easier to understand
 when shown as <code>00CC44FF</code> than <code>13387007</code>.</p>
@@ -165,7 +172,7 @@ It can be derived, and doing so is recommended for most types.</p>
 <li>Output intended primarily for end-users (<code>Display</code>) v.s. for programmers (<code>Debug</code>)</li>
 <li>Numbers shown in decimal v.s. hexadecimal</li>
 </ul>
-<a class="header" href="2226-fmt-debug-hex.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>In formatting strings like in the <code>format!</code> and <code>println!</code> macros,
 the formatting parameters <code>x</code> or <code>X</code> − to select lower-case or upper-case hexadecimal −
 can now be combined with <code>?</code> which select the <code>Debug</code> trait.</p>
@@ -181,8 +188,8 @@ let return_value = foo(bar);
 let expected = &amp;[ /* ... */ ][..];
 assert!(return_value == expected, &quot;{:08X?} != {:08X?}&quot;, return_value, expected);
 #}</code></pre></pre>
-<a class="header" href="2226-fmt-debug-hex.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2226-fmt-debug-hex.html#formatting-strings" id="formatting-strings"><h2>Formatting strings</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#formatting-strings" id="formatting-strings"><h2>Formatting strings</h2></a>
 <p>The syntax of formatting strings
 is <a href="https://doc.rust-lang.org/std/fmt/#syntax">specified with a grammar</a>
 which at the moment is as follows:</p>
@@ -205,7 +212,7 @@ parameter := argument '$'
 <pre><code>format_spec := [[fill]align][sign]['#']['0'][width]['.' precision][radix][type]
 radix: 'x' | 'X'
 </code></pre>
-<a class="header" href="2226-fmt-debug-hex.html#formatter-api" id="formatter-api"><h2><code>Formatter</code> API</h2></a>
+<a class="header" href="#formatter-api" id="formatter-api"><h2><code>Formatter</code> API</h2></a>
 <p>Note that <code>x</code> and <code>X</code> are already valid <em>types</em>.
 They are only interpreted as a radix when the type is <code>?</code>,
 since combining them with other types doesn’t make sense.</p>
@@ -231,7 +238,7 @@ impl&lt;'a&gt; Formatter&lt;'a&gt; {
 #}</code></pre></pre>
 <p>Although the radix and type are separate in the formatting string grammar,
 they are intentionally conflated in this new API.</p>
-<a class="header" href="2226-fmt-debug-hex.html#debug-impls" id="debug-impls"><h2><code>Debug</code> impls</h2></a>
+<a class="header" href="#debug-impls" id="debug-impls"><h2><code>Debug</code> impls</h2></a>
 <p>The <code>Debug</code> implementation for primitive integer types <code>{u,i}{8,16,32,64,128,size}</code>
 is modified to defer to <code>LowerHex</code> or <code>UpperHex</code> instead of <code>Display</code>,
 based on <code>formatter.number_radix()</code> and <code>formatter.number_uppercase()</code>.
@@ -241,17 +248,17 @@ the <code>0x</code> prefix is <em>not</em> included.</p>
 formatting parameters such as <em>width</em> when formatting keys/values/items.
 Doing so is important for this RFC to be useful.
 This is fixed by <a href="https://github.com/rust-lang/rust/pull/46233">PR #46233</a>.</p>
-<a class="header" href="2226-fmt-debug-hex.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The hexadecimal flag in the the <code>Debug</code> trait is superficially redundant
 with the <code>LowerHex</code> and <code>UpperHex</code> traits.
 If these traits were not stable yet, we could have considered a more unified design.</p>
-<a class="header" href="2226-fmt-debug-hex.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>Implementing <code>LowerHex</code> and <code>UpperHex</code> was proposed and rejected
 in <a href="https://github.com/rust-lang/rust/pull/44751">PR #44751</a>.</p>
 <p>The status quo is that debugging or testing code that could be a one-liner
 requires manual <code>Debug</code> impls and/or concatenating the results of separate
 string formatting operations.</p>
-<a class="header" href="2226-fmt-debug-hex.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Should this be extended to octal and binary (as <code>{:o?}</code> and <code>{:b?}</code>)?
 Other formatting types/traits too?</li>
@@ -301,9 +308,6 @@ Other formatting types/traits too?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

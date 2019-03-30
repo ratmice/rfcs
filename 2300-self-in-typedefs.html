@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2300-self-in-typedefs - </title>
+        <title>2300-self-in-typedefs - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2300">rust-lang/rfcs#2300</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/49303">rust-lang/rust#49303</a></li>
 </ul>
-<a class="header" href="2300-self-in-typedefs.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>The special <code>Self</code> identifier is now permitted in <code>struct</code>, <code>enum</code>, and <code>union</code>
 type definitions. A simple example <code>struct</code> is:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -153,8 +160,8 @@ where
     Cons(T, Box&lt;Self&gt;) // &lt;-- And here.
 }
 #}</code></pre></pre>
-<a class="header" href="2300-self-in-typedefs.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="2300-self-in-typedefs.html#removing-exceptions-and-making-the-language-more-uniform" id="removing-exceptions-and-making-the-language-more-uniform"><h2>Removing exceptions and making the language more uniform</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#removing-exceptions-and-making-the-language-more-uniform" id="removing-exceptions-and-making-the-language-more-uniform"><h2>Removing exceptions and making the language more uniform</h2></a>
 <p>The contextual identifier <code>Self</code> can already be used in type context in cases
 such as when defining what an associated type is for a particular type as well
 as for generic parameters in <code>impl</code>s as in:</p>
@@ -178,7 +185,7 @@ impl Foo&lt;Self&gt; for Quux {
 <p>But this is not currently possible inside both fields and where clauses of
 type definitions. This makes the language less consistent with respect to what
 is allowed in type positions than what it could be.</p>
-<a class="header" href="2300-self-in-typedefs.html#principle-of-least-surprise" id="principle-of-least-surprise"><h2>Principle of least surprise</h2></a>
+<a class="header" href="#principle-of-least-surprise" id="principle-of-least-surprise"><h2>Principle of least surprise</h2></a>
 <p>Users, just new to the language and experts in the language alike, also
 have a reasonable expectations that using <code>Self</code> inside type definitions is
 in fact already possible. Users may have and have these expectations because
@@ -187,7 +194,7 @@ attempts to use <code>Self</code> today, that attempt will fail, breaking the us
 intuition of the languages semantics. Avoiding that breakage will reduce the
 paper cuts newcomers face when using the language. It will also allow the
 community to focus on answering more important questions.</p>
-<a class="header" href="2300-self-in-typedefs.html#better-ergonomics-with-smaller-edit-distances" id="better-ergonomics-with-smaller-edit-distances"><h2>Better ergonomics with smaller edit distances</h2></a>
+<a class="header" href="#better-ergonomics-with-smaller-edit-distances" id="better-ergonomics-with-smaller-edit-distances"><h2>Better ergonomics with smaller edit distances</h2></a>
 <p>When you have complex recursive <code>enum</code>s with many variants and generic types,
 and want to rename a type parameter or the type itself, it would make renaming
 and refactoring the type definitions easier if you did not have to make changes
@@ -195,19 +202,19 @@ in the variant fields which mention the type. This can be helped by IDEs to some
 extent, but you do not always have such IDEs and even then, the readability of
 using <code>Self</code> is superior to repeating the type in variants and fields since it
 is a more visual cue that can be highlighted for specially.</p>
-<a class="header" href="2300-self-in-typedefs.html#encouraging-descriptively-named-types-type-variables-and-more-generic-code" id="encouraging-descriptively-named-types-type-variables-and-more-generic-code"><h2>Encouraging descriptively named types, type variables, and more generic code</h2></a>
+<a class="header" href="#encouraging-descriptively-named-types-type-variables-and-more-generic-code" id="encouraging-descriptively-named-types-type-variables-and-more-generic-code"><h2>Encouraging descriptively named types, type variables, and more generic code</h2></a>
 <p>Making it simpler and more ergonomic to have longer type names and more
 generic parameters in type definitions can also encourage using more
 descriptive identifiers for both the type and the type variables used.
 It may also encourage more generic code altogether.</p>
-<a class="header" href="2300-self-in-typedefs.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <blockquote>
 <p><a href="http://cglab.ca/%7Eabeinges/blah/too-many-lists/book/#an-obligatory-public-service-announcement">An Obligatory Public Service Announcement</a>: When reading this RFC,
 keep in mind that these lists are only examples.
 <strong>Always consider if you really need to use linked lists!</strong></p>
 </blockquote>
 <p>We will now go through a few examples of what you can and can't do with this RFC.</p>
-<a class="header" href="2300-self-in-typedefs.html#simple-example" id="simple-example"><h2>Simple example</h2></a>
+<a class="header" href="#simple-example" id="simple-example"><h2>Simple example</h2></a>
 <p>Let's look at a simple cons-list of <code>u8</code>s. Before this RFC, you had to write:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -238,7 +245,7 @@ the compiler would have greeted you with:</p>
 <p>This new way of writing with <code>Self</code> can be thought of as literally
 desugaring to the way it is written in the example before it. This also
 extends to generic types (non-nullary type constructors) that are recursive.</p>
-<a class="header" href="2300-self-in-typedefs.html#with-generic-type-parameters" id="with-generic-type-parameters"><h2>With generic type parameters</h2></a>
+<a class="header" href="#with-generic-type-parameters" id="with-generic-type-parameters"><h2>With generic type parameters</h2></a>
 <p>Continuing with the cons lists, let's take a look at how the canonical
 linked-list example can be rewritten using this RFC.</p>
 <p>We start off with:</p>
@@ -262,7 +269,7 @@ enum List&lt;T&gt; {
 <p>Notice in particular how we used just <code>Self</code> for both <code>U8List</code> and <code>List&lt;T&gt;</code>.
 This applies to types with any number of parameters, including those that are
 parameterized by lifetimes.</p>
-<a class="header" href="2300-self-in-typedefs.html#examples-with-lifetimes" id="examples-with-lifetimes"><h2>Examples with lifetimes</h2></a>
+<a class="header" href="#examples-with-lifetimes" id="examples-with-lifetimes"><h2>Examples with lifetimes</h2></a>
 <p>An example of this can be seen in the following cons list:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -281,7 +288,7 @@ enum StackList&lt;'a, T: 'a&gt; {
     Cons(T, &amp;'a Self) // &lt;-- Still using just 'Self'
 }
 #}</code></pre></pre>
-<a class="header" href="2300-self-in-typedefs.html#structs-and-unions" id="structs-and-unions"><h2>Structs and unions</h2></a>
+<a class="header" href="#structs-and-unions" id="structs-and-unions"><h2>Structs and unions</h2></a>
 <p>You can also use <code>Self</code> in <code>struct</code>s as in:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -301,7 +308,7 @@ struct NonEmptyList&lt;T&gt; {
 }
 #}</code></pre></pre>
 <p>This also extends to <code>union</code>s.</p>
-<a class="header" href="2300-self-in-typedefs.html#where-clauses" id="where-clauses"><h2><code>where</code>-clauses</h2></a>
+<a class="header" href="#where-clauses" id="where-clauses"><h2><code>where</code>-clauses</h2></a>
 <p>In today's Rust, it is possible to define a type such as:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -362,7 +369,7 @@ where
 }
 #}</code></pre></pre>
 <p>This makes the bound involving <code>Self</code> slightly more clear.</p>
-<a class="header" href="2300-self-in-typedefs.html#when-self-can-not-be-used" id="when-self-can-not-be-used"><h2>When <code>Self</code> can <strong>not</strong> be used</h2></a>
+<a class="header" href="#when-self-can-not-be-used" id="when-self-can-not-be-used"><h2>When <code>Self</code> can <strong>not</strong> be used</h2></a>
 <p>Consider the following small expression language:</p>
 <pre><pre class="playpen"><code class="language-rust">trait Ty { type Repr: ::std::fmt::Debug; }
 
@@ -421,7 +428,7 @@ enum Expr&lt;T: Ty&gt; {
     If(Box&lt;Expr&lt;Bool&gt;&gt;, Box&lt;Self&gt;, Box&lt;Self&gt;),
 }
 #}</code></pre></pre>
-<a class="header" href="2300-self-in-typedefs.html#types-of-infinite-size" id="types-of-infinite-size"><h2>Types of infinite size</h2></a>
+<a class="header" href="#types-of-infinite-size" id="types-of-infinite-size"><h2>Types of infinite size</h2></a>
 <p>Consider the following example:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -467,17 +474,17 @@ as seen in this snippet:</p>
   |
   = help: insert indirection (e.g., a `Box`, `Rc`, or `&amp;`) at some point to make `List` representable
 </code></pre>
-<a class="header" href="2300-self-in-typedefs.html#teaching-the-contents-of-this-rfc" id="teaching-the-contents-of-this-rfc"><h2>Teaching the contents of this RFC</h2></a>
+<a class="header" href="#teaching-the-contents-of-this-rfc" id="teaching-the-contents-of-this-rfc"><h2>Teaching the contents of this RFC</h2></a>
 <p>When talking about and teaching recursive types in Rust, since it is now
 possible to use <code>Self</code>, the ability to use <code>Self</code> in this context should
 be taught along side those types. An example of where this can be introduced
 is the <a href="http://cglab.ca/%7Eabeinges/blah/too-many-lists/book/first-layout.html"><em>&quot;Learning Rust With Entirely Too Many Linked Lists&quot;</em> guide</a>.</p>
-<a class="header" href="2300-self-in-typedefs.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>The identifier <code>Self</code> is (now) allowed in type contexts in fields of <code>struct</code>s,
 <code>union</code>s, and the variants of <code>enum</code>s. The identifier <code>Self</code> is also allowed
 as the left hand side of a bound in a <code>where</code> clause and as a type argument
 to a trait bound on the right hand side of a <code>where</code> clause.</p>
-<a class="header" href="2300-self-in-typedefs.html#desugaring" id="desugaring"><h2>Desugaring</h2></a>
+<a class="header" href="#desugaring" id="desugaring"><h2>Desugaring</h2></a>
 <p>When the compiler encounters <code>Self</code> in type contexts inside the places
 described above, it will substitute them with the header of the type
 definition but remove any bounds on generic parameters prior.</p>
@@ -530,12 +537,12 @@ where
     // Some fields..
 }
 #}</code></pre></pre>
-<a class="header" href="2300-self-in-typedefs.html#in-relation-to-a-hrefhttpsgithubcomrust-langrfcspull2102rfc-2102a-and-what-self-refers-to" id="in-relation-to-a-hrefhttpsgithubcomrust-langrfcspull2102rfc-2102a-and-what-self-refers-to"><h2>In relation to <a href="https://github.com/rust-lang/rfcs/pull/2102">RFC 2102</a> and what <code>Self</code> refers to.</h2></a>
+<a class="header" href="#in-relation-to-a-hrefhttpsgithubcomrust-langrfcspull2102rfc-2102a-and-what-self-refers-to" id="in-relation-to-a-hrefhttpsgithubcomrust-langrfcspull2102rfc-2102a-and-what-self-refers-to"><h2>In relation to <a href="https://github.com/rust-lang/rfcs/pull/2102">RFC 2102</a> and what <code>Self</code> refers to.</h2></a>
 <p>It should be noted that <code>Self</code> always refers to the top level type and not
 the inner unnamed <code>struct</code> or <code>union</code> because those are unnamed. Specifically,
 <em>Self always applies to the innermost nameable type</em>. In type definitions in
 particular, this is equivalent: <em>Self always applies to the top level type</em>.</p>
-<a class="header" href="2300-self-in-typedefs.html#error-messages" id="error-messages"><h2>Error messages</h2></a>
+<a class="header" href="#error-messages" id="error-messages"><h2>Error messages</h2></a>
 <p>When <code>Self</code> is used to construct an infinite type as in:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -558,27 +565,27 @@ enum List&lt;T&gt; {
   = help: insert indirection (e.g., a `Box`, `Rc`, or `&amp;`) at some point to make `List` representable
 </code></pre>
 <p>Note in particular that <code>Self</code> is used and not <code>List&lt;T&gt;</code> on line <code>3</code>.</p>
-<a class="header" href="2300-self-in-typedefs.html#in-relation-to-other-rfcs" id="in-relation-to-other-rfcs"><h2>In relation to other RFCs</h2></a>
-<p>This RFC expands on <a href="0593-forbid-Self-definitions.md">RFC 593</a> and <a href="1647-allow-self-in-where-clauses.md">RFC 1647</a> with respect to where the keyword
+<a class="header" href="#in-relation-to-other-rfcs" id="in-relation-to-other-rfcs"><h2>In relation to other RFCs</h2></a>
+<p>This RFC expands on <a href="0593-forbid-Self-definitions.html">RFC 593</a> and <a href="1647-allow-self-in-where-clauses.html">RFC 1647</a> with respect to where the keyword
 <code>Self</code> is allowed.</p>
-<a class="header" href="2300-self-in-typedefs.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Some may argue that we shouldn't have many ways to do the same thing and
 that it introduces new syntax whereby making the surface language more complex.
 However, the RFC may equally be said to simplify the surface language since
 it removes exceptional cases especially in the users mental model.</p>
 <p>Using <code>Self</code> in a type definition makes it harder to search for all positions
 in which a pattern can appear in an AST.</p>
-<a class="header" href="2300-self-in-typedefs.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>The rationale for this particular design is straightforward as it would be
 uneconomic, confusing, and inconsistent to use other keywords.</p>
-<a class="header" href="2300-self-in-typedefs.html#the-consistency-of-what-self-refers-to" id="the-consistency-of-what-self-refers-to"><h2>The consistency of what <code>Self</code> refers to</h2></a>
+<a class="header" href="#the-consistency-of-what-self-refers-to" id="the-consistency-of-what-self-refers-to"><h2>The consistency of what <code>Self</code> refers to</h2></a>
 <p>As explained in the [reference-level explanation], we said that:</p>
 <blockquote>
 <p><em>Self always applies to the innermost nameable type</em>.</p>
 </blockquote>
 <p>We arrive at this conclusion by examining a few different cases and what
 they have in common.</p>
-<a class="header" href="2300-self-in-typedefs.html#current-rust---shadowing-in-impls" id="current-rust---shadowing-in-impls"><h3>Current Rust - Shadowing in <code>impl</code>s</h3></a>
+<a class="header" href="#current-rust---shadowing-in-impls" id="current-rust---shadowing-in-impls"><h3>Current Rust - Shadowing in <code>impl</code>s</h3></a>
 <p>First, let's take a look at shadowing in <code>impl</code>s.</p>
 <pre><pre class="playpen"><code class="language-rust">fn main() { Foo {}.foo(); }
 
@@ -616,7 +623,7 @@ impl Trait for Foo {
 }
 #}</code></pre></pre>
 <p>We see that the conclusion holds for both examples.</p>
-<a class="header" href="2300-self-in-typedefs.html#in-relation-to-a-hrefhttpsgithubcomrust-langrfcspull2102rfc-2102a" id="in-relation-to-a-hrefhttpsgithubcomrust-langrfcspull2102rfc-2102a"><h3>In relation to <a href="https://github.com/rust-lang/rfcs/pull/2102">RFC 2102</a></h3></a>
+<a class="header" href="#in-relation-to-a-hrefhttpsgithubcomrust-langrfcspull2102rfc-2102a" id="in-relation-to-a-hrefhttpsgithubcomrust-langrfcspull2102rfc-2102a"><h3>In relation to <a href="https://github.com/rust-lang/rfcs/pull/2102">RFC 2102</a></h3></a>
 <p>Let's consider a modified example from <a href="https://github.com/rust-lang/rfcs/pull/2102">RFC 2102</a>:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -633,7 +640,7 @@ struct S {
 #}</code></pre></pre>
 <p>In this example, the inner union is not nameable, and so <code>Self</code> refers to the
 only nameable introduced type <code>S</code>. Therefore, the conclusion holds.</p>
-<a class="header" href="2300-self-in-typedefs.html#type-definitions-inside-impls" id="type-definitions-inside-impls"><h3>Type definitions inside <code>impl</code>s</h3></a>
+<a class="header" href="#type-definitions-inside-impls" id="type-definitions-inside-impls"><h3>Type definitions inside <code>impl</code>s</h3></a>
 <p>If in the future we decide to permit type definitions inside <code>impl</code>s as in:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -687,10 +694,10 @@ impl Trait for Foo {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2300-self-in-typedefs.html#conclusion" id="conclusion"><h3>Conclusion</h3></a>
+<a class="header" href="#conclusion" id="conclusion"><h3>Conclusion</h3></a>
 <p>We've now examined a few cases and seen that indeed, the meaning of <code>Self</code> is
 consistent in all of them as well as with what the meaning in in today's Rust.</p>
-<a class="header" href="2300-self-in-typedefs.html#doing-nothing" id="doing-nothing"><h2>Doing nothing</h2></a>
+<a class="header" href="#doing-nothing" id="doing-nothing"><h2>Doing nothing</h2></a>
 <p>One alternative to the changes proposed in this RFC is to simply not implement
 those changes. However, this has the downsides of not increasing the ergonomics
 and keeping the language less consistent than what it could be. Not improving
@@ -698,7 +705,7 @@ the ergonomics here may be especially problematic when dealing with &quot;recurs
 types that have long names and/or many generic parameters and may encourage
 developers to use type names which are less descriptive and keep their code
 less generic than what is appropriate.</p>
-<a class="header" href="2300-self-in-typedefs.html#internal-scoped-type-aliases" id="internal-scoped-type-aliases"><h2>Internal scoped type aliases</h2></a>
+<a class="header" href="#internal-scoped-type-aliases" id="internal-scoped-type-aliases"><h2>Internal scoped type aliases</h2></a>
 <p>Another alternative is to allow users to specify type aliases inside type
 definitions and use any generic parameters specified in that definition.
 An example is:</p>
@@ -751,7 +758,7 @@ permitted before the variants, or after the variants.</p>
 <p>For simpler cases such as the first tree-example, using <code>Self</code> is also more
 readable as it is a special construct that you can easily syntax-highlight
 for in a more noticeable way. Further, while there is an expectation from
-some users that <code>Self</code> already works, as discussed in the <a href="2300-self-in-typedefs.html#motivation">motivation</a>,
+some users that <code>Self</code> already works, as discussed in the <a href="#motivation">motivation</a>,
 the expectation that this alternative already works has not been brought
 forth by anyone as far as this RFC's author is aware.</p>
 <p>It is also unclear how internal scoped type aliases would syntactically work
@@ -760,7 +767,7 @@ with <code>where</code> bounds.</p>
 RFC in that both can be supported technically. The alternative should be
 considered interesting future work, but for now, a more conservative approach
 is preferred.</p>
-<a class="header" href="2300-self-in-typedefs.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>This syntax creates ambiguity if we ever permit types to be declared directly
 within impls (for example, as the value for an associated type). Do we ever want
@@ -812,9 +819,6 @@ rationale.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

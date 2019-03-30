@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0461-tls-overhaul - </title>
+        <title>0461-tls-overhaul - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/461">rust-lang/rfcs#461</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/19175">rust-lang/rust#19175</a></li>
 </ul>
-<a class="header" href="0461-tls-overhaul.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce a new thread local storage module to the standard library, <code>std::tls</code>,
 providing:</p>
 <ul>
@@ -146,7 +153,7 @@ providing:</p>
 <li>Owning TLS, an owning, dynamically initialized, dynamically destructed
 variant, similar to <code>std::local_data</code> today.</li>
 </ul>
-<a class="header" href="0461-tls-overhaul.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>In the past, the standard library's answer to thread local storage was the
 <code>std::local_data</code> module. This module was designed based on the Rust task model
 where a task could be either a 1:1 or M:N task. This design constraint has
@@ -161,7 +168,7 @@ critical part of many applications and opens many doors to interesting sets of
 functionality that this RFC sees fit to try and wedge it into the schedule. The
 current <code>std::local_data</code> module simply doesn't meet the requirements of what
 one may expect out of a TLS implementation for a language like Rust.</p>
-<a class="header" href="0461-tls-overhaul.html#current-drawbacks" id="current-drawbacks"><h2>Current Drawbacks</h2></a>
+<a class="header" href="#current-drawbacks" id="current-drawbacks"><h2>Current Drawbacks</h2></a>
 <p>Today's implementation of thread local storage, <code>std::local_data</code>, suffers from
 a few drawbacks:</p>
 <ul>
@@ -190,7 +197,7 @@ undocumented leaks.</p>
 runtime removal is complete, this will no longer be a valid assumption.</p>
 </li>
 </ul>
-<a class="header" href="0461-tls-overhaul.html#current-strengths" id="current-strengths"><h2>Current Strengths</h2></a>
+<a class="header" href="#current-strengths" id="current-strengths"><h2>Current Strengths</h2></a>
 <p>There are, however, a few pros to the usage of the module today which should be
 required for any replacement:</p>
 <ul>
@@ -198,7 +205,7 @@ required for any replacement:</p>
 <li><code>std::local_data</code> allows consuming ownership of data, allowing it to live past
 the current stack frame.</li>
 </ul>
-<a class="header" href="0461-tls-overhaul.html#building-blocks-available" id="building-blocks-available"><h2>Building blocks available</h2></a>
+<a class="header" href="#building-blocks-available" id="building-blocks-available"><h2>Building blocks available</h2></a>
 <p>There are currently two primary building blocks available to Rust when building
 a thread local storage abstraction, <code>#[thread_local]</code> and OS-based TLS. Neither
 of these are currently used for <code>std::local_data</code>, but are generally seen as
@@ -207,7 +214,7 @@ of these are currently used for <code>std::local_data</code>, but are generally 
 <code>O(log N)</code> lookup is quite speedy!</p>
 <p>With these available, this RFC is motivated in redesigning TLS to make use of
 these primitives.</p>
-<a class="header" href="0461-tls-overhaul.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Three new modules will be added to the standard library:</p>
 <ul>
 <li>
@@ -234,7 +241,7 @@ a value into and out of TLS.</p>
 </ul>
 <p>The design described below can be found as an existing cargo package:
 https://github.com/alexcrichton/tls-rs.</p>
-<a class="header" href="0461-tls-overhaul.html#the-os-layer" id="the-os-layer"><h2>The OS layer</h2></a>
+<a class="header" href="#the-os-layer" id="the-os-layer"><h2>The OS layer</h2></a>
 <p>While LLVM has support for <code>#[thread_local]</code> statics, this feature is not
 supported on all platforms that LLVM can target. Almost all platforms, however,
 provide some form of OS-based TLS. For example Unix normally comes with
@@ -247,7 +254,7 @@ will go under API stabilization at that time.</p>
 <p>This module will support &quot;statically allocated&quot; keys as well as dynamically
 allocated keys. A statically allocated key will actually allocate a key on
 first use.</p>
-<a class="header" href="0461-tls-overhaul.html#destructor-support" id="destructor-support"><h3>Destructor support</h3></a>
+<a class="header" href="#destructor-support" id="destructor-support"><h3>Destructor support</h3></a>
 <p>The major difference between Unix and Windows TLS support is that Unix supports
 a destructor function for each TLS slot while Windows does not. When each Unix
 TLS key is created, an optional destructor is specified. If any key has a
@@ -258,7 +265,7 @@ implementing destructor support for Windows to ensure that functionality is not
 lost when writing Unix-only code.</p>
 <p>Destructor support for Windows will be provided through a custom implementation
 of tracking known destructors for TLS keys.</p>
-<a class="header" href="0461-tls-overhaul.html#scoped-tls" id="scoped-tls"><h2>Scoped TLS</h2></a>
+<a class="header" href="#scoped-tls" id="scoped-tls"><h2>Scoped TLS</h2></a>
 <p>As discussed before, one of the motivations for this RFC is to provide a method
 of inserting any value into TLS, not just those that ascribe to <code>'static</code>. This
 provides maximal flexibility in storing values into TLS to ensure any &quot;thread
@@ -311,7 +318,7 @@ impl&lt;T&gt; Key&lt;T&gt; {
 <p>The purpose of this module is to enable the ability to insert a value into TLS
 for a scoped period of time. While able to cover many TLS patterns, this flavor
 of TLS is not comprehensive, motivating the owning variant of TLS.</p>
-<a class="header" href="0461-tls-overhaul.html#variations" id="variations"><h3>Variations</h3></a>
+<a class="header" href="#variations" id="variations"><h3>Variations</h3></a>
 <p>Specifically the <code>with</code> API can be somewhat unwieldy to use. The <code>with</code> function
 takes a closure to run, yielding a value to the closure.  It is believed that
 this is required for the implementation to be sound, but it also goes against
@@ -326,7 +333,7 @@ the use case where the key has not been <code>set</code> before it used via <cod
 somewhat unergonomic, however, as it will almost always be followed by
 <code>unwrap()</code>. An alternative design would be to provide a <code>is_set</code> function and
 have <code>with</code> <code>panic!</code> instead.</p>
-<a class="header" href="0461-tls-overhaul.html#owning-tls" id="owning-tls"><h2>Owning TLS</h2></a>
+<a class="header" href="#owning-tls" id="owning-tls"><h2>Owning TLS</h2></a>
 <p>Although scoped TLS can store any value, it is also limited in the fact that it
 cannot own a value. This means that TLS values cannot escape the stack from from
 which they originated from. This is itself another common usage pattern of TLS,
@@ -363,7 +370,7 @@ impl&lt;T: 'static&gt; Key&lt;T&gt; {
     pub fn with&lt;R&gt;(&amp;'static self, f: |Option&lt;&amp;T&gt;| -&gt; R) -&gt; R { /* ... */ }
 }
 #}</code></pre></pre>
-<a class="header" href="0461-tls-overhaul.html#destructors" id="destructors"><h3>Destructors</h3></a>
+<a class="header" href="#destructors" id="destructors"><h3>Destructors</h3></a>
 <p>One of the major points about this implementation is that it allows for values
 with destructors, meaning that destructors must be run when a thread exits. This
 is similar to placing a value with a destructor into <code>std::local_data</code>. This RFC
@@ -383,7 +390,7 @@ to a double-failure.</li>
 need some more hammering out. The sample implementation suffers from a few extra
 drawbacks, but it is believed that some more implementation work can overcome
 some of the minor downsides.</p>
-<a class="header" href="0461-tls-overhaul.html#variations-1" id="variations-1"><h3>Variations</h3></a>
+<a class="header" href="#variations-1" id="variations-1"><h3>Variations</h3></a>
 <p>Like the scoped TLS variation, this key has a <code>with</code> function instead of the
 normally expected <code>get</code> function (returning a reference). One possible
 alternative would be to yield <code>&amp;T</code> instead of <code>Option&lt;&amp;T&gt;</code> and <code>panic!</code> if the
@@ -392,7 +399,7 @@ function returning a <code>Ref&lt;T&gt;</code>. Currently this is unsafe, howeve
 way to ensure that <code>Ref&lt;T&gt;</code> does not satisfy <code>'static</code>. If the returned
 reference satisfies <code>'static</code>, then it's possible for TLS values to reference
 each other after one has been destroyed, causing a use-after-free.</p>
-<a class="header" href="0461-tls-overhaul.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>There is no variant of TLS for statically initialized data. Currently the
 <code>std::tls</code> module requires dynamic initialization, which means a slight
@@ -409,7 +416,7 @@ greenlets). This RFC considers it the multiplexing systems' responsibility to
 maintain native TLS if necessary, or otherwise strongly recommend not using
 native TLS.</li>
 </ul>
-<a class="header" href="0461-tls-overhaul.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Alternatives on the API can be found in the &quot;Variations&quot; sections above.</p>
 <p>Some other alternatives might include:</p>
 <ul>
@@ -431,7 +438,7 @@ via the usage of <code>transmute</code>. The implementation provided did not, ho
 include the scoped form of this RFC.</p>
 </li>
 </ul>
-<a class="header" href="0461-tls-overhaul.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Are the questions around destructors vague enough to warrant the <code>get</code> method
 being <code>unsafe</code> on owning TLS?</li>
@@ -481,9 +488,6 @@ being <code>unsafe</code> on owning TLS?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

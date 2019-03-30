@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2591-exhaustive-integer-pattern-matching - </title>
+        <title>2591-exhaustive-integer-pattern-matching - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2591">rust-lang/rfcs#2591</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/50907">rust-lang/rust#50907</a></li>
 </ul>
-<a class="header" href="2591-exhaustive-integer-pattern-matching.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Extend Rust's pattern matching exhaustiveness checks to cover the integer types: <code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code>, <code>u128</code>, <code>usize</code>, <code>i8</code>, <code>i16</code>, <code>i32</code>, <code>i64</code>, <code>i128</code>, <code>isize</code> and <code>char</code>.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -158,11 +165,11 @@ fn matcher_incomplete(x: u8) {
   }
 }
 #}</code></pre></pre>
-<a class="header" href="2591-exhaustive-integer-pattern-matching.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This is viewed essentially as a bug fix: other than the implementational challenges, there is no reason not to perform correct exhaustiveness checking on integer patterns, especially as range patterns are permitted, making it very straightforward to provide patterns covering every single integer.</p>
 <p>This change will mean that Rust correctly performs exhaustiveness checking on all the types that currently compose its type system.</p>
 <p>This feature has already <a href="https://github.com/rust-lang/rust/pull/50912">been implemented</a> behind the feature flag <code>exhaustive_integer_patterns</code>, so this RFC is viewed as a motion to stabilise the feature.</p>
-<a class="header" href="2591-exhaustive-integer-pattern-matching.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>Exhaustive pattern matching works for integer types, just like any other type. In addition, missing ranges of integers will be reported as errors.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -184,19 +191,19 @@ fn matcher_incomplete(x: u8) {
 <p>Specifically, for non-<code>char</code> integer types, the entire range of values from <code>{integer}::MIN</code> to <code>{integer}::MAX</code> are considered valid constructors. For <code>char</code>, the Unicode Scalar Value (USV) ranges (<code>\u{0000}..=\u{D7FF}</code> and <code>\u{E000}..=\u{10FFFF}</code>) are considered valid constructors.</p>
 <p>More examples may be found in <a href="https://github.com/rust-lang/rust/pull/50912/files#diff-8809036e5fb5a9a0fcc283431046ef51">the file of test cases</a>.</p>
 <p>Note that guarded arms are ignored for the purpose of exhaustiveness checks, just like with any other type (i.e. arms with <code>if</code> conditions are always considered fallible and aren't considered to cover any possibilities).</p>
-<a class="header" href="2591-exhaustive-integer-pattern-matching.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>The implementation of this features uses interval arithmetic and an extension of the pattern matching exhaustiveness checks as described in <a href="http://moscova.inria.fr/%7Emaranget/papers/warn/index.html">this paper</a>.</p>
 <p>This feature has already <a href="https://github.com/rust-lang/rust/pull/50912">been implemented</a>, so the code there may be used for further reference. The source contains detailed comments about the implementation.</p>
 <p>For <code>usize</code> and <code>isize</code>, no assumptions about the maximimum value are permitted. To exhaustively match on either pointer-size integer type a wildcard pattern (<code>_</code>) must be used (or if <a href="https://github.com/rust-lang/rfcs/issues/947">open-ended range patterns are added</a>, ranges must be open ended [e.g. <code>0..</code>]). An unstable feature <code>precise_pointer_size_matching</code> will be added to permit matching exactly on pointer-size integer types.</p>
-<a class="header" href="2591-exhaustive-integer-pattern-matching.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There is no reason not to do this: it fixes a limitation of the existing pattern exhaustiveness checks.</p>
-<a class="header" href="2591-exhaustive-integer-pattern-matching.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>This is a straightforward extension of the existing exhaustiveness checks. This is the only sensible design for the feature.</p>
-<a class="header" href="2591-exhaustive-integer-pattern-matching.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>As far as the author is unaware, Rust is the first language to support exhaustive integer pattern matching. At the time of writing, Swift and OCaml, two languages for which this feature could also make sense, do not implement this extension. This is likely because the feature is not simple to implement and the usefulness of this feature appears in specific domains.</p>
-<a class="header" href="2591-exhaustive-integer-pattern-matching.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>This feature is already implemented and appears to meet expectations for such a feature, as there have been no issues brought up about the implementation or design.</p>
-<a class="header" href="2591-exhaustive-integer-pattern-matching.html#future-possibilities" id="future-possibilities"><h1>Future possibilities</h1></a>
+<a class="header" href="#future-possibilities" id="future-possibilities"><h1>Future possibilities</h1></a>
 <p>Having added exhaustive pattern matching for integers, all types in Rust for which exhaustive matching is sensible are matched exhaustively. We should aim to ensure this remains the case. However, at present, exhaustive pattern matching in Rust is viewed complete.</p>
 
                     </main>
@@ -242,9 +249,6 @@ fn matcher_incomplete(x: u8) {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1513-less-unwinding - </title>
+        <title>1513-less-unwinding - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1513">rust-lang/rfcs#1513</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/32837">rust-lang/rust#32837</a></li>
 </ul>
-<a class="header" href="1513-less-unwinding.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Stabilize implementing panics as aborts.</p>
 <ul>
 <li>Stabilize the <code>-Z no-landing-pads</code> flag under the name <code>-C panic=strategy</code></li>
@@ -147,7 +154,7 @@
 implementations of panic just before a final product is generated.</li>
 <li>Add a <code>[profile.dev]</code> option to Cargo to configure how panics are implemented.</li>
 </ul>
-<a class="header" href="1513-less-unwinding.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Panics in Rust have long since been implemented with the intention of being
 caught at particular boundaries (for example the thread boundary). This is quite
 useful for isolating failures in Rust code, for example:</p>
@@ -188,31 +195,31 @@ be caught, it's easy to get into a situation where libraries of mixed
 compilation modes are linked together, causing odd or unknown errors. This RFC
 proposes a situation similar to the design of custom allocators to alleviate
 this situation.</p>
-<a class="header" href="1513-less-unwinding.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The major goal of this RFC is to develop a work flow around managing crates
 which wish to disable unwinding. This intends to set forth a complete vision for
 how these crates interact with the ecosystem at large. Much of this design will
 be similar to the <a href="https://github.com/rust-lang/rfcs/blob/master/text/1183-swap-out-jemalloc.md">custom allocator RFC</a>.</p>
-<a class="header" href="1513-less-unwinding.html#high-level-design" id="high-level-design"><h3>High level design</h3></a>
+<a class="header" href="#high-level-design" id="high-level-design"><h3>High level design</h3></a>
 <p>This section serves as a high-level tour through the design proposed in this
 RFC. The linked sections provide more complete explanation as to what each step
 entails.</p>
 <ul>
-<li>The compiler will have a <a href="1513-less-unwinding.html#new-compiler-flags">new stable flag</a>, <code>-C panic</code>
+<li>The compiler will have a <a href="#new-compiler-flags">new stable flag</a>, <code>-C panic</code>
 which will configure how unwinding-related code is generated.</li>
-<li><a href="1513-less-unwinding.html#panic-attributes">Two new unstable attributes</a> will be added to the
+<li><a href="#panic-attributes">Two new unstable attributes</a> will be added to the
 compiler, <code>#![needs_panic_runtime]</code> and <code>#![panic_runtime]</code>. The standard
 library will need a runtime and will be lazily linked to a crate which has
 <code>#![panic_runtime]</code>.</li>
-<li><a href="1513-less-unwinding.html#panic-crates">Two unstable crates</a> tagged with <code>#![panic_runtime]</code> will be
+<li><a href="#panic-crates">Two unstable crates</a> tagged with <code>#![panic_runtime]</code> will be
 distributed as the runtime implementation of panicking, <code>panic_abort</code> and
 <code>panic_unwind</code> crates.  The former will translate all panics to process
 aborts, whereas the latter will be implemented as unwinding is today, via the
 system stack unwinder.</li>
-<li><a href="1513-less-unwinding.html#cargo-changes">Cargo will gain</a> a new <code>panic</code> option in the <code>[profile.foo]</code>
+<li><a href="#cargo-changes">Cargo will gain</a> a new <code>panic</code> option in the <code>[profile.foo]</code>
 sections to indicate how that profile should compile panic support.</li>
 </ul>
-<a class="header" href="1513-less-unwinding.html#new-compiler-flags" id="new-compiler-flags"><h3>New Compiler Flags</h3></a>
+<a class="header" href="#new-compiler-flags" id="new-compiler-flags"><h3>New Compiler Flags</h3></a>
 <p>The first component to this design is to have a <strong>stable</strong> flag to the compiler
 which configures how panic-related code is generated.  This will be
 stabilized in the form:</p>
@@ -235,7 +242,7 @@ to disable the <code>invoke</code> instruction and use <code>call</code> instead
 today), and the value will be encoded into the crate metadata. This option is
 planned with extensibility in mind to future panic strategies if we ever
 implement some (return-based unwinding is at least one other possible option).</p>
-<a class="header" href="1513-less-unwinding.html#panic-attributes" id="panic-attributes"><h3>Panic Attributes</h3></a>
+<a class="header" href="#panic-attributes" id="panic-attributes"><h3>Panic Attributes</h3></a>
 <p>Very similarly to <a href="https://github.com/rust-lang/rfcs/blob/master/text/1183-swap-out-jemalloc.md#new-attributes">custom allocators</a>, two new
 <strong>unstable</strong> crate attributes will be added to the compiler:</p>
 <ul>
@@ -271,7 +278,7 @@ attributes will be unstable, and consequently the API itself will also be
 unstable. It suffices to say, however, that like custom allocators a panic
 runtime will implement some public <code>extern</code> symbols known to the crates that
 need a panic runtime, and that's how they'll communicate/link up.</p>
-<a class="header" href="1513-less-unwinding.html#panic-crates" id="panic-crates"><h3>Panic Crates</h3></a>
+<a class="header" href="#panic-crates" id="panic-crates"><h3>Panic Crates</h3></a>
 <p>Two new <strong>unstable</strong> crates will be added to the distribution for each target:</p>
 <ul>
 <li><code>panic_unwind</code> - this is an extraction of the current implementation of
@@ -284,7 +291,7 @@ required by this crate.</li>
 <p>The compiler will assume that these crates are distributed for each platform
 where the standard library is also distributed (e.g. a crate that has
 <code>#![needs_panic_runtime]</code>).</p>
-<a class="header" href="1513-less-unwinding.html#compiler-defaults" id="compiler-defaults"><h3>Compiler defaults</h3></a>
+<a class="header" href="#compiler-defaults" id="compiler-defaults"><h3>Compiler defaults</h3></a>
 <p>The compiler will ship with a few defaults which affect how panic runtimes are
 selected in Rust programs. Specifically:</p>
 <ul>
@@ -307,7 +314,7 @@ will be injected.</li>
 </ol>
 </li>
 </ul>
-<a class="header" href="1513-less-unwinding.html#cargo-changes" id="cargo-changes"><h3>Cargo changes</h3></a>
+<a class="header" href="#cargo-changes" id="cargo-changes"><h3>Cargo changes</h3></a>
 <p>In order to export this new feature to Cargo projects, a new option will be
 added to the <code>[profile]</code> section of manifests:</p>
 <pre><code class="language-toml">[profile.dev]
@@ -315,7 +322,7 @@ panic = 'unwind'
 </code></pre>
 <p>This will cause Cargo to pass <code>-C panic=unwind</code> to all <code>rustc</code> invocations for
 a crate graph. Cargo will have special knowledge, however, that for <code>cargo test</code> it cannot pass <code>-C panic=abort</code>.</p>
-<a class="header" href="1513-less-unwinding.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>The implementation of custom allocators was no small feat in the compiler, and
@@ -346,7 +353,7 @@ but without that option is this the best way to be implementing these switches
 for the standard library?</p>
 </li>
 </ul>
-<a class="header" href="1513-less-unwinding.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>Currently this RFC allows mixing multiple panic runtimes in a crate graph so
@@ -376,7 +383,7 @@ the crate graph. Additionally it may be easy to mix up crates of different
 panic strategies.</p>
 </li>
 </ul>
-<a class="header" href="1513-less-unwinding.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>One possible implementation of unwinding is via return-based flags. Much of
@@ -434,9 +441,6 @@ Cargo cache both copies of the crate?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

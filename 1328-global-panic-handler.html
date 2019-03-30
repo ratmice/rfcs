@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1328-global-panic-handler - </title>
+        <title>1328-global-panic-handler - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +146,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1328">rust-lang/rfcs#1328</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/30449">rust-lang/rust#30449</a></li>
 </ul>
-<a class="header" href="1328-global-panic-handler.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>When a thread panics in Rust, the unwinding runtime currently prints a message
 to standard error containing the panic argument as well as the filename and
 line number corresponding to the location from which the panic originated.
 This RFC proposes a mechanism to allow user code to replace this logic with
 custom handlers that will run before unwinding begins.</p>
-<a class="header" href="1328-global-panic-handler.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The default behavior is not always ideal for all programs:</p>
 <ul>
 <li>Programs with command line interfaces do not want their output polluted by
@@ -173,7 +180,7 @@ presence of file names and line numbers for all panics causes some amount of
 binary bloat and we may want to add some avenue to allow for the omission of
 those values in the future.</li>
 </ul>
-<a class="header" href="1328-global-panic-handler.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>A new module, <code>std::panic</code>, will be created with a panic handling API:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -254,7 +261,7 @@ out as appropriate.</p>
 It returns an <code>Option</code> to hedge against possible future changes to the panic
 system that would allow a crate to be compiled with location metadata removed
 to minimize binary size.</p>
-<a class="header" href="1328-global-panic-handler.html#prior-art" id="prior-art"><h2>Prior Art</h2></a>
+<a class="header" href="#prior-art" id="prior-art"><h2>Prior Art</h2></a>
 <p>C++ has a
 <a href="http://www.cplusplus.com/reference/exception/set_terminate/"><code>std::set_terminate</code></a>
 function which registers a handler for uncaught exceptions, returning the old
@@ -267,10 +274,10 @@ handled</a>
 by handlers registered on an individual <code>Thread</code>, by the <code>Thread</code>'s,
 <code>ThreadGroup</code>, and by a handler registered globally. The handlers are provided
 with the <code>Throwable</code> that triggered the handler.</p>
-<a class="header" href="1328-global-panic-handler.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The more infrastructure we add to interact with panics, the more attractive it
 becomes to use them as a more normal part of control flow.</p>
-<a class="header" href="1328-global-panic-handler.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Panic handlers could be run after a panicking thread has unwound rather than
 before. This is perhaps a more intuitive arrangement, and allows <code>catch_panic</code>
 to prevent panic handlers from running. However, running handlers before
@@ -294,7 +301,7 @@ handlers on top of the global one proposed here in a straightforward manner.</p>
 a bare function pointer. This seems like a somewhat weirder API, however, and
 the implementation proposed above should not end up complex enough to justify
 the change.</p>
-<a class="header" href="1328-global-panic-handler.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None at the moment.</p>
 
                     </main>
@@ -340,9 +347,6 @@ the change.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2476-clippy-uno - </title>
+        <title>2476-clippy-uno - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,27 +146,27 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2539">rust-lang/rfcs#2539</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang-nursery/rust-clippy/issues/3343">rust-lang-nursery/rust-clippy#54881</a></li>
 </ul>
-<a class="header" href="2476-clippy-uno.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Release Clippy 1.0, in preparation for it being shipped via rustup and eventually available via Rust Stable.</p>
-<a class="header" href="2476-clippy-uno.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>See also: <a href="https://manishearth.github.io/blog/2018/06/05/the-future-of-clippy-the-rust-linter/">The Future of Clippy</a></p>
 <p>Clippy, the linter for Rust, has been a nightly-only plugin to Rust for many years.
 In that time, it's grown big, but it's nightly-only nature makes it pretty hard to use.</p>
 <p>The eventual plan is to integrate it in Rustup à la Rustfmt/RLS so that you can simply fetch prebuilt binaries
 for your system and <code>cargo clippy</code> Just Works ™️. In preparation for this, we'd like to nail down various things
 about its lints and their categorization.</p>
-<a class="header" href="2476-clippy-uno.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
-<a class="header" href="2476-clippy-uno.html#usage-and-lint-philosophy" id="usage-and-lint-philosophy"><h2>Usage and lint philosophy</h2></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#usage-and-lint-philosophy" id="usage-and-lint-philosophy"><h2>Usage and lint philosophy</h2></a>
 <p>We expect Clippy to be used via <code>cargo clippy</code>.</p>
 <p>Clippy aims to follow the general Rust style. It may be somewhat opiniated in some situations.</p>
 <p>In general Clippy is intended to be used with a liberal sprinkling of <code>#[allow()]</code> and <code>#[warn()]</code>; <em>it is okay</em> to
 disagree with Clippy's choices. This is a weaker philosophy than that behind rustc's lints, where usually flipping
 one is an indication of a very specialized situation.</p>
-<a class="header" href="2476-clippy-uno.html#lint-attributes" id="lint-attributes"><h2>Lint attributes</h2></a>
+<a class="header" href="#lint-attributes" id="lint-attributes"><h2>Lint attributes</h2></a>
 <p>Currently to allow/deny Clippy lints you have to <code>#[cfg_attr(clippy, allow(lintname))]</code> which is somewhat tedious.</p>
 <p>The compiler should support something like <code>#[allow(clippy::lintname)]</code> which won't attempt to warn about nonexistant lints
 at all when not running Clippy.</p>
-<a class="header" href="2476-clippy-uno.html#stability-guarantees" id="stability-guarantees"><h2>Stability guarantees</h2></a>
+<a class="header" href="#stability-guarantees" id="stability-guarantees"><h2>Stability guarantees</h2></a>
 <p>Clippy will have the same idea of lint stability as rustc; essentially we do not guarantee stability under <code>#[deny(lintname)]</code>.
 This is not a problem since deny only affects the current crate (dependencies have their lints capped)
 so at most you’ll be forced to slap on an <code>#[allow()]</code> for your <em>own</em> crate following a Rust upgrade.</p>
@@ -184,8 +191,8 @@ are allow-by-default. These may experience radical changes, however they will ne
 <p>Pre-1.0 we may also flush out all of the deprecated lints.</p>
 <p>The configuration file for clippy, clippy.toml, is not stabilized in this RFC. Instead, we propose to require clippy.toml users set a <code>clippy_toml_is_unstable_and_may_go_away</code> option.</p>
 <p>The interface and existence of <code>cargo-clippy</code> is also not stabilized in this RFC. We will continue shipping it with rustup, but it may be replaced in the future with a combined <code>cargo lint</code> command.</p>
-<a class="header" href="2476-clippy-uno.html#lint-audit-and-categories" id="lint-audit-and-categories"><h2>Lint audit and categories</h2></a>
-<p>A couple months ago we did a lint audit to recategorize all the Clippy lints. The <a href="2476-clippy-uno.html#lint-categorization">Reference-Level explanation below</a> contains a list
+<a class="header" href="#lint-audit-and-categories" id="lint-audit-and-categories"><h2>Lint audit and categories</h2></a>
+<p>A couple months ago we did a lint audit to recategorize all the Clippy lints. The <a href="#lint-categorization">Reference-Level explanation below</a> contains a list
 of all of these lints as currently categorized.</p>
 <p>The categories we came up with are:</p>
 <ul>
@@ -206,7 +213,7 @@ simplify them. For example, a lint that asks you to replace <code>.filter(..).ne
 <p>Lints can only belong to one lint group at a time, and the lint group defines the lint level. There is a bunch of overlap between
 the style and complexity groups -- a lot of style issues are also complexity issues and vice versa. We separate these groups
 so that people can opt in to the complexity lints without having to opt in to Clippy's style.</p>
-<a class="header" href="2476-clippy-uno.html#compiler-uplift" id="compiler-uplift"><h2>Compiler uplift</h2></a>
+<a class="header" href="#compiler-uplift" id="compiler-uplift"><h2>Compiler uplift</h2></a>
 <p>The compiler has historically had a &quot;no new lints&quot; policy, partly with the desire that lints would
 incubate outside of the compiler (so usually in Clippy). This feels like a good time to look into uplifting these lints.</p>
 <p>This RFC does not <em>yet</em> propose lints to be uplifted, but the intention is that the RFC
@@ -219,7 +226,7 @@ whereas style/complexity/etc lints should probably belong in Clippy. Lints may b
 <p>I don't think the compler will want <em>all</em> correctness lints here, however if the lint is about a common enough situation
 where it being <em>not</em> a bug is an exceedingly rare case (i.e. very low false positive frequency) it should probably belong in the
 compiler.</p>
-<a class="header" href="2476-clippy-uno.html#what-lints-belong-in-clippy" id="what-lints-belong-in-clippy"><h2>What lints belong in clippy?</h2></a>
+<a class="header" href="#what-lints-belong-in-clippy" id="what-lints-belong-in-clippy"><h2>What lints belong in clippy?</h2></a>
 <p>Essentially, we consider the categorization itself to be a definition of boundaries -- if it doesn't fit in the categories,
 it doesn't fit in clippy (or needs an RFC for, specifically).</p>
 <p>In itself this isn't complete, we explicitly have a &quot;pedantic&quot; group that's kinda ill defined.</p>
@@ -267,8 +274,8 @@ wish to keep off by default for most of their code. The goal of restriction lint
 the language checks in very specific cases where you need it, e.g. forbidding panics from a certain area of code.</li>
 <li>&quot;cargo&quot; lints follow the same rules as pedantic lints (we only have one of them right now, so we may be experimenting with this in the future)</li>
 </ul>
-<a class="header" href="2476-clippy-uno.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2476-clippy-uno.html#lint-categorization" id="lint-categorization"><h2>Lint categorization</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#lint-categorization" id="lint-categorization"><h2>Lint categorization</h2></a>
 <p>This categorization can be browsed <a href="http://rust-lang-nursery.github.io/rust-clippy/current/">online</a>.</p>
 <p>Please leave comments on thoughts about these lints -- if their categorization is correct, if they should exist at all, and if we should be uplifting them to the compiler.</p>
 <p>For ease of review, the lints below are as they were listed in the original RFC. The proposed changes are:</p>
@@ -277,7 +284,7 @@ the language checks in very specific cases where you need it, e.g. forbidding pa
 <li>Various lints be uplifted to the compiler (and potentially renamed). This is tracked in https://github.com/rust-lang/rust/issues/53224</li>
 <li><code>explicit_iter_loop</code> and <code>explicit_into_iter_loop</code> be moved from <code>style</code> to <code>pedantic</code></li>
 </ul>
-<a class="header" href="2476-clippy-uno.html#correctness-deny" id="correctness-deny"><h1>correctness (Deny)</h1></a>
+<a class="header" href="#correctness-deny" id="correctness-deny"><h1>correctness (Deny)</h1></a>
 <ul>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#for_loop_over_option">for_loop_over_option</a>: Checks for <code>for</code> loops over <code>Option</code> values.</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#eq_op">eq_op</a>: Checks for equal operands to comparison, logical and
@@ -368,7 +375,7 @@ which never terminates.</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#enum_clike_unportable_variant">enum_clike_unportable_variant</a>: Checks for C-like enumerations that are
 <code>repr(isize/usize)</code> and have values that don't fit into an <code>i32</code>.</li>
 </ul>
-<a class="header" href="2476-clippy-uno.html#style-warn" id="style-warn"><h1>style (Warn)</h1></a>
+<a class="header" href="#style-warn" id="style-warn"><h1>style (Warn)</h1></a>
 <ul>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#inconsistent_digit_grouping">inconsistent_digit_grouping</a>: Warns if an integral or floating-point constant is
 grouped inconsistently with underscores.</li>
@@ -530,7 +537,7 @@ suggests the latter.</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#if_let_redundant_pattern_matching">if_let_redundant_pattern_matching</a>: Lint for redundant pattern matching over <code>Result</code> or
 <code>Option</code></li>
 </ul>
-<a class="header" href="2476-clippy-uno.html#complexity-warn" id="complexity-warn"><h1>complexity (Warn)</h1></a>
+<a class="header" href="#complexity-warn" id="complexity-warn"><h1>complexity (Warn)</h1></a>
 <ul>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#option_option">option_option</a>: Checks for use of <code>Option&lt;Option&lt;_&gt;&gt;</code> in function signatures and type
 definitions</li>
@@ -637,7 +644,7 @@ declarations above a certain complexity threshold.</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#char_lit_as_u8">char_lit_as_u8</a>: Checks for expressions where a character literal is cast
 to <code>u8</code> and suggests using a byte literal instead.</li>
 </ul>
-<a class="header" href="2476-clippy-uno.html#perf-warn" id="perf-warn"><h1>perf (Warn)</h1></a>
+<a class="header" href="#perf-warn" id="perf-warn"><h1>perf (Warn)</h1></a>
 <ul>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#mutex_atomic">mutex_atomic</a>: Checks for usages of <code>Mutex&lt;X&gt;</code> where an atomic will do.</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#large_enum_variant">large_enum_variant</a>: Checks for large size differences between variants on
@@ -666,7 +673,7 @@ etc., and suggests to use <code>unwrap_or_else</code> instead</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#single_char_pattern">single_char_pattern</a>: Checks for string methods that receive a single-character
 <code>str</code> as an argument, e.g. <code>_.split(&quot;x&quot;)</code>.</li>
 </ul>
-<a class="header" href="2476-clippy-uno.html#pedantic-allow" id="pedantic-allow"><h1>pedantic (Allow)</h1></a>
+<a class="header" href="#pedantic-allow" id="pedantic-allow"><h1>pedantic (Allow)</h1></a>
 <ul>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#expl_impl_clone_on_copy">expl_impl_clone_on_copy</a>: Checks for explicit <code>Clone</code> implementations for <code>Copy</code>
 types.</li>
@@ -737,7 +744,7 @@ or any 64-bit integer to <code>f64</code>.</li>
 true or false, but where one side has been upcast so that the comparison is
 necessary. Only integer types are checked.</li>
 </ul>
-<a class="header" href="2476-clippy-uno.html#nursery-allow" id="nursery-allow"><h1>nursery (Allow)</h1></a>
+<a class="header" href="#nursery-allow" id="nursery-allow"><h1>nursery (Allow)</h1></a>
 <ul>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#empty_line_after_outer_attr">empty_line_after_outer_attr</a>: Checks for empty lines after outer attributes</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#needless_borrow">needless_borrow</a>: Checks for address of operations (<code>&amp;</code>) that are going to
@@ -749,7 +756,7 @@ upper bound, e.g. <code>x..(y+1)</code>.</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#fallible_impl_from">fallible_impl_from</a>: Checks for impls of <code>From&lt;..&gt;</code> that contain <code>panic!()</code> or <code>unwrap()</code></li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#unnecessary_unwrap">unnecessary_unwrap</a>: Checks for calls of <code>unwrap[_err]()</code> that cannot fail.</li>
 </ul>
-<a class="header" href="2476-clippy-uno.html#restriction-allow" id="restriction-allow"><h1>restriction (Allow)</h1></a>
+<a class="header" href="#restriction-allow" id="restriction-allow"><h1>restriction (Allow)</h1></a>
 <ul>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#integer_arithmetic">integer_arithmetic</a>: Checks for plain integer arithmetic.</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#shadow_reuse">shadow_reuse</a>: Checks for bindings that shadow other bindings already in
@@ -764,11 +771,11 @@ the original value.</li>
 (<code>Rc</code>, <code>Arc</code>, <code>rc::Weak</code>, or <code>sync::Weak</code>), and suggests calling Clone via unified
 function syntax instead (e.g. <code>Rc::clone(foo)</code>).</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#wrong_pub_self_convention">wrong_pub_self_convention</a>: This is the same as
-<a href="2476-clippy-uno.html#wrong_self_convention"><code>wrong_self_convention</code></a>, but for public items.</li>
+<a href="#wrong_self_convention"><code>wrong_self_convention</code></a>, but for public items.</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#indexing_slicing">indexing_slicing</a>: Checks for usage of indexing or slicing.</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#float_arithmetic">float_arithmetic</a>: Checks for float arithmetic.</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#string_add">string_add</a>: Checks for all instances of <code>x + _</code> where <code>x</code> is of type
-<code>String</code>, but only if <a href="2476-clippy-uno.html#string_add_assign"><code>string_add_assign</code></a> does <em>not</em>
+<code>String</code>, but only if <a href="#string_add_assign"><code>string_add_assign</code></a> does <em>not</em>
 match.</li>
 <li><a href="https://rust-lang-nursery.github.io/rust-clippy/master/index.html#else_if_without_else">else_if_without_else</a>: Checks for usage of if expressions with an <code>else if</code> branch,
 but without a final <code>else</code> branch.</li>
@@ -790,11 +797,11 @@ is to catch debugging remnants.</li>
 value and constant, except in functions called <code>*eq*</code> (which probably
 implement equality for a type involving floats).</li>
 </ul>
-<a class="header" href="2476-clippy-uno.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>We don't particularly <em>need</em> a 1.0, however it's good to have a milestone here, and a general idea of stability as we move forward in this process.</p>
 <p>It's also good to have some community involvement in the lint design/categorization process since Clippy lints
 both reflect and affect the general style of the community.</p>
-<a class="header" href="2476-clippy-uno.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Through the process of this RFC we hope to determine if there are lints which need
 to be uplifted, recategorized, or removed.</p>
 
@@ -841,9 +848,6 @@ to be uplifted, recategorized, or removed.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1240-repr-packed-unsafe-ref - </title>
+        <title>1240-repr-packed-unsafe-ref - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1240">rust-lang/rfcs#1240</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27060">rust-lang/rust#27060</a></li>
 </ul>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Taking a reference into a struct marked <code>repr(packed)</code> should become
 <code>unsafe</code>, because it can lead to undefined behaviour. <code>repr(packed)</code>
 structs need to be banned from storing <code>Drop</code> types for this reason.</p>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Issue <a href="https://github.com/rust-lang/rust/issues/27060">#27060</a> noticed
 that it was possible to trigger undefined behaviour in safe code via
 <code>repr(packed)</code>, by creating references <code>&amp;T</code> which don't satisfy the
@@ -250,7 +257,7 @@ it is correct to take a reference to <code>w</code> in this case (and only that
 case). Similarly, it is only correct to take a reference to <code>y</code> if the
 struct is at an odd address, so that the <code>u16</code> starts at an even one
 (i.e. is 2-byte aligned).</p>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>It is <code>unsafe</code> to take a reference to the field of a <code>repr(packed)</code>
 struct. It is still possible, but it is up to the programmer to ensure
 that the alignment requirements are satisfied. Referencing
@@ -321,11 +328,11 @@ qux.t[0] = 10; // ditto
 <p>(NB. the subfield and indexing cases can be resolved by first copying
 the packed field's value onto the stack, and then accessing the
 desired value.)</p>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#staging" id="staging"><h2>Staging</h2></a>
+<a class="header" href="#staging" id="staging"><h2>Staging</h2></a>
 <p>This change will first land as warnings indicating that code will be
 broken, with the warnings switched to the intended errors after one
 release cycle.</p>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This will cause some functionality to stop working in
 possibly-surprising ways (NB. the drawback here is mainly the
 &quot;possibly-surprising&quot;, since the functionality is broken with general
@@ -347,7 +354,7 @@ impl Clone for Foo { fn clone(&amp;self) -&gt; Foo { *self } }
 not being a visible reference (<code>println!</code> takes one internally),
 however, this can be resolved by, for instance, assigning to a
 temporary.</p>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>A short-term solution would be to feature gate <code>repr(packed)</code> while
 the kinks are worked out of it</li>
@@ -366,10 +373,10 @@ could be OK.</li>
 </ul>
 </li>
 </ul>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#appendix" id="appendix"><h1>Appendix</h1></a>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#crater-analysis" id="crater-analysis"><h2>Crater analysis</h2></a>
+<a class="header" href="#appendix" id="appendix"><h1>Appendix</h1></a>
+<a class="header" href="#crater-analysis" id="crater-analysis"><h2>Crater analysis</h2></a>
 <p>Crater was run on 2015/07/23 with a patch that feature gated <code>repr(packed)</code>.</p>
 <p>High-level summary:</p>
 <ul>
@@ -399,21 +406,21 @@ submitted and merged to remove all of these)</li>
 <tr><td> kiss3d     </td><td> ✓      </td><td>        </td><td>          </td></tr>
 </tbody></table>
 <p>More detailed analysis inline with broken crates. (Don't miss <code>kiss3d</code> in the non-root section.)</p>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#regression-report-c85ba3e9cb4620c6ec8273a34cce6707e91778cb-vs-7a265c6d1280932ba1b881f31f04b03b20c258e5" id="regression-report-c85ba3e9cb4620c6ec8273a34cce6707e91778cb-vs-7a265c6d1280932ba1b881f31f04b03b20c258e5"><h3>Regression report c85ba3e9cb4620c6ec8273a34cce6707e91778cb vs. 7a265c6d1280932ba1b881f31f04b03b20c258e5</h3></a>
+<a class="header" href="#regression-report-c85ba3e9cb4620c6ec8273a34cce6707e91778cb-vs-7a265c6d1280932ba1b881f31f04b03b20c258e5" id="regression-report-c85ba3e9cb4620c6ec8273a34cce6707e91778cb-vs-7a265c6d1280932ba1b881f31f04b03b20c258e5"><h3>Regression report c85ba3e9cb4620c6ec8273a34cce6707e91778cb vs. 7a265c6d1280932ba1b881f31f04b03b20c258e5</h3></a>
 <ul>
 <li>From: c85ba3e9cb4620c6ec8273a34cce6707e91778cb</li>
 <li>To: 7a265c6d1280932ba1b881f31f04b03b20c258e5</li>
 </ul>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#coverage" id="coverage"><h4>Coverage</h4></a>
+<a class="header" href="#coverage" id="coverage"><h4>Coverage</h4></a>
 <ul>
 <li>2617 crates tested: 1404 working / 1151 broken / 40 regressed / 0 fixed / 22 unknown.</li>
 </ul>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#regressions" id="regressions"><h4>Regressions</h4></a>
+<a class="header" href="#regressions" id="regressions"><h4>Regressions</h4></a>
 <ul>
 <li>There are 11 root regressions</li>
 <li>There are 40 regressions</li>
 </ul>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#root-regressions-sorted-by-rank" id="root-regressions-sorted-by-rank"><h4>Root regressions, sorted by rank:</h4></a>
+<a class="header" href="#root-regressions-sorted-by-rank" id="root-regressions-sorted-by-rank"><h4>Root regressions, sorted by rank:</h4></a>
 <ul>
 <li>
 <p><a href="https://crates.io/crates/image">image-0.3.11</a>
@@ -546,7 +553,7 @@ required to match file headers/formats exactly.</li>
 <p>Requires nightly.</p>
 </li>
 </ul>
-<a class="header" href="1240-repr-packed-unsafe-ref.html#non-root-regressions-sorted-by-rank" id="non-root-regressions-sorted-by-rank"><h4>Non-root regressions, sorted by rank:</h4></a>
+<a class="header" href="#non-root-regressions-sorted-by-rank" id="non-root-regressions-sorted-by-rank"><h4>Non-root regressions, sorted by rank:</h4></a>
 <ul>
 <li>
 <p><a href="https://crates.io/crates/glium">glium-0.8.0</a> (<a href="https://tools.taskcluster.net/task-inspector/#m5yEIEu-QEeM_2t4_11Opg">before</a>) (<a href="https://tools.taskcluster.net/task-inspector/#Wztxoh9SQ-GqA4F3inaR9Q">after</a>)</p>
@@ -684,9 +691,6 @@ required to match file headers/formats exactly.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

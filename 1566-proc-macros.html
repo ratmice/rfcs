@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1566-proc-macros - </title>
+        <title>1566-proc-macros - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1566">rust-lang/rfcs#1566</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/38356">rust-lang/rust#38356</a></li>
 </ul>
-<a class="header" href="1566-proc-macros.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes an evolution of Rust's procedural macro system (aka syntax
 extensions, aka compiler plugins). This RFC specifies syntax for the definition
 of procedural macros, a high-level view of their implementation in the compiler,
@@ -159,7 +166,7 @@ a <code>#[proc_macro]</code> attribute. Macros operate on a list of tokens provi
 compiler and return a list of tokens that the macro use is replaced by. We
 provide low-level facilities for operating on these tokens. Higher level
 facilities (e.g., for parsing tokens to an AST) should exist as library crates.</p>
-<a class="header" href="1566-proc-macros.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Procedural macros have long been a part of Rust and have been used for diverse
 and interesting purposes, for example <a href="https://github.com/rust-lang-nursery/regex">compile-time regexes</a>,
 <a href="https://github.com/serde-rs/serde">serialisation</a>, and
@@ -175,7 +182,7 @@ break procedural macros. Therefore, offering the usual backwards compatibility
 guarantees to procedural macros, would inhibit our ability to evolve the
 language. By switching to a token-based (rather than AST- based) system, we hope
 to avoid this problem.</p>
-<a class="header" href="1566-proc-macros.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>There are two kinds of procedural macro: function-like and attribute-like. These
 two kinds exist today, and other than naming (see
 <a href="https://github.com/rust-lang/rfcs/pull/1561">RFC 1561</a>) the syntax for using
@@ -244,7 +251,7 @@ in the future allow implementing these traits directly, rather than just
 implementing the above functions. By adding methods to these traits, we can
 allow macro implementations to pass data to the compiler, for example,
 specifying hygiene information or allowing for fast re-compilation.</p>
-<a class="header" href="1566-proc-macros.html#proc-macro-crates" id="proc-macro-crates"><h2><code>proc-macro</code> crates</h2></a>
+<a class="header" href="#proc-macro-crates" id="proc-macro-crates"><h2><code>proc-macro</code> crates</h2></a>
 <p><a href="https://github.com/rust-lang/rfcs/pull/1681">Macros 1.1</a> added a new crate
 type: proc-macro. This both allows procedural macros to be declared within the
 crate, and dictates how the crate is compiled. Procedural macros must use
@@ -269,7 +276,7 @@ linked with the importing crate at runtime.</p>
 <p><a href="https://github.com/rust-lang/rfcs/pull/1681">Macros 1.1</a> required <code>#[macro_use]</code>
 on <code>extern crate</code> which imports procedural macros. This will not be required
 and should be deprecated.</p>
-<a class="header" href="1566-proc-macros.html#writing-procedural-macros" id="writing-procedural-macros"><h2>Writing procedural macros</h2></a>
+<a class="header" href="#writing-procedural-macros" id="writing-procedural-macros"><h2>Writing procedural macros</h2></a>
 <p>Procedural macro authors should not use the compiler crates (libsyntax, etc.).
 Using these will remain unstable. We will make available a new crate,
 libproc_macro, which will follow the usual path to stabilisation, will be part
@@ -296,7 +303,7 @@ to make items or variables more widely nameable than they would be by default.
 Procedural macros will be able to take part in the application of the hygiene
 algorithm via libproc_macro. Again, full details must wait for the libproc_macro
 RFC and a sketch is available in this <a href="http://ncameron.org/blog/libmacro/">blog post</a>.</p>
-<a class="header" href="1566-proc-macros.html#tokens" id="tokens"><h2>Tokens</h2></a>
+<a class="header" href="#tokens" id="tokens"><h2>Tokens</h2></a>
 <p>Procedural macros will primarily operate on tokens. There are two main benefits
 to this principle: flexibility and future proofing. By operating on tokens, code
 passed to procedural macros does not need to satisfy the Rust parser, only the
@@ -397,7 +404,7 @@ pub struct Symbol { ... }
 <p>Note that although tokens exclude whitespace, by examining the spans of tokens,
 a procedural macro can get the string representation of a <code>TokenStream</code> and thus
 has access to whitespace information.</p>
-<a class="header" href="1566-proc-macros.html#open-question-punctuationchar-and-multi-char-operators" id="open-question-punctuationchar-and-multi-char-operators"><h3>Open question: <code>Punctuation(char)</code> and multi-char operators.</h3></a>
+<a class="header" href="#open-question-punctuationchar-and-multi-char-operators" id="open-question-punctuationchar-and-multi-char-operators"><h3>Open question: <code>Punctuation(char)</code> and multi-char operators.</h3></a>
 <p>Rust has many compound operators, e.g., <code>&lt;&lt;</code>. It's not clear how best to deal
 with them. If the source code contains &quot;<code>+ =</code>&quot;, it would be nice to distinguish
 this in the token stream from &quot;<code>+=</code>&quot;. On the other hand, if we represent <code>&lt;&lt;</code> as
@@ -416,7 +423,7 @@ the current token set. The former would have issues with pattern matching. The
 latter is a bit hacky, there would be backwards compatibility issues if we
 wanted to add new compound operators in the future.</li>
 </ul>
-<a class="header" href="1566-proc-macros.html#staging" id="staging"><h2>Staging</h2></a>
+<a class="header" href="#staging" id="staging"><h2>Staging</h2></a>
 <ol>
 <li>Implement <a href="https://github.com/rust-lang/rfcs/pull/1561">RFC 1561</a>.</li>
 <li>Implement <code>#[proc_macro]</code> and <code>#[cfg(proc_macro)]</code> and the function approach to
@@ -430,7 +437,7 @@ libproc_macro. It is hoped that much of this work will be community-led.</li>
 <li>After some time to allow conversion, deprecate the old-style macros. Later,
 remove old macros completely.</li>
 </ol>
-<a class="header" href="1566-proc-macros.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Procedural macros are a somewhat unpleasant corner of Rust at the moment. It is
 hard to argue that some kind of reform is unnecessary. One could find fault with
 this proposed reform in particular (see below for some alternatives). Some
@@ -447,7 +454,7 @@ code in the compiler makes it vulnerable to crashes and possibly security issues
 macros can introduce hard to debug errors, macros can make a program hard to
 comprehend, it risks creating de facto dialects of Rust and thus fragmentation
 of the ecosystem, etc.</p>
-<a class="header" href="1566-proc-macros.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could keep the existing system or remove procedural macros from Rust.</p>
 <p>We could have an AST-based (rather than token-based) system. This has major
 backwards compatibility issues.</p>
@@ -476,8 +483,8 @@ the annotated item until after macro expansion. That would allow for more
 flexible macros, since the input would not be constrained to Rust syntax. However,
 this would require identifying items from tokens, rather than from the AST, which
 would require additional rules on token trees and may not be possible.</p>
-<a class="header" href="1566-proc-macros.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="1566-proc-macros.html#linking-model" id="linking-model"><h3>Linking model</h3></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#linking-model" id="linking-model"><h3>Linking model</h3></a>
 <p>Currently, procedural macros are dynamically linked with the compiler. This
 prevents the compiler being statically linked, which is sometimes desirable. An
 alternative architecture would have procedural macros compiled as independent
@@ -492,24 +499,24 @@ essential feature of macro reform, then we might want to consider the interfaces
 more thoroughly with this in mind.</p>
 <p>A step in this direction might be to run the macro in its own thread, but in the
 compiler's process.</p>
-<a class="header" href="1566-proc-macros.html#interactions-with-constant-evaluation" id="interactions-with-constant-evaluation"><h3>Interactions with constant evaluation</h3></a>
+<a class="header" href="#interactions-with-constant-evaluation" id="interactions-with-constant-evaluation"><h3>Interactions with constant evaluation</h3></a>
 <p>Both procedural macros and constant evaluation are mechanisms for running Rust
 code at compile time. Currently, and under the proposed design, they are
 considered completely separate features. There might be some benefit in letting
 them interact.</p>
-<a class="header" href="1566-proc-macros.html#inline-procedural-macros" id="inline-procedural-macros"><h3>Inline procedural macros</h3></a>
+<a class="header" href="#inline-procedural-macros" id="inline-procedural-macros"><h3>Inline procedural macros</h3></a>
 <p>It would nice to allow procedural macros to be defined in the crate in which
 they are used, as well as in separate crates (mentioned above). This complicates
 things since it breaks the invariant that a crate is designed to be used at
 either compile-time or runtime. I leave it for the future.</p>
-<a class="header" href="1566-proc-macros.html#specification-of-the-macro-definition-function-signatures" id="specification-of-the-macro-definition-function-signatures"><h3>Specification of the macro definition function signatures</h3></a>
+<a class="header" href="#specification-of-the-macro-definition-function-signatures" id="specification-of-the-macro-definition-function-signatures"><h3>Specification of the macro definition function signatures</h3></a>
 <p>As proposed, the signatures of functions used as macro definitions are hard-
 wired into the compiler. It would be more flexible to allow them to be specified
 by a lang-item. I'm not sure how beneficial this would be, since a change to the
 signature would require changing much of the procedural macro system. I propose
 leaving them hard-wired, unless there is a good use case for the more flexible
 approach.</p>
-<a class="header" href="1566-proc-macros.html#specifying-delimiters" id="specifying-delimiters"><h3>Specifying delimiters</h3></a>
+<a class="header" href="#specifying-delimiters" id="specifying-delimiters"><h3>Specifying delimiters</h3></a>
 <p>Under this RFC, a function-like macro use may use either parentheses, braces, or
 square brackets. The choice of delimiter does not affect the semantics of the
 macro (the rules requiring braces or a semi-colon for macro uses in item position
@@ -564,9 +571,6 @@ so as not to allow errors regarding delimiter choice to affect the user.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

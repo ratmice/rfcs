@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0738-variance - </title>
+        <title>0738-variance - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/738">rust-lang/rfcs#738</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/22212">rust-lang/rust#22212</a></li>
 </ul>
-<a class="header" href="0738-variance.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <ul>
 <li>Use inference to determine the <em>variance</em> of input type parameters.</li>
 <li>Make it an error to have unconstrained type/lifetime parameters.</li>
@@ -148,8 +155,8 @@ In fact, there are only two: <code>PhantomData</code> and <code>PhantomFn</code>
 analyses, notably OIBIT, that can otherwise be deceived into yielding
 incorrect results.</li>
 </ul>
-<a class="header" href="0738-variance.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="0738-variance.html#why-variance-is-good" id="why-variance-is-good"><h2>Why variance is good</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#why-variance-is-good" id="why-variance-is-good"><h2>Why variance is good</h2></a>
 <p>Today, all type parameters are invariant. This can be problematic
 around lifetimes. A particular common example of where problems
 arise is in the use of <code>Option</code>. Here is a simple example. Consider
@@ -189,7 +196,7 @@ fn main() { }
 respect to its argument type, it means that the lifetimes of <code>field1</code>
 and <code>field2</code> must match <em>exactly</em>. It is not good enough for them to
 have a common subset. This is not good.</p>
-<a class="header" href="0738-variance.html#what-variance-is" id="what-variance-is"><h2>What variance is</h2></a>
+<a class="header" href="#what-variance-is" id="what-variance-is"><h2>What variance is</h2></a>
 <p><a href="http://en.wikipedia.org/wiki/Covariance_and_contravariance_%28computer_science%29">Variance</a> is a general concept that comes up in all languages that
 combine subtyping and generic types. However, because in Rust all
 subtyping is related to the use of lifetimes parameters, Rust uses
@@ -277,7 +284,7 @@ traditionally called &quot;invariant&quot;.)</p>
 <p>Finally, there can be cases where it is ok to make a lifetime
 <em>longer</em>, but not shorter. This comes up (for example) in a type like
 <code>fn(&amp;'a u8)</code>, which may be safely treated as a <code>fn(&amp;'static u8)</code>.</p>
-<a class="header" href="0738-variance.html#why-variance-should-be-inferred" id="why-variance-should-be-inferred"><h2>Why variance should be inferred</h2></a>
+<a class="header" href="#why-variance-should-be-inferred" id="why-variance-should-be-inferred"><h2>Why variance should be inferred</h2></a>
 <p>Actually, lifetime parameters already have a notion of variance, and
 this variance is fully inferred. In fact, the proper variance for type
 parameters is <em>also</em> being inferred, we're just largely ignoring
@@ -294,7 +301,7 @@ specifying variance, it is easy to get those manual specifications
 wrong. There is one example later on where the author did this, but
 using the mechanisms described in this RFC to guide the inference
 actually led to the correct solution.</p>
-<a class="header" href="0738-variance.html#the-corner-case-unused-parameters-and-parameters-that-are-only-used-unsafely" id="the-corner-case-unused-parameters-and-parameters-that-are-only-used-unsafely"><h2>The corner case: unused parameters and parameters that are only used unsafely</h2></a>
+<a class="header" href="#the-corner-case-unused-parameters-and-parameters-that-are-only-used-unsafely" id="the-corner-case-unused-parameters-and-parameters-that-are-only-used-unsafely"><h2>The corner case: unused parameters and parameters that are only used unsafely</h2></a>
 <p>Unfortunately, variance inference only works if type parameters are
 actually <em>used</em>. Otherwise, there is no data to go on. You might think
 parameters would always be used, but this is not true. In particular,
@@ -320,11 +327,11 @@ always, the correct thing to do in such a case is to either remove the
 parameter in question or insert a <em>marker type</em>. Marker types
 basically inform the inference engine to pretend as if the type
 parameter were used in particular ways. They are discussed in the next section.</p>
-<a class="header" href="0738-variance.html#revamping-the-marker-types" id="revamping-the-marker-types"><h2>Revamping the marker types</h2></a>
-<a class="header" href="0738-variance.html#the-unsafecell-type" id="the-unsafecell-type"><h3>The UnsafeCell type</h3></a>
+<a class="header" href="#revamping-the-marker-types" id="revamping-the-marker-types"><h2>Revamping the marker types</h2></a>
+<a class="header" href="#the-unsafecell-type" id="the-unsafecell-type"><h3>The UnsafeCell type</h3></a>
 <p>As today, the <code>UnsafeCell&lt;T&gt;</code> type is well-known to <code>rustc</code> and is
 always considered invariant with respect to its type parameter <code>T</code>.</p>
-<a class="header" href="0738-variance.html#phantom-data" id="phantom-data"><h3>Phantom data</h3></a>
+<a class="header" href="#phantom-data" id="phantom-data"><h3>Phantom data</h3></a>
 <p>This RFC proposes to replace the existing marker types
 (<code>CovariantType</code>, <code>ContravariantLifetime</code>, etc) with a single type,
 <code>PhantomData</code>:</p>
@@ -382,7 +389,7 @@ and enums. OIBIT should treat phantom data the same as normal
 fields. Another example is the ongoing work for removing the
 <code>#[unsafe_dtor]</code> annotation, which also sometimes requires a recursive
 analysis of a similar nature.</p>
-<a class="header" href="0738-variance.html#phantom-functions" id="phantom-functions"><h3>Phantom functions</h3></a>
+<a class="header" href="#phantom-functions" id="phantom-functions"><h3>Phantom functions</h3></a>
 <p>One limitation of the marker type <code>PhantomData</code> is that it cannot be
 used to constrain unused parameters appearing on traits. Consider
 the following example:</p>
@@ -410,7 +417,7 @@ trait Dummy&lt;T&gt; : PhantomFn() -&gt; T { }
 #}</code></pre></pre>
 <p>As you can see, the <code>()</code> notation can be used with <code>PhantomFn</code> as
 well.</p>
-<a class="header" href="0738-variance.html#designating-marker-traits" id="designating-marker-traits"><h3>Designating marker traits</h3></a>
+<a class="header" href="#designating-marker-traits" id="designating-marker-traits"><h3>Designating marker traits</h3></a>
 <p>In addition to phantom fns, there is a convenient trait <code>MarkerTrait</code>
 that is intended for use as a supertrait for traits that designate
 sets of types. These traits often have no methods and thus no actual
@@ -467,10 +474,10 @@ desired behavior as a fn that I realized I had it backward, and
 quickly found the counterexample I give above. This gives me
 confidence that expressing variance in terms of data and fns is more
 reliable than trying to divine the correct results directly.</em></p>
-<a class="header" href="0738-variance.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Most of the detailed design has already been covered in the motivation
 section.</p>
-<a class="header" href="0738-variance.html#summary-of-changes-required" id="summary-of-changes-required"><h4>Summary of changes required</h4></a>
+<a class="header" href="#summary-of-changes-required" id="summary-of-changes-required"><h4>Summary of changes required</h4></a>
 <ul>
 <li>Use variance results to inform subtyping of nominal types
 (structs, enums).</li>
@@ -488,14 +495,14 @@ and the impact on the standard library, in
 the time of this writing, the code is slightly outdated with respect
 to this RFC in certain respects (which will clearly be rectified
 ASAP).</p>
-<a class="header" href="0738-variance.html#variance-inference-algorithm" id="variance-inference-algorithm"><h4>Variance inference algorithm</h4></a>
+<a class="header" href="#variance-inference-algorithm" id="variance-inference-algorithm"><h4>Variance inference algorithm</h4></a>
 <p>I won't dive too deeply into the inference algorithm that we are using
 here. It is based on Section 4 of the paper
 <a href="http://people.cs.umass.edu/%7Eyannis/variance-pldi11.pdf">&quot;Taming the Wildcards: Combining Definition- and Use-Site Variance&quot;</a>
 published in PLDI'11 and written by Altidor et al. There is a fairly
 detailed (and hopefully only slightly outdated) description in
 <a href="https://github.com/nikomatsakis/rust/blob/variance-3/src/librustc_typeck/variance.rs#L11-L205">the code</a> as well.</p>
-<a class="header" href="0738-variance.html#bivariance-yields-an-error" id="bivariance-yields-an-error"><h4>Bivariance yields an error</h4></a>
+<a class="header" href="#bivariance-yields-an-error" id="bivariance-yields-an-error"><h4>Bivariance yields an error</h4></a>
 <p>One big change from today is that if we compute a result of bivariance
 as the variance for any type or lifetime parameter, we will report a
 hard error. The error message explicitly suggests the use of a
@@ -508,7 +515,7 @@ on the phantom markers should also be helpful in guiding users to make
 the right choice (the ability to easily attach documentation to the
 marker type was in fact the major factor that led us to adopt marker
 types in the first place).</p>
-<a class="header" href="0738-variance.html#rules-for-associated-types" id="rules-for-associated-types"><h4>Rules for associated types</h4></a>
+<a class="header" href="#rules-for-associated-types" id="rules-for-associated-types"><h4>Rules for associated types</h4></a>
 <p>The only exception is when this type parameter is in fact
 an output that is implied by where clauses declared on the type.  As
 an example of why this distinction is important, consider the type
@@ -531,7 +538,7 @@ determined by the type <code>F</code> (note that <a href="https://github.com/rus
 type of <code>FnMut</code> an associated type).</p>
 <p>The analysis to decide when a type parameter is implied by other type
 parameters is the same as that specified in <a href="https://github.com/rust-lang/rfcs/blob/master/text/0447-no-unused-impl-parameters.md#detailed-design">RFC 447</a>.</p>
-<a class="header" href="0738-variance.html#future-possibilities" id="future-possibilities"><h1>Future possibilities</h1></a>
+<a class="header" href="#future-possibilities" id="future-possibilities"><h1>Future possibilities</h1></a>
 <p><strong>Make phantom data and fns more first-class.</strong> One thing I would
 consider in the future is to integrate phantom data and fns more
 deeply into the language to improve usability. The idea would be to
@@ -561,7 +568,7 @@ trait MarkerTrait {
 instance of a type and (being anonymous) could never be named. They
 exist solely to aid the analysis. This would improve the usability of
 phantom markers greatly.</p>
-<a class="header" href="0738-variance.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p><strong>Default to a particular variance when a type or lifetime parameter
 is unused.</strong> A prior RFC advocated for this approach, mostly because
 markers were seen as annoying to use. However, after some discussion,
@@ -585,7 +592,7 @@ suitable set of keywords or other system that felt sufficiently
 lightweight. Moreover, explicit annotations are error-prone when
 compared to the phantom data and fn approach (see example in the
 section regarding marker traits).</p>
-<a class="header" href="0738-variance.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>There is one significant unresolved question: the correct way to
 handle a <code>*mut</code> pointer. It was revealed recently that while the
 current treatment of <code>*mut T</code> is correct, it frequently yields overly
@@ -677,9 +684,6 @@ variance computation and subtyping relation diverge.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

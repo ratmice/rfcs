@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0344-conventions-galore - </title>
+        <title>0344-conventions-galore - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/344">rust-lang/rfcs#344</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/18074">rust-lang/rust#18074</a></li>
 </ul>
-<a class="header" href="0344-conventions-galore.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This is a conventions RFC for settling a number of remaining naming conventions:</p>
 <ul>
 <li>Referring to types in method names</li>
@@ -153,14 +160,14 @@
 </ul>
 <p>It also proposes to standardize on lower case error messages within the compiler
 and standard library.</p>
-<a class="header" href="0344-conventions-galore.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>As part of the ongoing API stabilization process, we need to settle naming
 conventions for public APIs. This RFC is a continuation of that process,
 addressing a number of smaller but still global naming issues.</p>
-<a class="header" href="0344-conventions-galore.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The RFC includes a number of unrelated naming conventions, broken down into
 subsections below.</p>
-<a class="header" href="0344-conventions-galore.html#referring-to-types-in-method-names" id="referring-to-types-in-method-names"><h2>Referring to types in method names</h2></a>
+<a class="header" href="#referring-to-types-in-method-names" id="referring-to-types-in-method-names"><h2>Referring to types in method names</h2></a>
 <p>Function names often involve type names, the most common example being conversions
 like <code>as_slice</code>. If the type has a purely textual name (ignoring parameters), it
 is straightforward to convert between type conventions and function conventions:</p>
@@ -186,7 +193,7 @@ apply the most specific applicable rule.</p>
 references. This abbreviation is already a fairly common convention
 (e.g. <code>as_ref</code> and <code>as_mut</code> methods), and is meant to keep this very common case
 short.</p>
-<a class="header" href="0344-conventions-galore.html#iterator-type-names" id="iterator-type-names"><h2>Iterator type names</h2></a>
+<a class="header" href="#iterator-type-names" id="iterator-type-names"><h2>Iterator type names</h2></a>
 <p>The current convention for iterator <em>type</em> names is the following:</p>
 <blockquote>
 <p>Iterators require introducing and exporting new types. These types should use
@@ -266,7 +273,7 @@ conventions.  In most cases, this situation should be taken as an indication
 that a more refined module hierarchy is called for.</p>
 </li>
 </ul>
-<a class="header" href="0344-conventions-galore.html#additional-iterator-method-names" id="additional-iterator-method-names"><h2>Additional iterator method names</h2></a>
+<a class="header" href="#additional-iterator-method-names" id="additional-iterator-method-names"><h2>Additional iterator method names</h2></a>
 <p>An <a href="https://github.com/rust-lang/rfcs/pull/199">earlier RFC</a> settled the
 conventions for the &quot;standard&quot; iterator methods: <code>iter</code>, <code>iter_mut</code>,
 <code>into_iter</code>.</p>
@@ -297,7 +304,7 @@ producing mutable references, and the <code>into_</code> prefix for variants con
 the data in order to produce owned values.</p>
 </li>
 </ul>
-<a class="header" href="0344-conventions-galore.html#gettersetter-apis" id="gettersetter-apis"><h2>Getter/setter APIs</h2></a>
+<a class="header" href="#gettersetter-apis" id="gettersetter-apis"><h2>Getter/setter APIs</h2></a>
 <p>Some data structures do not wish to provide direct access to their fields, but
 instead offer &quot;getter&quot; and &quot;setter&quot; methods for manipulating the field state
 (often providing checking or other functionality).</p>
@@ -310,14 +317,14 @@ here may take <code>&amp;T</code> or some other type, depending on the context.)
 <p>Note that this convention is about getters/setters on ordinary data types, <em>not</em>
 on <a href="http://aturon.github.io/ownership/builders.html">builder objects</a>. The
 naming conventions for builder methods are still open.</p>
-<a class="header" href="0344-conventions-galore.html#associated-types" id="associated-types"><h2>Associated types</h2></a>
+<a class="header" href="#associated-types" id="associated-types"><h2>Associated types</h2></a>
 <p>Unlike type parameters, the <em>names</em> of
 <a href="https://github.com/rust-lang/rfcs/pull/195">associated types</a> for a trait are a
 meaningful part of its public API.</p>
 <p>Associated types should be given concise, but meaningful names, generally
 following the convention for type names rather than generic. For example, use
 <code>Err</code> rather than <code>E</code>, and <code>Item</code> rather than <code>T</code>.</p>
-<a class="header" href="0344-conventions-galore.html#trait-naming" id="trait-naming"><h2>Trait naming</h2></a>
+<a class="header" href="#trait-naming" id="trait-naming"><h2>Trait naming</h2></a>
 <p>The wiki guidelines have long suggested naming traits as follows:</p>
 <blockquote>
 <p>Prefer (transitive) verbs, nouns, and then adjectives; avoid grammatical suffixes (like <code>able</code>)</p>
@@ -331,7 +338,7 @@ name for the trait itself. This is already the case for <code>Clone</code> and <
 for example.</p>
 <p>According to these rules, <code>Encodable</code> should probably be <code>Encode</code>.</p>
 <p>There are some open questions about these rules; see Unresolved Questions below.</p>
-<a class="header" href="0344-conventions-galore.html#lints" id="lints"><h2>Lints</h2></a>
+<a class="header" href="#lints" id="lints"><h2>Lints</h2></a>
 <p>Our lint names are
 <a href="https://github.com/rust-lang/rust/issues/16545">not consistent</a>. While this may
 seem like a minor concern, when we hit 1.0 the lint names will be locked down,
@@ -365,7 +372,7 @@ should use the term <code>unused</code>, e.g. <code>unused_imports</code>, <code
 <p>Use snake case in the same way you would for function names.</p>
 </li>
 </ul>
-<a class="header" href="0344-conventions-galore.html#suffix-ordering" id="suffix-ordering"><h2>Suffix ordering</h2></a>
+<a class="header" href="#suffix-ordering" id="suffix-ordering"><h2>Suffix ordering</h2></a>
 <p>Very occasionally, conventions will require a method to have multiple suffixes,
 for example <code>get_unchecked_mut</code>. When feasible, design APIs so that this
 situation does not arise.</p>
@@ -375,7 +382,7 @@ remember it.</p>
 <p>However, the <em>mut</em> suffix is so common, and is now entrenched as showing up in
 final position, that this RFC does propose one simple rule: if there are
 multiple suffixes including <code>mut</code>, place <code>mut</code> last.</p>
-<a class="header" href="0344-conventions-galore.html#prelude-traits" id="prelude-traits"><h2>Prelude traits</h2></a>
+<a class="header" href="#prelude-traits" id="prelude-traits"><h2>Prelude traits</h2></a>
 <p>It is not currently possible to define inherent methods directly on basic data
 types like <code>char</code> or slices. Consequently, <code>libcore</code> and other basic crates
 provide one-off traits (like <code>ImmutableSlice</code> or <code>Char</code>) that are intended to be
@@ -393,17 +400,17 @@ traits cannot yet be called directly on the types implementing the traits. These
 functions are the one case where you would need to mention the trait by name,
 today. Hopefully, this situation will change before 1.0; otherwise we may need a
 separate plan for dealing with associated functions.)</p>
-<a class="header" href="0344-conventions-galore.html#error-messages" id="error-messages"><h2>Error messages</h2></a>
+<a class="header" href="#error-messages" id="error-messages"><h2>Error messages</h2></a>
 <p>Error messages -- including those produced by <code>fail!</code> and those placed in the
 <code>desc</code> or <code>detail</code> fields of e.g. <code>IoError</code> -- should in general be in all lower
 case. This applies to both <code>rustc</code> and <code>std</code>.</p>
 <p>This is already the predominant convention, but there are some inconsistencies.</p>
-<a class="header" href="0344-conventions-galore.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0344-conventions-galore.html#iterator-type-names-1" id="iterator-type-names-1"><h2>Iterator type names</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#iterator-type-names-1" id="iterator-type-names-1"><h2>Iterator type names</h2></a>
 <p>The iterator type name convention could instead basically stick with today's
 convention, but using suffixes instead of prefixes, and <code>IntoItems</code> rather than
 <code>MoveItems</code>.</p>
-<a class="header" href="0344-conventions-galore.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>How far should the rules for trait names go? Should we avoid &quot;-er&quot; suffixes,
 e.g. have <code>Read</code> rather than <code>Reader</code>?</p>
 
@@ -450,9 +457,6 @@ e.g. have <code>Read</code> rather than <code>Reader</code>?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

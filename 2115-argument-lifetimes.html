@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2115-argument-lifetimes - </title>
+        <title>2115-argument-lifetimes - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2115">rust-lang/rfcs#2115</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44524">rust-lang/rust#44524</a></li>
 </ul>
-<a class="header" href="2115-argument-lifetimes.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Eliminate the need for separately binding lifetime parameters in <code>fn</code>
 definitions and <code>impl</code> headers, so that instead of writing:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -174,7 +181,7 @@ functions. (There are some additional, less important lints proposed as well.)</
 entirely leave off lifetime arguments for non-<code>&amp;</code> types</li>
 </ul>
 <p><strong>This RFC does not introduce any breaking changes</strong>.</p>
-<a class="header" href="2115-argument-lifetimes.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Today's system of lifetime elision has a kind of &quot;cliff&quot;. In cases where elision
 applies (because the necessary lifetimes are clear from the signature), you
 don't need to write anything:</p>
@@ -228,10 +235,10 @@ regressing ergonomics significantly.</p>
 users by simultaneously improving clarity and ergonomics. In practice it should
 reduce the total occurrences of <code>&lt;</code>, <code>&gt;</code> and <code>'a</code> in signatures, while
 <em>increasing</em> the overall clarity and explicitness of the lifetime system.</p>
-<a class="header" href="2115-argument-lifetimes.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p><em>Note: this is a <strong>sketch</strong> of what it might look like to teach someone
 lifetimes given this RFC</em>*.</p>
-<a class="header" href="2115-argument-lifetimes.html#introducing-references-and-borrowing" id="introducing-references-and-borrowing"><h2>Introducing references and borrowing</h2></a>
+<a class="header" href="#introducing-references-and-borrowing" id="introducing-references-and-borrowing"><h2>Introducing references and borrowing</h2></a>
 <p><em>Assume that ownership has already been introduced, but not yet borrowing</em>.</p>
 <p>While ownership is important in Rust, it's not very expressive or convenient by
 itself; it's quite common to want to &quot;lend&quot; a value to a function you're
@@ -256,7 +263,7 @@ print_vec(&amp;my_vec)
 #}</code></pre></pre>
 <p>This borrow of <code>my_vec</code> lasts only for the duration of the <code>print_vec</code> call.</p>
 <p><em>Imagine more explanation here...</em></p>
-<a class="header" href="2115-argument-lifetimes.html#functions-that-return-borrowed-data" id="functions-that-return-borrowed-data"><h2>Functions that return borrowed data</h2></a>
+<a class="header" href="#functions-that-return-borrowed-data" id="functions-that-return-borrowed-data"><h2>Functions that return borrowed data</h2></a>
 <p>So far we've only seen functions that <em>consume</em> borrowed data; what about
 producing it?</p>
 <p>In general, borrowed data is always borrowed <em>from something</em>. And that thing
@@ -282,7 +289,7 @@ impl MyStruct {
 <p>Here we're making what looks like a &quot;fresh&quot; borrow, it's &quot;derived&quot; from the
 existing borrow of <code>self</code>, and hence fine to return back to our caller; the
 actual <code>MyStruct</code> value must live outside our stack frame anyway.</p>
-<a class="header" href="2115-argument-lifetimes.html#pinpointing-borrows-with-lifetimes" id="pinpointing-borrows-with-lifetimes"><h3>Pinpointing borrows with lifetimes</h3></a>
+<a class="header" href="#pinpointing-borrows-with-lifetimes" id="pinpointing-borrows-with-lifetimes"><h3>Pinpointing borrows with lifetimes</h3></a>
 <p>For Rust to guarantee safety, it needs to track the <em>lifetime</em> of each loan,
 which says <em>for what portion of code the loan is valid</em>.</p>
 <p>In particular, each <code>&amp;</code> type also has an associated lifetime---but you can
@@ -322,7 +329,7 @@ returned <code>Item</code> borrow is valid for that period (which means it may i
 data from both of the input borrows).</p>
 </li>
 </ul>
-<a class="header" href="2115-argument-lifetimes.html#structs-and-lifetimes" id="structs-and-lifetimes"><h2><code>struct</code>s and lifetimes</h2></a>
+<a class="header" href="#structs-and-lifetimes" id="structs-and-lifetimes"><h2><code>struct</code>s and lifetimes</h2></a>
 <p>Sometimes you need to build data types that contain borrowed data. Since those
 types can then be used in many contexts, you can't say in advance what the
 lifetime of those borrows will be. Instead, you must take it as a parameter:</p>
@@ -359,7 +366,7 @@ impl&lt;T&gt; Vec&lt;T&gt; {
 #}</code></pre></pre>
 <p>The <code>'_</code> marker makes clear to the reader that <em>borrowing is happening</em>, which
 might not otherwise be clear.</p>
-<a class="header" href="2115-argument-lifetimes.html#impl-blocks-and-lifetimes" id="impl-blocks-and-lifetimes"><h2><code>impl</code> blocks and lifetimes</h2></a>
+<a class="header" href="#impl-blocks-and-lifetimes" id="impl-blocks-and-lifetimes"><h2><code>impl</code> blocks and lifetimes</h2></a>
 <p>When writing an <code>impl</code> block for a structure that takes a lifetime parameter,
 you can give that parameter a name, which you should strive to make
 <em>meaningful</em>:</p>
@@ -383,10 +390,10 @@ impl&lt;T&gt; VecIter&lt;'vec, T&gt; {
 #fn main() {
 impl&lt;T&gt; VecIter&lt;'_, T&gt; { ... }
 #}</code></pre></pre>
-<a class="header" href="2115-argument-lifetimes.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p><strong>Note: these changes are designed to <em>not</em> require a new epoch</strong>. They do
 expand our naming style lint, however.</p>
-<a class="header" href="2115-argument-lifetimes.html#lifetimes-in-impl-headers" id="lifetimes-in-impl-headers"><h2>Lifetimes in <code>impl</code> headers</h2></a>
+<a class="header" href="#lifetimes-in-impl-headers" id="lifetimes-in-impl-headers"><h2>Lifetimes in <code>impl</code> headers</h2></a>
 <p>When writing an <code>impl</code> header, you can mention lifetimes without binding them in
 the generics list. Any lifetimes that are not already in scope (which, today,
 means any lifetime whatsoever) is treated as being bound as a parameter of the
@@ -410,7 +417,7 @@ impl SomeTrait&lt;'tcx, 'gcx&gt; for SomeType&lt;'tcx, 'gcx&gt; { ... }
 <code>impl</code> headers (and perhaps someday, modules) should be multiple characters,
 i.e. &quot;meaningful&quot; names, to reduce the chance of collision with typical <code>'a</code>
 usage in functions.</p>
-<a class="header" href="2115-argument-lifetimes.html#lifetimes-in-fn-signatures" id="lifetimes-in-fn-signatures"><h2>Lifetimes in <code>fn</code> signatures</h2></a>
+<a class="header" href="#lifetimes-in-fn-signatures" id="lifetimes-in-fn-signatures"><h2>Lifetimes in <code>fn</code> signatures</h2></a>
 <p>When writing a <code>fn</code> declaration, if a lifetime appears that is not already in
 scope, it is taken to be a new binding, i.e. treated as a parameter to the
 function.</p>
@@ -456,7 +463,7 @@ an error keeps our options open for providing an interpretation later on.</p>
 an error to mention lifetimes from that outer definition (without binding them
 explicitly). This is again intended for future-proofing and clarity, and is an
 edge case.</p>
-<a class="header" href="2115-argument-lifetimes.html#the-wildcard-lifetime" id="the-wildcard-lifetime"><h2>The wildcard lifetime</h2></a>
+<a class="header" href="#the-wildcard-lifetime" id="the-wildcard-lifetime"><h2>The wildcard lifetime</h2></a>
 <p>When referring to a type (other than <code>&amp;</code>/<code>&amp;mut</code>) that requires lifetime
 arguments, it is deprecated to leave off those parameters.</p>
 <p>Instead, you can write a <code>'_</code> for the parameters, rather than giving a lifetime
@@ -475,7 +482,7 @@ fn iter(&amp;self) -&gt; Iter&lt;T&gt;
 fn foo(&amp;self) -&gt; Ref&lt;'_, SomeType&gt;
 fn iter(&amp;self) -&gt; Iter&lt;'_, T&gt;
 #}</code></pre></pre>
-<a class="header" href="2115-argument-lifetimes.html#additional-lints" id="additional-lints"><h2>Additional lints</h2></a>
+<a class="header" href="#additional-lints" id="additional-lints"><h2>Additional lints</h2></a>
 <p>Beyond the change to the style lint for <code>impl</code> header lifetimes, two more lints
 are provided:</p>
 <ul>
@@ -491,7 +498,7 @@ other unnecessary elements, e.g. when it could be using elision or could leave
 off lifetimes from its generics list.</p>
 </li>
 </ul>
-<a class="header" href="2115-argument-lifetimes.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The style lint for <code>impl</code> headers could introduce some amount of churn. This
 could be mitigated by only applying that lint for lifetimes not bound in the
 generics list.</p>
@@ -516,8 +523,8 @@ relatively rare, though, due to our type well-formedness rule.</p>
 or harder to determine, since the binding structure continues to be completely
 unambiguous; ergonomics and, arguably, learnability both improve. And
 signatures become less noisy and easier to read.</p>
-<a class="header" href="2115-argument-lifetimes.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
-<a class="header" href="2115-argument-lifetimes.html#core-rationale" id="core-rationale"><h2>Core rationale</h2></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#core-rationale" id="core-rationale"><h2>Core rationale</h2></a>
 <p>The key insight of the proposed design is that out-of-band bindings for lifetime
 parameters is buying us very little today:</p>
 <ul>
@@ -535,7 +542,7 @@ between the <code>impl</code> header (or eventual module headers) and <code>fn</
 <p>Alternatively, we could instead distinguish these cases at the use-site, for
 example by writing <code>outer('a)</code> or some such to refer to the <code>impl</code> block
 bindings.</p>
-<a class="header" href="2115-argument-lifetimes.html#possible-extension-or-alternative-backreferences" id="possible-extension-or-alternative-backreferences"><h2>Possible extension or alternative: &quot;backreferences&quot;</h2></a>
+<a class="header" href="#possible-extension-or-alternative-backreferences" id="possible-extension-or-alternative-backreferences"><h2>Possible extension or alternative: &quot;backreferences&quot;</h2></a>
 <p>A different approach would be refering to elided lifetimes through their
 parameter name, like so:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -566,7 +573,7 @@ that existing lifetime.</li>
 often nonsensical, since there's no sense in which one argument is the &quot;primary
 definer&quot; of the lifetime.</li>
 </ul>
-<a class="header" href="2115-argument-lifetimes.html#alternatives" id="alternatives"><h2>Alternatives</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h2>Alternatives</h2></a>
 <p>We could consider using this as an opportunity to eliminate <code>'</code> altogether, by
 tying these improvements to a new way of providing lifetimes, e.g. <code>&amp;ref(x) T</code>.</p>
 <p>The <a href="(https://internals.rust-lang.org/t/lang-team-minutes-elision-2-0/5182)">internals thread</a> on this topic covers a wide array of syntactic options
@@ -577,7 +584,7 @@ syntax is pretty clunky.</p>
 <p>As mentioned above, we could consider alternatives to the case distinction in
 lifetime variables, instead using something like <code>outer('a)</code> to refer to
 lifetimes from an <code>impl</code> header.</p>
-<a class="header" href="2115-argument-lifetimes.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>How to treat examples like <code>fn f() -&gt; &amp;'a str { &quot;static string&quot; }</code>.</li>
 </ul>
@@ -625,9 +632,6 @@ lifetimes from an <code>impl</code> header.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

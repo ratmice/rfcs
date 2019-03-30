@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2561-future-possibilities - </title>
+        <title>2561-future-possibilities - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +146,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2561">rust-lang/rfcs#2561</a></li>
 <li>Rust Issue: N/A. The RFC is self-executing.</li>
 </ul>
-<a class="header" href="2561-future-possibilities.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Adds a <em>&quot;Future possibilities&quot;</em> section to the <code>0000-template.md</code> RFC template
 that asks authors to elaborate on what natural extensions there might to their
 RFC and what future directions this may take the project into.
 This section asks authors to think <em>holistically</em>.</p>
-<a class="header" href="2561-future-possibilities.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="2561-future-possibilities.html#the-benefit-for-the-author" id="the-benefit-for-the-author"><h2>The benefit for the author</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#the-benefit-for-the-author" id="the-benefit-for-the-author"><h2>The benefit for the author</h2></a>
 <p>Often times, when an RFC is written, the only thing an author considers
 may be the feature or change proposal itself but not the larger picture
 and context in which the RFC operates in. By asking the author to reflect
@@ -158,7 +165,7 @@ sections (<a href="https://github.com/Centril/rfcs/blob/rfc/assoc-default-groups
 author to think more clearly about interactions in each of the written RFCs.
 If for no other reason, these sections offer a permanent space to idea-dump
 while writing an RFC.</p>
-<a class="header" href="2561-future-possibilities.html#for-the-team" id="for-the-team"><h2>For the team</h2></a>
+<a class="header" href="#for-the-team" id="for-the-team"><h2>For the team</h2></a>
 <p>The holistic perspective that a future-possibilities section can offer may also
 help the relevant sub-team to understand:</p>
 <ol>
@@ -167,24 +174,24 @@ help the relevant sub-team to understand:</p>
 <li>how said proposals fit with the product vision and roadmap that the team
 currently has.</li>
 </ol>
-<a class="header" href="2561-future-possibilities.html#for-readers-in-general" id="for-readers-in-general"><h2>For readers in general</h2></a>
+<a class="header" href="#for-readers-in-general" id="for-readers-in-general"><h2>For readers in general</h2></a>
 <p>More generally, the benefits for the teams described above also hold for
 all readers. In particular, a reader can better infer what sort of language
 Rust is turning into given the information in a future-possibilities section.
 Having such a section may also help generate interest in subsequent proposals
 which a different author may then write.</p>
-<a class="header" href="2561-future-possibilities.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>This Meta-RFC modifies the RFC template by adding a <em>&quot;Future possibilities&quot;</em>
 section after the <em>&quot;Unresolved questions&quot;</em>. The newly introduced section is
 intended to help the authors, teams and readers in general reflect holistically
 on the big picture effects that a specific RFC proposal has.</p>
-<p>Please read the <a href="2561-future-possibilities.html#reference-level-explanation">reference-level-explanation</a> for exact details of what an
+<p>Please read the <a href="#reference-level-explanation">reference-level-explanation</a> for exact details of what an
 RFC author will see in the changed template.</p>
-<a class="header" href="2561-future-possibilities.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>The implementation of this RFC consists of inserting the following text to the
 RFC template <em>after</em> the section <em>Unresolved questions</em>:</p>
 <blockquote>
-<a class="header" href="2561-future-possibilities.html#future-possibilities" id="future-possibilities"><h1>Future possibilities</h1></a>
+<a class="header" href="#future-possibilities" id="future-possibilities"><h1>Future possibilities</h1></a>
 <p>Think about what the natural extension and evolution of your proposal would
 be and how it would affect the language and project as a whole in a holistic
 way. Try to use this section as a tool to more fully consider all possible
@@ -200,11 +207,11 @@ is not a reason to accept the current or a future RFC; such notes should be
 in the section on motivation or rationale in this or subsequent RFCs.
 The section merely provides additional information.</p>
 </blockquote>
-<a class="header" href="2561-future-possibilities.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There are three main potential drawbacks:</p>
-<a class="header" href="2561-future-possibilities.html#the-section-will-be-unused" id="the-section-will-be-unused"><h2>The section will be unused</h2></a>
+<a class="header" href="#the-section-will-be-unused" id="the-section-will-be-unused"><h2>The section will be unused</h2></a>
 <p>There's some risk that the section will simply be left empty and unused.
-However, in the recent RFCs written by the author as noted in the <a href="2561-future-possibilities.html#motivation">motivation</a>,
+However, in the recent RFCs written by the author as noted in the <a href="#motivation">motivation</a>,
 this has not been a problem. On the contrary, the very idea behind adding
 this section has come as a result of the experience gained by writing
 such future-possibilities sections in the aforementioned RFCs.</p>
@@ -212,18 +219,18 @@ such future-possibilities sections in the aforementioned RFCs.</p>
 sections. Therefore, if an RFC leaves the newly introduced section empty,
 it is not the end of the world. The section is intended as encouragement and
 recommendation; it is not mandatory as no section in an RFC has ever really been.</p>
-<a class="header" href="2561-future-possibilities.html#higher-barrier-to-entry" id="higher-barrier-to-entry"><h2>Higher barrier to entry</h2></a>
+<a class="header" href="#higher-barrier-to-entry" id="higher-barrier-to-entry"><h2>Higher barrier to entry</h2></a>
 <p>As noted in <a href="https://github.com/rust-lang/rfcs/blob/master/text/2333-prior-art.md#drawbacks">RFC 2333</a>, which was the last RFC to extend the template,
 the longer the template becomes, the more work there is to writing an RFC.
 This can raise the barrier to entry somewhat.
 However, we argue that it is worth the minor raise in the bar since
 it is OK for RFCs to leave the section empty.</p>
-<a class="header" href="2561-future-possibilities.html#readers-reacting-negatively-on-the-future-possibilities" id="readers-reacting-negatively-on-the-future-possibilities"><h2>Readers reacting negatively on the future possibilities</h2></a>
+<a class="header" href="#readers-reacting-negatively-on-the-future-possibilities" id="readers-reacting-negatively-on-the-future-possibilities"><h2>Readers reacting negatively on the future possibilities</h2></a>
 <p>Another potential drawback is that readers of the RFC will focus too much
 on what is written in the future-possibilities section and not the actual proposal
 that is made in the RFC. This has not been the case in the RFCs mentioned
-in the <a href="2561-future-possibilities.html#motivation">motivation</a>.</p>
-<a class="header" href="2561-future-possibilities.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+in the <a href="#motivation">motivation</a>.</p>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <ol>
 <li>
 <p>We could rephrase the section in various ways.
@@ -245,15 +252,15 @@ of providing such a section. It might otherwise not occur to the author
 that such a section could be written.</p>
 </li>
 </ol>
-<a class="header" href="2561-future-possibilities.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>None of the languages enumerated in <a href="https://github.com/rust-lang/rfcs/blob/master/text/2333-prior-art.md#drawbacks">RFC 2333</a> have such a section proposed
 in this RFC. However, there are plenty of academic papers published which
 do contain sections pertaining to future possibilities. It is customary for
 such sections to be at the end of papers so as to not bore readers and keep
 them reading.</p>
-<a class="header" href="2561-future-possibilities.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None as of yet.</p>
-<a class="header" href="2561-future-possibilities.html#future-possibilities-1" id="future-possibilities-1"><h1>Future possibilities</h1></a>
+<a class="header" href="#future-possibilities-1" id="future-possibilities-1"><h1>Future possibilities</h1></a>
 <p>It may be the case that we would overhaul the RFC template completely if we
 undertake larger changes to the RFC process itself as is proposed in the
 <a href="http://smallcultfollowing.com/babysteps/blog/2018/06/20/proposal-for-a-staged-rfc-process/">staged</a>-RFCs idea. However, we'll likely want to determine the answers and
@@ -303,9 +310,6 @@ some point during the lifecycle of a proposal.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

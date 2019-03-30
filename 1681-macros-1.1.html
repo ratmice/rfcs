@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1681-macros-1.1 - </title>
+        <title>1681-macros-1.1 - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,14 +146,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1681">rust-lang/rfcs#1681</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/35900">rust-lang/rust#35900</a></li>
 </ul>
-<a class="header" href="1681-macros-1.1.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Extract a very small sliver of today's procedural macro system in the compiler,
 just enough to get basic features like custom derive working, to have an
 eventually stable API. Ensure that these features will not pose a maintenance
 burden on the compiler but also don't try to provide enough features for the
 &quot;perfect macro system&quot; at the same time. Overall, this should be considered an
 incremental step towards an official &quot;macros 2.0&quot;.</p>
-<a class="header" href="1681-macros-1.1.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Some large projects in the ecosystem today, such as <a href="https://github.com/serde-rs/serde">serde</a> and <a href="http://diesel.rs/">diesel</a>,
 effectively require the nightly channel of the Rust compiler. Although most
 projects have an alternative to work on stable Rust, this tends to be far less
@@ -188,10 +195,10 @@ implemented in future versions of the compiler as well.</p>
 <p>Put another way, we currently have macros 1.0 unstable today, we're shooting
 for macros 2.0 stable in the far future, but this RFC is striking a middle
 ground at macros 1.1 today!</p>
-<a class="header" href="1681-macros-1.1.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>First, before looking how we're going to expose procedural macros, let's
 take a detailed look at how they work today.</p>
-<a class="header" href="1681-macros-1.1.html#todays-procedural-macros" id="todays-procedural-macros"><h3>Today's procedural macros</h3></a>
+<a class="header" href="#todays-procedural-macros" id="todays-procedural-macros"><h3>Today's procedural macros</h3></a>
 <p>A procedural macro today is loaded into a crate with the <code>#![plugin(foo)]</code>
 annotation at the crate root. This in turn looks for a crate named <code>foo</code> <a href="https://github.com/rust-lang/rust/blob/78d49bfac2bbcd48de522199212a1209f498e834/src/librustc_metadata/creader.rs#L480">via
 the same crate loading mechanisms</a> as <code>extern crate</code>, except <a href="https://github.com/rust-lang/rust/blob/78d49bfac2bbcd48de522199212a1209f498e834/src/librustc_metadata/creader.rs#L494">with the
@@ -211,7 +218,7 @@ custom macros, attributes, etc.</p>
 of expanding a crate. Whenever the compiler encounters this macro it will call
 this registration with essentially and AST and morally gets back a different
 AST to splice in or replace.</p>
-<a class="header" href="1681-macros-1.1.html#todays-drawbacks" id="todays-drawbacks"><h3>Today's drawbacks</h3></a>
+<a class="header" href="#todays-drawbacks" id="todays-drawbacks"><h3>Today's drawbacks</h3></a>
 <p>This expansion process suffers from many of the downsides mentioned in the
 motivation section, such as a lack of hygiene, a lack of modularity, and the
 inability to import macros as you would normally other functionality in the
@@ -229,14 +236,14 @@ statically linked compiler (e.g. compiled for <code>x86_64-unknown-linux-musl</c
 Another goal of this RFC will also be to hide as many of these technical
 details as possible, allowing the compiler to flexibly change how it interfaces
 to macros.</p>
-<a class="header" href="1681-macros-1.1.html#macros-11" id="macros-11"><h2>Macros 1.1</h2></a>
+<a class="header" href="#macros-11" id="macros-11"><h2>Macros 1.1</h2></a>
 <p>Ok, with the background knowledge of what procedural macros are today, let's
 take a look at how we can solve the major problems blocking its stabilization:</p>
 <ul>
 <li>Sharing an API of the entire compiler</li>
 <li>Frozen interface between the compiler and macros</li>
 </ul>
-<a class="header" href="1681-macros-1.1.html#librustc_macro" id="librustc_macro"><h3><code>librustc_macro</code></h3></a>
+<a class="header" href="#librustc_macro" id="librustc_macro"><h3><code>librustc_macro</code></h3></a>
 <p>Proposed in <a href="https://github.com/rust-lang/rfcs/pull/1566">RFC 1566</a> and
 described in <a href="http://ncameron.org/blog/libmacro/">this blog post</a> the
 distribution will now ship with a new <code>librustc_macro</code> crate available for macro
@@ -280,7 +287,7 @@ only be converted to and from a <code>String</code>. Eventually <code>TokenStrea
 more closely resemble token streams <a href="https://github.com/rust-lang/rust/blob/master/src/libsyntax/tokenstream.rs#L323-L338">in the compiler
 itself</a>, and more fine-grained manipulations will be
 available as well.</p>
-<a class="header" href="1681-macros-1.1.html#defining-a-macro" id="defining-a-macro"><h3>Defining a macro</h3></a>
+<a class="header" href="#defining-a-macro" id="defining-a-macro"><h3>Defining a macro</h3></a>
 <p>A new crate type will be added to the compiler, <code>rustc-macro</code> (described below),
 indicating a crate that's compiled as a procedural macro. There will not be a
 &quot;registrar&quot; function in this crate type (like there is today), but rather a
@@ -341,7 +348,7 @@ more interesting methods of signaling errors to users.</p>
 attributes, although it will be required for <code>rustc_macro_derive</code>
 implementations to remove these attributes when handing them back to the
 compiler. The compiler will still gate unknown attributes by default.</p>
-<a class="header" href="1681-macros-1.1.html#rustc-macro-crates" id="rustc-macro-crates"><h3><code>rustc-macro</code> crates</h3></a>
+<a class="header" href="#rustc-macro-crates" id="rustc-macro-crates"><h3><code>rustc-macro</code> crates</h3></a>
 <p>Like the rlib and dylib crate types, the <code>rustc-macro</code> crate
 type is intended to be an intermediate product.  What it <em>actually</em> produces is
 not specified, but if a <code>-L</code> path is provided to it then the compiler will
@@ -364,7 +371,7 @@ and at compile time. That is, an <code>extern crate foo</code> annotation may lo
 available. Limiting the public exports for now to only custom-derive
 annotations should allow for maximal flexibility here.</li>
 </ul>
-<a class="header" href="1681-macros-1.1.html#using-a-procedural-macro" id="using-a-procedural-macro"><h3>Using a procedural macro</h3></a>
+<a class="header" href="#using-a-procedural-macro" id="using-a-procedural-macro"><h3>Using a procedural macro</h3></a>
 <p>Using a procedural macro will be very similar to today's <code>extern crate</code> system,
 such as:</p>
 <pre><pre class="playpen"><code class="language-rust">#[macro_use]
@@ -387,7 +394,7 @@ placed into the same global namespace. Any conflicts (shadowing) will cause the
 compiler to generate an error, and it must be resolved by loading only one or
 the other of the <code>rustc-macro</code> crates (eventually this will be solved with a
 more principled <code>use</code> system in macros 2.0).</p>
-<a class="header" href="1681-macros-1.1.html#initial-implementation-details" id="initial-implementation-details"><h3>Initial implementation details</h3></a>
+<a class="header" href="#initial-implementation-details" id="initial-implementation-details"><h3>Initial implementation details</h3></a>
 <p>This section lays out what the initial implementation details of macros 1.1
 will look like, but none of this will be specified as a stable interface to the
 compiler. These exact details are subject to change over time as the
@@ -410,7 +417,7 @@ the compiler.</p>
 <p>The actual underlying representation of <code>TokenStream</code> will be basically the same
 as it is in the compiler today. (the details on this are a little light
 intentionally, shouldn't be much need to go into <em>too</em> much detail).</p>
-<a class="header" href="1681-macros-1.1.html#initial-cargo-integration" id="initial-cargo-integration"><h3>Initial Cargo integration</h3></a>
+<a class="header" href="#initial-cargo-integration" id="initial-cargo-integration"><h3>Initial Cargo integration</h3></a>
 <p>Like plugins today, Cargo needs to understand which crates are <code>rustc-macro</code>
 crates and which aren't. Cargo additionally needs to understand this to sequence
 compilations correctly and ensure that <code>rustc-macro</code> crates are compiled for the
@@ -424,7 +431,7 @@ rustc-macro = true
 <p>Eventually Cargo may also grow support to understand that a <code>rustc-macro</code> crate
 should be compiled twice, once for the host and once for the target, but this is
 intended to be a backwards-compatible extension to Cargo.</p>
-<a class="header" href="1681-macros-1.1.html#pieces-to-stabilize" id="pieces-to-stabilize"><h2>Pieces to stabilize</h2></a>
+<a class="header" href="#pieces-to-stabilize" id="pieces-to-stabilize"><h2>Pieces to stabilize</h2></a>
 <p>Eventually this RFC is intended to be considered for stabilization (after it's
 implemented and proven out on nightly, of course). The summary of pieces that
 would become stable are:</p>
@@ -440,7 +447,7 @@ just all added to the same global namespace with errors on conflicts.
 Additionally, definitions end up having no hygiene for now.</li>
 <li>The <code>rustc-macro = true</code> attribute in Cargo</li>
 </ul>
-<a class="header" href="1681-macros-1.1.html#macros-11-in-practice" id="macros-11-in-practice"><h3>Macros 1.1 in practice</h3></a>
+<a class="header" href="#macros-11-in-practice" id="macros-11-in-practice"><h3>Macros 1.1 in practice</h3></a>
 <p>Alright, that's a lot to take in! Let's take a look at what this is all going to
 look like in practice, focusing on a case study of <code>#[derive(Serialize)]</code> for
 serde.</p>
@@ -500,7 +507,7 @@ pub struct Foo {
     b: String,
 }
 #}</code></pre></pre>
-<a class="header" href="1681-macros-1.1.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>This is not an interface that would be considered for stabilization in a void,
@@ -568,7 +575,7 @@ is caused by that field, but that kind of precision will not be
 possible until a richer interface is available.</p>
 </li>
 </ul>
-<a class="header" href="1681-macros-1.1.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>Wait for macros 2.0, but this likely comes with the high cost of postponing a
@@ -615,7 +622,7 @@ deviates from what you actually may want, <code>#[derive(serde::Deserialize)]</c
 example.</p>
 </li>
 </ul>
-<a class="header" href="1681-macros-1.1.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Is the interface between macros and the compiler actually general enough to
@@ -703,9 +710,6 @@ concatenation, to allow preserving spans?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

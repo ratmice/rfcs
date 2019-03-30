@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2500-needle - </title>
+        <title>2500-needle - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,45 +146,45 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2500">rust-lang/rfcs#2500</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/56345">rust-lang/rust#56345</a></li>
 </ul>
-<a class="header" href="2500-needle.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Generalize the needle (née pattern) API to support <code>&amp;str</code>, <code>&amp;mut str</code>, <code>&amp;[T]</code>, <code>&amp;mut [T]</code>, <code>Vec&lt;T&gt;</code> and <code>&amp;OsStr</code>.</p>
 <!-- TOC depthTo:2 -->
 <ul>
-<li><a href="2500-needle.html#summary">Summary</a></li>
-<li><a href="2500-needle.html#motivation">Motivation</a>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#motivation">Motivation</a>
 <ul>
-<li><a href="2500-needle.html#stabilize-the-pattern-api">Stabilize the Pattern API</a></li>
-<li><a href="2500-needle.html#implement-omg-wtf-8">Implement OMG-WTF-8</a></li>
+<li><a href="#stabilize-the-pattern-api">Stabilize the Pattern API</a></li>
+<li><a href="#implement-omg-wtf-8">Implement OMG-WTF-8</a></li>
 </ul>
 </li>
-<li><a href="2500-needle.html#guide-level-explanation">Guide-level explanation</a></li>
-<li><a href="2500-needle.html#reference-level-explanation">Reference-level explanation</a>
+<li><a href="#guide-level-explanation">Guide-level explanation</a></li>
+<li><a href="#reference-level-explanation">Reference-level explanation</a>
 <ul>
-<li><a href="2500-needle.html#api">API</a></li>
-<li><a href="2500-needle.html#standard-library-changes">Standard library changes</a></li>
-<li><a href="2500-needle.html#performance">Performance</a></li>
+<li><a href="#api">API</a></li>
+<li><a href="#standard-library-changes">Standard library changes</a></li>
+<li><a href="#performance">Performance</a></li>
 </ul>
 </li>
-<li><a href="2500-needle.html#drawbacks">Drawbacks</a></li>
-<li><a href="2500-needle.html#rationale-and-alternatives">Rationale and alternatives</a>
+<li><a href="#drawbacks">Drawbacks</a></li>
+<li><a href="#rationale-and-alternatives">Rationale and alternatives</a>
 <ul>
-<li><a href="2500-needle.html#principles">Principles</a></li>
-<li><a href="2500-needle.html#design-rationales">Design rationales</a></li>
-<li><a href="2500-needle.html#miscellaneous-decisions">Miscellaneous decisions</a></li>
-<li><a href="2500-needle.html#alternatives">Alternatives</a></li>
+<li><a href="#principles">Principles</a></li>
+<li><a href="#design-rationales">Design rationales</a></li>
+<li><a href="#miscellaneous-decisions">Miscellaneous decisions</a></li>
+<li><a href="#alternatives">Alternatives</a></li>
 </ul>
 </li>
-<li><a href="2500-needle.html#prior-art">Prior art</a>
+<li><a href="#prior-art">Prior art</a>
 <ul>
-<li><a href="2500-needle.html#previous-attempts">Previous attempts</a></li>
-<li><a href="2500-needle.html#haskell">Haskell</a></li>
+<li><a href="#previous-attempts">Previous attempts</a></li>
+<li><a href="#haskell">Haskell</a></li>
 </ul>
 </li>
-<li><a href="2500-needle.html#unresolved-questions">Unresolved questions</a></li>
+<li><a href="#unresolved-questions">Unresolved questions</a></li>
 </ul>
 <!-- /TOC -->
-<a class="header" href="2500-needle.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="2500-needle.html#stabilize-the-pattern-api" id="stabilize-the-pattern-api"><h2>Stabilize the Pattern API</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#stabilize-the-pattern-api" id="stabilize-the-pattern-api"><h2>Stabilize the Pattern API</h2></a>
 <p>Pattern API v1.0 (<a href="https://github.com/rust-lang/rfcs/pull/528">RFC 528</a> / <a href="https://github.com/rust-lang/rust/issues/27721">issue 27721</a>) has been implemented for nearly 3 years,
 but we still haven't decided to stabilize. One of the blockers is attempting to generalize the API
 to support <code>str</code>, <code>[T]</code> and <code>OsStr</code>, though it only exists as sketches and never finalized.</p>
@@ -194,15 +201,15 @@ the previous attempts.</p>
 </ol>
 <p>We hope that this RFC could revitalize the Pattern API development and make its stabilization
 foreseeable.</p>
-<a class="header" href="2500-needle.html#implement-omg-wtf-8" id="implement-omg-wtf-8"><h2>Implement OMG-WTF-8</h2></a>
+<a class="header" href="#implement-omg-wtf-8" id="implement-omg-wtf-8"><h2>Implement OMG-WTF-8</h2></a>
 <p>The OMG-WTF-8 encoding was introduced to allow slicing an <code>&amp;OsStr</code>, and thus enable extending
 the Pattern API to <code>&amp;OsStr</code> without special-casing (<a href="https://github.com/rust-lang/rfcs/pull/2295">RFC 2295</a> / <a href="https://github.com/rust-lang/rust/issues/49802">issue 49802</a>). That RFC expects
 a Pattern API working with <code>OsStr</code> to generalize some methods (e.g. <code>OsStr::ends_with()</code>).
 This RFC would unblock the implementation of RFC 2295, as to decide whether to integrate with
 a Pattern API, or just go with the non-generic version.</p>
-<a class="header" href="2500-needle.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>You may check the prototype package <a href="https://crates.io/crates/pattern-3"><code>pattern-3</code></a> for API documentation and source code.</p>
-<a class="header" href="2500-needle.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>Key concepts:</p>
 <ul>
 <li>Searching is based on <em>trisection</em>, splitting a string into 3 parts: the substring before, being,
@@ -211,11 +218,11 @@ and after the match. <code>&quot;ab123cedf&quot; == &quot;ab&quot; ++ &quot;123&
 <li><em>Searcher</em> is responsible for finding the range of the match.</li>
 <li>Utilizing these together to safely construct many useful algorithms related to string matching.</li>
 </ul>
-<a class="header" href="2500-needle.html#api" id="api"><h2>API</h2></a>
+<a class="header" href="#api" id="api"><h2>API</h2></a>
 <p>All items below should be placed in the <code>core::needle</code> module, re-exported as <code>std::needle</code>.</p>
 <p>We renamed &quot;Pattern API&quot; into &quot;Needle API&quot; to avoid confusion with the language's pattern matching
 i.e. the <code>match</code> expression.</p>
-<a class="header" href="2500-needle.html#hay" id="hay"><h3>Hay</h3></a>
+<a class="header" href="#hay" id="hay"><h3>Hay</h3></a>
 <p>A <code>Hay</code> is the core type which the search algorithm will run on.
 It is implemented on the unsized slice-like types like <code>str</code>, <code>OsStr</code> and <code>[T]</code>.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -252,7 +259,7 @@ where a cursor/pointer would be more suitable for allowing sub-linear splitting.
              +----+                        |
         prev_index(2) = 1            end_index() = 7
 </code></pre>
-<a class="header" href="2500-needle.html#haystack" id="haystack"><h3>Haystack</h3></a>
+<a class="header" href="#haystack" id="haystack"><h3>Haystack</h3></a>
 <p>A <code>Haystack</code> is any linear structure which we can do string/array matching on,
 and can be sliced or split so they could be returned from the <code>matches()</code> and <code>split()</code> iterators.</p>
 <p>Haystack is implemented on the reference or collection itself e.g. <code>&amp;[T]</code>, <code>&amp;mut [T]</code> and <code>Vec&lt;T&gt;</code>.
@@ -295,7 +302,7 @@ It is usually just implemented as <code>(original.start + parent.start)..(origin
 <p>When an index is based on a pointer, splitting a haystack will <em>invalidate</em> those pointers.
 However, a pointer is persisted with slicing, so they could implement this method simply as
 <code>self.start_index()..self.end_index()</code>.</p>
-<a class="header" href="2500-needle.html#shared-haystack" id="shared-haystack"><h3>Shared haystack</h3></a>
+<a class="header" href="#shared-haystack" id="shared-haystack"><h3>Shared haystack</h3></a>
 <p>A <code>SharedHaystack</code> is a marker sub-trait which tells the compiler this haystack can cheaply be
 cheaply cloned (i.e. shared), e.g. a <code>&amp;H</code> or <code>Rc&lt;H&gt;</code>. Implementing this trait alters some behavior
 of the <code>Span</code> structure discussed next section.</p>
@@ -306,7 +313,7 @@ pub trait SharedHaystack: Haystack + Clone {}
 #}</code></pre></pre>
 <p><code>.restore_range()</code> will never be called with a shared haystack and should be implemented as
 <code>unreachable!()</code>.</p>
-<a class="header" href="2500-needle.html#span" id="span"><h3>Span</h3></a>
+<a class="header" href="#span" id="span"><h3>Span</h3></a>
 <p>A <code>Span</code> is a haystack coupled with information where the original span is found.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -369,7 +376,7 @@ Slicing is only done when returning from an algorithm.</p>
 a haystack will be split as soon as the span is split. The &quot;original range&quot; becomes a value
 disconnected from the haystack, and this is where <code>.restore_range()</code> is needed:
 to recover the indices in the middle (<code>5 == 3 + 2</code> and <code>7 == 3 + 4</code>).</p>
-<a class="header" href="2500-needle.html#searcher" id="searcher"><h3>Searcher</h3></a>
+<a class="header" href="#searcher" id="searcher"><h3>Searcher</h3></a>
 <p>A searcher only provides a single method: <code>.search()</code>. It takes a span as input,
 and returns the first sub-range where the given needle is found.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -405,7 +412,7 @@ an example which implements <code>ReverseSearcher</code> but not <code>DoubleEnd
 <li>Forward searching the needle <code>xx</code> in the haystack <code>xxxxx</code> will yield <code>[xx][xx]x</code></li>
 <li>Backward searching the needle <code>xx</code> in the haystack <code>xxxxx</code> will yield <code>x[xx][xx]</code></li>
 </ul>
-<a class="header" href="2500-needle.html#consumer" id="consumer"><h3>Consumer</h3></a>
+<a class="header" href="#consumer" id="consumer"><h3>Consumer</h3></a>
 <p>A consumer provides the <code>.consume()</code> method to implement <code>starts_with()</code> and <code>trim_start()</code>. It
 takes a span as input, and if the beginning matches the needle, returns the end index of the match.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -441,7 +448,7 @@ assert_eq!(&quot;GH&quot;.into_consumer().consume(span.clone()), None);
 #}</code></pre></pre>
 <p>The trait also provides a <code>.trim_start()</code> method in case a faster specialization exists.</p>
 <p>Similar to searchers, the consumers also have the &quot;reverse&quot; and &quot;double-ended&quot; variants.</p>
-<a class="header" href="2500-needle.html#needle" id="needle"><h3>Needle</h3></a>
+<a class="header" href="#needle" id="needle"><h3>Needle</h3></a>
 <p>A needle is simply a &quot;factory&quot; of a searcher and consumer.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -506,7 +513,7 @@ where
 #}</code></pre></pre>
 <p>and a type can implement all of <code>(FnMut(char) -&gt; bool) + Searcher&lt;str&gt; + Consumer&lt;str&gt;</code>,
 causing impl conflict.</p>
-<a class="header" href="2500-needle.html#algorithms" id="algorithms"><h3>Algorithms</h3></a>
+<a class="header" href="#algorithms" id="algorithms"><h3>Algorithms</h3></a>
 <p>Standard algorithms are provided as <em>functions</em> in the <code>core::needle::ext</code> module.</p>
 <p><details><summary>List of algorithms</summary></p>
 <p><strong>Starts with, ends with</strong></p>
@@ -702,7 +709,7 @@ impl str {
     ...
 }
 #}</code></pre></pre>
-<a class="header" href="2500-needle.html#standard-library-changes" id="standard-library-changes"><h2>Standard library changes</h2></a>
+<a class="header" href="#standard-library-changes" id="standard-library-changes"><h2>Standard library changes</h2></a>
 <ul>
 <li>
 <p>Remove the entire <code>core::str::pattern</code> module from public, as this is unstable.</p>
@@ -834,7 +841,7 @@ forward_to_needle_api! {
 should produce an <code>OsString</code>.</p>
 </li>
 </ul>
-<a class="header" href="2500-needle.html#performance" id="performance"><h2>Performance</h2></a>
+<a class="header" href="#performance" id="performance"><h2>Performance</h2></a>
 <p>The benchmark of the <code>pattern_3</code> package shows that algorithms using the Needle API (&quot;v3.0 API&quot;)
 is close to or much faster than the corresponding methods in libstd using v1.0.</p>
 <p>The main performance improvement comes from <code>trim()</code>. In v1.0, <code>trim()</code> depends on
@@ -872,7 +879,7 @@ searcher would be a job mismatch for <code>trim()</code>. This justifies the <co
 <tr><td> <code>trim_start(&quot;💩💩&quot;)</code> </td><td align="right"> −97% </td></tr>
 </tbody></table>
 <p></details></p>
-<a class="header" href="2500-needle.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>This RFC suggests generalizing some stabilized methods of <code>str</code> and <code>[T]</code> to adapt
@@ -959,10 +966,10 @@ impl&lt;'p&gt; Needle&lt;MyOsString&gt; for &amp;'p str { ... }
 <p>RFC 1672 is currently blocked by <code>chalk</code> integration before it could be reopened.</p>
 </li>
 </ul>
-<a class="header" href="2500-needle.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
-<a class="header" href="2500-needle.html#principles" id="principles"><h2>Principles</h2></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#principles" id="principles"><h2>Principles</h2></a>
 <p>These are some guiding principles v3.0 will adhere to.</p>
-<a class="header" href="2500-needle.html#generic-algorithms" id="generic-algorithms"><h3>Generic algorithms</h3></a>
+<a class="header" href="#generic-algorithms" id="generic-algorithms"><h3>Generic algorithms</h3></a>
 <ol>
 <li>
 <p>The Needle API should define an interface which can be used to easily implement
@@ -982,7 +989,7 @@ all algorithms the standard library currently provides:</p>
 to do borrowck by hand (e.g. ensuring there is no overlapping mutable slices across functions).</p>
 </li>
 </ol>
-<a class="header" href="2500-needle.html#haystack-implementor" id="haystack-implementor"><h3>Haystack implementor</h3></a>
+<a class="header" href="#haystack-implementor" id="haystack-implementor"><h3>Haystack implementor</h3></a>
 <ol start="3">
 <li>
 <p>The standard slice types must be supported:
@@ -993,7 +1000,7 @@ to do borrowck by hand (e.g. ensuring there is no overlapping mutable slices acr
 assuming we get either custom DST or GATs implemented.</p>
 </li>
 </ol>
-<a class="header" href="2500-needle.html#needlesearcher-implementor" id="needlesearcher-implementor"><h3>Needle/Searcher implementor</h3></a>
+<a class="header" href="#needlesearcher-implementor" id="needlesearcher-implementor"><h3>Needle/Searcher implementor</h3></a>
 <ol start="5">
 <li>
 <p>The existing needle for <code>&amp;str</code> and <code>&amp;mut str</code> should be supported:</p>
@@ -1027,9 +1034,9 @@ the existing ones in the standard library.</p>
 <code>Vec&lt;T&gt;</code>. The searcher should rely on that these all can be borrowed as an <code>&amp;[T]</code>.</p>
 </li>
 </ol>
-<a class="header" href="2500-needle.html#design-rationales" id="design-rationales"><h2>Design rationales</h2></a>
+<a class="header" href="#design-rationales" id="design-rationales"><h2>Design rationales</h2></a>
 <p>The section lists some important use cases which shape v3.0.</p>
-<a class="header" href="2500-needle.html#no-more-next_reject" id="no-more-next_reject"><h3>No more <code>.next_reject()</code></h3></a>
+<a class="header" href="#no-more-next_reject" id="no-more-next_reject"><h3>No more <code>.next_reject()</code></h3></a>
 <p>In v1.0 a searcher provides a <code>.next()</code> method which returns what is being seen ahead:
 a match, no-match, or end-to-string, and then advance the cursor.</p>
 <p>None of the generic algorithms besides <code>starts_with()</code>/<code>ends_with()</code>
@@ -1044,7 +1051,7 @@ The <code>starts_with()</code> methods are supported instead via a specialized m
 <p>However, we see that even <code>.next_reject()</code> is not something obvious. Given that <code>.next_reject()</code>
 is only used in <code>trim()</code>, in v3.0 we decide to remove this method as well,
 and instead make the Needle implement <code>trim()</code> directly.</p>
-<a class="header" href="2500-needle.html#searching-in-a-mut-str" id="searching-in-a-mut-str"><h3>Searching in a <code>&amp;mut str</code></h3></a>
+<a class="header" href="#searching-in-a-mut-str" id="searching-in-a-mut-str"><h3>Searching in a <code>&amp;mut str</code></h3></a>
 <p>In all versions of Pattern APIs up to v2.0, the &quot;haystack&quot; is directly managed by the searcher.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1098,7 +1105,7 @@ gen fn matches&lt;H: Haystack, P: Needle&lt;H&gt;&gt;(mut haystack: H, needle: P
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2500-needle.html#matching-a-regex" id="matching-a-regex"><h3>Matching a <code>&amp;Regex</code></h3></a>
+<a class="header" href="#matching-a-regex" id="matching-a-regex"><h3>Matching a <code>&amp;Regex</code></h3></a>
 <p>In the prototype above, we always feed the remaining haystack into <code>.search()</code>.
 This works fine for built-in needle types like <code>char</code> and <code>&amp;str</code>,
 but is totally broken for more advanced regular expression needles.</p>
@@ -1172,7 +1179,7 @@ gen fn matches&lt;H: Haystack, P: Needle&lt;H&gt;&gt;(haystack: H, needle: P) -&
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2500-needle.html#hay-dont-repeat-yourself" id="hay-dont-repeat-yourself"><h3>Hay: Don't repeat yourself</h3></a>
+<a class="header" href="#hay-dont-repeat-yourself" id="hay-dont-repeat-yourself"><h3>Hay: Don't repeat yourself</h3></a>
 <p>When we support searching both <code>&amp;str</code> and <code>&amp;mut str</code>, we'll often need to implement the same
 algorithm to both types. v2.0 solves this by using macros, which works but is not elegant.</p>
 <p>Since both <code>&amp;str</code> and <code>&amp;mut str</code> can be borrowed as a <code>str</code>, we could force every haystack
@@ -1201,7 +1208,7 @@ trait Needle&lt;H: Haystack&gt; {
     ...
 }
 #}</code></pre></pre>
-<a class="header" href="2500-needle.html#consumer-1" id="consumer-1"><h3>Consumer</h3></a>
+<a class="header" href="#consumer-1" id="consumer-1"><h3>Consumer</h3></a>
 <p>In v2.0 and before, a pattern (needle) will need to specialize <code>starts_with()</code> and <code>ends_with()</code>.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1254,8 +1261,8 @@ trait Consumer&lt;A: Hay + ?Sized&gt; {
 #}</code></pre></pre>
 <p>Both <code>starts_with()</code> and <code>trim()</code> can be efficiently implemented in terms of <code>.consume()</code>,
 though for some needles a specialized <code>trim()</code> can be even faster, so we keep this default method.</p>
-<a class="header" href="2500-needle.html#miscellaneous-decisions" id="miscellaneous-decisions"><h2>Miscellaneous decisions</h2></a>
-<a class="header" href="2500-needle.html#usize-as-index-instead-of-pointers" id="usize-as-index-instead-of-pointers"><h3><code>usize</code> as index instead of pointers</h3></a>
+<a class="header" href="#miscellaneous-decisions" id="miscellaneous-decisions"><h2>Miscellaneous decisions</h2></a>
+<a class="header" href="#usize-as-index-instead-of-pointers" id="usize-as-index-instead-of-pointers"><h3><code>usize</code> as index instead of pointers</h3></a>
 <p>Pattern API v1.3–v2.0 all used cursors (pointers) as the primary indexing method.
 v3.0 still supports cursor-based indexing, but reverts to <code>usize</code> for the built-in slice types
 (<code>str</code>, <code>[T]</code> and <code>OsStr</code>). There are two reasons for this:</p>
@@ -1271,7 +1278,7 @@ and easy to get wrong (the v2.0 implementation does not consider ZSTs for instan
 or cursor pointer have similar performance.</p>
 </li>
 </ol>
-<a class="header" href="2500-needle.html#dsts-instead-of-gats" id="dsts-instead-of-gats"><h3>DSTs instead of GATs</h3></a>
+<a class="header" href="#dsts-instead-of-gats" id="dsts-instead-of-gats"><h3>DSTs instead of GATs</h3></a>
 <p>We share a searcher implementation by introducing the <code>Hay</code> trait, as the dereference target of the
 <code>Haystack</code> trait, i.e. <code>&amp;[T]</code>, <code>&amp;mut [T]</code> and <code>Vec&lt;T&gt;</code> will all be delegated to <code>[T]</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1311,7 +1318,7 @@ irrelevant in the standard library.</p>
 has still not landed on the Rust compiler, making it impossible to create a test prototype.</p>
 </li>
 </ol>
-<a class="header" href="2500-needle.html#deref-instead-of-borrow" id="deref-instead-of-borrow"><h3><code>Deref</code> instead of <code>Borrow</code></h3></a>
+<a class="header" href="#deref-instead-of-borrow" id="deref-instead-of-borrow"><h3><code>Deref</code> instead of <code>Borrow</code></h3></a>
 <p>The <code>Haystack</code> trait inherits <code>Deref</code> and requires its <code>Target</code> to implement <code>Hay</code>. An alternative
 is extending <code>Borrow</code> instead:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1327,7 +1334,7 @@ unsafe trait Haystack: Borrow&lt;Self::Hay&gt; + Sized {
 implement <code>Hay</code>, because it cannot properly implement <code>slice_unchecked(&amp;self, ...) -&gt; &amp;Self</code>
 (we cannot magically make up a borrowed sub-list).</p>
 <p>And thus the more general <code>Borrow</code> trait offers no advantage over <code>Deref</code>.</p>
-<a class="header" href="2500-needle.html#searcher-makes-hay-an-input-type-instead-of-associated-type" id="searcher-makes-hay-an-input-type-instead-of-associated-type"><h3>Searcher makes Hay an input type instead of associated type</h3></a>
+<a class="header" href="#searcher-makes-hay-an-input-type-instead-of-associated-type" id="searcher-makes-hay-an-input-type-instead-of-associated-type"><h3>Searcher makes Hay an input type instead of associated type</h3></a>
 <p>The <code>Searcher</code> and <code>Consumer</code> traits makes the hay as input type.
 This makes any algorithm relying on a <code>ReverseSearcher</code> need to spell out the hay as well.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1362,11 +1369,11 @@ where
 quite frequently, e.g. the two-way search algorithm is shared among the needles of <code>&amp;[T]</code>, <code>&amp;str</code>
 and <code>&amp;OsStr</code>. Associated type would force creation of many wrapper types which is annoying.</p>
 <p>Therefore we stay with having the hay as the input type, the same choice taken in v2.0 and before.</p>
-<a class="header" href="2500-needle.html#specialization-of-contains" id="specialization-of-contains"><h3>Specialization of <code>contains()</code></h3></a>
+<a class="header" href="#specialization-of-contains" id="specialization-of-contains"><h3>Specialization of <code>contains()</code></h3></a>
 <p>v3.0 removed the <code>Needle::is_contained_in()</code> method. The <code>contains()</code> algorithm simply returned
 <code>searcher.search(span).is_some()</code>. The micro-benchmarks shows no performance decrease,
 thus the method is removed to reduce the API surface.</p>
-<a class="header" href="2500-needle.html#needle-for-t-only-requires-t-partialeq" id="needle-for-t-only-requires-t-partialeq"><h3>Needle for <code>&amp;[T]</code> only requires <code>T: PartialEq</code></h3></a>
+<a class="header" href="#needle-for-t-only-requires-t-partialeq" id="needle-for-t-only-requires-t-partialeq"><h3>Needle for <code>&amp;[T]</code> only requires <code>T: PartialEq</code></h3></a>
 <p>Sub-slice searching nowadays uses the Two-Way search algorithm, which requires ordered alphabet
 i.e. <code>T: Ord</code>. However, there are already two stabilized APIs only assuming <code>T: PartialEq</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1387,7 +1394,7 @@ of the array searching algorithm require <code>T: Ord</code>, it feels very inco
 <p>With specialization, this dilemma can be easily fixed: we will fallback to an algorithm
 which only requires <code>T: PartialEq</code> (e.g. <a href="https://crates.io/crates/galil-seiferas"><code>galil-seiferas</code></a> or even naive search),
 and use the faster Two-Way algorithm when <code>T: Ord</code>.</p>
-<a class="header" href="2500-needle.html#not-having-default-implementations-for-search-and-consume" id="not-having-default-implementations-for-search-and-consume"><h3>Not having default implementations for <code>search</code> and <code>consume</code></h3></a>
+<a class="header" href="#not-having-default-implementations-for-search-and-consume" id="not-having-default-implementations-for-search-and-consume"><h3>Not having default implementations for <code>search</code> and <code>consume</code></h3></a>
 <p>In the <code>Searcher</code> and <code>Consumer</code> traits, <code>.search()</code> and <code>.consume()</code> can be implemented
 in terms of each other:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1435,7 +1442,7 @@ where
 <p>These fallbacks should only be used when the needle does not allow more efficient implementations,
 which is often not the case. To encourage needle implementations to support both primitives,
 where they should have full control of the details, we keep them as required methods.</p>
-<a class="header" href="2500-needle.html#names-of-everything" id="names-of-everything"><h3>Names of everything</h3></a>
+<a class="header" href="#names-of-everything" id="names-of-everything"><h3>Names of everything</h3></a>
 <ul>
 <li>
 <p><strong>Haystack</strong>. Inherited from the v1.0 method <code>Searcher::haystack()</code>. v2.0 called it
@@ -1513,13 +1520,13 @@ is adding an <code>r</code> prefix, so we do the same for the trait methods as w
 <p><strong>Span</strong>. The name is taken from the rustc compiler.</p>
 </li>
 </ul>
-<a class="header" href="2500-needle.html#alternatives" id="alternatives"><h2>Alternatives</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h2>Alternatives</h2></a>
 <ul>
 <li>The names of everything except <code>Searcher</code> and <code>Haystack</code> are not finalized.</li>
 </ul>
-<a class="header" href="2500-needle.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
-<a class="header" href="2500-needle.html#previous-attempts" id="previous-attempts"><h2>Previous attempts</h2></a>
-<a class="header" href="2500-needle.html#v10" id="v10"><h3>v1.0</h3></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#previous-attempts" id="previous-attempts"><h2>Previous attempts</h2></a>
+<a class="header" href="#v10" id="v10"><h3>v1.0</h3></a>
 <p>The existing <code>Pattern</code> API was introduced in <a href="https://github.com/rust-lang/rfcs/pull/528">RFC 528</a> to provide a common interface for several
 search-related operations on a string. There were several minor revisions after the RFC was
 accepted, but till nowadays is still an unstable API.</p>
@@ -1604,7 +1611,7 @@ string methods.</p>
 <p>While the pattern-to-searcher conversion is beneficial when searching the entire haystack, it is
 often wasteful in simple functions like <code>starts_with</code> and <code>ends_with</code> (a sub-slice equality check is
 optimal). Therefore, the specialized methods like <code>Pattern::is_prefix_of</code> are provided.</p>
-<a class="header" href="2500-needle.html#v12v15" id="v12v15"><h3>v1.2–v1.5</h3></a>
+<a class="header" href="#v12v15" id="v12v15"><h3>v1.2–v1.5</h3></a>
 <p>The <code>Pattern</code> API in Rust only supports searching a string. An <a href="https://github.com/rust-lang/rust/issues/27721#issuecomment-185405392">attempt</a> to
 evolve this to arbitrary haystack type can be found in the repository <a href="https://github.com/Kimundi/pattern_api_sketch">Kimundi/pattern_api_sketch</a>.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1639,7 +1646,7 @@ trait SearchPtrs { // e.g. implemented for &amp;str
     unsafe fn cursor_at_back(hs: Self::Haystack) -&gt; Self::Cursor;
 }
 #}</code></pre></pre>
-<a class="header" href="2500-needle.html#v20" id="v20"><h3>v2.0</h3></a>
+<a class="header" href="#v20" id="v20"><h3>v2.0</h3></a>
 <p>The <a href="https://github.com/Kimundi/rust_pattern_api_v2">v2.0 API</a> was introduced due to <a href="https://github.com/rust-lang/rfcs/pull/1309">RFC 1309</a>,
 trying to cover <code>OsStr</code> as well. But other than <code>OsStr</code> support
 the v2.0 API is essentially the same as the v1.5 API.</p>
@@ -1671,7 +1678,7 @@ trait PatternHaystack: Sized { // same as SearchPtrs in v1.5
     fn match_type_len(mt: &amp;Self::MatchType) -&gt; usize;
 }
 #}</code></pre></pre>
-<a class="header" href="2500-needle.html#haskell" id="haskell"><h2>Haskell</h2></a>
+<a class="header" href="#haskell" id="haskell"><h2>Haskell</h2></a>
 <p>Haskell is perhaps one of the few languages where a generic string matching API is found,
 since it also has so many string types like Rust 😝, and there isn't an official regex
 implementation (unlike C++ which won't give insight how a <code>Searcher</code> interface should be designed).</p>
@@ -1720,7 +1727,7 @@ and <code>prev_index</code> become simply <code>(+ 1)</code> and <code>(− 1)</
 <code>end_index</code> is also not needed since <code>before</code> and <code>after</code> (the slicing operations) will
 automatically clamp the index.</li>
 </ol>
-<a class="header" href="2500-needle.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Currently, due to RFC 2089 and/or 2289 not being implemented, using a <code>Haystack</code> in any algorithm
@@ -1810,9 +1817,6 @@ we may want to merge <code>Consumer</code> and <code>Searcher</code> into a sing
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0940-hyphens-considered-harmful - </title>
+        <title>0940-hyphens-considered-harmful - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/940">rust-lang/rfcs#940</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/23533">rust-lang/rust#23533</a></li>
 </ul>
-<a class="header" href="0940-hyphens-considered-harmful.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Disallow hyphens in Rust crate names, but continue allowing them in Cargo packages.</p>
-<a class="header" href="0940-hyphens-considered-harmful.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This RFC aims to reconcile two conflicting points of view.</p>
 <p>First: hyphens in crate names are awkward to use, and inconsistent with the rest of the language. Anyone who uses such a crate must rename it on import:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -152,38 +159,38 @@ extern crate &quot;rustc-serialize&quot; as rustc_serialize;
 <p>An earlier version of this RFC aimed to solve this issue by removing hyphens entirely.</p>
 <p>However, there is a large amount of precedent for keeping <code>-</code> in package names. Systems as varied as GitHub, npm, RubyGems and Debian all have an established convention of using hyphens. Disallowing them would go against this precedent, causing friction with the wider community.</p>
 <p>Fortunately, Cargo presents us with a solution. It already separates the concepts of <em>package name</em> (used by Cargo and crates.io) and <em>crate name</em> (used by rustc and <code>extern crate</code>). We can disallow hyphens in the crate name only, while still accepting them in the outer package. This solves the usability problem, while keeping with the broader convention.</p>
-<a class="header" href="0940-hyphens-considered-harmful.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0940-hyphens-considered-harmful.html#disallow-hyphens-in-crates-only" id="disallow-hyphens-in-crates-only"><h2>Disallow hyphens in crates (only)</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#disallow-hyphens-in-crates-only" id="disallow-hyphens-in-crates-only"><h2>Disallow hyphens in crates (only)</h2></a>
 <p>In <strong>rustc</strong>, enforce that all crate names are valid identifiers.</p>
 <p>In <strong>Cargo</strong>, continue allowing hyphens in package names.</p>
 <p>The difference will be in the crate name Cargo passes to the compiler. If the <code>Cargo.toml</code> does <em>not</em> specify an explicit crate name, then Cargo will use the package name but with all <code>-</code> replaced by <code>_</code>.</p>
 <p>For example, if I have a package named <code>apple-fritter</code>, Cargo will pass <code>--crate-name apple_fritter</code> to the compiler instead.</p>
 <p>Since most packages do not set their own crate names, this mapping will ensure that the majority of hyphenated packages continue to build unchanged.</p>
-<a class="header" href="0940-hyphens-considered-harmful.html#identify---and-_-on-cratesio" id="identify---and-_-on-cratesio"><h2>Identify <code>-</code> and <code>_</code> on crates.io</h2></a>
+<a class="header" href="#identify---and-_-on-cratesio" id="identify---and-_-on-cratesio"><h2>Identify <code>-</code> and <code>_</code> on crates.io</h2></a>
 <p>Right now, crates.io compares package names case-insensitively. This means, for example, you cannot upload a new package named <code>RUSTC-SERIALIZE</code> because <code>rustc-serialize</code> already exists.</p>
 <p>Under this proposal, we will extend this logic to identify <code>-</code> and <code>_</code> as well.</p>
-<a class="header" href="0940-hyphens-considered-harmful.html#remove-the-quotes-from-extern-crate" id="remove-the-quotes-from-extern-crate"><h2>Remove the quotes from <code>extern crate</code></h2></a>
+<a class="header" href="#remove-the-quotes-from-extern-crate" id="remove-the-quotes-from-extern-crate"><h2>Remove the quotes from <code>extern crate</code></h2></a>
 <p>Change the syntax of <code>extern crate</code> so that the crate name is no longer in quotes (e.g. <code>extern crate photo_finish as photo;</code>). This is viable now that all crate names are valid identifiers.</p>
 <p>To ease the transition, keep the old <code>extern crate</code> syntax around, transparently mapping any hyphens to underscores. For example, <code>extern crate &quot;silver-spoon&quot; as spoon;</code> will be desugared to <code>extern crate silver_spoon as spoon;</code>. This syntax will be deprecated, and removed before 1.0.</p>
-<a class="header" href="0940-hyphens-considered-harmful.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
-<a class="header" href="0940-hyphens-considered-harmful.html#inconsistency-between-packages-and-crates" id="inconsistency-between-packages-and-crates"><h2>Inconsistency between packages and crates</h2></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#inconsistency-between-packages-and-crates" id="inconsistency-between-packages-and-crates"><h2>Inconsistency between packages and crates</h2></a>
 <p>This proposal makes package and crate names inconsistent: the former will accept hyphens while the latter will not.</p>
 <p>However, this drawback may not be an issue in practice. As hinted in the motivation, most other platforms have different syntaxes for packages and crates/modules anyway. Since the package system is orthogonal to the language itself, there is no need for consistency between the two.</p>
-<a class="header" href="0940-hyphens-considered-harmful.html#inconsistency-between---and-_" id="inconsistency-between---and-_"><h2>Inconsistency between <code>-</code> and <code>_</code></h2></a>
+<a class="header" href="#inconsistency-between---and-_" id="inconsistency-between---and-_"><h2>Inconsistency between <code>-</code> and <code>_</code></h2></a>
 <p>Quoth @P1start:</p>
 <blockquote>
 <p>... it's also annoying to have to choose between <code>-</code> and <code>_</code> when choosing a crate name, and to remember which of <code>-</code> and <code>_</code> a particular crate uses.</p>
 </blockquote>
 <p>I believe, like other naming issues, this problem can be addressed by conventions.</p>
-<a class="header" href="0940-hyphens-considered-harmful.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0940-hyphens-considered-harmful.html#do-nothing" id="do-nothing"><h2>Do nothing</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#do-nothing" id="do-nothing"><h2>Do nothing</h2></a>
 <p>As with any proposal, we can choose to do nothing. But given the reasons outlined above, the author believes it is important that we address the problem before the beta release.</p>
-<a class="header" href="0940-hyphens-considered-harmful.html#disallow-hyphens-in-package-names-as-well" id="disallow-hyphens-in-package-names-as-well"><h2>Disallow hyphens in package names as well</h2></a>
+<a class="header" href="#disallow-hyphens-in-package-names-as-well" id="disallow-hyphens-in-package-names-as-well"><h2>Disallow hyphens in package names as well</h2></a>
 <p>An earlier version of this RFC proposed to disallow hyphens in packages as well. The drawbacks of this idea are covered in the motivation.</p>
-<a class="header" href="0940-hyphens-considered-harmful.html#make-extern-crate-match-fuzzily" id="make-extern-crate-match-fuzzily"><h2>Make <code>extern crate</code> match fuzzily</h2></a>
+<a class="header" href="#make-extern-crate-match-fuzzily" id="make-extern-crate-match-fuzzily"><h2>Make <code>extern crate</code> match fuzzily</h2></a>
 <p>Alternatively, we can have the compiler consider hyphens and underscores as equal while looking up a crate. In other words, the crate <code>flim-flam</code> would match both <code>extern crate flim_flam</code> and <code>extern crate &quot;flim-flam&quot; as flim_flam</code>.</p>
 <p>This involves much more magic than the original proposal, and it is not clear what advantages it has over it.</p>
-<a class="header" href="0940-hyphens-considered-harmful.html#repurpose-hyphens-as-namespace-separators" id="repurpose-hyphens-as-namespace-separators"><h2>Repurpose hyphens as namespace separators</h2></a>
+<a class="header" href="#repurpose-hyphens-as-namespace-separators" id="repurpose-hyphens-as-namespace-separators"><h2>Repurpose hyphens as namespace separators</h2></a>
 <p>Alternatively, we can treat hyphens as path separators in Rust.</p>
 <p>For example, the crate <code>hoity-toity</code> could be imported as</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -203,7 +210,7 @@ mod hoity {
 }
 #}</code></pre></pre>
 <p>However, on prototyping this proposal, the author found it too complex and fraught with edge cases. For these reasons the author chose not to push this solution.</p>
-<a class="header" href="0940-hyphens-considered-harmful.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None so far.</p>
 
                     </main>
@@ -249,9 +256,6 @@ mod hoity {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

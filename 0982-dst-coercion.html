@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0982-dst-coercion - </title>
+        <title>0982-dst-coercion - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,16 +146,16 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/982">rust-lang/rfcs#982</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/18598">rust-lang/rust#18598</a></li>
 </ul>
-<a class="header" href="0982-dst-coercion.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Custom coercions allow smart pointers to fully participate in the DST system.
 In particular, they allow practical use of <code>Rc&lt;T&gt;</code> and <code>Arc&lt;T&gt;</code> where <code>T</code> is unsized.</p>
 <p>This RFC subsumes part of <a href="https://github.com/rust-lang/rfcs/blob/master/text/0401-coercions.md">RFC 401 coercions</a>.</p>
-<a class="header" href="0982-dst-coercion.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>DST is not really finished without this, in particular there is a need for types
 like reference counted trait objects (<code>Rc&lt;Trait&gt;</code>) which are not currently well-
 supported (without coercions, it is pretty much impossible to create such values
 with such a type).</p>
-<a class="header" href="0982-dst-coercion.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>There is an <code>Unsize</code> trait and lang item. This trait signals that a type can be
 converted using the compiler's coercion machinery from a sized to an unsized
 type. All implementations of this trait are implicit and compiler generated. It
@@ -205,8 +212,8 @@ impl&lt;T: ?Sized+Unsize&lt;U&gt;, U: ?Sized&gt; CoerceUnsized&lt;*const U&gt; f
 <p>Note that there are some coercions which are not given by <code>CoerceUnsized</code>, e.g.,
 from safe to unsafe function pointers, so it really is a <code>CoerceUnsized</code> trait,
 not a general <code>Coerce</code> trait.</p>
-<a class="header" href="0982-dst-coercion.html#compiler-checking" id="compiler-checking"><h2>Compiler checking</h2></a>
-<a class="header" href="0982-dst-coercion.html#on-encountering-an-implementation-of-coerceunsized-type-collection-phase" id="on-encountering-an-implementation-of-coerceunsized-type-collection-phase"><h3>On encountering an implementation of <code>CoerceUnsized</code> (type collection phase)</h3></a>
+<a class="header" href="#compiler-checking" id="compiler-checking"><h2>Compiler checking</h2></a>
+<a class="header" href="#on-encountering-an-implementation-of-coerceunsized-type-collection-phase" id="on-encountering-an-implementation-of-coerceunsized-type-collection-phase"><h3>On encountering an implementation of <code>CoerceUnsized</code> (type collection phase)</h3></a>
 <ul>
 <li>If the impl is for a built-in pointer type, we check nothing, otherwise...</li>
 <li>The compiler checks that the <code>Self</code> type is a struct or tuple struct and that
@@ -227,7 +234,7 @@ unrelated to unsizing are excluded, these could probably be added later, if need
 <li>We record for each impl, the index of the field in the <code>Self</code> type which is
 coerced.</li>
 </ul>
-<a class="header" href="0982-dst-coercion.html#on-encountering-a-potential-coercion-type-checking-phase" id="on-encountering-a-potential-coercion-type-checking-phase"><h3>On encountering a potential coercion (type checking phase)</h3></a>
+<a class="header" href="#on-encountering-a-potential-coercion-type-checking-phase" id="on-encountering-a-potential-coercion-type-checking-phase"><h3>On encountering a potential coercion (type checking phase)</h3></a>
 <ul>
 <li>
 <p>If we have an expression with type <code>E</code> where the type <code>F</code> is required during
@@ -244,7 +251,7 @@ bounds. We must also check for <code>Unsize</code> bounds for the case where the
 is auto-deref'ed, but not autoref'ed.</p>
 </li>
 </ul>
-<a class="header" href="0982-dst-coercion.html#on-encountering-an-adjustment-translation-phase" id="on-encountering-an-adjustment-translation-phase"><h3>On encountering an adjustment (translation phase)</h3></a>
+<a class="header" href="#on-encountering-an-adjustment-translation-phase" id="on-encountering-an-adjustment-translation-phase"><h3>On encountering an adjustment (translation phase)</h3></a>
 <ul>
 <li>In trans (which is post-monomorphisation) we should always be able to find an
 impl for any <code>CoerceUnsized</code> bound.</li>
@@ -255,13 +262,13 @@ code for the various pointer kinds (<code>Box&lt;T&gt;</code> has different beha
 the object being coerced and coerce the field in question by recursing (the
 built-in pointers are the base cases).</li>
 </ul>
-<a class="header" href="0982-dst-coercion.html#adjustment-types" id="adjustment-types"><h3>Adjustment types</h3></a>
+<a class="header" href="#adjustment-types" id="adjustment-types"><h3>Adjustment types</h3></a>
 <p>We add <code>AdjustCustom</code> to the <code>AutoAdjustment</code> enum as a placeholder for coercions
 due to a <code>CoerceUnsized</code> bound. I don't think we need the <code>UnsizeKind</code> enum at
 all now, since all checking is postponed until trans or relies on traits and impls.</p>
-<a class="header" href="0982-dst-coercion.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Not as flexible as the previous proposal.</p>
-<a class="header" href="0982-dst-coercion.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The original <a href="http://smallcultfollowing.com/babysteps/blog/2014/01/05/dst-take-5/">DST5 proposal</a>
 contains a similar proposal with no opt-in trait, i.e., coercions are completely
 automatic and arbitrarily deep. This is a little too magical and unpredicatable.
@@ -275,13 +282,13 @@ manual option to the <code>CoerceUnsized</code> trait backwards compatibly.</p>
 <p>The proposed design could be tweaked: for example, we could change the
 <code>CoerceUnsized</code> trait in many ways (we experimented with an associated type to
 indicate the field type which is coerced, for example).</p>
-<a class="header" href="0982-dst-coercion.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>It is unclear to what extent DST coercions should support multiple fields that
 refer to the same type parameter. <code>PhantomData&lt;T&gt;</code> should definitely be
 supported as an &quot;extra&quot; field that's skipped, but can all zero-sized fields
 be skipped? Are there cases where this would enable by-passing the abstractions
 that make some API safe?</p>
-<a class="header" href="0982-dst-coercion.html#updates-since-being-accepted" id="updates-since-being-accepted"><h1>Updates since being accepted</h1></a>
+<a class="header" href="#updates-since-being-accepted" id="updates-since-being-accepted"><h1>Updates since being accepted</h1></a>
 <p>Since it was accepted, the RFC has been updated as follows:</p>
 <ol>
 <li><code>CoerceUnsized</code> was specified to ingore PhantomData fields.</li>
@@ -330,9 +337,6 @@ that make some API safe?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0387-higher-ranked-trait-bounds - </title>
+        <title>0387-higher-ranked-trait-bounds - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,11 +145,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/387">rust-lang/rfcs#387</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/18639">rust-lang/rust#18639</a></li>
 </ul>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <ul>
 <li>Add the ability to have trait bounds that are polymorphic over lifetimes.</li>
 </ul>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently, closure types can be polymorphic over lifetimes. But
 closure types are deprecated in favor of traits and object types as
 part of RFC #44 (unboxed closures). We need to close the gap. The
@@ -249,8 +256,8 @@ fn with(callback: &amp;mut for&lt;'a&gt; FnMut&lt;(&amp;'a Data,),()&gt;)
 }
 #}</code></pre></pre>
 <p>The syntax for <code>fn</code> types must be updated as well to use <code>for</code>.</p>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#for-syntax" id="for-syntax"><h2>For syntax</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#for-syntax" id="for-syntax"><h2>For syntax</h2></a>
 <p>We modify the grammar for a trait reference to include</p>
 <pre><code>for&lt;lifetimes&gt; Trait&lt;T1, ..., Tn&gt;
 for&lt;lifetimes&gt; Trait(T1, ..., tn) -&gt; Tr
@@ -260,10 +267,10 @@ is not permitted in impls nor in qualified paths (<code>&lt;T as Trait&gt;</code
 impls, the distinction between early and late-bound lifetimes are
 inferred. In qualified paths, which are used to select a member from
 an impl, no bound lifetimes are permitted.</p>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#update-syntax-of-fn-types" id="update-syntax-of-fn-types"><h2>Update syntax of fn types</h2></a>
+<a class="header" href="#update-syntax-of-fn-types" id="update-syntax-of-fn-types"><h2>Update syntax of fn types</h2></a>
 <p>The existing bare fn types will be updated to use the same <code>for</code>
 notation. Therefore, <code>&lt;'a&gt; fn(&amp;'a int)</code> becomes <code>for&lt;'a&gt; fn(&amp;'a int)</code>.</p>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#implicit-binders-when-using-parentheses-notation-and-in-fn-types" id="implicit-binders-when-using-parentheses-notation-and-in-fn-types"><h2>Implicit binders when using parentheses notation and in fn types</h2></a>
+<a class="header" href="#implicit-binders-when-using-parentheses-notation-and-in-fn-types" id="implicit-binders-when-using-parentheses-notation-and-in-fn-types"><h2>Implicit binders when using parentheses notation and in fn types</h2></a>
 <p>When using the <code>Trait(T1, ..., Tn)</code> notation, implicit binders are
 introduced for omitted lifetimes. In other words, <code>FnMut(&amp;int)</code> is
 effectively shorthand for <code>for&lt;'a&gt; FnMut(&amp;'a int)</code>, which is itself
@@ -273,7 +280,7 @@ introduced when not using the parentheses notation (i.e.,
 the usual way, and hence <code>FnMut(&amp;Foo) -&gt; &amp;Bar</code> is shorthand for
 <code>for&lt;'a&gt; FnMut(&amp;'a Foo) -&gt; &amp;'a Bar</code>. The same is all true (and already
 true) for fn types.</p>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#distinguishing-early-vs-late-bound-lifetimes-in-impls" id="distinguishing-early-vs-late-bound-lifetimes-in-impls"><h2>Distinguishing early vs late bound lifetimes in impls</h2></a>
+<a class="header" href="#distinguishing-early-vs-late-bound-lifetimes-in-impls" id="distinguishing-early-vs-late-bound-lifetimes-in-impls"><h2>Distinguishing early vs late bound lifetimes in impls</h2></a>
 <p>We will distinguish early vs late-bound lifetimes on impls in the same
 way as we do for fns. Background on this process can be found in these
 two blog posts [<a href="http://smallcultfollowing.com/babysteps/blog/2013/10/29/intermingled-parameter-lists/">1</a>, <a href="http://smallcultfollowing.com/babysteps/blog/2013/11/04/intermingled-parameter-lists/">2</a>]. The basic idea is to distinguish
@@ -317,7 +324,7 @@ fn foo&lt;T&gt;(t: T) where T : FnMut(&amp;Foo) { ... }
 foo::&lt;SomeType&gt;(...) // ok
 foo::&lt;SomeOtherType&lt;'static&gt;&gt;(...) // not ok
 #}</code></pre></pre>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#instantiating-late-bound-lifetimes-in-a-trait-reference" id="instantiating-late-bound-lifetimes-in-a-trait-reference"><h2>Instantiating late-bound lifetimes in a trait reference</h2></a>
+<a class="header" href="#instantiating-late-bound-lifetimes-in-a-trait-reference" id="instantiating-late-bound-lifetimes-in-a-trait-reference"><h2>Instantiating late-bound lifetimes in a trait reference</h2></a>
 <p>Whenever
 an associated item from a trait reference is accessed, all late-bound
 lifetimes are instantiated. This means basically when a method is
@@ -344,7 +351,7 @@ is equivalent to:</p>
     &lt;t as FnMut&lt;(&amp;&amp;'b Foo,),()&gt;::call_mut(&amp;mut t, ...);
 }
 </code></pre>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#subtyping-of-trait-references" id="subtyping-of-trait-references"><h2>Subtyping of trait references</h2></a>
+<a class="header" href="#subtyping-of-trait-references" id="subtyping-of-trait-references"><h2>Subtyping of trait references</h2></a>
 <p>The subtyping rules for trait references that involve higher-ranked
 lifetimes will be defined in an analogous way to the current subtyping
 rules for closures. The high-level idea is to replace each
@@ -360,10 +367,10 @@ goes from &quot;more general&quot; to &quot;less general&quot;. For example, if 
 trait reference like <code>for&lt;'a&gt; FnMut(&amp;'a int)</code>, that would be usable
 wherever a trait reference with a concrete lifetime, like
 <code>FnMut(&amp;'static int)</code>, is expected.</p>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This feature is needed. There isn't really any particular drawback beyond
 language complexity.</p>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p><strong>Drop the keyword.</strong> The <code>for</code> keyword is used due to potential
 ambiguities surrounding UFCS notation. Under UFCS, it is legal to
 write e.g. <code>&lt;T&gt;::Foo::Bar</code> in a type context. This is awfully close to
@@ -379,7 +386,7 @@ in the future to permit types as well, though only in where clauses
 and not in types. For example, one might write:</p>
 <pre><code>fn foo&lt;IDENTITY&gt;(t: IDENTITY) where IDENTITY : for&lt;U&gt; FnMut(U) -&gt; U { ... }
 </code></pre>
-<a class="header" href="0387-higher-ranked-trait-bounds.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None. Implementation is underway though not complete.</p>
 
                     </main>
@@ -425,9 +432,6 @@ and not in types. For example, one might write:</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

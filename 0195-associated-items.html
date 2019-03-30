@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0195-associated-items - </title>
+        <title>0195-associated-items - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/195">rust-lang/rfcs#195</a></li>
 <li>Rust Issue #: <a href="https://github.com/rust-lang/rust/issues/17307">rust-lang/rust#17307</a></li>
 </ul>
-<a class="header" href="0195-associated-items.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC extends traits with <em>associated items</em>, which make generic programming
 more convenient, scalable, and powerful. In particular, traits will consist of a
 set of methods, together with:</p>
@@ -159,7 +166,7 @@ that associated consts will be added rather than statics, and to provide a
 summary of restrictions on the initial implementation of associated
 consts. Other than that modification, the proposal has not been changed to
 reflect newer Rust features or syntax.</em></p>
-<a class="header" href="0195-associated-items.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>A typical example where associated items are helpful is data structures like
 graphs, which involve at least three types: nodes, edges, and the graph itself.</p>
 <p>In today's Rust, to capture graphs as a generic trait, you have to take the
@@ -201,7 +208,7 @@ fn distance&lt;G: Graph&gt;(graph: &amp;G, start: &amp;G::N, end: &amp;G::N) -&g
 #}</code></pre></pre>
 <p>The following subsections expand on the above benefits of associated items, as
 well as some others.</p>
-<a class="header" href="0195-associated-items.html#associated-types-engineering-benefits-for-generics" id="associated-types-engineering-benefits-for-generics"><h2>Associated types: engineering benefits for generics</h2></a>
+<a class="header" href="#associated-types-engineering-benefits-for-generics" id="associated-types-engineering-benefits-for-generics"><h2>Associated types: engineering benefits for generics</h2></a>
 <p>As the graph example above illustrates, associated <em>types</em> do not increase the
 expressiveness of traits <em>per se</em>, because you can always use extra type
 parameters to a trait instead. However, associated types provide several
@@ -227,7 +234,7 @@ existing client code.</p>
 more type parameters to a trait, which breaks all code mentioning the trait.</p>
 </li>
 </ul>
-<a class="header" href="0195-associated-items.html#clearer-trait-matching" id="clearer-trait-matching"><h2>Clearer trait matching</h2></a>
+<a class="header" href="#clearer-trait-matching" id="clearer-trait-matching"><h2>Clearer trait matching</h2></a>
 <p>Type parameters to traits can either be &quot;inputs&quot; or &quot;outputs&quot;:</p>
 <ul>
 <li>
@@ -298,7 +305,7 @@ impl Add&lt;Complex&gt; for int {
 <p>With this approach, a trait declaration like <code>trait Add&lt;Rhs&gt; { ... }</code> is really
 defining a <em>family</em> of traits, one for each choice of <code>Rhs</code>. One can then
 provide a distinct <code>impl</code> for every member of this family.</p>
-<a class="header" href="0195-associated-items.html#expressiveness" id="expressiveness"><h2>Expressiveness</h2></a>
+<a class="header" href="#expressiveness" id="expressiveness"><h2>Expressiveness</h2></a>
 <p>Associated types, lifetimes, and functions can already be expressed in today's
 Rust, though it is unwieldy to do so (as argued above).</p>
 <p>But associated <em>consts</em> cannot be expressed using today's traits.</p>
@@ -334,7 +341,7 @@ trait Float {
     ...
 }
 #}</code></pre></pre>
-<a class="header" href="0195-associated-items.html#why-now" id="why-now"><h2>Why now?</h2></a>
+<a class="header" href="#why-now" id="why-now"><h2>Why now?</h2></a>
 <p>The above motivations aside, it may not be obvious why adding associated types
 <em>now</em> (i.e., pre-1.0) is important. There are essentially two reasons.</p>
 <p>First, the design presented here is <em>not</em> backwards compatible, because it
@@ -372,8 +379,8 @@ covered in future RFCs). Adding these traits would improve the quality and
 consistency of our 1.0 library APIs.</p>
 </li>
 </ul>
-<a class="header" href="0195-associated-items.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0195-associated-items.html#trait-headers" id="trait-headers"><h2>Trait headers</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#trait-headers" id="trait-headers"><h2>Trait headers</h2></a>
 <p>Trait headers are written according to the following grammar:</p>
 <pre><code>TRAIT_HEADER =
   'trait' IDENT [ '&lt;' INPUT_PARAMS '&gt;' ] [ ':' BOUNDS ] [ WHERE_CLAUSE ]
@@ -399,7 +406,7 @@ the subsection &quot;Constraining associated types&quot; below.</p>
 an <code>impl</code>; conceptually, each distinct instantiation of the types yields a
 distinct trait. More details are given in the section &quot;The input/output type
 distinction&quot; below.</p>
-<a class="header" href="0195-associated-items.html#trait-bodies-defining-associated-items" id="trait-bodies-defining-associated-items"><h2>Trait bodies: defining associated items</h2></a>
+<a class="header" href="#trait-bodies-defining-associated-items" id="trait-bodies-defining-associated-items"><h2>Trait bodies: defining associated items</h2></a>
 <p>Trait bodies are expanded to include three new kinds of items: consts, types,
 and lifetimes:</p>
 <pre><code>TRAIT = TRAIT_HEADER '{' TRAIT_ITEM* '}'
@@ -434,7 +441,7 @@ fn print_nodes&lt;G: Graph&gt;(g: &amp;G) {
     ...
 }
 #}</code></pre></pre>
-<a class="header" href="0195-associated-items.html#namespacingshadowing-for-associated-types" id="namespacingshadowing-for-associated-types"><h3>Namespacing/shadowing for associated types</h3></a>
+<a class="header" href="#namespacingshadowing-for-associated-types" id="namespacingshadowing-for-associated-types"><h3>Namespacing/shadowing for associated types</h3></a>
 <p>Associated types may have the same name as existing types in scope, <em>except</em> for
 type parameters to the trait:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -461,7 +468,7 @@ there is no use for clashing input/output names.</p>
 <p>In the case of a name clash like <code>Foo</code> above, if the trait needs to refer to the
 outer <code>Foo</code> for some reason, it can always do so by using a <code>type</code> alias
 external to the trait.</p>
-<a class="header" href="0195-associated-items.html#defaults" id="defaults"><h3>Defaults</h3></a>
+<a class="header" href="#defaults" id="defaults"><h3>Defaults</h3></a>
 <p>Notice that associated consts and types both permit defaults, just as trait
 methods and functions can provide defaults.</p>
 <p>Defaults are useful both as a code reuse mechanism, and as a way to expand the
@@ -530,7 +537,7 @@ override <em>all</em> default functions and methods.</p>
 methods/functions, as they can today.</p>
 </li>
 </ul>
-<a class="header" href="0195-associated-items.html#trait-implementations" id="trait-implementations"><h2>Trait implementations</h2></a>
+<a class="header" href="#trait-implementations" id="trait-implementations"><h2>Trait implementations</h2></a>
 <p>Trait <code>impl</code> syntax is much the same as before, except that const, type, and
 lifetime items are allowed:</p>
 <pre><code>IMPL_ITEM =
@@ -541,7 +548,7 @@ lifetime items are allowed:</p>
 </code></pre>
 <p>Any <code>type</code> implementation must satisfy all bounds and where clauses in the
 corresponding trait item.</p>
-<a class="header" href="0195-associated-items.html#referencing-associated-items" id="referencing-associated-items"><h2>Referencing associated items</h2></a>
+<a class="header" href="#referencing-associated-items" id="referencing-associated-items"><h2>Referencing associated items</h2></a>
 <p>Associated items are referenced through paths. The expression path grammar was
 updated as part of <a href="https://github.com/rust-lang/rfcs/pull/132">UFCS</a>, but to
 accommodate associated types and lifetimes we need to update the type path
@@ -588,7 +595,7 @@ Vec&lt;T&gt;::Iter    // reference to the type `Iter` associated with `Vec&lt;T&
                 // reference to the type `SomeType` associated with `SomeTrait`,
                 //   as implemented by `Vec&lt;T&gt;`
 #}</code></pre></pre>
-<a class="header" href="0195-associated-items.html#ways-to-reference-items" id="ways-to-reference-items"><h3>Ways to reference items</h3></a>
+<a class="header" href="#ways-to-reference-items" id="ways-to-reference-items"><h3>Ways to reference items</h3></a>
 <p>Next, we'll go into more detail on the meaning of each kind of path.</p>
 <p>For the sake of discussion, we'll suppose we've defined a trait like the
 following:</p>
@@ -609,8 +616,8 @@ impl&lt;T&gt; Container for Vec&lt;T&gt; {
     ...
 }
 #}</code></pre></pre>
-<a class="header" href="0195-associated-items.html#via-an-id_segment-prefix" id="via-an-id_segment-prefix"><h4>Via an <code>ID_SEGMENT</code> prefix</h4></a>
-<a class="header" href="0195-associated-items.html#when-the-prefix-resolves-to-a-type" id="when-the-prefix-resolves-to-a-type"><h5>When the prefix resolves to a type</h5></a>
+<a class="header" href="#via-an-id_segment-prefix" id="via-an-id_segment-prefix"><h4>Via an <code>ID_SEGMENT</code> prefix</h4></a>
+<a class="header" href="#when-the-prefix-resolves-to-a-type" id="when-the-prefix-resolves-to-a-type"><h5>When the prefix resolves to a type</h5></a>
 <p>The most common way to get at an associated item is through a type parameter
 with a trait bound:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -658,7 +665,7 @@ fn pick&lt;C: Container&gt;(c: &amp;C) -&gt; Option&lt;&amp;&lt;C&gt;::E&gt; { .
 fn pick&lt;C: Container&gt;(c: &amp;C) -&gt; Option&lt;&amp;&lt;&lt;C&gt;::E&gt;&gt; { ... }
 #}</code></pre></pre>
 <p>The behavior of <code>TYPE_SEGMENT</code> prefixes is described in the next subsection.</p>
-<a class="header" href="0195-associated-items.html#when-the-prefix-resolves-to-a-trait" id="when-the-prefix-resolves-to-a-trait"><h5>When the prefix resolves to a trait</h5></a>
+<a class="header" href="#when-the-prefix-resolves-to-a-trait" id="when-the-prefix-resolves-to-a-trait"><h5>When the prefix resolves to a trait</h5></a>
 <p>However, it is possible for an <code>ID_SEGMENT</code> prefix to resolve to a <em>trait</em>,
 rather than a type. In this case, the behavior of an <code>ID_SEGMENT</code> varies from
 that of a <code>TYPE_SEGMENT</code> in the following way:</p>
@@ -692,7 +699,7 @@ resolve since there is no way to tell which <code>impl</code> to use. A path lik
 #fn main() {
 fn trait_empty&lt;C: Container&gt;() -&gt; C;
 #}</code></pre></pre>
-<a class="header" href="0195-associated-items.html#via-a-type_segment-prefix" id="via-a-type_segment-prefix"><h4>Via a <code>TYPE_SEGMENT</code> prefix</h4></a>
+<a class="header" href="#via-a-type_segment-prefix" id="via-a-type_segment-prefix"><h4>Via a <code>TYPE_SEGMENT</code> prefix</h4></a>
 <blockquote>
 <p>The following text is <em>slightly changed</em> from the
 <a href="https://github.com/rust-lang/rfcs/pull/132">UFCS RFC</a>.</p>
@@ -729,7 +736,7 @@ continue.</li>
 </ul>
 </li>
 </ol>
-<a class="header" href="0195-associated-items.html#via-a-impl_segment-prefix" id="via-a-impl_segment-prefix"><h4>Via a <code>IMPL_SEGMENT</code> prefix</h4></a>
+<a class="header" href="#via-a-impl_segment-prefix" id="via-a-impl_segment-prefix"><h4>Via a <code>IMPL_SEGMENT</code> prefix</h4></a>
 <blockquote>
 <p>The following text is <em>somewhat different</em> from the
 <a href="https://github.com/rust-lang/rfcs/pull/132">UFCS RFC</a>.</p>
@@ -830,7 +837,7 @@ pick_node(G) // has type: &lt;MyGraph as Graph&gt;::N = MyNode
 function knows nothing about the associated type <code>G::N</code>. However, a <em>client</em> of
 <code>pick_node</code> that instantiates it with a particular concrete graph type will also
 know the concrete type of the value returned from the function -- here, <code>MyNode</code>.</p>
-<a class="header" href="0195-associated-items.html#scoping-of-trait-and-impl-items" id="scoping-of-trait-and-impl-items"><h2>Scoping of <code>trait</code> and <code>impl</code> items</h2></a>
+<a class="header" href="#scoping-of-trait-and-impl-items" id="scoping-of-trait-and-impl-items"><h2>Scoping of <code>trait</code> and <code>impl</code> items</h2></a>
 <p>Associated types are frequently referred to in the signatures of a trait's
 methods and associated functions, and it is natural and convenient to refer to
 them directly.</p>
@@ -890,7 +897,7 @@ impl Bar {
 }
 #}</code></pre></pre>
 <p>Items from super traits are <em>not</em> in scope, however. See
-<a href="0195-associated-items.html#super-traits">the discussion on super traits below</a> for more detail.</p>
+<a href="#super-traits">the discussion on super traits below</a> for more detail.</p>
 <p>These scope rules provide good ergonomics for associated types in
 particular, and a consistent scope model for language constructs that
 can contain items (like traits, impls, and modules). In the long run,
@@ -922,7 +929,7 @@ trait Foo&lt;Input&gt; {
     ...
 }
 #}</code></pre></pre>
-<a class="header" href="0195-associated-items.html#constraining-associated-types" id="constraining-associated-types"><h2>Constraining associated types</h2></a>
+<a class="header" href="#constraining-associated-types" id="constraining-associated-types"><h2>Constraining associated types</h2></a>
 <p>Associated types are not treated as parameters to a trait, but in some cases a
 function will want to constrain associated types in some way. For example, as
 explained in the Motivation section, the <code>Iterator</code> trait should treat the
@@ -996,7 +1003,7 @@ does not make sense to apply additional constraints to the implementation when
 referencing it.</p>
 <p>Output constraints are a handy shorthand when using trait bounds, but they are a
 <em>necessity</em> for trait objects, which we discuss next.</p>
-<a class="header" href="0195-associated-items.html#trait-objects" id="trait-objects"><h2>Trait objects</h2></a>
+<a class="header" href="#trait-objects" id="trait-objects"><h2>Trait objects</h2></a>
 <p>When using trait objects, the <code>Self</code> type is &quot;erased&quot;, so different types
 implementing the trait can be used under the same trait object type:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1053,7 +1060,7 @@ fn consume_obj(t: Box&lt;Foo&lt;I1, I2, Output1 = O2, Output2 = O2, 'a = 'static
 part of trait objects. But it leaves wiggle room to relax this restriction
 later on: trait object types that are not allowed under this design can be given
 meaning in some later design.</p>
-<a class="header" href="0195-associated-items.html#inherent-associated-items" id="inherent-associated-items"><h2>Inherent associated items</h2></a>
+<a class="header" href="#inherent-associated-items" id="inherent-associated-items"><h2>Inherent associated items</h2></a>
 <p>All associated items are also allowed in inherent <code>impl</code>s, so a definition like
 the following is allowed:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1088,11 +1095,11 @@ fn distance(g: &amp;MyGraph, from: &amp;MyGraph::N, to: &amp;MyGraph::N) -&gt; u
 // This is *not* a legal type:
 MyGraph&lt;N = SomeNodeType&gt;
 #}</code></pre></pre>
-<a class="header" href="0195-associated-items.html#the-inputoutput-type-distinction" id="the-inputoutput-type-distinction"><h2>The input/output type distinction</h2></a>
+<a class="header" href="#the-inputoutput-type-distinction" id="the-inputoutput-type-distinction"><h2>The input/output type distinction</h2></a>
 <p>When designing a trait that references some unknown type, you now have the
 option of taking that type as an input parameter, or specifying it as an output
 associated type. What are the ramifications of this decision?</p>
-<a class="header" href="0195-associated-items.html#coherence-implications" id="coherence-implications"><h3>Coherence implications</h3></a>
+<a class="header" href="#coherence-implications" id="coherence-implications"><h3>Coherence implications</h3></a>
 <p>Input types are used when determining which <code>impl</code> matches, even for the same
 <code>Self</code> type:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1150,7 +1157,7 @@ is a struct or enum defined within the current crate:</p>
 with the same set of types for the input type parameters.</p>
 <p>See the <a href="https://github.com/rust-lang/rfcs/pull/48">trait reform RFC</a> for more
 discussion of these properties.</p>
-<a class="header" href="0195-associated-items.html#type-inference-implications" id="type-inference-implications"><h3>Type inference implications</h3></a>
+<a class="header" href="#type-inference-implications" id="type-inference-implications"><h3>Type inference implications</h3></a>
 <p>Finally, <em>output</em> type parameters can be inferred/resolved as soon as there is
 a matching <code>impl</code> based on the input type parameters. Because of the
 coherence property above, there can be at most one.</p>
@@ -1163,7 +1170,7 @@ makes it possible to ensure <em>crate concatenation</em>: adding another crate m
 <code>Add</code> trait given at the beginning of this RFC, the <code>Sum</code> output type is
 immediately known once the input types are known, which can avoid the need for
 type annotations.</p>
-<a class="header" href="0195-associated-items.html#limitations" id="limitations"><h2>Limitations</h2></a>
+<a class="header" href="#limitations" id="limitations"><h2>Limitations</h2></a>
 <p>The main limitation of associated items as presented here is about associated
 <em>types</em> in particular. You might be tempted to write a trait like the following:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1207,7 +1214,7 @@ The point of view of this RFC is that associated items bring the most important
 changes needed to stabilize our existing traits (and add a few key others),
 while HKTs will allow us to define important traits in the future but are not
 necessary for 1.0.</p>
-<a class="header" href="0195-associated-items.html#encoding-higher-kinded-types" id="encoding-higher-kinded-types"><h3>Encoding higher-kinded types</h3></a>
+<a class="header" href="#encoding-higher-kinded-types" id="encoding-higher-kinded-types"><h3>Encoding higher-kinded types</h3></a>
 <p>That said, it's worth pointing out that variants of higher-kinded types can be
 encoded in the system being proposed here.</p>
 <p>For example, the <code>Iterable</code> example above can be written in the following
@@ -1261,19 +1268,19 @@ trait Mappable
 #}</code></pre></pre>
 <p>While the above demonstrates the versatility of associated types and <code>where</code>
 clauses, it is probably too much of a hack to be viable for use in <code>libstd</code>.</p>
-<a class="header" href="0195-associated-items.html#associated-consts-in-generic-code" id="associated-consts-in-generic-code"><h3>Associated consts in generic code</h3></a>
+<a class="header" href="#associated-consts-in-generic-code" id="associated-consts-in-generic-code"><h3>Associated consts in generic code</h3></a>
 <p>If the value of an associated const depends on a type parameter (including
 <code>Self</code>), it cannot be used in a constant expression. This restriction will
 almost certainly be lifted in the future, but this raises questions outside the
 scope of this RFC.</p>
-<a class="header" href="0195-associated-items.html#staging" id="staging"><h1>Staging</h1></a>
+<a class="header" href="#staging" id="staging"><h1>Staging</h1></a>
 <p>Associated lifetimes are probably not necessary for the 1.0 timeframe. While we
 currently have a few traits that are parameterized by lifetimes, most of these
 can go away once DST lands.</p>
 <p>On the other hand, associated lifetimes are probably trivial to implement once
 associated types have been implemented.</p>
-<a class="header" href="0195-associated-items.html#other-interactions" id="other-interactions"><h1>Other interactions</h1></a>
-<a class="header" href="0195-associated-items.html#interaction-with-implied-bounds" id="interaction-with-implied-bounds"><h2>Interaction with implied bounds</h2></a>
+<a class="header" href="#other-interactions" id="other-interactions"><h1>Other interactions</h1></a>
+<a class="header" href="#interaction-with-implied-bounds" id="interaction-with-implied-bounds"><h2>Interaction with implied bounds</h2></a>
 <p>As part of the
 <a href="http://smallcultfollowing.com/babysteps/blog/2014/07/06/implied-bounds/">implied bounds</a>
 idea, it may be desirable for this:</p>
@@ -1289,7 +1296,7 @@ fn pick_node&lt;G&gt;(g: &amp;G) -&gt; &amp;&lt;G as Graph&gt;::N
 fn pick_node&lt;G: Graph&gt;(g: &amp;G) -&gt; &amp;&lt;G as Graph&gt;::N
 #}</code></pre></pre>
 <p>But this feature can easily be added later, as part of a general implied bounds RFC.</p>
-<a class="header" href="0195-associated-items.html#future-proofing-specialization-of-impls" id="future-proofing-specialization-of-impls"><h2>Future-proofing: specialization of <code>impl</code>s</h2></a>
+<a class="header" href="#future-proofing-specialization-of-impls" id="future-proofing-specialization-of-impls"><h2>Future-proofing: specialization of <code>impl</code>s</h2></a>
 <p>In the future, we may wish to relax the &quot;overlapping instances&quot; rule so that one
 can provide &quot;blanket&quot; trait implementations and then &quot;specialize&quot; them for
 particular types. For example:</p>
@@ -1329,8 +1336,8 @@ would <em>not</em> allow generic code to &quot;see&quot; associated types for bl
 implementations; instead, output types would only be visible when all input
 types were concretely known. This approach is backwards-compatible with the RFC,
 and is probably a good idea in any case.</p>
-<a class="header" href="0195-associated-items.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0195-associated-items.html#multidispatch-through-tuple-types" id="multidispatch-through-tuple-types"><h2>Multidispatch through tuple types</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#multidispatch-through-tuple-types" id="multidispatch-through-tuple-types"><h2>Multidispatch through tuple types</h2></a>
 <p>This RFC clarifies trait matching by making trait type parameters inputs to
 matching, and associated types outputs.</p>
 <p>A more radical alternative would be to <em>remove type parameters from traits</em>, and
@@ -1408,7 +1415,7 @@ erased input type in this RFC may seem somewhat arbitrary).</p>
 </ul>
 <p>On balance, the generics-based approach seems like a better fit for the language
 design, especially in its interaction with methods and the object system.</p>
-<a class="header" href="0195-associated-items.html#a-backwards-compatible-version" id="a-backwards-compatible-version"><h2>A backwards-compatible version</h2></a>
+<a class="header" href="#a-backwards-compatible-version" id="a-backwards-compatible-version"><h2>A backwards-compatible version</h2></a>
 <p>Yet another alternative would be to allow trait type parameters to be either
 inputs or outputs, marking the inputs with a keyword <code>in</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1424,8 +1431,8 @@ all input types, it might even be possible to migrate output type parameters
 like <code>Sum</code> above into associated types later.</p>
 <p>This is perhaps a reasonable fallback, but it seems better to introduce a clean
 design with both multidispatch and associated items together.</p>
-<a class="header" href="0195-associated-items.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="0195-associated-items.html#super-traits" id="super-traits"><h2>Super traits</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#super-traits" id="super-traits"><h2>Super traits</h2></a>
 <p>This RFC largely ignores super traits.</p>
 <p>Currently, the implementation of super traits treats them identically to a
 <code>where</code> clause that bounds <code>Self</code>, and this RFC does not propose to change
@@ -1434,11 +1441,11 @@ semantics for super traits.</p>
 <p>Note that this treatment of super traits is, in particular, consistent with the
 proposed scoping rules, which do not bring items from super traits into scope in
 the body of a subtrait; they must be accessed via <code>Self::item_name</code>.</p>
-<a class="header" href="0195-associated-items.html#equality-constraints-in-where-clauses" id="equality-constraints-in-where-clauses"><h2>Equality constraints in <code>where</code> clauses</h2></a>
+<a class="header" href="#equality-constraints-in-where-clauses" id="equality-constraints-in-where-clauses"><h2>Equality constraints in <code>where</code> clauses</h2></a>
 <p>This RFC allows equality constraints on types for associated types, but does not
 propose a similar feature for <code>where</code> clauses. That will be the subject of a
 follow-up RFC.</p>
-<a class="header" href="0195-associated-items.html#multiple-trait-object-bounds-for-the-same-trait" id="multiple-trait-object-bounds-for-the-same-trait"><h2>Multiple trait object bounds for the same trait</h2></a>
+<a class="header" href="#multiple-trait-object-bounds-for-the-same-trait" id="multiple-trait-object-bounds-for-the-same-trait"><h2>Multiple trait object bounds for the same trait</h2></a>
 <p>The design here makes it possible to write bounds or trait objects that mention
 the same trait, multiple times, with different inputs:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -1451,13 +1458,13 @@ fn mulit_add_obj(t: Box&lt;Add&lt;int&gt; + Add&lt;Complex&gt;&gt;) -&gt; Box&lt
 bounds, but may have implications for vtables that make it problematic for trait
 objects. Whether or not such trait combinations are allowed will likely depend
 on implementation concerns, which are not yet clear.</p>
-<a class="header" href="0195-associated-items.html#generic-associated-consts-in-match-patterns" id="generic-associated-consts-in-match-patterns"><h2>Generic associated consts in match patterns</h2></a>
+<a class="header" href="#generic-associated-consts-in-match-patterns" id="generic-associated-consts-in-match-patterns"><h2>Generic associated consts in match patterns</h2></a>
 <p>It seems desirable to allow constants that depend on type parameters in match
 patterns, but it's not clear how to do so while still checking exhaustiveness
 and reachability of the match arms. Most likely this requires new forms of
 where clause, to constrain associated constant values.</p>
 <p>For now, we simply defer the question.</p>
-<a class="header" href="0195-associated-items.html#generic-associated-consts-in-array-sizes" id="generic-associated-consts-in-array-sizes"><h2>Generic associated consts in array sizes</h2></a>
+<a class="header" href="#generic-associated-consts-in-array-sizes" id="generic-associated-consts-in-array-sizes"><h2>Generic associated consts in array sizes</h2></a>
 <p>It would be useful to be able to use trait-associated constants in generic code.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -1522,9 +1529,6 @@ arithmetic. The question of how to do this is deferred.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

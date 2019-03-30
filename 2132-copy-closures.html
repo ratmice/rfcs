@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2132-copy-closures - </title>
+        <title>2132-copy-closures - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2132">rust-lang/rfcs#2132</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44490">rust-lang/rust#44490</a></li>
 </ul>
-<a class="header" href="2132-copy-closures.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Implement <code>Clone</code> and <code>Copy</code> for closures where possible:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -176,7 +183,7 @@ fn call_three_times&lt;F: FnMut()&gt;(mut f: F) {
 call_three_times(print_incr); // prints &quot;0&quot;, &quot;1&quot;, &quot;2&quot;
 call_three_times(print_incr); // prints &quot;0&quot;, &quot;1&quot;, &quot;2&quot;
 #}</code></pre></pre>
-<a class="header" href="2132-copy-closures.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Idiomatic Rust often includes liberal use of closures.
 Many APIs have combinator functions which wrap closures to provide additional
 functionality (e.g. methods in the <a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html"><code>Iterator</code></a> and <a href="https://docs.rs/futures/*/futures/future/trait.Future.html"><code>Future</code></a> traits).</p>
@@ -189,7 +196,7 @@ closure-based types by-value are impossible to call multiple times.</p>
 closures from capturing values, even zero-sized ones.</p>
 <p>This RFC solves this issue by implementing the <code>Copy</code> and <code>Clone</code> traits on
 closures where possible.</p>
-<a class="header" href="2132-copy-closures.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>If a non-<code>move</code> closure doesn't mutate captured variables,
 then it is <code>Copy</code> and <code>Clone</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -243,7 +250,7 @@ move_it(print_incr);
 move_it(print_incr);
 move_it(print_incr);
 #}</code></pre></pre>
-<a class="header" href="2132-copy-closures.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>Closures are internally represented as structs which contain either values
 or references to the values of captured variables
 (<code>move</code> or non-<code>move</code> closures).
@@ -267,20 +274,20 @@ are <code>Clone</code> or <code>Copy</code>.</p>
 <p>The internal implementation of <code>Clone</code> for non-<code>Copy</code> closures will resemble
 the basic implementation generated by <code>derive</code>, but the order in which values
 are <code>Clone</code>d will remain unspecified.</p>
-<a class="header" href="2132-copy-closures.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This feature increases the complexity of the language, as it will force users
 to reason about which variables are being captured in order to understand
 whether or not a closure is <code>Copy</code> or <code>Clone</code>.</p>
 <p>However, this can be mitigated through error messages which point to the
 specific captured variables that prevent a closure from satisfying <code>Copy</code> or
 <code>Clone</code> bounds.</p>
-<a class="header" href="2132-copy-closures.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
 <p>It would be possible to implement <code>Clone</code> or <code>Copy</code> for a more minimal set of
 closures, such as only non-<code>move</code> closures, or non-mutating closures.
 This could make it easier to reason about exactly which closures implement
 <code>Copy</code> or <code>Clone</code>, but this would come at the cost of greatly decreased
 functionality.</p>
-<a class="header" href="2132-copy-closures.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>How can we provide high-quality, tailored error messages to indicate why a
 closure isn't <code>Copy</code> or <code>Clone</code>?</li>
@@ -329,9 +336,6 @@ closure isn't <code>Copy</code> or <code>Clone</code>?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

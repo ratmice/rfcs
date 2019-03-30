@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2070-panic-implementation - </title>
+        <title>2070-panic-implementation - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2070">rust-lang/rfcs#2070</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44489">rust-lang/rust#44489</a></li>
 </ul>
-<a class="header" href="2070-panic-implementation.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Provide a stable mechanism to specify the behavior of <code>panic!</code> in no-std
 applications.</p>
-<a class="header" href="2070-panic-implementation.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The <code>#![no_std]</code> attribute was stabilized some time ago and it made possible to
 build no-std libraries on stable. However, to this day no-std applications
 still require a nightly compiler to be built. The main cause of this is that
@@ -153,14 +160,14 @@ item</a>.</p>
 no-std context. This would be a step towards enabling development of no-std
 applications like device firmware, kernels and operating systems on the stable
 channel.</p>
-<a class="header" href="2070-panic-implementation.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="2070-panic-implementation.html#constraints" id="constraints"><h2>Constraints</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#constraints" id="constraints"><h2>Constraints</h2></a>
 <p><code>panic!</code> in no-std environments must continue to be free of memory allocations
 and <a href="https://doc.rust-lang.org/core/macro.panic.html">its API</a> can only be changed in a backward compatible way.</p>
 <p>Although not a hard constraint, the cognitive load of the mechanism would be
 greatly reduced if it mimicked the existing <a href="https://doc.rust-lang.org/std/panic/fn.set_hook.html">custom panic hook</a> mechanism as
 much as possible.</p>
-<a class="header" href="2070-panic-implementation.html#panicinfo" id="panicinfo"><h2><code>PanicInfo</code></h2></a>
+<a class="header" href="#panicinfo" id="panicinfo"><h2><code>PanicInfo</code></h2></a>
 <p>The types <a href="https://doc.rust-lang.org/std/panic/struct.PanicInfo.html"><code>std::panic::PanicInfo</code></a> and <a href="https://doc.rust-lang.org/std/panic/struct.Location.html"><code>std::panic::Location</code></a> will be moved
 into the <code>core</code> crate, and <code>PanicInfo</code> will gain a new method:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -172,7 +179,7 @@ impl PanicInfo {
 #}</code></pre></pre>
 <p>This method returns <code>Some</code> if the <code>panic!</code> invocation needs to do any formatting
 like <code>panic!(&quot;{}: {}&quot;, key , value)</code> does.</p>
-<a class="header" href="2070-panic-implementation.html#fmtdisplay" id="fmtdisplay"><h3><code>fmt::Display</code></h3></a>
+<a class="header" href="#fmtdisplay" id="fmtdisplay"><h3><code>fmt::Display</code></h3></a>
 <p>For convenience, <code>PanicInfo</code> will gain an implementation of the <code>fmt::Display</code>
 trait that produces a message very similar to the one that the standard <code>panic!</code>
 hook produces. For instance, this program:</p>
@@ -192,7 +199,7 @@ fn main() {
 <pre><code class="language-console">$ cargo run
 the application panicked at 'Hello, world!', src/main.rs:27:4
 </code></pre>
-<a class="header" href="2070-panic-implementation.html#panic_implementation" id="panic_implementation"><h2><code>#[panic_implementation]</code></h2></a>
+<a class="header" href="#panic_implementation" id="panic_implementation"><h2><code>#[panic_implementation]</code></h2></a>
 <p>A <code>#[panic_implementation]</code> attribute will be added to the language. This
 attribute can be used to specify the behavior of <code>panic!</code> in no-std context.
 Only functions with signature <code>fn(&amp;PanicInfo) -&gt; !</code> can be annotated with this
@@ -233,7 +240,7 @@ pub extern fn rust_begin_panic(msg: ::core::fmt::Arguments,
     my_panic(&amp;PanicInfo::__private_unstable_constructor(msg, file, line, col))
 }
 #}</code></pre></pre>
-<a class="header" href="2070-panic-implementation.html#payload" id="payload"><h2>Payload</h2></a>
+<a class="header" href="#payload" id="payload"><h2>Payload</h2></a>
 <p>The <code>core</code> version of the <code>panic!</code> macro will gain support for <em>payloads</em>, as in
 <code>panic!(42)</code>. When invoked with a payload <code>PanicInfo.payload()</code> will return the
 payload as an <code>&amp;Any</code> trait object just like it does in std context with custom
@@ -242,37 +249,37 @@ panic hooks.</p>
 will be uninspectable: it won't be downcastable to any known type. This is where
 <code>core::panic!</code> diverges from <code>std::panic!</code>. The latter returns a <code>String</code>,
 behind the <code>&amp;Any</code> trait object, from the <code>payload()</code> method in this situation.</p>
-<a class="header" href="2070-panic-implementation.html#feature-gate" id="feature-gate"><h2>Feature gate</h2></a>
+<a class="header" href="#feature-gate" id="feature-gate"><h2>Feature gate</h2></a>
 <p>The initial implementation of the <code>#[panic_implementation]</code> mechanism as well as
 the <code>core::panic::Location</code> and <code>core::panic::PanicInfo</code> types will be feature
 gated. <code>std::panic::Location</code> and <code>std::panic::PanicInfo</code> will continue to be
 stable except for the new <code>PanicInfo.message</code> method.</p>
-<a class="header" href="2070-panic-implementation.html#unwinding" id="unwinding"><h2>Unwinding</h2></a>
+<a class="header" href="#unwinding" id="unwinding"><h2>Unwinding</h2></a>
 <p>The <code>#[panic_implementation]</code> mechanism can only be used with no-std
 applications compiled with <code>-C panic=abort</code>. Applications compiled with <code>-C panic=unwind</code> additionally require the <code>eh_personality</code> language item which this
 proposal doesn't cover.</p>
-<a class="header" href="2070-panic-implementation.html#stdpanic" id="stdpanic"><h2><code>std::panic!</code></h2></a>
+<a class="header" href="#stdpanic" id="stdpanic"><h2><code>std::panic!</code></h2></a>
 <p>This proposal doesn't affect how the selection of the panic runtime in <code>std</code>
 applications works (<code>panic_abort</code>, <code>panic_unwind</code>, etc.). Using
 <code>#[panic_implementation]</code> in <code>std</code> programs will cause a compiler error.</p>
-<a class="header" href="2070-panic-implementation.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>Currently, no-std applications are only possible on nightly so there's not much
 official documentation on this topic given its dependency on several unstable
 features. Hopefully once no-std applications are minimally possible on stable we
 can have a detailed chapter on the topic in <a href="https://doc.rust-lang.org/book/second-edition/">&quot;The Rust Programming Language&quot;</a>
 book. In the meantime, this feature can be documented in <a href="https://doc.rust-lang.org/unstable-book/">the unstable book</a>.</p>
-<a class="header" href="2070-panic-implementation.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
-<a class="header" href="2070-panic-implementation.html#slight-deviation-from-std" id="slight-deviation-from-std"><h2>Slight deviation from std</h2></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#slight-deviation-from-std" id="slight-deviation-from-std"><h2>Slight deviation from std</h2></a>
 <p>Although both <code>#[panic_implementation]</code> (no-std) and custom panic hooks (std)
 use the same <code>PanicInfo</code> type. The behavior of the <code>PanicInfo.payload()</code> method
 changes depending on which context it is used: given <code>panic!(&quot;{}&quot;, 42)</code>,
 <code>payload()</code> will return a <code>String</code>, behind an <code>Any</code> trait object, in std context
 but it will return an opaque <code>Any</code> trait object in no-std context.</p>
-<a class="header" href="2070-panic-implementation.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="2070-panic-implementation.html#not-doing-this" id="not-doing-this"><h2>Not doing this</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#not-doing-this" id="not-doing-this"><h2>Not doing this</h2></a>
 <p>Not providing a stable alternative to the <code>panic_fmt</code> language item means that
 no-std applications will continue to be tied to the nightly channel.</p>
-<a class="header" href="2070-panic-implementation.html#two-panicinfo-types" id="two-panicinfo-types"><h2>Two <code>PanicInfo</code> types</h2></a>
+<a class="header" href="#two-panicinfo-types" id="two-panicinfo-types"><h2>Two <code>PanicInfo</code> types</h2></a>
 <p>An alternative design is to have two different <code>PanicInfo</code> types, one in <code>core</code>
 and one in <code>std</code>. The difference between these two types would be in their APIs:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -300,11 +307,11 @@ panic hooks will continue to use the <code>std::panic::PanicInfo</code> type.</p
 <p>This design precludes supporting payloads in <code>core::panic!</code> but also eliminates
 the difference between <code>core::PanicInfo.payload()</code> in no-std vs std by
 eliminating the method in the former context.</p>
-<a class="header" href="2070-panic-implementation.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="2070-panic-implementation.html#fmtdisplay-1" id="fmtdisplay-1"><h2><code>fmt::Display</code></h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#fmtdisplay-1" id="fmtdisplay-1"><h2><code>fmt::Display</code></h2></a>
 <p>Should the <code>Display</code> of <code>PanicInfo</code> format the panic information as <code>&quot;panicked at 'reason', src/main.rs:27:4&quot;</code>, as <code>&quot;'reason', src/main.rs:27:4&quot;</code>, or simply as
 <code>&quot;reason&quot;</code>.</p>
-<a class="header" href="2070-panic-implementation.html#unwinding-in-no-std" id="unwinding-in-no-std"><h2>Unwinding in no-std</h2></a>
+<a class="header" href="#unwinding-in-no-std" id="unwinding-in-no-std"><h2>Unwinding in no-std</h2></a>
 <p>Is this design compatible, or can it be extended to work, with unwinding
 implementations for no-std environments?</p>
 
@@ -351,9 +358,6 @@ implementations for no-std environments?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

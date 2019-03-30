@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2504-fix-error - </title>
+        <title>2504-fix-error - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2504">rust-lang/rfcs#2504</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/53487">rust-lang/rust#53487</a></li>
 </ul>
-<a class="header" href="2504-fix-error.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Change the <code>std::error::Error</code> trait to improve its usability. Introduce a
 backtrace module to the standard library to provide a standard interface for
 backtraces.</p>
-<a class="header" href="2504-fix-error.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The <code>Error</code> trait has long been known to be flawed in several respects. In
 particular:</p>
 <ol>
@@ -171,8 +178,8 @@ trait Error: Display + Debug {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2504-fix-error.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
-<a class="header" href="2504-fix-error.html#the-new-api-of-the-error-trait" id="the-new-api-of-the-error-trait"><h2>The new API of the Error trait</h2></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#the-new-api-of-the-error-trait" id="the-new-api-of-the-error-trait"><h2>The new API of the Error trait</h2></a>
 <p>The new API provides three main components:</p>
 <ol>
 <li>The Display and Debug impls, for printing error messages. Ideally, the
@@ -185,7 +192,7 @@ not expected to.</li>
 source of this error. If this error has no underlying source (that is, it is
 the &quot;root source&quot; of the error), this method should return none.</li>
 </ol>
-<a class="header" href="2504-fix-error.html#the-backtrace-api" id="the-backtrace-api"><h2>The backtrace API</h2></a>
+<a class="header" href="#the-backtrace-api" id="the-backtrace-api"><h2>The backtrace API</h2></a>
 <p>This RFC adds a new <code>backtrace</code> module to std, with one type, with this API:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -233,7 +240,7 @@ pub enum BacktraceStatus {
 #}</code></pre></pre>
 <p>This minimal initial API is just intended for printing backtraces for end users.
 In time, this may grow the ability to visit individual frames of the backtrace.</p>
-<a class="header" href="2504-fix-error.html#backtrace-controlling-environment-variables" id="backtrace-controlling-environment-variables"><h3>Backtrace controlling environment variables</h3></a>
+<a class="header" href="#backtrace-controlling-environment-variables" id="backtrace-controlling-environment-variables"><h3>Backtrace controlling environment variables</h3></a>
 <p>Today, the <code>RUST_BACKTRACE</code> controls backtraces generated by panics. After this
 RFC, it also controls backtraces generated in the standard library: no backtrace
 will be generated when calling <code>Backtrace::capture</code> unless this variable is set.
@@ -241,7 +248,7 @@ On the other hand, <code>Backtrace::force_capture</code> will ignore this variab
 <p>Two additional variables will be added: <code>RUST_PANIC_BACKTRACE</code> and
 <code>RUST_LIB_BACKTRACE</code>: these will independently override the behavior of
 <code>RUST_BACKTRACE</code> for backtraces generated for panics and from the std API.</p>
-<a class="header" href="2504-fix-error.html#the-transition-plan" id="the-transition-plan"><h2>The transition plan</h2></a>
+<a class="header" href="#the-transition-plan" id="the-transition-plan"><h2>The transition plan</h2></a>
 <p>Deprecating both <code>cause</code> and <code>description</code> is a backward compatible change, and
 adding provided methods <code>backtrace</code> and <code>source</code> is also backward compatible.
 We can make these changes unceremoniously, and the <code>Error</code> trait will be much
@@ -256,24 +263,24 @@ fn cause(&amp;self) -&gt; Option&lt;&amp;dyn Error&gt; {
 #}</code></pre></pre>
 <p>This way, if an error defines <code>source</code>, someone calling the deprecated <code>cause</code>
 API will still get the correct cause type, even though they can't downcast it.</p>
-<a class="header" href="2504-fix-error.html#stability" id="stability"><h2>Stability</h2></a>
+<a class="header" href="#stability" id="stability"><h2>Stability</h2></a>
 <p>The addition of <code>source</code> and the deprecation of <code>cause</code> will be instantly
 stabilized after implementing this RFC.</p>
 <p>The addition of the backtrace method and the entire backtrace API will be left
 unstable under the <code>backtrace</code> feature for now.</p>
-<a class="header" href="2504-fix-error.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2504-fix-error.html#why-cause---source" id="why-cause---source"><h2>Why <code>cause</code> -&gt; <code>source</code></h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#why-cause---source" id="why-cause---source"><h2>Why <code>cause</code> -&gt; <code>source</code></h2></a>
 <p>The problem with the existing <code>cause</code> API is that the error it returns is not
 <code>'static</code>. This means it is not possible to downcast the error trait object,
 because downcasting can only be done on <code>'static</code> trait objects (for soundness
 reasons).</p>
-<a class="header" href="2504-fix-error.html#note-on-backtraces" id="note-on-backtraces"><h2>Note on backtraces</h2></a>
+<a class="header" href="#note-on-backtraces" id="note-on-backtraces"><h2>Note on backtraces</h2></a>
 <p>The behavior of backtraces is somewhat platform specific, and on certain
 platforms backtraces may contain strange and inaccurate information. The
 backtraces provided by the standard library are designed for user display
 purposes only, and not guaranteed to provide a perfect representation of the
 program state, depending on the capabilities of the platform.</p>
-<a class="header" href="2504-fix-error.html#how-this-impacts-failure" id="how-this-impacts-failure"><h2>How this impacts failure</h2></a>
+<a class="header" href="#how-this-impacts-failure" id="how-this-impacts-failure"><h2>How this impacts failure</h2></a>
 <p>The failure crate defines a <code>Fail</code> trait with an API similar to (but not
 exactly like) the API proposed here. In a breaking change to failure, we would
 change that trait to be an extension trait to <code>Error</code>:</p>
@@ -305,13 +312,13 @@ struct MyError {
 <p>The exact nature of the new failure API would be determined by the maintainers
 of failure, it would not be proscribed by this RFC. This section is just to
 demonstrate that failure could still work using the std Error trait.</p>
-<a class="header" href="2504-fix-error.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This causes some churn, as users who are already using one of the deprecated
 methods will be encouraged (by warnings) to change their code, and library
 authors will need to revisit whether they should override one of the new
 methods.</p>
-<a class="header" href="2504-fix-error.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
-<a class="header" href="2504-fix-error.html#provide-a-new-error-trait" id="provide-a-new-error-trait"><h2>Provide a new error trait</h2></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#provide-a-new-error-trait" id="provide-a-new-error-trait"><h2>Provide a new error trait</h2></a>
 <p>The most obvious alternative to this RFC would be to provide an entirely new
 error trait. This could make deeper changes to the API of the trait than we are
 making here. For example, we could take an approach like <code>failure</code> has, and
@@ -341,10 +348,10 @@ compatible with the Error trait as it exists.</p>
 Error trait, we could follow this alternative: we would deprecate the Error
 trait and introduce a new trait then. That is, accepting this RFC now does not
 foreclose on this alternative later.</p>
-<a class="header" href="2504-fix-error.html#bikeshedding-the-name-of-source" id="bikeshedding-the-name-of-source"><h2>Bikeshedding the name of <code>source</code></h2></a>
+<a class="header" href="#bikeshedding-the-name-of-source" id="bikeshedding-the-name-of-source"><h2>Bikeshedding the name of <code>source</code></h2></a>
 <p>The replacement for <code>cause</code> could have another name. The only one the RFC author
 came up with is <code>origin</code>.</p>
-<a class="header" href="2504-fix-error.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>This proposal is largely informed by our experience with the existing Error
 trait API, and from the experience of the <code>failure</code> experiment. The main
 conclusions we drew:</p>
@@ -356,8 +363,8 @@ can be very disruptive.</li>
 </ol>
 <p>This RFC threads the needle between the problem with the Error trait and the
 problems caused by defining a new trait.</p>
-<a class="header" href="2504-fix-error.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="2504-fix-error.html#backtrace-api" id="backtrace-api"><h2>Backtrace API</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#backtrace-api" id="backtrace-api"><h2>Backtrace API</h2></a>
 <p>This RFC intentionally proposes a most minimal API. There are a number of API
 extensions we could consider in the future. Prominent examples:</p>
 <ol>
@@ -418,9 +425,6 @@ constructors to return an <code>Option&lt;Backtrace&gt;</code> instead.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

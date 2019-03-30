@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1685-deprecate-anonymous-parameters - </title>
+        <title>1685-deprecate-anonymous-parameters - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1685">rust-lang/rfcs#1685</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/41686">rust-lang/rust#41686</a></li>
 </ul>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Currently Rust allows anonymous parameters in trait methods:</p>
 <pre><code class="language-Rust">trait T {
     fn foo(i32);
@@ -151,7 +158,7 @@
 </code></pre>
 <p>This RFC proposes to deprecate this syntax. This RFC intentionally does not
 propose to remove this syntax.</p>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Anonymous parameters are a <a href="https://github.com/rust-lang/rust/pull/29406#issuecomment-151859611">historic accident</a>. They cause a number of technical
 annoyances.</p>
 <ol>
@@ -219,8 +226,8 @@ Python or JavaScript, this <code>T</code> looks more like a parameter name.</p>
 implementations. One way to write an implementation is to copy the method
 prototypes from the trait into the impl block. With anonymous parameters this
 leads to syntax errors.</p>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#backward-compatibility" id="backward-compatibility"><h2>Backward compatibility</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#backward-compatibility" id="backward-compatibility"><h2>Backward compatibility</h2></a>
 <p>Removing anonymous parameters from the language is formally a breaking change.
 The breakage can be trivially and automatically fixed by adding <code>_:</code> (suggested by @nagisa):</p>
 <pre><code class="language-Rust">trait T {
@@ -240,7 +247,7 @@ Parameter names are rarely omitted, but it happens. For example,
 </code></pre>
 <p>Of the 5560 packages from crates.io, 416 include at least one usage of
 an anonymous parameter (<a href="https://github.com/rust-lang/rfcs/pull/1685#issuecomment-238954434">full report</a>).</p>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#benefits-of-deprecation" id="benefits-of-deprecation"><h2>Benefits of deprecation</h2></a>
+<a class="header" href="#benefits-of-deprecation" id="benefits-of-deprecation"><h2>Benefits of deprecation</h2></a>
 <p>So the proposal is just to deprecate this syntax. Phasing the syntax out of
 usage will mostly solve the learning curve problems. The technical problems
 would not be solved until the actual removal becomes feasible and
@@ -251,22 +258,22 @@ practical. This hypothetical future may include:</p>
 <li>Storing crates on crates.io in &quot;elaborated&quot; syntax independent format.</li>
 </ul>
 <p>Enabling deprecation early makes potential future removal easier in practice.</p>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#deprecation-strategy" id="deprecation-strategy"><h2>Deprecation strategy</h2></a>
+<a class="header" href="#deprecation-strategy" id="deprecation-strategy"><h2>Deprecation strategy</h2></a>
 <p>There are two possible ways to deprecate this syntax:</p>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#hard-deprecation" id="hard-deprecation"><h3>Hard deprecation</h3></a>
+<a class="header" href="#hard-deprecation" id="hard-deprecation"><h3>Hard deprecation</h3></a>
 <p>One option is to produce a warning for anonymous parameters. This is backwards
 compatible, but in practice will force crate authors to actively change their
 code to avoid the warnings, causing code churn.</p>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#soft-deprecation" id="soft-deprecation"><h3>Soft deprecation</h3></a>
+<a class="header" href="#soft-deprecation" id="soft-deprecation"><h3>Soft deprecation</h3></a>
 <p>Another option is to clearly document this syntax as deprecated and add an
 allow-by-default lint, a clippy lint, and an IntelliJ Rust inspection, but do
 not produce compiler warnings by default. This will make the update process more
 gradual, but will delay the benefits of deprecation.</p>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#automatic-transition" id="automatic-transition"><h3>Automatic transition</h3></a>
+<a class="header" href="#automatic-transition" id="automatic-transition"><h3>Automatic transition</h3></a>
 <p>Rustfmt and IntelliJ Rust can automatically change anonymous parameters to
 <code>_</code>. However it is better to manually add real names to make it obvious what
 name is expected on the <code>impl</code> side.</p>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>Hard deprecation will cause code churn.</p>
@@ -282,7 +289,7 @@ into a hard error.</p>
 <p>It is not clear if it will ever be possible to remove this syntax entirely.</p>
 </li>
 </ul>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>Status quo.</p>
@@ -296,7 +303,7 @@ unbounded look ahead can be used in the parser to allow both anonymous
 parameters and the full pattern syntax.</p>
 </li>
 </ul>
-<a class="header" href="1685-deprecate-anonymous-parameters.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>What deprecation strategy should be chosen?</li>
 </ul>
@@ -344,9 +351,6 @@ parameters and the full pattern syntax.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

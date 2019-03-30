@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0526-fmt-text-writer - </title>
+        <title>0526-fmt-text-writer - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,10 +145,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/526">rust-lang/rfcs#526</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/20352">rust-lang/rust#20352</a></li>
 </ul>
-<a class="header" href="0526-fmt-text-writer.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Statically enforce that the <code>std::fmt</code> module can only create valid UTF-8 data
 by removing the arbitrary <code>write</code> method in favor of a <code>write_str</code> method.</p>
-<a class="header" href="0526-fmt-text-writer.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Today it is conventionally true that the output from macros like <code>format!</code> and
 well as implementations of <code>Show</code> only create valid UTF-8 data. This is not
 statically enforced, however. As a consequence the <code>.to_string()</code> method must
@@ -151,7 +158,7 @@ of the formatting subsystem while normally just being a redundant check.</p>
 <p>Additionally, it is possible to statically enforce the convention that <code>Show</code>
 only deals with valid unicode, and as such the possibility of doing so should be
 explored.</p>
-<a class="header" href="0526-fmt-text-writer.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The <code>std::fmt::FormatWriter</code> trait will be redefined as:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -189,7 +196,7 @@ an arbitrary <code>io::Writer</code> is <em>still valid</em> as it's still just 
 The changes outlined in this RFC will only affect <code>Show</code> and other formatting
 trait implementations. As can be seen from the sample implementation, the
 fallout is quite minimal with respect to the rest of the standard library.</p>
-<a class="header" href="0526-fmt-text-writer.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>A version of this RFC has been <a href="https://github.com/rust-lang/rfcs/pull/57">previously postponed</a>, but this variant
 is much less ambitious in terms of generic <code>TextWriter</code> support. At this time
 the design of <code>fmt::Writer</code> is purposely conservative.</p>
@@ -197,7 +204,7 @@ the design of <code>fmt::Writer</code> is purposely conservative.</p>
 as a <code>&amp;mut Writer</code>, e.g. for the <code>Show</code> impl of <code>Json</code>. This is undoubtedly used
 outside this repository, and it would break all of these users relying on the
 binary functionality of the old <code>FormatWriter</code>.</p>
-<a class="header" href="0526-fmt-text-writer.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Another possible solution to specifically the performance problem is to have an
 <code>unsafe</code> flag on a <code>Formatter</code> indicating that only valid utf-8 data was
 written, and if all sub-parts of formatting set this flag then the data can be
@@ -206,7 +213,7 @@ on the type system instead.</p>
 <p>The <code>fmt::Writer</code> trait can also be located as <code>io::TextWriter</code> instead to
 emphasize its possible future connection with I/O, although there are not
 concrete plans today to develop these connections.</p>
-<a class="header" href="0526-fmt-text-writer.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>It is unclear to what degree a <code>fmt::Writer</code> needs to interact with
 <code>io::Writer</code> and the various adaptors/buffers. For example one would have to
@@ -256,9 +263,6 @@ implement their own <code>BufferedWriter</code> for a <code>fmt::Writer</code>.<
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

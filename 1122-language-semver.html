@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1122-language-semver - </title>
+        <title>1122-language-semver - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1122">rust-lang/rfcs#1122</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1122-language-semver.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC has the goal of defining what sorts of breaking changes we
 will permit for the Rust language itself, and giving guidelines for
 how to go about making such changes.</p>
-<a class="header" href="1122-language-semver.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>With the release of 1.0, we need to establish clear policy on what
 precisely constitutes a &quot;minor&quot; vs &quot;major&quot; change to the Rust language
 itself (as opposed to libraries, which are covered by <a href="https://github.com/rust-lang/rfcs/pull/1105">RFC 1105</a>).
@@ -162,12 +169,12 @@ that is not a soundness problem or compiler bug, but rather correcting
 a defect in design. Such cases should be rare. But if such a change is
 deemed worthwhile, then the guidelines given here can still be used to
 mitigate its impact.</p>
-<a class="header" href="1122-language-semver.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The detailed design is broken into two major sections: how to address
 soundness changes, and how to address other, opt-in style changes. We
 do not discuss non-breaking changes here, since obviously those are
 safe.</p>
-<a class="header" href="1122-language-semver.html#soundness-changes" id="soundness-changes"><h3>Soundness changes</h3></a>
+<a class="header" href="#soundness-changes" id="soundness-changes"><h3>Soundness changes</h3></a>
 <p>When compiler or type-system bugs are encountered in the language
 itself (as opposed to in a library), clearly they ought to be
 fixed. However, it is important to fix them in such a way as to
@@ -249,7 +256,7 @@ compilation fails.</li>
 </ul>
 </li>
 </ul>
-<a class="header" href="1122-language-semver.html#what-is-a-compiler-bug-or-soundness-change" id="what-is-a-compiler-bug-or-soundness-change"><h4>What is a &quot;compiler bug&quot; or &quot;soundness change&quot;?</h4></a>
+<a class="header" href="#what-is-a-compiler-bug-or-soundness-change" id="what-is-a-compiler-bug-or-soundness-change"><h4>What is a &quot;compiler bug&quot; or &quot;soundness change&quot;?</h4></a>
 <p>In the absence of a formal spec, it is hard to define precisely what
 constitutes a &quot;compiler bug&quot; or &quot;soundness change&quot; (see also the
 section below on underspecified parts of the language). The obvious
@@ -273,7 +280,7 @@ where it falls. The recent conflict between <code>Rc</code> and scoped threads i
 an example of such a discusison: it was clear that both APIs could not
 be legal, but not clear which one was at fault. The results of these
 discussions will feed into the Rust spec as it is developed.</p>
-<a class="header" href="1122-language-semver.html#opting-out" id="opting-out"><h4>Opting out</h4></a>
+<a class="header" href="#opting-out" id="opting-out"><h4>Opting out</h4></a>
 <p>In some cases, it may be useful to permit users to opt out of new type
 rules. The intention is that this &quot;opt out&quot; is used as a temporary
 crutch to make it easy to get the code up and running. Typically this
@@ -284,7 +291,7 @@ mechanism in place permanently. In either case, use of the &quot;opt out&quot;
 API would trigger the deprecation lint.</p>
 <p>Note that we should make every effort to ensure that crates which
 employ this opt out can be used compatibly with crates that do not.</p>
-<a class="header" href="1122-language-semver.html#changes-that-alter-dynamic-semantics-versus-typing-rules" id="changes-that-alter-dynamic-semantics-versus-typing-rules"><h4>Changes that alter dynamic semantics versus typing rules</h4></a>
+<a class="header" href="#changes-that-alter-dynamic-semantics-versus-typing-rules" id="changes-that-alter-dynamic-semantics-versus-typing-rules"><h4>Changes that alter dynamic semantics versus typing rules</h4></a>
 <p>In some cases, fixing a bug may not cause crates to stop compiling,
 but rather will cause them to silently start doing something different
 than they were doing before. In cases like these, the same principle
@@ -301,7 +308,7 @@ change that
 which helps to expose code that was implicitly relying on the current
 behavior (much of which has since been restructured in a more
 future-proof way).</p>
-<a class="header" href="1122-language-semver.html#underspecified-language-semantics" id="underspecified-language-semantics"><h4>Underspecified language semantics</h4></a>
+<a class="header" href="#underspecified-language-semantics" id="underspecified-language-semantics"><h4>Underspecified language semantics</h4></a>
 <p>There are a number of areas where the precise language semantics are
 currently somewhat underspecified. Over time, we expect to be fully
 defining the semantics of all of these areas. This may cause some
@@ -362,13 +369,13 @@ passing that some of the CLI flags to the compiler may change in the
 future as well. The <code>-Z</code> flags are of course explicitly unstable, but
 some of the <code>-C</code>, rustdoc, and linker-specific flags are expected to
 evolve over time (see e.g. <a href="https://github.com/rust-lang/rust/pull/24451">#24451</a>).</p>
-<a class="header" href="1122-language-semver.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The primary drawback is that making breaking changes are disruptive,
 even when done with the best of intentions. The alternatives list some
 ways that we could avoid breaking changes altogether, and the
 downsides of each.</p>
-<a class="header" href="1122-language-semver.html#notes-on-phasing" id="notes-on-phasing"><h2>Notes on phasing</h2></a>
-<a class="header" href="1122-language-semver.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#notes-on-phasing" id="notes-on-phasing"><h2>Notes on phasing</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p><strong>Rather than simply fixing soundness bugs, we could issue new major
 releases, or use some sort of opt-in mechanism to fix them
 conditionally.</strong> This was initially considered as an option, but
@@ -388,7 +395,7 @@ that they can be &quot;opted into&quot; can be very difficult and would
 complicate the compiler internally; it would also make it harder to
 reason about the type system as a whole.</li>
 </ul>
-<a class="header" href="1122-language-semver.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p><strong>What precisely constitutes &quot;small&quot; impact?</strong> This RFC does not
 attempt to define when the impact of a patch is &quot;small&quot; or &quot;not
 small&quot;. We will have to develop guidelines over time based on
@@ -458,9 +465,6 @@ example.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

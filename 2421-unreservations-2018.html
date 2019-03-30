@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2421-unreservations-2018 - </title>
+        <title>2421-unreservations-2018 - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2421">rust-lang/rfcs#2421</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/51115">rust-lang/rust#51115</a></li>
 </ul>
-<a class="header" href="2421-unreservations-2018.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>We unreserve:</p>
 <ul>
 <li><code>pure</code></li>
@@ -147,14 +154,14 @@
 <li><code>alignof</code></li>
 <li><code>offsetof</code></li>
 </ul>
-<a class="header" href="2421-unreservations-2018.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<p>We are currently not using any of the reserved keywords listed in the <a href="2421-unreservations-2018.html#summary">summary</a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<p>We are currently not using any of the reserved keywords listed in the <a href="#summary">summary</a>
 for anything in the language at the moment. We also have no intention of using
 the keywords for anything in the future, and as such, we want to unreserve them
 so that rustaceans can use them as identifiers.</p>
-<a class="header" href="2421-unreservations-2018.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
-<p>See the <a href="2421-unreservations-2018.html#reference-level-explanation">reference-level-explanation</a>.</p>
-<a class="header" href="2421-unreservations-2018.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<p>See the <a href="#reference-level-explanation">reference-level-explanation</a>.</p>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>The keywords listed below are removed from the
 <a href="https://doc.rust-lang.org/book/second-edition/appendix-01-keywords.html#keywords-currently-in-use">list of reserved keywords</a> and are longer reserved such that they can be
 used as general identifiers. This is done immediately and on edition 2015.</p>
@@ -165,30 +172,30 @@ used as general identifiers. This is done immediately and on edition 2015.</p>
 <li><code>alignof</code></li>
 <li><code>offsetof</code></li>
 </ul>
-<a class="header" href="2421-unreservations-2018.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The only drawback is that we're not able to use each listed word as a keyword
 in the future, without a reservation in a new edition, if we realize that we
 made a mistake.</p>
 <p>See the rationale for potential risks with each keyword.</p>
-<a class="header" href="2421-unreservations-2018.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>There's only one alternative: Not unreserving all listed / some keywords.</p>
 <p>Not unreserving a keyword would make the word unavailable for use as an
 identifier.</p>
-<a class="header" href="2421-unreservations-2018.html#general-policy-around-unreservations" id="general-policy-around-unreservations"><h2>General policy around unreservations</h2></a>
+<a class="header" href="#general-policy-around-unreservations" id="general-policy-around-unreservations"><h2>General policy around unreservations</h2></a>
 <p>This RFC establishes a general rationale and policy for keyword unreservation:
 <em>If we are not using a keyword for anything in the language, and we are sure
 that we have no intention of using the keyword in the future, then it is
 permissible to unreserve a keyword and it is motivated.
 Additionally, if there is a desire for a keyword to be used as an identifier,
 this can in some cases outweigh very hypothetical and speculative language features.</em></p>
-<a class="header" href="2421-unreservations-2018.html#rationale-for-pure" id="rationale-for-pure"><h2>Rationale for <code>pure</code></h2></a>
+<a class="header" href="#rationale-for-pure" id="rationale-for-pure"><h2>Rationale for <code>pure</code></h2></a>
 <p>This keyword used to be used for <code>pure fn</code>, that is: as an effect.</p>
 <p>When <em>generic associated types</em> (GATs) lands, it is likely that people would
 like to use this in their <a href="http://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Applicative.html#t:Applicative">applicative functor</a> and monad libraries,
 which speaks in favour of unreserving <code>pure</code>. This use case explicitly mentioned by <a href="https://github.com/ubsan/"><code>@ubsan</code></a> who requested that the keyword be unreserved for this purpose.</p>
-<a class="header" href="2421-unreservations-2018.html#potential-drawbacks" id="potential-drawbacks"><h3>Potential drawbacks</h3></a>
+<a class="header" href="#potential-drawbacks" id="potential-drawbacks"><h3>Potential drawbacks</h3></a>
 <p>Examples / The reasons why we might want to keep <code>pure</code> reserved are:</p>
-<a class="header" href="2421-unreservations-2018.html#a1-effects" id="a1-effects"><h4>1. Effects</h4></a>
+<a class="header" href="#1-effects" id="1-effects"><h4>1. Effects</h4></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -200,7 +207,7 @@ pure fn foo(x: Type) -&gt; Type {
 for more or less the same, and it is unlikely that we would introduce an effect
 (or restriction thereof) that is essentially <code>const fn</code> but not entirely.
 So this use case is unlikely to happen.</p>
-<a class="header" href="2421-unreservations-2018.html#a2-explicit-ok-wrapping" id="a2-explicit-ok-wrapping"><h4>2. Explicit <em><code>Ok</code>-wrapping</em></h4></a>
+<a class="header" href="#2-explicit-ok-wrapping" id="2-explicit-ok-wrapping"><h4>2. Explicit <em><code>Ok</code>-wrapping</em></h4></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -229,10 +236,10 @@ in this context as <code>pure</code> does not respect the <a href="https://en.wi
 The desugaring is also not particularly obvious when <code>pure</code> is used.
 If we did add sugar for explicit <code>Ok</code>-wrapping, we'd probably go with something
 other than <code>pure</code>.</p>
-<a class="header" href="2421-unreservations-2018.html#summary-1" id="summary-1"><h4>Summary</h4></a>
+<a class="header" href="#summary-1" id="summary-1"><h4>Summary</h4></a>
 <p>In both 1. and 2., <code>pure</code> can be contextual.
 We also don't think that the drawbacks are significant for <code>pure</code>.</p>
-<a class="header" href="2421-unreservations-2018.html#rationale-for-sizeof-alignof-and-offsetof" id="rationale-for-sizeof-alignof-and-offsetof"><h2>Rationale for <code>sizeof</code>, <code>alignof</code>, and <code>offsetof</code></h2></a>
+<a class="header" href="#rationale-for-sizeof-alignof-and-offsetof" id="rationale-for-sizeof-alignof-and-offsetof"><h2>Rationale for <code>sizeof</code>, <code>alignof</code>, and <code>offsetof</code></h2></a>
 <p>We already have <a href="https://doc.rust-lang.org/nightly/std/mem/fn.size_of.html"><code>std::mem::size_of</code></a> and similar which
 are <code>const fn</code>s or can be. In the case of <code>offsetof</code>, we would instead use
 a macro <code>offset_of!</code>.</p>
@@ -242,13 +249,13 @@ not because we will use them ourselves, but because it would be confusing,
 and so the error messages could be improved saying
 <em>&quot;go look at <code>std::mem::size_of</code> instead&quot;</em>. However, we believe it is better
 to allow users the freedom to use these keywords instead.</p>
-<a class="header" href="2421-unreservations-2018.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>Not applicable.</p>
-<a class="header" href="2421-unreservations-2018.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>There are none.
 All reservations we will do should be resolved before merging the RFC.</p>
-<a class="header" href="2421-unreservations-2018.html#appendix" id="appendix"><h1>Appendix</h1></a>
-<a class="header" href="2421-unreservations-2018.html#reserved-keywords-we-probably-dont-want-to-unreserve" id="reserved-keywords-we-probably-dont-want-to-unreserve"><h2>Reserved keywords we probably don't want to unreserve</h2></a>
+<a class="header" href="#appendix" id="appendix"><h1>Appendix</h1></a>
+<a class="header" href="#reserved-keywords-we-probably-dont-want-to-unreserve" id="reserved-keywords-we-probably-dont-want-to-unreserve"><h2>Reserved keywords we probably don't want to unreserve</h2></a>
 <p>The following keywords are used in the nightly compiler and we are sure
 that we want to keep them:</p>
 <ul>
@@ -325,8 +332,8 @@ impl TR for S {
 </ul>
 </li>
 </ul>
-<a class="header" href="2421-unreservations-2018.html#possible-future-unreservations" id="possible-future-unreservations"><h2>Possible future unreservations</h2></a>
-<a class="header" href="2421-unreservations-2018.html#unsized" id="unsized"><h3><code>unsized</code></h3></a>
+<a class="header" href="#possible-future-unreservations" id="possible-future-unreservations"><h2>Possible future unreservations</h2></a>
+<a class="header" href="#unsized" id="unsized"><h3><code>unsized</code></h3></a>
 <p>This would be a modifier on types, but we already have <code>&lt;T: ?Sized&gt;</code> and we
 could have <code>T: !Sized</code> so there seems to be no need for keeping <code>unsized</code>.</p>
 <p>However, <code>unsized type</code> or <code>unsized struct</code> might be a desirable syntax for
@@ -334,7 +341,7 @@ declaring a <em>dynamically sized type (DST)</em> or completely unsized type.
 Therefore, we will hold off on unreserving <code>unsized</code> until we have a better
 ideas of how custom DSTs will work and it's clear we don't need <code>unsized</code>
 as a keyword.</p>
-<a class="header" href="2421-unreservations-2018.html#priv" id="priv"><h3><code>priv</code></h3></a>
+<a class="header" href="#priv" id="priv"><h3><code>priv</code></h3></a>
 <p>Here, <code>priv</code> is a privacy / visibility modifier on things like fields, and items.
 An example:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -366,10 +373,10 @@ worth the complexity.</p>
 <p>However, right now (2018-04-26), there is a lot of movement around the module
 system. So we would like to wait and discuss unreserving this keyword at some
 later time.</p>
-<a class="header" href="2421-unreservations-2018.html#box" id="box"><h3><code>box</code></h3></a>
+<a class="header" href="#box" id="box"><h3><code>box</code></h3></a>
 <p>We use this in nightly for box patterns.
 We might want to unreserve this eventually however.</p>
-<a class="header" href="2421-unreservations-2018.html#virtual" id="virtual"><h3><code>virtual</code></h3></a>
+<a class="header" href="#virtual" id="virtual"><h3><code>virtual</code></h3></a>
 <p>This annotation would be for something like virtual functions (see <code>dyn</code>).
 However, we already have <code>dyn</code>, so why would we need <code>virtual</code>?
 Assuming the following makes sense semantically (which we do not care about here),
@@ -388,7 +395,7 @@ virtual fn foo(..) -&gt; whatever { .. }
 <p>However, there might be some use case related to specialization.
 After specialization is stable, we would like to revisit unreservation of
 <code>virtual</code>.</p>
-<a class="header" href="2421-unreservations-2018.html#final" id="final"><h3><code>final</code></h3></a>
+<a class="header" href="#final" id="final"><h3><code>final</code></h3></a>
 <p>The <code>final</code> keyword is currently reserved. It is used in Java to mean two
 separate things:</p>
 <ol>
@@ -448,9 +455,6 @@ After specialization is stable, we would like to revisit unreservation of
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

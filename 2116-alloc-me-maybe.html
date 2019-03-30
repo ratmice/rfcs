@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2116-alloc-me-maybe - </title>
+        <title>2116-alloc-me-maybe - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,14 +146,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2116">rust-lang/rfcs#2116</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/48043">rust-lang/rust#48043</a></li>
 </ul>
-<a class="header" href="2116-alloc-me-maybe.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add minimal support for fallible allocations to the standard collection APIs. This is done in two ways:</p>
 <ul>
 <li>For users with unwinding, an <code>oom=panic</code> configuration is added to make global allocators panic on oom.</li>
 <li>For users without unwinding, a <code>try_reserve() -&gt; Result&lt;(), CollectionAllocErr&gt;</code> method is added.</li>
 </ul>
 <p>The former is sufficient to unwinding users, but the latter is insufficient for the others (although it is a decent 80/20 solution). Completing the no-unwinding story is left for future work.</p>
-<a class="header" href="2116-alloc-me-maybe.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Many collection methods may decide to allocate (push, insert, extend, entry, reserve, with_capacity, ...) and those allocations may fail. Early on in Rust's history we made a policy decision not to expose this fact at the API level, preferring to abort. This is because most developers aren't prepared to handle it, or interested. Handling allocation failure haphazardly is likely to lead to many never-tested code paths and therefore bugs. We call this approach <em>infallible</em> collection allocation, because the developer model is that allocations just don't fail.</p>
 <p>Unfortunately, this stance is unsustainable in several of the contexts Rust is designed for.
 This RFC seeks to establish a basic <em>fallible</em> collection allocation API, which allows our users to handle allocation failures where desirable. This RFC does not attempt to perfectly address all use cases, but does intend to establish the goals and constraints of those use cases, and sketches a path forward for addressing them all.</p>
@@ -157,23 +164,23 @@ This RFC seeks to establish a basic <em>fallible</em> collection allocation API,
 <li>server: task-oriented, semi-robust, global, unwinding</li>
 <li>runtime: whole-system, robust, global, no unwinding</li>
 </ul>
-<a class="header" href="2116-alloc-me-maybe.html#user-profile-embedded" id="user-profile-embedded"><h2>User Profile: Embedded</h2></a>
+<a class="header" href="#user-profile-embedded" id="user-profile-embedded"><h2>User Profile: Embedded</h2></a>
 <p>Embedded devs are primarily well-aligned with Rust's current strategy. First and foremost, embedded devs just try to <em>not</em> dynamically allocate. Memory should ideally all be allocated at startup. In cases where this isn't practical, simply aborting the process is often the next-best choice. Robust embedded systems need to be able to recover from a crash anyway, and aborting is completely fool-proof.</p>
 <p>However, sometimes the embedded system needs to process some user-defined tasks with unpredictable allocations, and completely crashing on OOM would be inappropriate. In those cases handling allocation failure is the right solution. In the case of a failure, the entire task usually reports a failure and is torn down. To make this robust, all allocations for a task are usually isolated to a single pool that can easily be torn down. This ensures nothing leaks, and helps avoid fragmentation. The important thing to note is that the embedded developers are ready and willing to take control of all allocations to do this properly.</p>
 <p>Some embedded systems do use unwinding, but this is very rare, so it cannot be assumed.</p>
 <p>It seems they would be happy to have some system to prevent infallible allocations from ever being used.</p>
-<a class="header" href="2116-alloc-me-maybe.html#user-profile-gecko" id="user-profile-gecko"><h2>User Profile: Gecko</h2></a>
+<a class="header" href="#user-profile-gecko" id="user-profile-gecko"><h2>User Profile: Gecko</h2></a>
 <p>Gecko is also primarily well-aligned with Rust's current strategy. For the most part, they liberally allocate and are happy to crash on OOM. This is especially palatable now that firefox is multiprocess. However as a <em>quality of implementation</em> matter, they occasionally make some subroutines fallible. For instance, it would be unfortunate if a single giant image prevented a page from loading. Similarly, running out of memory while processing a style sheet isn't significantly different from failing to download it.</p>
 <p>However in contrast to the embedded case, this isn't done in a particularly principled way. Some parts might be fallible, some might be infallible. Nothing is pooled to isolate tasks. It's just a best-effort affair.</p>
 <p>Gecko is built without unwinding.</p>
 <p>It seems they would be happy to have some system to prevent infallible allocations from ever being used.</p>
 <p>Gecko's need for this API as soon as possible will result in it temporarily forking several of the std collections, which is the primary impetus for this RFC.</p>
-<a class="header" href="2116-alloc-me-maybe.html#user-profile-server" id="user-profile-server"><h2>User Profile: Server</h2></a>
+<a class="header" href="#user-profile-server" id="user-profile-server"><h2>User Profile: Server</h2></a>
 <p>This represents a commodity server which handles tasks using threads or futures.</p>
 <p>Similar to the embedded case, handling allocation failure at the granularity of tasks is ideal for quality-of-implementation purposes. However, unlike embedded development, it isn't considered practical (in terms of cost) to properly take control of everything and ensure allocation failure is handled robustly.</p>
 <p>Here unwinding is available, and seems to be the preferred solution, as it maximizes the chances of allocation failures bubbling out of whatever libraries are used. This is unlikely to be totally robust, but that's ok.</p>
 <p>With unwinding there isn't any apparent use for an infallible allocation checker.</p>
-<a class="header" href="2116-alloc-me-maybe.html#user-profile-runtime" id="user-profile-runtime"><h2>User Profile: Runtime</h2></a>
+<a class="header" href="#user-profile-runtime" id="user-profile-runtime"><h2>User Profile: Runtime</h2></a>
 <p>A garbage-collected runtime (such as SpiderMonkey or the Microsoft CLR), is generally expected to avoid crashing due to out-of-memory conditions. Different strategies and allocators are used for different situations here. Most notably, there are allocations on the GC heap for the running script, and allocations on the global heap for the actual runtime's own processing (e.g. performing a JIT compilation).</p>
 <p>Allocations on the GC heap aren't particularly interesting for our purposes, as these need to have a special format for tracing, and management by the runtime. A runtime probably wouldn't ever want to build a native Vec backed by the GC heap, but a Vec <em>might</em> contain GC'd pointers that the runtime must trace. Thankfully, this is unrelated to the process of allocating the Vec itself.</p>
 <p>When performing a GC, allocating data structures may enable faster or more responsive strategies, but the system must be ready to fall back to less memory-intensive solution in the case of allocation failure. In the limit, very small allocations in critical sections may be infallible.</p>
@@ -182,7 +189,7 @@ This RFC seeks to establish a basic <em>fallible</em> collection allocation API,
 <p>Due to mixed fallible/infallible allocation use, tools which prevent the use of infallible allocation may not be appropriate.</p>
 <p>The Runtime dev profile seems to closely reflect that of Database dev (which wasn't seriously researched for this RFC). A database is in some sense just a runtime for its query language (e.g. SQL), with similar reliability constraints.</p>
 <p>Aside: many devs in this space have a testing feature which can repeatedly run test cases with OOMs injected at the allocator level. This doesn't really effect our constraints, but it's something to keep in mind to address the &quot;many untested paths&quot; issue.</p>
-<a class="header" href="2116-alloc-me-maybe.html#additional-background-how-collections-handle-allocation-now" id="additional-background-how-collections-handle-allocation-now"><h2>Additional Background: How Collections Handle Allocation Now</h2></a>
+<a class="header" href="#additional-background-how-collections-handle-allocation-now" id="additional-background-how-collections-handle-allocation-now"><h2>Additional Background: How Collections Handle Allocation Now</h2></a>
 <p>All of our collections consider there to be two interesting cases:</p>
 <ul>
 <li>The capacity got too big (&gt;<code>isize::MAX</code>), which is handled by <code>panic!(&quot;capacity overflow&quot;)</code></li>
@@ -192,19 +199,19 @@ This RFC seeks to establish a basic <em>fallible</em> collection allocation API,
 <p>These behaviours were purposefully designed, but probably not particularly well-motivated, <a href="https://github.com/rust-lang/rust/issues/42808">as discussed here</a>. Some of these details are documented, although not correctly or in sufficient detail. For instance <code>Vec::reserve</code> only mentions panicking when overflowing <code>usize</code>, which is accurate for 64-bit but not 32-bit or 16-bit. Oddly no mention of out-of-memory conditions or aborts can be found anywhere in Vec's documentation.</p>
 <p>To make matters more complex, the (unstable) <code>heap::Alloc</code> trait currently documents that any oom impl can panic <em>or</em> abort, so collection users need to assume that can happen anyway. This is intended insofar as it was considered desirable for local allocators, but is considered an oversight in the global case. This is because Alloc is mostly designed around local allocators.</p>
 <p>This is enough of a mess (which to be clear can be significantly blamed on the author) that the author expects no one is relying on the specific behaviours here, and they could be changed pretty liberally. That said, the primary version of this proposal doesn't attempt to change any of these behaviours. It's certainly a plausible alternative, though.</p>
-<a class="header" href="2116-alloc-me-maybe.html#additional-background-allocation-failure-in-c" id="additional-background-allocation-failure-in-c"><h2>Additional Background: Allocation Failure in C(++)</h2></a>
+<a class="header" href="#additional-background-allocation-failure-in-c" id="additional-background-allocation-failure-in-c"><h2>Additional Background: Allocation Failure in C(++)</h2></a>
 <p>There are two ways that collection allocation failure is handled in C(++): with error return values, and with unwinding (C++ only). The C++ standard library (STL) only provides fallible allocations through exceptions, but the broader ecosystem also uses return values. For example, mozilla's own standard library (MFBT) only uses return values.</p>
 <p>Unfortunately, attempting to handle allocation failure in C(++) has been a historical source of critical vulnerabilities. For instance, if reallocating an array fails but isn't noticed, the user of the array can end up thinking it has more space than it actually does and writing past the end of the allocation.</p>
 <p>The return-value-based approach is problematic because neither language has good facilities for mandating that a result is actually <em>checked</em>. There are two notable cases here: when the result of the allocation is some kind of error code (e.g. a bool), or the result is a pointer into the allocation (or a specific pointer indicating failure).</p>
 <p>In the error code case, neither language provides a native facility to mandate that error codes must be checked. However compiler-specific attributes like GCC's warn_unused_result can be used here. Unfortunately nothing mandates that the error code is used <em>correctly</em>. In the pointer case, blindly dereferencing is considered a valid use, fooling basic lints.</p>
 <p>Unwinding is better than error codes in this regard, because completely ignoring an exception aborts the process. The author's understanding is that problems arise from the complicated exception-safety rules C++ collections have.</p>
 <p>Both of these concerns are partially mitigated in Rust. For return values, Result and bool have proper on-by-default must-use checks. However again nothing mandates they are used properly. In the pointer case, we can however prevent you from ever getting the pointer if the Result is an <code>Err</code>. For unwinding, it's much harder to run afoul of exception-safety in Rust, especially since copy/move can't be overloaded. However unsafe code may have trouble.</p>
-<a class="header" href="2116-alloc-me-maybe.html#additional-background-overcommit-and-killers" id="additional-background-overcommit-and-killers"><h2>Additional Background: Overcommit and Killers</h2></a>
+<a class="header" href="#additional-background-overcommit-and-killers" id="additional-background-overcommit-and-killers"><h2>Additional Background: Overcommit and Killers</h2></a>
 <p>Some operating systems can be configured to pretend there's more memory than there actually is. Generally this is the result of pretending to allocate physical pages of memory, but only actually doing so when the page is accessed. For instance, forking a process is supposed to create two separate copies of the process's memory, but this can be avoided by simply marking all the pages as <em>copy on write</em> and having the processes share the same physical memory. The first process to mutate the shared page triggers a page fault, which the OS handles by properly allocating a new physical page for it. Similarly, to postpone zeroing fresh pages of memory, the OS may use a copy-on-write zero page.</p>
 <p>The result of this is that allocation failure may happen when memory is first <em>accessed</em> and not when it's actually requested. If this happens, someone needs to give up their memory, which can mean the OS killing your process (or another random one!).</p>
 <p>This strategy is used on many *nix variants/descendants, including Android, iOS, MacOS, and Ubuntu.</p>
 <p>Some developers will try to use this as an argument for never <em>trying</em> to handle allocation failure. This RFC does not consider this to be a reasonable stance. First and foremost: Windows doesn't do it. So anything that's used a lot on windows (e.g. Firefox) can reasonably try to handle allocation failure there. Similarly, overcommit can be disabled completely or partially on many OSes. For instance the default for Linux is to actually fail on allocations that are &quot;obviously&quot; too large to handle.</p>
-<a class="header" href="2116-alloc-me-maybe.html#additional-background-recovering-from-allocation-failure-without-data-loss" id="additional-background-recovering-from-allocation-failure-without-data-loss"><h2>Additional Background: Recovering From Allocation Failure Without Data Loss</h2></a>
+<a class="header" href="#additional-background-recovering-from-allocation-failure-without-data-loss" id="additional-background-recovering-from-allocation-failure-without-data-loss"><h2>Additional Background: Recovering From Allocation Failure Without Data Loss</h2></a>
 <p>The most common collection interfaces in Rust expect you to move data into them, and may fail to allocate in the middle of processing this data. As a basic example, <code>push</code> consumes a T. To avoid data loss, this T should be returned, so a fallible <code>push</code> would need a signature like:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -228,13 +235,13 @@ fn extend&lt;I: IntoIter&lt;Item=T&gt;&gt;(&amp;mut self, iter: I)
     -&gt; Result&lt;(), (I::IntoIter, Option&lt;T&gt;, Err)&gt;
 #}</code></pre></pre>
 <p>Note that this API only even works because Iterator's signature currently guarantees that the yielded elements outlive the iterator. This would not be the case if we ever moved to support so-called &quot;streaming iterators&quot;, which yield elements that point into themselves.</p>
-<a class="header" href="2116-alloc-me-maybe.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>Due to the diversity of requirements between our user profiles, there isn't any one-size fits all solution. This RFC proposes two solutions which will require minimal work for maximal impact:</p>
 <ul>
 <li>For the server users, an <code>oom=panic</code> configuration, in the same vein as the <code>panic=abort</code>.</li>
 <li>For everyone else, add <code>try_reserve</code> and <code>try_reserve_exact</code> as standard collection APIs.</li>
 </ul>
-<a class="header" href="2116-alloc-me-maybe.html#oompanic" id="oompanic"><h2>oom=panic</h2></a>
+<a class="header" href="#oompanic" id="oompanic"><h2>oom=panic</h2></a>
 <p>Applying this configuration in a Cargo.toml would change the behaviour of the global allocator's <code>oom()</code> function, which currently aborts, to instead panic. As discussed in the Server user profile, this would allow OOM to be handled at task boundaries with minimal effort for server developers, and no effort from library maintainers.</p>
 <p>If using a thread-per-task model, OOMs will be naturally caught at the thread boundary. If using a different model, tasks can be isolated using the <code>thread::catch_unwind</code> or <code>Future::catch_unwind</code> APIs.</p>
 <p>We expose a flag, rather than changing the default, because we maintain that <em>by default</em> Rust programmers should not be trying to recover from allocation failures.</p>
@@ -265,7 +272,7 @@ oom = &quot;panic&quot;
     }
 }
 </code></pre></pre>
-<a class="header" href="2116-alloc-me-maybe.html#try_reserve" id="try_reserve"><h2>try_reserve</h2></a>
+<a class="header" href="#try_reserve" id="try_reserve"><h2>try_reserve</h2></a>
 <p><code>try_reserve</code> and <code>try_reserve_exact</code> would be added to <code>HashMap</code>, <code>Vec</code>, <code>String</code>, and <code>VecDeque</code>. These would have the exact same APIs as their infallible counterparts, except that OOM would be exposed as an error case, rather than a call to <code>Alloc::oom()</code>. They would have the following signatures:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -317,30 +324,30 @@ impl&lt;T&gt; FallibleVecExt&lt;T&gt; for Vec&lt;T&gt; {
 }
 #}</code></pre></pre>
 <p>Note that iterator-consuming implementations are limited to ExactSizeIterator, as this lets us perfectly predict how much space we need. In practice this shouldn't be much of a constraint, as most uses of these APIs just feed arrays into arrays or maps into maps. Only things like <code>filter</code> produce unpredictable iterator sizes.</p>
-<a class="header" href="2116-alloc-me-maybe.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2116-alloc-me-maybe.html#oompanic-1" id="oompanic-1"><h2>oom=panic</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#oompanic-1" id="oompanic-1"><h2>oom=panic</h2></a>
 <p>Disclaimer: not super familiar with all the mechanics here, so this is a sketch that hopefully someone whose worked on these details can help flesh out.</p>
 <p>We add a <code>-C oom=abort|panic</code> flag to rustc, which changes the impl of <code>__rust_oom</code> that's linked in to either panic or abort. It's possible that this should just change the value of a <code>extern static bool</code> in libcore (liballoc?) that <code>__rust_oom</code> impls are expected to check?</p>
 <p>Unlike the <code>panic=abort</code> flag, this shouldn't make your crate incompatible with crates with a different choice. Only a subset of target types should be able to set this, e.g. it's a bin-level decision?</p>
 <p>Cargo would also add a <code>oom=abort=panic</code> profile configuration, to set the rustc flag. Its value should be ignored in dependencies?</p>
-<a class="header" href="2116-alloc-me-maybe.html#try_reserve-1" id="try_reserve-1"><h2>try_reserve</h2></a>
+<a class="header" href="#try_reserve-1" id="try_reserve-1"><h2>try_reserve</h2></a>
 <p><a href="https://github.com/rust-lang/rust/pull/43890">An implementation of try_reserve for Vec can be found for here</a></p>
 <p>The guide-level explanation otherwise covers all the interesting details.</p>
-<a class="header" href="2116-alloc-me-maybe.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There doesn't seem to be any drawback for adding support for <code>oom=panic</code>.</p>
 <p><code>try_reserve</code>'s only serious drawback is that it isn't a complete solution, and it may not idiomatically match future &quot;complete&quot; solutions to the problem.</p>
-<a class="header" href="2116-alloc-me-maybe.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
-<a class="header" href="2116-alloc-me-maybe.html#always-panic-on-oom" id="always-panic-on-oom"><h2>Always panic on OOM</h2></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#always-panic-on-oom" id="always-panic-on-oom"><h2>Always panic on OOM</h2></a>
 <p>We probably shouldn't mandate this in the actual Alloc trait, but certainly we could change how our global Alloc impls behave. This RFC doesn't propose this for two reasons.</p>
 <p>The first is basically on the grounds of &quot;not rocking the boat&quot;. Notably unsafe code might be relying on global OOM not unwinding for exception safety reasons. The author expects such code could very easily be changed to be exception-safe if we decided to do this.</p>
 <p>The second is that the author still considers it legitimately correct to discourage handling OOM by default, for the reasons stated in earlier sections.</p>
-<a class="header" href="2116-alloc-me-maybe.html#eliminate-the-capacityoverflow-distinction" id="eliminate-the-capacityoverflow-distinction"><h2>Eliminate the CapacityOverflow distinction</h2></a>
+<a class="header" href="#eliminate-the-capacityoverflow-distinction" id="eliminate-the-capacityoverflow-distinction"><h2>Eliminate the CapacityOverflow distinction</h2></a>
 <p>Collections could potentially just create an <code>AllocErr::Unsupported(&quot;capacity overflow&quot;)</code> and feed it to their allocator. Presumably this wouldn't do something bad to the allocator? Then the oom=abort flag could be used to completely control whether allocation failure is a panic or abort (for participating allocators).</p>
 <p>Again this is avoided simply to leave things &quot;as they are&quot;. In this case it would be a change to a legitimately documented API behaviour (panic on overflow of usize), but again that documentation isn't even totally accurate.</p>
-<a class="header" href="2116-alloc-me-maybe.html#eliminate-the-64-bit-difference" id="eliminate-the-64-bit-difference"><h2>Eliminate the 64-bit difference</h2></a>
+<a class="header" href="#eliminate-the-64-bit-difference" id="eliminate-the-64-bit-difference"><h2>Eliminate the 64-bit difference</h2></a>
 <p>This difference literally exists to save a single perfectly-predictable compare-and-branch on 64-bit platforms when allocating collections, which is probably insignificant considering how expensive the success path is. Also the difference here would be a bit exacerbated by exposing the CapacityOverflow variant here.</p>
 <p>Again, not proposed to avoid rocking the boat.</p>
-<a class="header" href="2116-alloc-me-maybe.html#collectionallocerr" id="collectionallocerr"><h2>CollectionAllocErr</h2></a>
+<a class="header" href="#collectionallocerr" id="collectionallocerr"><h2>CollectionAllocErr</h2></a>
 <p>There were a few different possible designs for CollectionAllocErr:</p>
 <ul>
 <li>Just make it AllocErr</li>
@@ -351,11 +358,11 @@ impl&lt;T&gt; FallibleVecExt&lt;T&gt; for Vec&lt;T&gt; {
 <p>It's also possible we should suppress the AllocErr details to &quot;hide&quot; how collections are interpreting the requests they receive. This just didn't seem that important, and has the possibility to get in the way of someone using their own local allocator.</p>
 <p>The most extreme version of this would be to just say &quot;there was an error&quot; without any information. The only reason to really prefer this is for bloat reasons; the current Rust compiler really doesn't handle Result payloads very efficiently. This should presumably be fixed <em>eventually</em>, since Results are pretty important?</p>
 <p>We simply opted for the version that had maximum information, on the off-chance this was useful.</p>
-<a class="header" href="2116-alloc-me-maybe.html#future-work-infallible-allocation-effect-system-w-portability-lints" id="future-work-infallible-allocation-effect-system-w-portability-lints"><h2>Future Work: Infallible Allocation Effect System (w/ Portability Lints)</h2></a>
+<a class="header" href="#future-work-infallible-allocation-effect-system-w-portability-lints" id="future-work-infallible-allocation-effect-system-w-portability-lints"><h2>Future Work: Infallible Allocation Effect System (w/ Portability Lints)</h2></a>
 <p>Several of our users have expressed desire for some kind of system to prevent a function from ever infallibly allocating. This is ultimately an effect system.</p>
 <p>One possible way to implement this would be to use the <em>portability lint</em> system. In particular, the &quot;subsetting&quot; portability lints that were proposed as future work in <a href="https://github.com/rust-lang/rfcs/blob/master/text/1868-portability-lint.md#subsetting-std">RFC-1868</a>.</p>
 <p>This system is supposed to handle things like &quot;I don't have float support&quot; or &quot;I don't have AtomicU64&quot;. &quot;I don't have infallible allocation support&quot; is much the same idea. This could be scoped to modules or functions.</p>
-<a class="header" href="2116-alloc-me-maybe.html#future-work-complete-result-apis" id="future-work-complete-result-apis"><h2>Future Work: Complete Result APIs</h2></a>
+<a class="header" href="#future-work-complete-result-apis" id="future-work-complete-result-apis"><h2>Future Work: Complete Result APIs</h2></a>
 <p>Although this RFC handles the &quot;wants to unwind&quot; case pretty cleanly and completely, it leaves no-unwind world with an imperfect one. In particular, it's completely useless for collections which have unpredictable allocations like BTreeMap. This proposal punts on this problem because solving it will be a big change which will likely make a bunch of people mad no matter what.</p>
 <p>The author would prefer that we don't spend much time focusing on these solutions, but will document them here just for informational purposes. Also for these purposes we will only be discussing the <code>push</code> method on Vec, since any solution for that generalizes cleanly to everything else.</p>
 <p>Broadly speaking, there's two schools of thought here: fallible operations should just be methods, and fallible operations should be distinguished at the type-level. Basically, should you be able to do: <code>vec.push(x); vec.try_push(y)</code>, or will you somehow obtain a special kind of Vec and <code>vec.push(x)</code> will then return a <code>Result</code>.</p>
@@ -388,7 +395,7 @@ fn process(&amp;mut self, data: &amp;[Item]) -&gt; Result&lt;Vec&lt;Processed&gt
 <p>The fourth is certainly nice-to-have, but probably not a high enough priority to create an entire separate Vec type.</p>
 <p>All of the type-based solutions also suffer from a fairly serious problem: they can't implement many core traits in the fallible state. For instance, Extend::extend and Display::to_string require allocation and don't support fallibility.</p>
 <p>With all that said, these are the proposed solutions:</p>
-<a class="header" href="2116-alloc-me-maybe.html#method-based" id="method-based"><h3>Method-Based</h3></a>
+<a class="header" href="#method-based" id="method-based"><h3>Method-Based</h3></a>
 <p>Fairly straight-forward, but a bunch of duplicate code. Probably we would either end up implementing <code>push</code> in terms of <code>try_push</code> (which would be inefficient but easy), or with macros.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -405,7 +412,7 @@ impl&lt;T&gt; Vec&lt;T&gt; {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2116-alloc-me-maybe.html#generic-on-vec" id="generic-on-vec"><h3>Generic (on Vec)</h3></a>
+<a class="header" href="#generic-on-vec" id="generic-on-vec"><h3>Generic (on Vec)</h3></a>
 <p>This is a sketch, didn't want to put enough effort in to crack this puzzle.</p>
 <p>The most notable thing is that it relies on generic associated types, which
 don't actually exist yet, and probably won't be stable until ~late 2018
@@ -462,9 +469,9 @@ impl&lt;T, ..., F&gt; Vec&lt;T, ..., F&gt; {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="2116-alloc-me-maybe.html#generic-on-alloc" id="generic-on-alloc"><h3>Generic (on Alloc)</h3></a>
+<a class="header" href="#generic-on-alloc" id="generic-on-alloc"><h3>Generic (on Alloc)</h3></a>
 <p>Same basic idea as the previous design, but the Fallibility trait is folded into the Alloc trait. Then one would use <code>FallibleHeap</code> or <code>InfallibleHeap</code>, or maybe <code>Infallible&lt;Heap&gt;</code>? This forces anyone who wants to support generic allocators to support generic fallibility. It would require a complete redesign of the allocator API, blocking it on generic associated types.</p>
-<a class="header" href="2116-alloc-me-maybe.html#falliblevec" id="falliblevec"><h3>FallibleVec</h3></a>
+<a class="header" href="#falliblevec" id="falliblevec"><h3>FallibleVec</h3></a>
 <p>Just make a completely separate type. Includes an <code>into_fallible(self)</code>/<code>into_infallible(self)</code> conversion which is free since there's no actual representation change. Makes it possible to change &quot;phases&quot; between fallibility/infallibly for different parts of the program if that's valuable. Implementation-wise, basically identical to the method approach, but we also need to duplicate non-allocating methods just to mirror the API.</p>
 <p>Alternatively we could make <code>FallibleVec&lt;'a, T&gt;</code> and <code>as_fallible(&amp;mut self)</code>, which is a temporary view like Iterator/Entry. This is probably a bit more consistent with how we do this sort of thing. This also makes &quot;temporary&quot; fallibility easier, but at the cost of being able to permanently become fallible:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -482,7 +489,7 @@ let vec = vec.into_infallible();
 
 return vec.into_fallible()
 #}</code></pre></pre>
-<a class="header" href="2116-alloc-me-maybe.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>How exactly should oom=panic be implemented in the compiler?</li>
 <li>How exactly should oom=panic behave for dependencies?</li>
@@ -531,9 +538,6 @@ return vec.into_fallible()
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

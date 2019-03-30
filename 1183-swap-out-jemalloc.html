@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1183-swap-out-jemalloc - </title>
+        <title>1183-swap-out-jemalloc - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +146,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1183">rust-lang/rfcs#1183</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27389">rust-lang/rust#27389</a></li>
 </ul>
-<a class="header" href="1183-swap-out-jemalloc.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add support to the compiler to override the default allocator, allowing a
 different allocator to be used by default in Rust programs. Additionally, also
 switch the default allocator for dynamic libraries and static libraries to using
 the system malloc instead of jemalloc.</p>
 <p><em>Note:</em> this RFC has been superseded by <a href="https://github.com/rust-lang/rfcs/blob/master/text/1974-global-allocators.md">RFC 1974</a>.</p>
-<a class="header" href="1183-swap-out-jemalloc.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Note that this issue was <a href="http://smallcultfollowing.com/babysteps/blog/2014/11/14/allocators-in-rust/">discussed quite a bit</a> in the past, and
 the meat of this RFC draws from Niko's post.</p>
 <p>Currently all Rust programs by default use jemalloc for an allocator because it
@@ -160,12 +167,12 @@ the allocator.</p>
 programs may want to simply instrument allocations or shim in additional
 functionality (such as memory tracking statistics). This is currently quite
 difficult to do, and would be accomodated with a custom allocation scheme.</p>
-<a class="header" href="1183-swap-out-jemalloc.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The high level design can be found <a href="https://gist.github.com/alexcrichton/41c6aad500e56f49abda">in this gist</a>, but this RFC intends to
 expound on the idea to make it more concrete in terms of what the compiler
 implementation will look like. A <a href="https://github.com/alexcrichton/rust/tree/less-jemalloc">sample implementaiton</a> is available of
 this section.</p>
-<a class="header" href="1183-swap-out-jemalloc.html#high-level-design" id="high-level-design"><h3>High level design</h3></a>
+<a class="header" href="#high-level-design" id="high-level-design"><h3>High level design</h3></a>
 <p>The design of this RFC from 10,000 feet (referred to below), which was
 <a href="https://gist.github.com/alexcrichton/41c6aad500e56f49abda">previously outlined</a> looks like:</p>
 <ol>
@@ -190,7 +197,7 @@ jemalloc shim.</li>
 </ol>
 <p>The final link step will be optional, and one could link in any compliant
 allocator at that time if so desired.</p>
-<a class="header" href="1183-swap-out-jemalloc.html#new-attributes" id="new-attributes"><h3>New Attributes</h3></a>
+<a class="header" href="#new-attributes" id="new-attributes"><h3>New Attributes</h3></a>
 <p>Two new <strong>unstable</strong> attributes will be added to the compiler:</p>
 <ul>
 <li><code>#![needs_allocator]</code> indicates that a library requires the &quot;allocation
@@ -204,7 +211,7 @@ to leverage more LLVM optimizations as well.</li>
 </ul>
 <p>All crates implementing the Rust allocation API must be tagged with
 <code>#![allocator]</code> to get properly recognized and handled.</p>
-<a class="header" href="1183-swap-out-jemalloc.html#new-crates" id="new-crates"><h3>New Crates</h3></a>
+<a class="header" href="#new-crates" id="new-crates"><h3>New Crates</h3></a>
 <p>Two new <strong>unstable</strong> crates will be added to the standard distribution:</p>
 <ul>
 <li><code>alloc_system</code> is a crate that will be tagged with <code>#![allocator]</code> and will
@@ -214,7 +221,7 @@ jemalloc to redirect allocations to.</li>
 </ul>
 <p>Both crates will be available to link to manually, but they will not be
 available in stable Rust to start out.</p>
-<a class="header" href="1183-swap-out-jemalloc.html#allocation-functions" id="allocation-functions"><h3>Allocation functions</h3></a>
+<a class="header" href="#allocation-functions" id="allocation-functions"><h3>Allocation functions</h3></a>
 <p>Each crate tagged <code>#![allocator]</code> is expected to provide the full suite of
 allocation functions used by Rust, defined as:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -244,7 +251,7 @@ pub extern fn __rust_allocate(size: usize, align: usize) -&gt; *mut u8 {
     /* ... */
 }
 #}</code></pre></pre>
-<a class="header" href="1183-swap-out-jemalloc.html#limitations-of-allocator" id="limitations-of-allocator"><h3>Limitations of <code>#![allocator]</code></h3></a>
+<a class="header" href="#limitations-of-allocator" id="limitations-of-allocator"><h3>Limitations of <code>#![allocator]</code></h3></a>
 <p>Allocator crates (those tagged with <code>#![allocator]</code>) are not allowed to
 transitively depend on a crate which is tagged with <code>#![needs_allocator]</code>. This
 would introduce a circular dependency which is difficult to link and is highly
@@ -255,7 +262,7 @@ if a crate defines an allocation API the compiler will not verify that it is
 tagged with <code>#![allocator]</code>. This means that the only meaning <code>#![allocator]</code>
 has to the compiler is to signal that the default allocator should not be
 linked.</p>
-<a class="header" href="1183-swap-out-jemalloc.html#default-allocator-specifications" id="default-allocator-specifications"><h3>Default allocator specifications</h3></a>
+<a class="header" href="#default-allocator-specifications" id="default-allocator-specifications"><h3>Default allocator specifications</h3></a>
 <p>Target specifications will be extended with two keys: <code>lib_allocation_crate</code>
 and <code>exe_allocation_crate</code>, describing the default allocator crate for these
 two kinds of artifacts for each target. The compiler will by default have all
@@ -263,7 +270,7 @@ targets redirect to <code>alloc_system</code> for both scenarios, but <code>allo
 be used for binaries on OSX, Bitrig, DragonFly, FreeBSD, Linux, OpenBSD, and GNU
 Windows. MSVC will notably <strong>not</strong> use jemalloc by default for binaries (we
 don't currently build jemalloc on MSVC).</p>
-<a class="header" href="1183-swap-out-jemalloc.html#injecting-an-allocator" id="injecting-an-allocator"><h3>Injecting an allocator</h3></a>
+<a class="header" href="#injecting-an-allocator" id="injecting-an-allocator"><h3>Injecting an allocator</h3></a>
 <p>As described above, the compiler will inject an allocator if necessary into the
 current compilation. The compiler, however, cannot blindly do so as it can
 easily lead to link errors (or worse, two allocators), so it will have some
@@ -283,7 +290,7 @@ value is injected, otherwise the <code>lib_allocation_crate</code> is injected.<
 <p>The compiler will also record that the injected crate is injected, so later
 compilations know that rlibs don't actually require the injected crate at
 runtime (allowing it to be overridden).</p>
-<a class="header" href="1183-swap-out-jemalloc.html#allocators-in-practice" id="allocators-in-practice"><h3>Allocators in practice</h3></a>
+<a class="header" href="#allocators-in-practice" id="allocators-in-practice"><h3>Allocators in practice</h3></a>
 <p>Most libraries written in Rust wouldn't interact with the scheme proposed in
 this RFC at all as they wouldn't explicitly link with an allocator and generally
 are compiled as rlibs. If a Rust dynamic library is used as a dependency, then
@@ -297,7 +304,7 @@ then a crate can be written and linked in.</p>
 <p>Finally, providers of allocators will simply provide a crate to do so, and then
 applications and/or libraries can make explicit use of the allocator by
 depending on it as usual.</p>
-<a class="header" href="1183-swap-out-jemalloc.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>A significant amount of API surface area is being added to the compiler and
 standard distribution as part of this RFC, but it is possible for it to all
 enter as <code>#[unstable]</code>, so we can take our time stabilizing it and perhaps only
@@ -315,7 +322,7 @@ the source itself.</p>
 <p>It's possible to define an allocator API (e.g. define the symbols) but then
 forget the <code>#![allocator]</code> annotation, causing the compiler to wind up linking
 two allocators, which may cause link errors that are difficult to debug.</p>
-<a class="header" href="1183-swap-out-jemalloc.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The compiler's knowledge about allocators could be simplified quite a bit to the
 point where a compiler flag is used to just turn injection on/off, and then it's
 the responsibility of the application to define the necessary symbols if the
@@ -325,12 +332,12 @@ it for the mild amount of complexity in the compiler.</p>
 <p>Many of the names (such as <code>alloc_system</code>) have a number of alternatives, and
 the naming of attributes and functions could perhaps follow a stronger
 convention.</p>
-<a class="header" href="1183-swap-out-jemalloc.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Does this enable jemalloc to be built without a prefix on Linux? This would
 enable us to direct LLVM allocations to jemalloc, which would be quite nice!</p>
 <p>Should BSD-like systems use Rust's jemalloc by default? Many of them have
 jemalloc as the system allocator and even the special APIs we use from jemalloc.</p>
-<a class="header" href="1183-swap-out-jemalloc.html#updates-since-being-accepted" id="updates-since-being-accepted"><h1>Updates since being accepted</h1></a>
+<a class="header" href="#updates-since-being-accepted" id="updates-since-being-accepted"><h1>Updates since being accepted</h1></a>
 <p><em>Note:</em> this RFC has been superseded by <a href="https://github.com/rust-lang/rfcs/blob/master/text/1974-global-allocators.md">RFC 1974</a>.</p>
 
                     </main>
@@ -376,9 +383,6 @@ jemalloc as the system allocator and even the special APIs we use from jemalloc.
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

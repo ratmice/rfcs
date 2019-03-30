@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1859-try-trait - </title>
+        <title>1859-try-trait - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1859">rust-lang/rfcs#1859</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/31436">rust-lang/rust#31436</a></li>
 </ul>
-<a class="header" href="1859-try-trait.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce a trait <code>Try</code> for customizing the behavior of the <code>?</code>
 operator when applied to types other than <code>Result</code>.</p>
-<a class="header" href="1859-try-trait.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="1859-try-trait.html#using--with-types-other-than-result" id="using--with-types-other-than-result"><h3>Using <code>?</code> with types other than <code>Result</code></h3></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#using--with-types-other-than-result" id="using--with-types-other-than-result"><h3>Using <code>?</code> with types other than <code>Result</code></h3></a>
 <p>The <code>?</code> operator is very useful for working with <code>Result</code>, but it
 really applies to any sort of short-circuiting computation. As the
 existence and popularity of the <code>try_opt!</code> macro confirms, it is
@@ -199,7 +206,7 @@ differently, but
 that in fact the original design <em>did</em> use an <code>enum</code> like <code>Poll</code>, and
 it was changed to be more compatible with the existing <code>try!</code> macro,
 and hence could be changed back to be more in line with this RFC.)</p>
-<a class="header" href="1859-try-trait.html#support-interconversion-but-with-caution" id="support-interconversion-but-with-caution"><h3>Support interconversion, but with caution</h3></a>
+<a class="header" href="#support-interconversion-but-with-caution" id="support-interconversion-but-with-caution"><h3>Support interconversion, but with caution</h3></a>
 <p>The existing <code>try!</code> macro and <code>?</code> operator already allow a limit
 amount of type conversion, specifically in the error case. That is, if
 you apply <code>?</code> to a value of type <code>Result&lt;T, E&gt;</code>, the surrouding
@@ -238,12 +245,12 @@ convert an error case into a &quot;non-error&quot; type (e.g., <code>Option</cod
 is a risk that users accidentally overlook error cases. To mitigate
 this risk, we adopt certain conventions (see below) in that case to
 help ensure that &quot;accidental&quot; interconversion does not occur.</p>
-<a class="header" href="1859-try-trait.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1859-try-trait.html#playground" id="playground"><h3>Playground</h3></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#playground" id="playground"><h3>Playground</h3></a>
 <p>Note: if you wish to experiment,
 <a href="https://play.rust-lang.org/?gist=9ef8effa0c1c81bc8bb8dccb07505c54&amp;version=stable&amp;backtrace=0">this Rust playgroud link</a>
 contains the traits and impls defined herein.</p>
-<a class="header" href="1859-try-trait.html#desugaring-and-the-try-trait" id="desugaring-and-the-try-trait"><h3>Desugaring and the <code>Try</code> trait</h3></a>
+<a class="header" href="#desugaring-and-the-try-trait" id="desugaring-and-the-try-trait"><h3>Desugaring and the <code>Try</code> trait</h3></a>
 <p>The desugaring of the <code>?</code> operator is changed to the following, where
 <code>Try</code> refers to a new trait that will be introduced shortly:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -294,7 +301,7 @@ trait Try {
     fn from_ok(v: Self::Ok) -&gt; Self;
 }
 #}</code></pre></pre>
-<a class="header" href="1859-try-trait.html#initial-impls" id="initial-impls"><h3>Initial impls</h3></a>
+<a class="header" href="#initial-impls" id="initial-impls"><h3>Initial impls</h3></a>
 <p>libcore will also define the following impls for the following types.</p>
 <p><strong>Result</strong></p>
 <p>The <code>Result</code> type includes an impl as follows:</p>
@@ -358,7 +365,7 @@ an <code>Option</code>. (This rationale was originally
 implements <code>Try</code> for a type that does not have the <code>#[must_use]</code>
 attribute (or, more semantically, that does not represent an
 &quot;unhandled error&quot;).</p>
-<a class="header" href="1859-try-trait.html#interaction-with-type-inference" id="interaction-with-type-inference"><h3>Interaction with type inference</h3></a>
+<a class="header" href="#interaction-with-type-inference" id="interaction-with-type-inference"><h3>Interaction with type inference</h3></a>
 <p>Supporting more types with the <code>?</code> operator can be somewhat limiting
 for type inference. In particular, if <code>?</code> only works on values of type
 <code>Result</code> (as did the old <code>try!</code> macro), then <code>x?</code> forces the type of
@@ -383,8 +390,8 @@ something like <code>From::from(From::from(err))</code> -- but only the starting
 point (<code>err</code>) and the final type are constrained. The inner type is
 not.  It's unclear how to address this problem without introducing
 some form of inference fallback, which seems orthogonal from this RFC.</p>
-<a class="header" href="1859-try-trait.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
-<a class="header" href="1859-try-trait.html#where-and-how-to-document-it" id="where-and-how-to-document-it"><h3>Where and how to document it</h3></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#where-and-how-to-document-it" id="where-and-how-to-document-it"><h3>Where and how to document it</h3></a>
 <p>This RFC proposes extending an existing operator to permit the same
 general short-circuiting pattern to be used with more types. When
 initially teaching the <code>?</code> operator, it would probably be best to
@@ -403,7 +410,7 @@ expressed earlier, the rule of thumb ought to be that a special error
 type should be used whenever implementing <code>Try</code> for a type that does
 not, semantically, indicates an unhandled error (i.e., a type for
 which the <code>#[must_use]</code> attribute would be inappropriate).</p>
-<a class="header" href="1859-try-trait.html#error-messages" id="error-messages"><h3>Error messages</h3></a>
+<a class="header" href="#error-messages" id="error-messages"><h3>Error messages</h3></a>
 <p>Another important factor is the error message when <code>?</code> is used in a
 function whose return type is not suitable. The current error message
 in this scenario is quite opaque and directly references the <code>Carrer</code>
@@ -489,7 +496,7 @@ fn main() {
 message if <code>?</code> were not desugared when lowering from AST to HIR but
 rather when lowering from HIR to MIR; however, the use of source
 annotations may suffice.</p>
-<a class="header" href="1859-try-trait.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>One drawback of supporting more types is that type inference becomes
 harder. This is because an expression like <code>x?</code> no longer implies that
 the type of <code>x</code> is <code>Result</code>.</p>
@@ -497,8 +504,8 @@ the type of <code>x</code> is <code>Result</code>.</p>
 accidentally converted into other types. This is mitigated by the use
 of newtypes like <code>option::Missing</code> (rather than, say, a generic type
 like <code>()</code>).</p>
-<a class="header" href="1859-try-trait.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1859-try-trait.html#the-essentialist-approach" id="the-essentialist-approach"><h3>The &quot;essentialist&quot; approach</h3></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#the-essentialist-approach" id="the-essentialist-approach"><h3>The &quot;essentialist&quot; approach</h3></a>
 <p>When this RFC was first proposed, the <code>Try</code> trait looked quite different:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -532,7 +539,7 @@ that permits a <code>Result</code> to be returned in a function that yields <cod
 That would require an impl like this <code>impl&lt;T,E&gt; Try&lt;Poll&lt;T,E&gt;&gt; for Result&lt;T, E&gt;</code>,
 but this impl runs afoul of the orphan rules.</li>
 </ul>
-<a class="header" href="1859-try-trait.html#traits-implemented-over-higher-kinded-types" id="traits-implemented-over-higher-kinded-types"><h3>Traits implemented over higher-kinded types</h3></a>
+<a class="header" href="#traits-implemented-over-higher-kinded-types" id="traits-implemented-over-higher-kinded-types"><h3>Traits implemented over higher-kinded types</h3></a>
 <p>The desire to avoid &quot;free interconversion&quot; between <code>Result</code> and
 <code>Option</code> seemed to suggest that the <code>Carrier</code> trait ought to be
 defined over higher-kinded types (or generic associated types) in some
@@ -556,7 +563,7 @@ value to both be changed, though not arbitrarily (subject to the
 <code>Option&lt;U&gt;</code>, allow only the type of the success value to change,
 whereas others (like converting <code>bool</code> to <code>bool</code>) do not allow either
 type to change.</p>
-<a class="header" href="1859-try-trait.html#what-to-name-the-trait" id="what-to-name-the-trait"><h3>What to name the trait</h3></a>
+<a class="header" href="#what-to-name-the-trait" id="what-to-name-the-trait"><h3>What to name the trait</h3></a>
 <p>A number of names have been proposed for this trait. The original name
 was <code>Carrier</code>, as the implementing type was the &quot;carrier&quot; for an error
 value. A proposed alternative was <code>QuestionMark</code>, named after the
@@ -566,7 +573,7 @@ Rust operator overloading traits tend to be named after the
 <code>Deref</code> and not <code>Star</code> or <code>Asterisk</code>), it was more appropriate to name
 the trait <code>Try</code>, which seems to be the best name for the operation in
 question.</p>
-<a class="header" href="1859-try-trait.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -612,9 +619,6 @@ question.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0246-const-vs-static - </title>
+        <title>0246-const-vs-static - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/246">rust-lang/rfcs#246</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/17718">rust-lang/rust#17718</a></li>
 </ul>
-<a class="header" href="0246-const-vs-static.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Divide global declarations into two categories:</p>
 <ul>
 <li><strong>constants</strong> declare <em>constant values</em>. These represent a value,
@@ -150,7 +157,7 @@ address.  They would be rarely used: the primary use cases are
 global locks, global atomic counters, and interfacing with legacy C
 libraries.</li>
 </ul>
-<a class="header" href="0246-const-vs-static.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>We have been wrestling with the best way to represent globals for some
 times. There are a number of interrelated issues:</p>
 <ul>
@@ -210,8 +217,8 @@ variants and nullary structs, which look like global data but in
 fact act quite differently. They are actual values which do not have
 addresses. They are categorized as rvalues and so forth.</li>
 </ul>
-<a class="header" href="0246-const-vs-static.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0246-const-vs-static.html#constants" id="constants"><h2>Constants</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#constants" id="constants"><h2>Constants</h2></a>
 <p>Reintroduce a <code>const</code> declaration which declares a <em>constant</em>:</p>
 <pre><code>const name: type = value;
 </code></pre>
@@ -220,7 +227,7 @@ Constants are considered rvalues. Therefore, taking the address of a
 constant actually creates a spot on the local stack -- they by
 definition have no significant addresses. Constants are intended to
 behave exactly like nullary enum variants.</p>
-<a class="header" href="0246-const-vs-static.html#possible-extension-generic-constants" id="possible-extension-generic-constants"><h3>Possible extension: Generic constants</h3></a>
+<a class="header" href="#possible-extension-generic-constants" id="possible-extension-generic-constants"><h3>Possible extension: Generic constants</h3></a>
 <p>As a possible extension, it is perfectly reasonable for constants to
 have generic parameters. For example, the following constant is legal:</p>
 <pre><code>struct WrappedOption&lt;T&gt; { value: Option&lt;T&gt; }
@@ -228,7 +235,7 @@ const NONE&lt;T&gt; = WrappedOption { value: None }
 </code></pre>
 <p>Note that this makes no sense for a <code>static</code> variable, which represents
 a memory location and hence must have a concrete type.</p>
-<a class="header" href="0246-const-vs-static.html#possible-extension-constant-functions" id="possible-extension-constant-functions"><h3>Possible extension: constant functions</h3></a>
+<a class="header" href="#possible-extension-constant-functions" id="possible-extension-constant-functions"><h3>Possible extension: constant functions</h3></a>
 <p>It is possible to imagine constant functions as well. This could help
 to address the problem of encapsulating initialization. To avoid the
 need to specify what kinds of code can execute in a constant function,
@@ -242,7 +249,7 @@ const LOCKED&lt;T:Send&gt;(t: T) -&gt; LockedData&lt;T&gt; {
 </code></pre>
 <p>This would allow us to make the <code>value</code> field on <code>UnsafeCell</code> private,
 among other things.</p>
-<a class="header" href="0246-const-vs-static.html#static-variables" id="static-variables"><h2>Static variables</h2></a>
+<a class="header" href="#static-variables" id="static-variables"><h2>Static variables</h2></a>
 <p>Repurpose the <code>static</code> declaration to declare static variables
 only. Static variables always have single addresses. <code>static</code>
 variables can optionally be declared as <code>mut</code>. The lifetime of a
@@ -256,8 +263,8 @@ an <code>UnsafeCell</code> in its interior, the compiler may place it in
 read-only memory, but otherwise it must be placed in mutable memory.</p>
 <p><code>mut</code> statics may have any type. All access is considered unsafe.
 They may not be placed in read-only memory.</p>
-<a class="header" href="0246-const-vs-static.html#globals-referencing-globals" id="globals-referencing-globals"><h2>Globals referencing Globals</h2></a>
-<a class="header" href="0246-const-vs-static.html#const--const" id="const--const"><h3>const =&gt; const</h3></a>
+<a class="header" href="#globals-referencing-globals" id="globals-referencing-globals"><h2>Globals referencing Globals</h2></a>
+<a class="header" href="#const--const" id="const--const"><h3>const =&gt; const</h3></a>
 <p>It is possible to create a <code>const</code> or a <code>static</code> which references another
 <code>const</code> or another <code>static</code> by its address. For example:</p>
 <pre><code>struct SomeStruct { x: uint }
@@ -279,15 +286,15 @@ does indeed have the <code>'static</code> lifetime. Due to this rewriting, the c
 will disallow <code>SomeStruct</code> from containing an <code>UnsafeCell</code> (interior
 mutability). In general, a constant A cannot reference the address of another
 constant B if B contains an <code>UnsafeCell</code> in its interior.</p>
-<a class="header" href="0246-const-vs-static.html#const--static" id="const--static"><h3>const =&gt; static</h3></a>
+<a class="header" href="#const--static" id="const--static"><h3>const =&gt; static</h3></a>
 <p>It is illegal for a constant to refer to another static. A constant represents a
 <em>constant</em> value while a static represents a memory location, and this sort of
 reference is difficult to reconcile in light of their definitions.</p>
-<a class="header" href="0246-const-vs-static.html#static--const" id="static--const"><h3>static =&gt; const</h3></a>
+<a class="header" href="#static--const" id="static--const"><h3>static =&gt; const</h3></a>
 <p>If a <code>static</code> references the address of a <code>const</code>, then a similar rewriting
 happens, but there is no interior mutability restriction (only a <code>Sync</code>
 restriction).</p>
-<a class="header" href="0246-const-vs-static.html#static--static" id="static--static"><h3>static =&gt; static</h3></a>
+<a class="header" href="#static--static" id="static--static"><h3>static =&gt; static</h3></a>
 <p>It is illegal for a <code>static</code> to reference another <code>static</code> by value. It is
 required that all references be borrowed. Additionally, not all kinds of borrows
 are allowed, only explicitly taking the address of another static is allowed.
@@ -301,16 +308,16 @@ that the static being referenced fall into one of two categories:</p>
 </ol>
 <p>Instead of falling into one of these two categories, the compiler will instead
 disallow any references to statics by value (from other statics).</p>
-<a class="header" href="0246-const-vs-static.html#patterns" id="patterns"><h2>Patterns</h2></a>
+<a class="header" href="#patterns" id="patterns"><h2>Patterns</h2></a>
 <p>Today, a <code>static</code> is allowed to be used in pattern matching. With the
 introduction of <code>const</code>, however, a <code>static</code> will be forbidden from appearing
 in a pattern match, and instead only a <code>const</code> can appear.</p>
-<a class="header" href="0246-const-vs-static.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This RFC introduces two keywords for global data. Global data is kind
 of an edge feature so this feels like overkill. (On the other hand,
 the only keyword that most Rust programmers should need to know is
 <code>const</code> -- I imagine <code>static</code> variables will be used quite rarely.)</p>
-<a class="header" href="0246-const-vs-static.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The other design under consideration is to keep the current split but
 make access to <code>static mut</code> be considered safe if the type of the
 static mut is <code>Sync</code>. For the details of this discussion, please see
@@ -320,7 +327,7 @@ the Rust 1.0 schedule is inadvisable. Therefore, it would be possible
 to take a hybrid approach: keep the current <code>static</code> rules, or perhaps
 the variation where access to <code>static mut</code> is safe, for the time
 being, and create <code>const</code> declarations after Rust 1.0 is released.</p>
-<a class="header" href="0246-const-vs-static.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Should the compiler be allowed to inline the values of <code>static</code>
@@ -385,9 +392,6 @@ would be nice to have. If hard, they can wait.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

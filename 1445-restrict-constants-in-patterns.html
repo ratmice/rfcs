@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1445-restrict-constants-in-patterns - </title>
+        <title>1445-restrict-constants-in-patterns - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1445">rust-lang/rfcs#1445</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/31434">rust-lang/rust#31434</a></li>
 </ul>
-<a class="header" href="1445-restrict-constants-in-patterns.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>The current compiler implements a more expansive semantics for pattern
 matching than was originally intended. This RFC introduces several
 mechanisms to reign in these semantics without actually breaking
@@ -177,7 +184,7 @@ regressions.</p>
 points from that thread are summarized either inline or in
 alternatives.</p>
 <p>[internals thread]: https://internals.rust-lang.org/t/how-to-handle-pattern-matching-on-constants/2846)</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The compiler currently permits any kind of constant to be used within
 a pattern. However, the <em>meaning</em> of such a pattern is somewhat
 controversial: the current semantics implemented by the compiler were
@@ -186,7 +193,7 @@ and were never widely discussed nor did they go through the RFC
 process. Moreover, the discussion at the time was focused primarily on
 implementation concerns, and overlooked the potential semantic
 hazards.</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#semantic-vs-structural-equality" id="semantic-vs-structural-equality"><h3>Semantic vs structural equality</h3></a>
+<a class="header" href="#semantic-vs-structural-equality" id="semantic-vs-structural-equality"><h3>Semantic vs structural equality</h3></a>
 <p>Consider a program like this one, which references a constant value
 from within a pattern:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -270,7 +277,7 @@ match v {
     _ =&gt; println!(&quot;No&quot;),
 }
 #}</code></pre></pre>
-<a class="header" href="1445-restrict-constants-in-patterns.html#disadvantages-of-the-current-approach" id="disadvantages-of-the-current-approach"><h3>Disadvantages of the current approach</h3></a>
+<a class="header" href="#disadvantages-of-the-current-approach" id="disadvantages-of-the-current-approach"><h3>Disadvantages of the current approach</h3></a>
 <p>Given that the compiler already has a defined semantics, it is
 reasonable to ask why we might want to change it. There
 are two main disadvantages:</p>
@@ -282,7 +289,7 @@ they can be constructed in a constant).</li>
 permit associated constants or generic integers to be used in a
 match statement.</li>
 </ol>
-<a class="header" href="1445-restrict-constants-in-patterns.html#disadvantage-weakened-abstraction-bounary" id="disadvantage-weakened-abstraction-bounary"><h4>Disadvantage: Weakened abstraction bounary</h4></a>
+<a class="header" href="#disadvantage-weakened-abstraction-bounary" id="disadvantage-weakened-abstraction-bounary"><h4>Disadvantage: Weakened abstraction bounary</h4></a>
 <p>The single biggest concern with structural equality is that it
 introduces two distinct notions of equality: the <code>==</code> operator, based
 on the <code>PartialEq</code> trait, and pattern matching, based on a builtin
@@ -403,7 +410,7 @@ example, strings that compare using case-insensitive comparisons, but
 retain the original case for reference, such as those used in
 file-systems. Views that extract a subportion of a larger value (and
 hence which should only compare that subportion). And so forth.</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#disadvantage-scaling-to-associated-constants-and-generic-integers" id="disadvantage-scaling-to-associated-constants-and-generic-integers"><h4>Disadvantage: Scaling to associated constants and generic integers</h4></a>
+<a class="header" href="#disadvantage-scaling-to-associated-constants-and-generic-integers" id="disadvantage-scaling-to-associated-constants-and-generic-integers"><h4>Disadvantage: Scaling to associated constants and generic integers</h4></a>
 <p>Rewriting constants into patterns requires that we can <strong>fully
 evaluate</strong> the constant at the time of exhaustiveness checking. For
 associated constants and type-level integers, that is not possible --
@@ -435,7 +442,7 @@ impl SomeTrait for u32 {
 #}</code></pre></pre>
 <p>Is this match exhaustive? Does it contain dead code? The answer will
 depend on whether <code>T=i32</code> or <code>T=u32</code>, of course.</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#advantages-of-the-current-approach" id="advantages-of-the-current-approach"><h3>Advantages of the current approach</h3></a>
+<a class="header" href="#advantages-of-the-current-approach" id="advantages-of-the-current-approach"><h3>Advantages of the current approach</h3></a>
 <p>However, structural equality also has a number of advantages:</p>
 <p><strong>Better optimization.</strong> One of the biggest &quot;pros&quot; is that it can
 potentially enable nice optimization. For example, given constants like the following:</p>
@@ -516,11 +523,11 @@ of whether <code>Modes</code> implements <code>PartialEq</code>, which it does n
 the other hand, if matching against <code>C</code> were to require a <code>PartialEq</code>
 impl, then it would be illegal. Therefore matching against an <em>enum
 variant</em> is distinct from matching against a <em>constant</em>.</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The goal of this RFC is not to decide between semantic and structural
 equality. Rather, the goal is to restrict pattern matching to that subset
 of types where the two variants behave roughly the same.</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#the-structural-match-attribute" id="the-structural-match-attribute"><h3>The structural match attribute</h3></a>
+<a class="header" href="#the-structural-match-attribute" id="the-structural-match-attribute"><h3>The structural match attribute</h3></a>
 <p>We will introduce an attribute <code>#[structural_match]</code> which can be
 applied to struct and enum types. Explicit use of this attribute will
 (naturally) be feature-gated. When converting a constant value into a
@@ -528,11 +535,11 @@ pattern, if the constant is of struct or enum type, we will check
 whether this attribute is present on the struct -- if so, we will
 convert the value as we do today. If not, we will report an error that
 the struct/enum value cannot be used in a pattern.</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#behavior-of-deriveeq" id="behavior-of-deriveeq"><h3>Behavior of <code>#[derive(Eq)]</code></h3></a>
+<a class="header" href="#behavior-of-deriveeq" id="behavior-of-deriveeq"><h3>Behavior of <code>#[derive(Eq)]</code></h3></a>
 <p>When deriving the <code>Eq</code> trait, we will add the <code>#[structural_match]</code> to
 the type in question. Attributes added in this way will be <strong>exempt from
 the feature gate</strong>.</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#exhaustiveness-and-dead-code-checking" id="exhaustiveness-and-dead-code-checking"><h2>Exhaustiveness and dead-code checking</h2></a>
+<a class="header" href="#exhaustiveness-and-dead-code-checking" id="exhaustiveness-and-dead-code-checking"><h2>Exhaustiveness and dead-code checking</h2></a>
 <p>We will treat user-defined structs &quot;opaquely&quot; for the purpose of
 exhaustiveness and dead-code checking. This is required to allow for
 semantic equality semantics in the future, since in that case we
@@ -554,16 +561,16 @@ adopt for constants that involve no user-defined types. There, the
 definition of <code>Eq</code> is purely under our control, and we know that it
 matches structural equality, so we can retain our current aggressive
 analysis if desired.</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#phasing" id="phasing"><h3>Phasing</h3></a>
+<a class="header" href="#phasing" id="phasing"><h3>Phasing</h3></a>
 <p>We will not make this change instantaneously. Rather, for at least one
 release cycle, users who are pattern matching on struct types that
 lack <code>#[structural_match]</code> will be warned about imminent breakage.</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This is a breaking change, which means some people might have to
 change their code. However, that is considered extremely unlikely,
 because such users would have to be pattern matching on constants that
 are not comparable for equality (this is likely a bug in any case).</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p><strong>Limit matching to builtin types.</strong> An earlier version of this RFC
 limited matching to builtin types like integers (and tuples of
 integers). This RFC is a generalization of that which also
@@ -579,7 +586,7 @@ out would be a riskier breaking change, as it could silently change
 the semantics of existing programs (whereas the current proposal only
 causes compilation to fail, never changes what an existing program
 will do).</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#discussion-thread-summary" id="discussion-thread-summary"><h1>Discussion thread summary</h1></a>
+<a class="header" href="#discussion-thread-summary" id="discussion-thread-summary"><h1>Discussion thread summary</h1></a>
 <p>This section summarizes various points that were raised in the
 [internals thread] which are related to patterns but didn't seem to
 fit elsewhere.</p>
@@ -598,7 +605,7 @@ as
 The author feels that pattern synonyms might be a useful feature, but
 it would be better to design them as a first-class feature, not adapt
 constants for that purpose.</p>
-<a class="header" href="1445-restrict-constants-in-patterns.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p><strong>What about exhaustiveness etc on builtin types?</strong> Even if we ignore
 user-defined types, there are complications around exhaustiveness
 checking for constants of any kind related to associated constants and
@@ -732,9 +739,6 @@ of &quot;abstract constant&quot;.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

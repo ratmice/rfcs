@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0236-error-conventions - </title>
+        <title>0236-error-conventions - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/236">rust-lang/rfcs#236</a></li>
 <li>Rust Issue #: <a href="https://github.com/rust-lang/rust/issues/18466">rust-lang/rust#18466</a></li>
 </ul>
-<a class="header" href="0236-error-conventions.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This is a <em>conventions</em> RFC for formalizing the basic conventions around error
 handling in Rust libraries.</p>
 <p>The high-level overview is:</p>
@@ -162,7 +169,7 @@ values may be useful to a function's caller.</p>
 <p>This RFC follows up on <a href="https://github.com/rust-lang/rfcs/pull/204">two</a>
 <a href="https://github.com/rust-lang/rfcs/pull/220">earlier</a> attempts by giving more
 leeway in when to fail the task.</p>
-<a class="header" href="0236-error-conventions.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Rust provides two basic strategies for dealing with errors:</p>
 <ul>
 <li>
@@ -181,7 +188,7 @@ handling mechanisms, we need to have formal guidelines in order to ensure
 consistency as we stabilize library APIs. That is the purpose of this RFC.</p>
 <p>For the most part, the RFC proposes guidelines that are already followed today,
 but it tries to motivate and clarify them.</p>
-<a class="header" href="0236-error-conventions.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Errors fall into one of three categories:</p>
 <ul>
 <li>Catastrophic errors, e.g. out-of-memory.</li>
@@ -195,28 +202,28 @@ recovered at a <em>coarse grain</em>, i.e. a task boundary.</li>
 <li>Obstructions preventing an operation should be reported at a maximally <em>fine
 grain</em> -- to the immediate invoker of the operation.</li>
 </ul>
-<a class="header" href="0236-error-conventions.html#catastrophic-errors" id="catastrophic-errors"><h2>Catastrophic errors</h2></a>
+<a class="header" href="#catastrophic-errors" id="catastrophic-errors"><h2>Catastrophic errors</h2></a>
 <p>An error is <em>catastrophic</em> if there is no meaningful way for the current task to
 continue after the error occurs.</p>
 <p>Catastrophic errors are <em>extremely</em> rare, especially outside of <code>libstd</code>.</p>
 <p><strong>Canonical examples</strong>: out of memory, stack overflow.</p>
-<a class="header" href="0236-error-conventions.html#for-catastrophic-errors-fail-the-task" id="for-catastrophic-errors-fail-the-task"><h3>For catastrophic errors, fail the task.</h3></a>
+<a class="header" href="#for-catastrophic-errors-fail-the-task" id="for-catastrophic-errors-fail-the-task"><h3>For catastrophic errors, fail the task.</h3></a>
 <p>For errors like stack overflow, Rust currently aborts the process, but
 could in principle fail the task, which (in the best case) would allow
 reporting and recovery from a supervisory task.</p>
-<a class="header" href="0236-error-conventions.html#contract-violations" id="contract-violations"><h2>Contract violations</h2></a>
+<a class="header" href="#contract-violations" id="contract-violations"><h2>Contract violations</h2></a>
 <p>An API may define a contract that goes beyond the type checking enforced by the
 compiler. For example, slices support an indexing operation, with the contract
 that the supplied index must be in bounds.</p>
 <p>Contracts can be complex and involve more than a single function invocation. For
 example, the <code>RefCell</code> type requires that <code>borrow_mut</code> not be called until all
 existing borrows have been relinquished.</p>
-<a class="header" href="0236-error-conventions.html#for-contract-violations-fail-the-task" id="for-contract-violations-fail-the-task"><h3>For contract violations, fail the task.</h3></a>
+<a class="header" href="#for-contract-violations-fail-the-task" id="for-contract-violations-fail-the-task"><h3>For contract violations, fail the task.</h3></a>
 <p>A contract violation is always a bug, and for bugs we follow the Erlang
 philosophy of &quot;let it crash&quot;: we assume that software <em>will</em> have bugs, and we
 design coarse-grained task boundaries to report, and perhaps recover, from these
 bugs.</p>
-<a class="header" href="0236-error-conventions.html#contract-design" id="contract-design"><h3>Contract design</h3></a>
+<a class="header" href="#contract-design" id="contract-design"><h3>Contract design</h3></a>
 <p>One subtle aspect of these guidelines is that the contract for a function is
 chosen by an API designer -- and so the designer also determines what counts as
 a violation.</p>
@@ -251,7 +258,7 @@ checking done by the API for their own purposes.</p>
 <p>When in doubt, use loose contracts and instead return a <code>Result</code> or <code>Option</code>.</p>
 </li>
 </ul>
-<a class="header" href="0236-error-conventions.html#obstructions" id="obstructions"><h2>Obstructions</h2></a>
+<a class="header" href="#obstructions" id="obstructions"><h2>Obstructions</h2></a>
 <p>An operation is <em>obstructed</em> if it cannot be completed for some reason, even
 though the operation's contract has been satisfied. Obstructed operations may
 have (documented!) side effects -- they are not required to roll back after
@@ -261,13 +268,13 @@ etc.).</p>
 <p>Obstructions may involve external conditions (e.g., I/O), or they may involve
 aspects of the input that are not covered by the contract.</p>
 <p><strong>Canonical examples</strong>: file not found, parse error.</p>
-<a class="header" href="0236-error-conventions.html#for-obstructions-use-result" id="for-obstructions-use-result"><h3>For obstructions, use <code>Result</code></h3></a>
+<a class="header" href="#for-obstructions-use-result" id="for-obstructions-use-result"><h3>For obstructions, use <code>Result</code></h3></a>
 <p>The
 <a href="http://static.rust-lang.org/doc/master/std/result/index.html"><code>Result&lt;T,E&gt;</code> type</a>
 represents either a success (yielding <code>T</code>) or failure (yielding <code>E</code>). By
 returning a <code>Result</code>, a function allows its clients to discover and react to
 obstructions in a fine-grained way.</p>
-<a class="header" href="0236-error-conventions.html#what-about-option" id="what-about-option"><h4>What about <code>Option</code>?</h4></a>
+<a class="header" href="#what-about-option" id="what-about-option"><h4>What about <code>Option</code>?</h4></a>
 <p>The <code>Option</code> type should not be used for &quot;obstructed&quot; operations; it
 should only be used when a <code>None</code> return value could be considered a
 &quot;successful&quot; execution of the operation.</p>
@@ -281,7 +288,7 @@ question (possibly with sideeffects)? Operations like <code>pop</code> on a
 vector can be viewed as asking for the contents of the first element,
 with the side effect of removing it if it exists -- with an <code>Option</code>
 return value.</p>
-<a class="header" href="0236-error-conventions.html#do-not-provide-both-result-and-fail-variants" id="do-not-provide-both-result-and-fail-variants"><h2>Do not provide both <code>Result</code> and <code>fail!</code> variants.</h2></a>
+<a class="header" href="#do-not-provide-both-result-and-fail-variants" id="do-not-provide-both-result-and-fail-variants"><h2>Do not provide both <code>Result</code> and <code>fail!</code> variants.</h2></a>
 <p>An API should not provide both <code>Result</code>-producing and <code>fail</code>ing versions of an
 operation. It should provide just the <code>Result</code> version, allowing clients to use
 <code>try!</code> or <code>unwrap</code> instead as needed. This is part of the general pattern of
@@ -318,7 +325,7 @@ accepted.</p>
 </li>
 </ul>
 <p>(Note: it is unclear whether these APIs will continue to provide both variants.)</p>
-<a class="header" href="0236-error-conventions.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The main drawbacks of this proposal are:</p>
 <ul>
 <li>
@@ -333,7 +340,7 @@ disagreements about an API's design.</p>
 </ul>
 <p>The alternatives mentioned below do not suffer from these problems, but have
 drawbacks of their own.</p>
-<a class="header" href="0236-error-conventions.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p><a href="https://github.com/rust-lang/rfcs/pull/204">Two</a>
 <a href="https://github.com/rust-lang/rfcs/pull/220">alternative</a> designs have been
 given in earlier RFCs, both of which take a much harder line on using <code>fail!</code>
@@ -343,7 +350,7 @@ given in earlier RFCs, both of which take a much harder line on using <code>fail
 however, mixing what might be seen as contract violations with obstructions can
 make it much more difficult to write obstruction-robust code; see the linked
 comment for more detail.</p>
-<a class="header" href="0236-error-conventions.html#naming" id="naming"><h2>Naming</h2></a>
+<a class="header" href="#naming" id="naming"><h2>Naming</h2></a>
 <p>There are numerous possible suffixes for a <code>Result</code>-producing variant:</p>
 <ul>
 <li>
@@ -407,9 +414,6 @@ play for <code>recv</code> in particular).</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

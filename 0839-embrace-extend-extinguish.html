@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0839-embrace-extend-extinguish - </title>
+        <title>0839-embrace-extend-extinguish - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/839">rust-lang/rfcs#839</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/25976">rust-lang/rust#25976</a></li>
 </ul>
-<a class="header" href="0839-embrace-extend-extinguish.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Make all collections <code>impl&lt;'a, T: Copy&gt; Extend&lt;&amp;'a T&gt;</code>.</p>
 <p>This enables both <code>vec.extend(&amp;[1, 2, 3])</code>, and <code>vec.extend(&amp;hash_set_of_ints)</code>.
 This partially covers the usecase of the awkward <code>Vec::push_all</code> with
 literally no ergonomic loss, while leveraging established APIs.</p>
-<a class="header" href="0839-embrace-extend-extinguish.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Vec::push_all is kinda random and specific. Partially motivated by performance concerns,
 but largely just &quot;nice&quot; to not have to do something like
 <code>vec.extend([1, 2, 3].iter().cloned())</code>. The performance argument falls flat
@@ -156,7 +163,7 @@ because a slice can't be moved out of. Collections would have to take <code>Into
 and copy out of the reference. So, do exactly that.</p>
 <p>As a bonus, this is more expressive than <code>push_all</code>, because you can feed in <em>any</em>
 collection by-reference to clone the data out of it, not just slices.</p>
-<a class="header" href="0839-embrace-extend-extinguish.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <ul>
 <li>For sequences and sets: <code>impl&lt;'a, T: Copy&gt; Extend&lt;&amp;'a T&gt;</code></li>
 <li>For maps: <code>impl&lt;'a, K: Copy, V: Copy&gt; Extend&lt;(&amp;'a K, &amp;'a V)&gt;</code></li>
@@ -181,7 +188,7 @@ fn main() {
     println!(&quot;{:?}&quot;, foo);
 }
 </code></pre></pre>
-<a class="header" href="0839-embrace-extend-extinguish.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>Mo' generics, mo' magic. How you gonna discover it?</p>
@@ -208,22 +215,22 @@ not always be sufficient to determine the type of a <code>vec![]</code>.</p>
 <ul>
 <li>This design does not fully replace the push_all, as it takes <code>T: Clone</code>.</li>
 </ul>
-<a class="header" href="0839-embrace-extend-extinguish.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="0839-embrace-extend-extinguish.html#the-cloneian-candidate" id="the-cloneian-candidate"><h2>The Cloneian Candidate</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#the-cloneian-candidate" id="the-cloneian-candidate"><h2>The Cloneian Candidate</h2></a>
 <p>This proposal is artifically restricting itself to <code>Copy</code> rather than full
 <code>Clone</code> as a concession to the general Rustic philosophy of Clones being
 explicit. Since this proposal is largely motivated by simple shuffling of
 primitives, this is sufficient. Also, because <code>Copy: Clone</code>, it would be
 backwards compatible to upgrade to <code>Clone</code> in the future if demand is
 high enough.</p>
-<a class="header" href="0839-embrace-extend-extinguish.html#the-new-method" id="the-new-method"><h2>The New Method</h2></a>
+<a class="header" href="#the-new-method" id="the-new-method"><h2>The New Method</h2></a>
 <p>It is theoretically plausible to add a new defaulted method to Extend called
 <code>extend_cloned</code> that provides this functionality. This removes any concern of
 accidental clones and makes inference totally work. However this design cannot
 simultaneously support Sequences and Maps, as the signature for sequences would
 mean Maps can only Copy through &amp;(K, V), rather than (&amp;K, &amp;V). This would make
 it impossible to copy-chain Maps through Extend.</p>
-<a class="header" href="0839-embrace-extend-extinguish.html#why-not-fromiterator" id="why-not-fromiterator"><h2>Why not FromIterator?</h2></a>
+<a class="header" href="#why-not-fromiterator" id="why-not-fromiterator"><h2>Why not FromIterator?</h2></a>
 <p>FromIterator could also be extended in the same manner, but this is less useful for
 two reasons:</p>
 <ul>
@@ -234,7 +241,7 @@ two reasons:</p>
 <p>Of course, context might disambiguate in many cases, and
 <code>let foo: Vec&lt;i32&gt; = [1, 2, 3].iter().collect()</code> might still be nicer than
 <code>let foo: Vec&lt;_&gt; = [1, 2, 3].iter().cloned().collect()</code>.</p>
-<a class="header" href="0839-embrace-extend-extinguish.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -280,9 +287,6 @@ two reasons:</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

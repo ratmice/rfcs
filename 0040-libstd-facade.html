@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0040-libstd-facade - </title>
+        <title>0040-libstd-facade - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,10 +145,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/40">rust-lang/rfcs#40</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/13851">rust-lang/rust#13851</a></li>
 </ul>
-<a class="header" href="0040-libstd-facade.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Split the current libstd into component libraries, rebuild libstd as a facade in
 front of these component libraries.</p>
-<a class="header" href="0040-libstd-facade.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Rust as a language is ideal for usage in constrained contexts such as embedding
 in applications, running on bare metal hardware, and building kernels. The
 standard library, however, is not quite as portable as the language itself yet.
@@ -149,7 +156,7 @@ The standard library should be as usable as it can be in as many contexts as
 possible, without compromising its usability in any context.</p>
 <p>This RFC is meant to expand the usability of the standard library into these
 domains where it does not currently operate easily</p>
-<a class="header" href="0040-libstd-facade.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>In summary, the following libraries would make up part of the standard
 distribution. Each library listed after the colon are the dependent libraries.</p>
 <ul>
@@ -162,7 +169,7 @@ distribution. Each library listed after the colon are the dependent libraries.</
 <li>libsync: libmini liballoc liblibc librustrt</li>
 <li>libstd: everything above</li>
 </ul>
-<a class="header" href="0040-libstd-facade.html#libmini" id="libmini"><h3><code>libmini</code></h3></a>
+<a class="header" href="#libmini" id="libmini"><h3><code>libmini</code></h3></a>
 <blockquote>
 <p><strong>Note</strong>: The name <code>libmini</code> warrants bikeshedding. Please consider it a
 placeholder for the name of this library.</p>
@@ -206,7 +213,7 @@ this makeup is selected specifically to eliminate the need for the dreaded &quot
 off extension trait&quot;. This pattern, while possible, is currently viewed as
 subpar due to reduced documentation benefit and sharding implementation across
 many locations.</p>
-<a class="header" href="0040-libstd-facade.html#strings" id="strings"><h4>Strings</h4></a>
+<a class="header" href="#strings" id="strings"><h4>Strings</h4></a>
 <p>In a post-DST world, the string type will actually be a library-defined type,
 <code>Str</code> (or similarly named). Strings will no longer be a lanuage feature or a
 language-defined type. This implies that any methods on strings must be in the
@@ -248,7 +255,7 @@ code (if it came from the OS).</p>
 that defines <code>Str</code>.</p>
 </li>
 </ul>
-<a class="header" href="0040-libstd-facade.html#formatting" id="formatting"><h4>Formatting</h4></a>
+<a class="header" href="#formatting" id="formatting"><h4>Formatting</h4></a>
 <p>While not often thought of as &quot;ultra-core&quot; functionality, this module may be
 necessary because printing information about types is a fundamental problem that
 normally requires no dependencies.</p>
@@ -257,7 +264,7 @@ normally requires no dependencies.</p>
 to no overhead required in terms of dependencies.</p>
 <p>Neither <code>print!</code> nor <code>format!</code> macros to be a part of this library, but the
 <code>write!</code> macro would be present.</p>
-<a class="header" href="0040-libstd-facade.html#io" id="io"><h4>I/O</h4></a>
+<a class="header" href="#io" id="io"><h4>I/O</h4></a>
 <p>The primary reason for defining the <code>io</code> module in the libmini crate would be to
 implement the <code>fmt</code> module. The ramification of removing strings was previously
 discussed for <code>IoError</code>, but there are further modifications that would be
@@ -281,23 +288,23 @@ me that these methods should be removed. Regardless, the remaining methods
 could live in essentially any location.</p>
 </li>
 </ul>
-<a class="header" href="0040-libstd-facade.html#slices" id="slices"><h4>Slices</h4></a>
+<a class="header" href="#slices" id="slices"><h4>Slices</h4></a>
 <p>The only method lost on mutable slices would currently be the sorting method.
 This can be circumvented by implementing a sorting algorithm that doesn't
 require allocating a temporary buffer. If intensive use of a sorting algorithm
 is required, Rust can provide a <code>libsort</code> crate with a variety of sorting
 algorithms apart from the default sorting algorithm.</p>
-<a class="header" href="0040-libstd-facade.html#fromstr" id="fromstr"><h4>FromStr</h4></a>
+<a class="header" href="#fromstr" id="fromstr"><h4>FromStr</h4></a>
 <p>This trait and module are left out because strings are left out. All types in
 libmini can have their implemention of FromStr in the crate which implements
 strings</p>
-<a class="header" href="0040-libstd-facade.html#floats" id="floats"><h4>Floats</h4></a>
+<a class="header" href="#floats" id="floats"><h4>Floats</h4></a>
 <p>This current design excludes floats entirely from libmini (implementations of
 traits and such). This is another questionable decision, but the current
 implementation of floats heavily leans on functions defined in libm, so it is
 unacceptable for these functions to exist in libmini.</p>
 <p>Either libstd or a libfloat crate will define floating point traits and such.</p>
-<a class="header" href="0040-libstd-facade.html#failure" id="failure"><h4>Failure</h4></a>
+<a class="header" href="#failure" id="failure"><h4>Failure</h4></a>
 <p>It is unacceptable for <code>Option</code> to reside outside of libmini, but it is also
 also unacceptable for <code>unwrap</code> to live outside of the <code>Option</code> type.
 Consequently, this means that it must be possible for <code>libmini</code> to fail.</p>
@@ -313,7 +320,7 @@ rules could be tweaked to allow for this use case.</p>
 <p>tl;dr; The implementation of libmini can use failure, but it does not define
 failure. All usage of libmini would require an implementation of failure
 somewhere.</p>
-<a class="header" href="0040-libstd-facade.html#liblibc" id="liblibc"><h3><code>liblibc</code></h3></a>
+<a class="header" href="#liblibc" id="liblibc"><h3><code>liblibc</code></h3></a>
 <p>This library will exist to provide bindings to libc. This will be a highly
 platform-specific library, containing an entirely separate api depending on
 which platform it's being built for.</p>
@@ -324,7 +331,7 @@ the inclusion of all C header files.</p>
 the form of declaration rather than <code>extern crate c;</code> which is consider to be
 too short for its own good.</p>
 <p>Note that this crate can only exist in rlib or dylib form.</p>
-<a class="header" href="0040-libstd-facade.html#liballoc" id="liballoc"><h3><code>liballoc</code></h3></a>
+<a class="header" href="#liballoc" id="liballoc"><h3><code>liballoc</code></h3></a>
 <blockquote>
 <p><strong>Note</strong>: This name <code>liballoc</code> is questionable, please consider it a
 placeholder.</p>
@@ -342,7 +349,7 @@ suitable essentially everywhere else.</p>
 <code>global_heap</code> module. Its purpose is to define the allocation lang items
 required by the compiler.</p>
 <p>Note that this crate can only exist in rlib form.</p>
-<a class="header" href="0040-libstd-facade.html#libcollections" id="libcollections"><h3><code>libcollections</code></h3></a>
+<a class="header" href="#libcollections" id="libcollections"><h3><code>libcollections</code></h3></a>
 <p>This crate would <em>not</em> depend on libstd, it would only depend on liballoc and
 libmini. These two foundational crates should provide all that is necessary to
 provide a robust set of containers (what you would expect today). Each container
@@ -354,7 +361,7 @@ allocation succeeds, and this will be reflected in the api of each collection.</
 today, as well as the <code>vec</code> module from the standard library. This would also
 implement any relevant traits necessary for <code>~[T]</code>.</p>
 <p>Note that this crate can only exist in rlib form.</p>
-<a class="header" href="0040-libstd-facade.html#libtext" id="libtext"><h3><code>libtext</code></h3></a>
+<a class="header" href="#libtext" id="libtext"><h3><code>libtext</code></h3></a>
 <p>This crate would define all functionality in rust related to strings. This would
 contain the definition of the <code>Str</code> type, as well as implementations of the
 relevant traits from <code>libmini</code> for the string type.</p>
@@ -365,7 +372,7 @@ building block for string buffers and the string type.</p>
 <p>This crate would be composed of the <code>str</code>, <code>ascii</code>, and <code>unicode</code> modules which
 live in libstd today, but would allow for the extension of other text-related
 functionality.</p>
-<a class="header" href="0040-libstd-facade.html#librustrt" id="librustrt"><h3><code>librustrt</code></h3></a>
+<a class="header" href="#librustrt" id="librustrt"><h3><code>librustrt</code></h3></a>
 <p>This library would be the crate where the <code>rt</code> module is almost entirely
 implemented. It will assume that allocation succeeds, and it will assume a libc
 implementation to run on.</p>
@@ -379,14 +386,14 @@ would be:</p>
 <p>Note that <code>comm</code> is <em>not</em> on this list. This crate will additionally define
 failure (as unwinding for each task). This crate can exist in both rlib and
 dylib form.</p>
-<a class="header" href="0040-libstd-facade.html#libsync" id="libsync"><h3><code>libsync</code></h3></a>
+<a class="header" href="#libsync" id="libsync"><h3><code>libsync</code></h3></a>
 <p>This library will largely remain what it is today, with the exception that the
 <code>comm</code> implementation would move into this crate. The purpose of doing so would
 be to consolidate all concurrency-related primitives in this crate, leaving none
 out.</p>
 <p>This crate would depend on the runtime for task management (scheduling and
 descheduling).</p>
-<a class="header" href="0040-libstd-facade.html#the-libstd-facade" id="the-libstd-facade"><h3>The <code>libstd</code> facade</h3></a>
+<a class="header" href="#the-libstd-facade" id="the-libstd-facade"><h3>The <code>libstd</code> facade</h3></a>
 <p>A new standard library would be created that would primarily be a facade which
 would expose the underlying crates as a stable API. This library would depend on
 all of the above libraries, and would predominately be a grouping of <code>pub use</code>
@@ -409,7 +416,7 @@ the underlying crates. Once a facade is established, it is the only stable API.
 The actual structure and makeup of all the above crates will be fluid until an
 acceptable design is settled on. Note that this fluidity does not apply to
 libstd, only to the structure of the underlying crates.</p>
-<a class="header" href="0040-libstd-facade.html#updates-to-rustdoc" id="updates-to-rustdoc"><h3>Updates to rustdoc</h3></a>
+<a class="header" href="#updates-to-rustdoc" id="updates-to-rustdoc"><h3>Updates to rustdoc</h3></a>
 <p>With today's incarnation of rustdoc, the documentation for this libstd facade
 would not be as high quality as it is today. The facade would just provide
 hyperlinks back to the original crates, which would have reduced quantities of
@@ -429,7 +436,7 @@ explicitly.</p>
 <p>These changes to rustdoc should place it in a much more presentable space, but
 it is an open question to what degree these modifications will suffice and how
 much further rustdoc will have to change.</p>
-<a class="header" href="0040-libstd-facade.html#remaining-crates" id="remaining-crates"><h3>Remaining crates</h3></a>
+<a class="header" href="#remaining-crates" id="remaining-crates"><h3>Remaining crates</h3></a>
 <p>There are many more crates in the standard distribution of rust, all of which
 currently depend on libstd. These crates would continue to depend on libstd as
 most rust libraries would.</p>
@@ -444,7 +451,7 @@ only depend on libmini are likely candidates for being used in kernels, whereas
 crates only depending on liballoc are good candidates for being embedded into
 other languages. Having a clear delineation for the usability of a crate in
 various environments seems beneficial.</p>
-<a class="header" href="0040-libstd-facade.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>There are many alternatives to the above sharding of libstd and its dependent
@@ -472,7 +479,7 @@ possibly be difficult to juggle the large number of crates to choose from
 where one could otherwise just look at libstd.</p>
 </li>
 </ul>
-<a class="header" href="0040-libstd-facade.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Compile times. It's possible that having so many upstream crates for each rust
@@ -561,9 +568,6 @@ solution to this situation? How much of an impact does this have?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

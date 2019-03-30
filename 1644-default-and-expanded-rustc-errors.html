@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1644-default-and-expanded-rustc-errors - </title>
+        <title>1644-default-and-expanded-rustc-errors - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -140,15 +147,15 @@
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/34826">rust-lang/rust#34826</a>
 <a href="https://github.com/rust-lang/rust/issues/34827">rust-lang/rust#34827</a></li>
 </ul>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes an update to error reporting in rustc. Its focus is to change the format of Rust
 error messages and improve --explain capabilities to focus on the user's code. The end goal is for
 errors and explain text to be more readable, more friendly to new users, while still helping Rust
 coders fix bugs as quickly as possible. We expect to follow this RFC with a supplemental RFC that
 provides a writing style guide for error messages and explain text with a focus on readability and
 education.</p>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#default-error-format" id="default-error-format"><h2>Default error format</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#default-error-format" id="default-error-format"><h2>Default error format</h2></a>
 <p>Rust offers a unique value proposition in the landscape of languages in part by codifying concepts
 like ownership and borrowing. Because these concepts are unique to Rust, it's critical that the
 learning curve be as smooth as possible. And one of the most important tools for lowering the
@@ -206,7 +213,7 @@ format:</p>
 <p>[as image]</p>
 <p><a href="http://www.jonathanturner.org/images/new_errors_3.png"><img src="http://www.jonathanturner.org/images/new_errors_3.png" height="200" width="750" ></a></p>
 <p><em>Example of the same borrow check error in the proposed format</em></p>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#expanded-error-format-revised---explain" id="expanded-error-format-revised---explain"><h2>Expanded error format (revised --explain)</h2></a>
+<a class="header" href="#expanded-error-format-revised---explain" id="expanded-error-format-revised---explain"><h2>Expanded error format (revised --explain)</h2></a>
 <p>Languages like Elm have shown how effective an educational tool error messages can be if the
 explanations like our --explain text are mixed with the user's code. As mentioned earlier, it's
 crucial for Rust to be easy-to-use, especially since it introduces a fair number of concepts that
@@ -250,10 +257,10 @@ move. A naive fix might look this:
 30  |                  [Foo { string: ref aa },
 
 </code></pre>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The RFC is separated into two parts: the format of error messages and the format of expanded error
 messages (using <code>--explain errors</code>).</p>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#format-of-error-messages" id="format-of-error-messages"><h2>Format of error messages</h2></a>
+<a class="header" href="#format-of-error-messages" id="format-of-error-messages"><h2>Format of error messages</h2></a>
 <p>The proposal is a lighter error format focused on the code the user wrote. Messages that help
 understand why an error occurred appear as labels on the source. The goals of this new format are
 to:</p>
@@ -283,14 +290,14 @@ for a more graphical error in the future.</li>
 <li>Where possible, use labels on the source itself rather than sentence &quot;notes&quot; at the end.</li>
 <li>Keep filename:line easy to spot for people who use editors that let them click on errors</li>
 </ul>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#header" id="header"><h3>Header</h3></a>
+<a class="header" href="#header" id="header"><h3>Header</h3></a>
 <pre><code>error[E0499]: cannot borrow `foo.bar1` as mutable more than once at a time
   --&gt; src/test/compile-fail/borrowck/borrowck-borrow-from-owned-ptr.rs:29:22
 </code></pre>
 <p>The header still serves the original purpose of knowing: a) if it's a warning or error, b) the text
 of the warning/error, and c) the location of this warning/error. We keep the error code, now a part
 of the error indicator, as a way to help improve search results.</p>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#line-number-column" id="line-number-column"><h3>Line number column</h3></a>
+<a class="header" href="#line-number-column" id="line-number-column"><h3>Line number column</h3></a>
 <pre><code>   |
 28 |
    |
@@ -312,7 +319,7 @@ to also support span-less notes and hints. For example:</p>
    = note: expected type `&amp;core::workspace::Workspace&lt;'_&gt;`
    = note:    found type `&amp;core::package::Package`
 </code></pre>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#source-area" id="source-area"><h3>Source area</h3></a>
+<a class="header" href="#source-area" id="source-area"><h3>Source area</h3></a>
 <pre><code>      let bar1 = &amp;mut foo.bar1;
                       -------- first mutable borrow occurs here
       let _bar2 = &amp;mut foo.bar1;
@@ -339,7 +346,7 @@ lets the user glance at the colored labels and quickly form an educated guess as
 update their code.</p>
 <p>Note: We'll talk more about additional style guidance for wording to help create flow in the
 subsequent style RFC.</p>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#expanded-error-messages" id="expanded-error-messages"><h2>Expanded error messages</h2></a>
+<a class="header" href="#expanded-error-messages" id="expanded-error-messages"><h2>Expanded error messages</h2></a>
 <p>Currently, --explain text focuses on the error code. You invoke the compiler with --explain
 <error code> and receive a verbose description of what causes errors of that number. The resulting
 message can be helpful, but it uses generic sample code which makes it feel less connected to the
@@ -377,14 +384,14 @@ expanded text.</p>
 but would be available in the expanded error format. This gives the explain text writer maximal
 flexibility without impacting the readability of the default message. I'm currently prototyping an
 implementation of how this templating could work in practice.</p>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#tying-it-together" id="tying-it-together"><h2>Tying it together</h2></a>
+<a class="header" href="#tying-it-together" id="tying-it-together"><h2>Tying it together</h2></a>
 <p>Lastly, we propose that the final error message:</p>
 <pre><code>error: aborting due to 2 previous errors
 </code></pre>
 <p>Be changed to notify users of this ability:</p>
 <pre><code>note: compile failed due to 2 errors. You can compile again with `--explain errors` for more information
 </code></pre>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Changes in the error format can impact integration with other tools. For example, IDEs that use a
 simple regex to detect the error would need to be updated to support the new format. This takes
 time and community coordination.</p>
@@ -393,7 +400,7 @@ time and community coordination.</p>
 well as the original format.</p>
 <p>There is a fair amount of work involved to update the errors and explain text to the proposed
 format.</p>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Rather than using the proposed error format format, we could only provide the verbose --explain
 style that is proposed in this RFC. Respected programmers like
 <a href="https://twitter.com/ID_AA_Carmack/status/735197548034412546">John Carmack</a> have praised the Elm
@@ -426,7 +433,7 @@ educational tool, and we wanted to leverage its style in Rust. For day-to-day wo
 favor an error format that puts heavy emphasis on quickly guiding the user to what the error is and
 why it occurred, with an easy way to get the richer explanations (using --explain) when the user
 wants them.</p>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#stabilization" id="stabilization"><h1>Stabilization</h1></a>
+<a class="header" href="#stabilization" id="stabilization"><h1>Stabilization</h1></a>
 <p>Currently, this new rust error format is available on nightly using the
 <code>export RUST_NEW_ERROR_FORMAT=true</code> environment variable. Ultimately, this should become the
 default. In order to get there, we need to ensure that the new error format is indeed an
@@ -441,7 +448,7 @@ would improve the current state but shows no ways to measure success.</p>
 <p>Likewise, while some of us have been dogfooding these errors, we don't know what long-term use feels
 like. For example, after a time does the use of color feel excessive?  We can always update the
 errors as we go, but it'd be helpful to catch it early if possible.</p>
-<a class="header" href="1644-default-and-expanded-rustc-errors.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>There are a few unresolved questions:</p>
 <ul>
 <li>Editors that rely on pattern-matching the compiler output will need to be updated. It's an open
@@ -494,9 +501,6 @@ much boldness cause errors to become less readable?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

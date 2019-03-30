@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1288-time-improvements - </title>
+        <title>1288-time-improvements - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1288">rust-lang/rfcs#1288</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/29866">rust-lang/rust#29866</a></li>
 </ul>
-<a class="header" href="1288-time-improvements.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes several new types and associated APIs for working with times in Rust.
 The primary new types are <code>Instant</code>, for working with time that is guaranteed to be
 monotonic, and <code>SystemTime</code>, for working with times across processes on a single system
 (usually internally represented as a number of seconds since an epoch).</p>
-<a class="header" href="1288-time-improvements.html#motivations" id="motivations"><h1>Motivations</h1></a>
+<a class="header" href="#motivations" id="motivations"><h1>Motivations</h1></a>
 <p>The primary motivation of this RFC is to flesh out a larger set of APIs for
 representing instants in time and durations of time.</p>
 <p>For various reasons that this RFC will explore, APIs related to time are fairly
@@ -227,8 +234,8 @@ This allows methods related to monotonic time to be uncaveated, while working
 with the system clock has more methods that return <code>Result</code>s.</p>
 <p>This RFC does not attempt to define a type for calendared DateTimes, nor does it
 directly address time zones.</p>
-<a class="header" href="1288-time-improvements.html#proposal" id="proposal"><h1>Proposal</h1></a>
-<a class="header" href="1288-time-improvements.html#types" id="types"><h2>Types</h2></a>
+<a class="header" href="#proposal" id="proposal"><h1>Proposal</h1></a>
+<a class="header" href="#types" id="types"><h2>Types</h2></a>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
 #fn main() {
@@ -247,7 +254,7 @@ pub struct Duration {
   nanos: u32
 }
 #}</code></pre></pre>
-<a class="header" href="1288-time-improvements.html#instant" id="instant"><h3>Instant</h3></a>
+<a class="header" href="#instant" id="instant"><h3>Instant</h3></a>
 <p><code>Instant</code> is the simplest of the types representing moments in time. It
 represents an opaque (non-serializable!) timestamp that is guaranteed to
 be monotonic when compared to another <code>Instant</code>.</p>
@@ -325,7 +332,7 @@ impl Duration {
   pub fn from_standard_days(days: u64) -&gt; Duration;
 }
 #}</code></pre></pre>
-<a class="header" href="1288-time-improvements.html#systemtime" id="systemtime"><h3>SystemTime</h3></a>
+<a class="header" href="#systemtime" id="systemtime"><h3>SystemTime</h3></a>
 <p><strong>This type should not be used for in-process timestamps, like those used in
 benchmarks.</strong></p>
 <p>A <code>SystemTime</code> represents a time stored on the local machine derived from the
@@ -392,7 +399,7 @@ impl SystemTimeError {
 know for sure that a <code>SystemTime</code> is in the past, even if the operation that
 produced it happened in the past (in real time).</p>
 <hr />
-<a class="header" href="1288-time-improvements.html#illustrative-example" id="illustrative-example"><h5>Illustrative Example:</h5></a>
+<a class="header" href="#illustrative-example" id="illustrative-example"><h5>Illustrative Example:</h5></a>
 <p>If a program requests a <code>SystemTime</code> that represents the <code>mtime</code> of a given file,
 then writes a new file and requests its <code>SystemTime</code>, it may expect the second
 <code>SystemTime</code> to be after the first.</p>
@@ -400,7 +407,7 @@ then writes a new file and requests its <code>SystemTime</code>, it may expect t
 possible, and make it easy to handle that case. As always, the programmer can
 use <code>.unwrap()</code> in the prototype stage to avoid having to handle the edge-case
 yet, while retaining a reminder that the edge-case is possible.</p>
-<a class="header" href="1288-time-improvements.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This RFC defines two new types for describing times, and posits a third type
 to complete the picture. At first glance, having three different APIs for
 working with times may seem overly complex.</p>
@@ -411,7 +418,7 @@ human terms.</p>
 <p>As a result, this RFC chose to make these differences explicit, allowing
 ergonomic, uncaveated use of monotonic time, and a small speedbump when
 working with times that can move both forward and backward.</p>
-<a class="header" href="1288-time-improvements.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>One alternative design would be to attempt to have a single unified time
 type. The rationale for not doing so is explained under Drawbacks.</p>
 <p>Another possible alternative is to allow free math between instants,
@@ -429,7 +436,7 @@ the point where they are produced, rather than requiring all APIs that
 <p>Because <code>Ord</code> is implemented on <code>SystemTime</code> and <code>Instant</code>, it is
 possible to compare two arbitrary times to each other first, and then
 use <code>duration_from_earlier</code> reliably to get a positive <code>Duration</code>.</p>
-<a class="header" href="1288-time-improvements.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
 <p>This RFC leaves types related to human representations of dates and times
 to a future proposal.</p>
 
@@ -476,9 +483,6 @@ to a future proposal.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1574-more-api-documentation-conventions - </title>
+        <title>1574-more-api-documentation-conventions - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,19 +146,19 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1574">rust-lang/rfcs#1574</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1574-more-api-documentation-conventions.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p><a href="https://github.com/rust-lang/rfcs/blob/master/text/0505-api-comment-conventions.md">RFC 505</a> introduced certain conventions around documenting Rust projects. This
 RFC augments that one, and a full text of the older one combined with these
 modfications is provided below.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Documentation is an extremely important part of any project. It’s important
 that we have consistency in our documentation.</p>
 <p>For the most part, the RFC proposes guidelines that are already followed today,
 but it tries to motivate and clarify them.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1574-more-api-documentation-conventions.html#english" id="english"><h3>English</h3></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#english" id="english"><h3>English</h3></a>
 <p>This section applies to <code>rustc</code> and the standard library.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#using-markdown" id="using-markdown"><h3>Using Markdown</h3></a>
+<a class="header" href="#using-markdown" id="using-markdown"><h3>Using Markdown</h3></a>
 <p>The updated list of common headings is:</p>
 <ul>
 <li>Examples</li>
@@ -191,7 +198,7 @@ style.’ This is still recommended, but prefer to leave off the second <code>[]
 [website]: http://www.rust-lang.org
 </code></pre>
 <p>But, if the text is very long, it is okay to use this form.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#examples-in-api-docs" id="examples-in-api-docs"><h3>Examples in API docs</h3></a>
+<a class="header" href="#examples-in-api-docs" id="examples-in-api-docs"><h3>Examples in API docs</h3></a>
 <p>Everything should have examples. Here is an example of how to do examples:</p>
 <pre><code>/// # Examples
 ///
@@ -211,20 +218,20 @@ style.’ This is still recommended, but prefer to leave off the second <code>[]
 /// let answer = op::compare(s, |a| a.chars().is_whitespace().all());
 /// ```
 </code></pre>
-<a class="header" href="1574-more-api-documentation-conventions.html#referring-to-types" id="referring-to-types"><h3>Referring to types</h3></a>
+<a class="header" href="#referring-to-types" id="referring-to-types"><h3>Referring to types</h3></a>
 <p>When talking about a type, use its full name. In other words, if the type is generic,
 say <code>Option&lt;T&gt;</code>, not <code>Option</code>. An exception to this is bounds. Write <code>Cow&lt;'a, B&gt;</code>
 rather than <code>Cow&lt;'a, B&gt; where B: 'a + ToOwned + ?Sized</code>.</p>
 <p>Another possibility is to write in lower case using a more generic term. In other words,
 ‘string’ can refer to a <code>String</code> or an <code>&amp;str</code>, and ‘an option’ can be ‘an <code>Option&lt;T&gt;</code>’.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#link-all-the-things" id="link-all-the-things"><h3>Link all the things</h3></a>
+<a class="header" href="#link-all-the-things" id="link-all-the-things"><h3>Link all the things</h3></a>
 <p>A major drawback of Markdown is that it cannot automatically link types in API documentation.
 Do this yourself with the reference-style syntax, for ease of reading:</p>
 <pre><code>/// The [`String`] passed in lorum ipsum...
 ///
 /// [`String`]: ../string/struct.String.html
 </code></pre>
-<a class="header" href="1574-more-api-documentation-conventions.html#module-level-vs-type-level-docs" id="module-level-vs-type-level-docs"><h3>Module-level vs type-level docs</h3></a>
+<a class="header" href="#module-level-vs-type-level-docs" id="module-level-vs-type-level-docs"><h3>Module-level vs type-level docs</h3></a>
 <p>There has often been a tension between module-level and type-level
 documentation. For example, in today's standard library, the various
 <code>*Cell</code> docs say, in the pages for each type, to &quot;refer to the module-level
@@ -234,7 +241,7 @@ everything in the module, and each type should document itself fully. It is
 okay if there is some small amount of duplication here. Module-level
 documentation should be broad and not go into a lot of detail. That is left
 to the type's documentation.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#example" id="example"><h2>Example</h2></a>
+<a class="header" href="#example" id="example"><h2>Example</h2></a>
 <p>Below is a full crate, with documentation following these rules. I am loosely basing
 this off of my <a href="https://crates.io/crates/ref_slice">ref_slice</a> crate, because it’s small, but I’m not claiming the code
 is good here. It’s about the docs, not the code.</p>
@@ -374,27 +381,27 @@ pub fn ref_slice&lt;T&gt;(opt: &amp;Option&lt;T&gt;) -&gt; &amp;[T] {
     unimplemented!()
 }
 #}</code></pre></pre>
-<a class="header" href="1574-more-api-documentation-conventions.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It’s possible that RFC 505 went far enough, and something this detailed is inappropriate.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could stick with the more minimal conventions of the previous RFC.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#appendix-a-full-conventions-text" id="appendix-a-full-conventions-text"><h1>Appendix A: Full conventions text</h1></a>
+<a class="header" href="#appendix-a-full-conventions-text" id="appendix-a-full-conventions-text"><h1>Appendix A: Full conventions text</h1></a>
 <p>Below is a combination of RFC 505 + this RFC’s modifications, for convenience.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#summary-sentence" id="summary-sentence"><h3>Summary sentence</h3></a>
+<a class="header" href="#summary-sentence" id="summary-sentence"><h3>Summary sentence</h3></a>
 <p>In API documentation, the first line should be a single-line short sentence
 providing a summary of the code. This line is used as a summary description
 throughout Rustdoc’s output, so it’s a good idea to keep it short.</p>
 <p>The summary line should be written in third person singular present indicative
 form. Basically, this means write ‘Returns’ instead of ‘Return’.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#english-1" id="english-1"><h3>English</h3></a>
+<a class="header" href="#english-1" id="english-1"><h3>English</h3></a>
 <p>This section applies to <code>rustc</code> and the standard library.</p>
 <p>All documentation for the standard library is standardized on American English,
 with regards to spelling, grammar, and punctuation conventions. Language
 changes over time, so this doesn’t mean that there is always a correct answer
 to every grammar question, but there is often some kind of formal consensus.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#use-line-comments" id="use-line-comments"><h3>Use line comments</h3></a>
+<a class="header" href="#use-line-comments" id="use-line-comments"><h3>Use line comments</h3></a>
 <p>Avoid block comments. Use line comments instead:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -431,7 +438,7 @@ mod test {
     // ...
 }
 #}</code></pre></pre>
-<a class="header" href="1574-more-api-documentation-conventions.html#using-markdown-1" id="using-markdown-1"><h3>Using Markdown</h3></a>
+<a class="header" href="#using-markdown-1" id="using-markdown-1"><h3>Using Markdown</h3></a>
 <p>Within doc comments, use Markdown to format your documentation.</p>
 <p>Use top level headings (<code>#</code>) to indicate sections within your comment. Common headings:</p>
 <ul>
@@ -500,7 +507,7 @@ it’s important to mark what is not Rust so your tests don’t fail.</p>
 
 [website]: http://www.rust-lang.org
 </code></pre>
-<a class="header" href="1574-more-api-documentation-conventions.html#examples-in-api-docs-1" id="examples-in-api-docs-1"><h3>Examples in API docs</h3></a>
+<a class="header" href="#examples-in-api-docs-1" id="examples-in-api-docs-1"><h3>Examples in API docs</h3></a>
 <p>Everything should have examples. Here is an example of how to do examples:</p>
 <pre><code>/// # Examples
 ///
@@ -520,20 +527,20 @@ it’s important to mark what is not Rust so your tests don’t fail.</p>
 /// let answer = op::compare(s, |a| a.chars().is_whitespace().all());
 /// ```
 </code></pre>
-<a class="header" href="1574-more-api-documentation-conventions.html#referring-to-types-1" id="referring-to-types-1"><h3>Referring to types</h3></a>
+<a class="header" href="#referring-to-types-1" id="referring-to-types-1"><h3>Referring to types</h3></a>
 <p>When talking about a type, use its full name. In other words, if the type is generic,
 say <code>Option&lt;T&gt;</code>, not <code>Option</code>. An exception to this is bounds. Write <code>Cow&lt;'a, B&gt;</code>
 rather than <code>Cow&lt;'a, B&gt; where B: 'a + ToOwned + ?Sized</code>.</p>
 <p>Another possibility is to write in lower case using a more generic term. In other words,
 ‘string’ can refer to a <code>String</code> or an <code>&amp;str</code>, and ‘an option’ can be ‘an <code>Option&lt;T&gt;</code>’.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#link-all-the-things-1" id="link-all-the-things-1"><h3>Link all the things</h3></a>
+<a class="header" href="#link-all-the-things-1" id="link-all-the-things-1"><h3>Link all the things</h3></a>
 <p>A major drawback of Markdown is that it cannot automatically link types in API documentation.
 Do this yourself with the reference-style syntax, for ease of reading:</p>
 <pre><code>/// The [`String`] passed in lorum ipsum...
 ///
 /// [`String`]: ../string/struct.String.html
 </code></pre>
-<a class="header" href="1574-more-api-documentation-conventions.html#module-level-vs-type-level-docs-1" id="module-level-vs-type-level-docs-1"><h3>Module-level vs type-level docs</h3></a>
+<a class="header" href="#module-level-vs-type-level-docs-1" id="module-level-vs-type-level-docs-1"><h3>Module-level vs type-level docs</h3></a>
 <p>There has often been a tension between module-level and type-level
 documentation. For example, in today's standard library, the various
 <code>*Cell</code> docs say, in the pages for each type, to &quot;refer to the module-level
@@ -543,7 +550,7 @@ everything in the module, and each type should document itself fully. It is
 okay if there is some small amount of duplication here. Module-level
 documentation should be broad, and not go into a lot of detail, which is left
 to the type's documentation.</p>
-<a class="header" href="1574-more-api-documentation-conventions.html#example-1" id="example-1"><h2>Example</h2></a>
+<a class="header" href="#example-1" id="example-1"><h2>Example</h2></a>
 <p>Below is a full crate, with documentation following these rules. I am loosely basing
 this off of my <a href="https://crates.io/crates/ref_slice">ref_slice</a> crate, because it’s small, but I’m not claiming the code
 is good here. It’s about the docs, not the code.</p>
@@ -727,9 +734,6 @@ pub fn ref_slice&lt;T&gt;(opt: &amp;Option&lt;T&gt;) -&gt; &amp;[T] {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

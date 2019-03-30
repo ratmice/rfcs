@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0736-privacy-respecting-fru - </title>
+        <title>0736-privacy-respecting-fru - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,10 +145,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/736">rust-lang/rfcs#736</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/21407">rust-lang/rust#21407</a></li>
 </ul>
-<a class="header" href="0736-privacy-respecting-fru.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Change Functional Record Update (FRU) for struct literal expressions
 to respect struct privacy.</p>
-<a class="header" href="0736-privacy-respecting-fru.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Functional Record Update is the name for the idiom by which one can
 write <code>..&lt;expr&gt;</code> at the end of a struct literal expression to fill in
 all remaining fields of the struct literal by using <code>&lt;expr&gt;</code> as the
@@ -225,7 +232,7 @@ privacy restrictions.</p>
 <p>The main motivation for this is to plug this abstraction-violating
 hole with as little other change to the rules, implementation, and
 character of the Rust language as possible.</p>
-<a class="header" href="0736-privacy-respecting-fru.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>As already stated above, the change proposed here is that a struct
 literal expression using FRU is effectively expanded into a complete
 struct literal with initializers for all fields (i.e., a struct
@@ -283,7 +290,7 @@ to the <code>librustc_privacy</code> crate.)</p>
 <p>The proposed change is applied only to struct literal expressions.  In
 particular, enum struct variants are left unchanged, since all of
 their fields are already implicitly public.</p>
-<a class="header" href="0736-privacy-respecting-fru.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There is a use case for allowing private fields to be moved/copied via
 FRU, which I call the &quot;future extensibility&quot; library design pattern:
 it is a convenient way for a library author to tell clients to make
@@ -340,7 +347,7 @@ are now made to <code>BarHidden</code>.  The struct <code>Bar</code> is entirely
 the supposedly-hidden field named <code>_hidden</code>), and
 thus can be legally be used with FRU in all client contexts that can
 see the type <code>Bar</code>, even under the new rules proposed by this RFC.</p>
-<a class="header" href="0736-privacy-respecting-fru.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Most Important: If we do not do <em>something</em> about this, then both stdlib types like
 <code>Vec</code> and user-defined types will fundmentally be unable to enforce
 abstraction. In other words, the Rust language will be broken.</p>
@@ -409,7 +416,7 @@ contained in a separate struct with all private fields,
 much like the <code>BarHidden</code> code pattern discussed above.</p>
 </li>
 </ol>
-<a class="header" href="0736-privacy-respecting-fru.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>How important is the &quot;future extensibility&quot; library design pattern
 described in the Drawbacks section?  How many Cargo packages, if any,
 use it?</p>
@@ -457,9 +464,6 @@ use it?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

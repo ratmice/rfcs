@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0531-define-rfc-scope - </title>
+        <title>0531-define-rfc-scope - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,18 +145,18 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/531">531</a></li>
 <li>Rust Issue: n/a</li>
 </ul>
-<a class="header" href="0531-define-rfc-scope.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>According to current documents, the RFC process is required to make &quot;substantial&quot; changes to the Rust
 distribution. It is currently lightweight, but lacks a definition for the Rust distribution. This RFC
 aims to amend the process with a both broad and clear definition of &quot;Rust distribution,&quot; while still
 keeping the process itself in tact.</p>
-<a class="header" href="0531-define-rfc-scope.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The motivation for this change comes from the recent decision for Crates.io to affirm its first come,
 first serve policy. While there was discussion of the matter on a GitHub issue, this discussion was
 rather low visibility. Regardless of the outcome of this particular decision, it highlights the
 fact that there is not a clear place for thorough discussion of policy decisions related to the
 outermost parts of Rust.</p>
-<a class="header" href="0531-define-rfc-scope.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>To remedy this issue, there must be a defined scope for the RFC process. This definition would be
 incorporated into the section titled &quot;When you need to follow this process.&quot; The goal here is to be as
 explicit as possible. This RFC proposes that the scope of the RFC process be defined as follows:</p>
@@ -163,15 +170,15 @@ explicit as possible. This RFC proposes that the scope of the RFC process be def
 <ul>
 <li>Other crates maintained under the rust-lang organization, such as time.</li>
 </ul>
-<a class="header" href="0531-define-rfc-scope.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The only particular drawback would be if this definition is too narrow, it might be restrictive.
 However, this definition fortunately includes the ability to amend the RFC process. So, this
 could be expanded if the need exists.</p>
-<a class="header" href="0531-define-rfc-scope.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The alternative is leaving the process as is. However, adding clarity at little to no cost should
 be preferred as it lowers the barrier to entry for contributions, and increases the visibility of
 potential changes that may have previously been discussed outside of an RFC.</p>
-<a class="header" href="0531-define-rfc-scope.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Are there other things that should be explicitly included as part of the scope of the RFC process right now?</p>
 
                     </main>
@@ -217,9 +224,6 @@ potential changes that may have previously been discussed outside of an RFC.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

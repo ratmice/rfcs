@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0093-remove-format-intl - </title>
+        <title>0093-remove-format-intl - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,12 +145,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/93">rust-lang/rfcs#93</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/14812">rust-lang/rust#14812</a></li>
 </ul>
-<a class="header" href="0093-remove-format-intl.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Remove localization features from format!, and change the set of escapes
 accepted by format strings. The <code>plural</code> and <code>select</code> methods would be removed,
 <code>#</code> would no longer need to be escaped, and <code>{{</code>/<code>}}</code> would become escapes for
 <code>{</code> and <code>}</code>, respectively.</p>
-<a class="header" href="0093-remove-format-intl.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Localization is difficult to implement correctly, and doing so will
 likely not be done in the standard library, but rather in an external library.
 After talking with others much more familiar with localization, it has
@@ -153,7 +160,7 @@ localization.</p>
 <p>Instead of having a half-baked unused system adding complexity to the compiler
 and libraries, the support for this functionality would be removed from format
 strings.</p>
-<a class="header" href="0093-remove-format-intl.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The primary localization features that <code>format!</code> supports today are the
 <code>plural</code> and <code>select</code> methods inside of format strings. These methods are
 choices made at format-time based on the input arguments of how to format a
@@ -178,7 +185,7 @@ parameter := integer '$'
 </code></pre>
 <p>The current syntax can be found at http://doc.rust-lang.org/std/fmt/#syntax to
 see the diff between the two</p>
-<a class="header" href="0093-remove-format-intl.html#choosing-a-new-escape-sequence" id="choosing-a-new-escape-sequence"><h2>Choosing a new escape sequence</h2></a>
+<a class="header" href="#choosing-a-new-escape-sequence" id="choosing-a-new-escape-sequence"><h2>Choosing a new escape sequence</h2></a>
 <p>Upon landing, there was a significant amount of discussion about the escape
 sequence that would be used in format strings. Some context can be found on some
 <a href="https://github.com/mozilla/rust/pull/9161">old pull requests</a>, and the current escape mechanism has been the source of
@@ -192,7 +199,7 @@ character, while <code>}}</code> would be an escape for a <code>}</code> charact
 <p>Adopting this scheme would avoid clashing with Rust's string literal escapes.
 There would be no &quot;double escape&quot; problem. More details on this can be found in
 the comments of an <a href="https://github.com/mozilla/rust/pull/9161">old PR</a>.</p>
-<a class="header" href="0093-remove-format-intl.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The localization methods of select/plural are genuinely used for
 applications that do not involve localization. For example, the compiler
 and rustdoc often use plural to easily create plural messages. Removing this
@@ -202,7 +209,7 @@ allocating a string at runtime or defining two separate format strings.</p>
 Raw string literals serve as a good use case for format strings that must escape
 the <code>{</code> and <code>}</code> characters. The current system is arguably good enough to pass
 with for today.</p>
-<a class="header" href="0093-remove-format-intl.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The major localization approach explored has been l20n, which has shown
 itself to be fairly incompatible with the way format strings work today.
 Different localization systems, however, have not been explored. Systems
@@ -214,7 +221,7 @@ could be leveraged by l20n. It is unlikely that time will be allocated to polish
 off an localization library before 1.0, and it is currently seen as
 undesirable to have a half-baked system in the libraries rather than a
 first-class well designed system.</p>
-<a class="header" href="0093-remove-format-intl.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Should localization support be left in <code>std::fmt</code> as a &quot;poor man's&quot;
 implementation for those to use as they see fit?</li>
@@ -263,9 +270,6 @@ implementation for those to use as they see fit?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2196-metabuild - </title>
+        <title>2196-metabuild - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2196">rust-lang/rfcs#2196</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/49803">rust-lang/rust#49803</a></li>
 </ul>
-<a class="header" href="2196-metabuild.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce a mechanism for Cargo crates to make use of declarative build
 scripts, obtained from one or more of their dependencies rather than via a
 <code>build.rs</code> file. Support experimentation with declarative build scripts in the
 crates.io ecosystem.</p>
-<a class="header" href="2196-metabuild.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Cargo has many potentially desirable enhancements planned for its build
 process, including integrating a Cargo build process with native dependencies,
 and integrating with broader build systems or projects, such as massive
@@ -167,7 +174,7 @@ crates.io ecosystem, in crates supplying modular components similar to
 <code>build.rs</code> scripts. By convention, such scripts should typically read any
 parameters and metadata they need from <code>Cargo.toml</code>, in a form that other
 build-related software can read as well.</p>
-<a class="header" href="2196-metabuild.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>In the <code>[package]</code> section of <code>Cargo.toml</code>, you can specify a field
 <code>metabuild</code>, whose value should be a string or list of strings, each one
 exactly matching the name of a dependency specified in the
@@ -201,7 +208,7 @@ interfaces may also wish to run scripts in parallel, provide dependencies
 between them, or orchestrate their execution in many other ways. This minimal
 specification allows for experimentation with such interfaces within the
 crates.io ecosystem, by providing an adapter from the raw metabuild interface.</p>
-<a class="header" href="2196-metabuild.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>Cargo's logic to invoke <code>build.rs</code> should check for the <code>metabuild</code> key, and if
 present, create and invoke a temporary <code>build.rs</code> as described above. For an
 initial implementation, Cargo can generate and cache that <code>build.rs</code> in the
@@ -223,11 +230,11 @@ from reimplementing it themselves.</p>
 <p>As we develop other best practices for the development and implementation of
 metabuild crates, we should extract and standardize common code for those
 practices as crates.</p>
-<a class="header" href="2196-metabuild.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>While Cargo can change this interface arbitrarily while still unstable, one
 stabilized, Cargo will have to support it forever, even if we develop a new
 build/metabuild interface in the future.</p>
-<a class="header" href="2196-metabuild.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
 <p><code>metabuild</code> could always point to a single crate, and not support a list of
 crate names; a crate in the crates.io ecosystem could easily provide the &quot;list
 of crate names&quot; functionality, along with more advanced flows of information
@@ -293,9 +300,6 @@ also not provide an obvious path to support code generators.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2627-raw-dylib-kind - </title>
+        <title>2627-raw-dylib-kind - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,14 +146,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2627">rust-lang/rfcs#2627</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/58713">rust-lang/rust#58713</a></li>
 </ul>
-<a class="header" href="2627-raw-dylib-kind.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Extend the <code>#[link]</code> attribute by adding a new kind <code>kind=&quot;raw-dylib&quot;</code> for use on Windows which emits idata sections for the items in the attached <code>extern</code> block, so they may be linked against without linking against an import library. Also add a <code>#[link_ordinal]</code> attribute for specifying symbols that are actually ordinals.</p>
-<a class="header" href="2627-raw-dylib-kind.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Traditionally, to link against a <a href="https://en.wikipedia.org/wiki/Dynamic-link_library">dll</a>, the program must actually link against an import library. For example to depend on some symbols from <code>kernel32.dll</code> the program links to <code>kernel32.lib</code>. However, this requires that the correct import libraries be available to link against, and for third party libraries that are only distributed as a dll creating an import library can be quite difficult, especially given that <code>lib.exe</code> is incapable of creating an import library that links to <code>stdcall</code> symbols.</p>
 <p>A real advantage of this feature, however, is the fact that symbols will be <em>guaranteed</em> to come from the specified dll. Currently, linking is a very finnicky process where if multiple libraries provide the same symbol the linker will choose one of them to provide the symbol and the user has little control over it. With <code>kind=&quot;raw-dylib&quot;</code> the user is ensured that the symbol will come from the specified dll.</p>
 <p>Sometimes, a crate may know exactly which dll it wants to link against, but which import library it ends up linking against is unknown. In particular the <code>d3dcompiler.lib</code> provided by the Windows SDK can link to several different versions of the d3dcompiler dll depending on which version of the Windows SDK the user has installed. <code>kind=&quot;raw-dylib&quot;</code> would allow <code>winapi</code> to link to a specific version of that dll and ensure the symbols are correct for that version.</p>
 <p>This would also allow <code>winapi</code> to not have to bundle import libraries for the <code>pc-windows-gnu</code> targets, saving on bandwidth and disk space for users.</p>
-<a class="header" href="2627-raw-dylib-kind.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>When trying to link to a Windows dll, the <code>dylib</code> kind may sometimes be unsuitable, and <code>kind=&quot;raw-dylib&quot;</code> can be used instead. A central requirement of <code>kind=&quot;raw-dylib&quot;</code> is that the dll has a stable ABI. Here are some examples of valid reasons to use <code>kind=&quot;raw-dylib&quot;</code>:</p>
 <ul>
 <li>You've had it up to here with trying to create an import library for a dll that has <code>stdcall</code> functions.</li>
@@ -177,7 +184,7 @@ extern &quot;system&quot; {
     fn WSACleanup() -&gt; i32;
 }
 #}</code></pre></pre>
-<a class="header" href="2627-raw-dylib-kind.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>Add a new attribute <code>#[link_ordinal]</code> taking a single unsuffixed integer value, such as <code>#[link_ordinal(116)]</code>. It can only be specified on symbols in an extern block using <code>kind=&quot;raw-dylib&quot;</code>.</p>
 <p>Add a new possible value <code>raw-dylib</code> to the <code>kind</code> property of the <code>link</code> attribute. When this kind is specified, the <code>name</code> must explicitly include the extension. In addition, for all items in the associated extern block, Rust will <em>keep</em> the symbol mangled, instead of having an unmangled symbol. Rust will emit an idata section that maps from the <em>mangled</em> symbol to a symbol in the specified dll. The symbol in the dll that the idata section maps to depends on which attributes are specified on the item in question:</p>
 <ul>
@@ -188,17 +195,17 @@ extern &quot;system&quot; {
 <li>If <code>#[no_mangle]</code> is specified an error will be emitted.</li>
 </ul>
 <p>The <a href="https://docs.microsoft.com/en-us/windows/desktop/debug/pe-format#the-idata-section">idata section</a> that is produced is equivalent to the idata sections found in <a href="https://docs.microsoft.com/en-us/windows/desktop/debug/pe-format#import-library-format">import libraries</a>, and should result in identical code generation by the linker.</p>
-<a class="header" href="2627-raw-dylib-kind.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Additional complexity in the language through a new <code>kind</code> and a new attribute for specifying ordinals.</p>
-<a class="header" href="2627-raw-dylib-kind.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <p>The RFC as proposed would allow for full control over linking to symbols from dlls with syntax as close as possible to existing extern blocks.</p>
 <p>No alternatives are currently known other than the status quo.</p>
-<a class="header" href="2627-raw-dylib-kind.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>Many non-native languages have the ability to import symbols from dlls, but this uses runtime loading by the language runtime and is not the same as what is being proposed here.</p>
 <p>Delphi is a native language that has the ability to import symbols from dlls without import libraries.</p>
-<a class="header" href="2627-raw-dylib-kind.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Whether there are any unresolved questions is an unresolved question.</p>
-<a class="header" href="2627-raw-dylib-kind.html#future-possibilities" id="future-possibilities"><h1>Future possibilities</h1></a>
+<a class="header" href="#future-possibilities" id="future-possibilities"><h1>Future possibilities</h1></a>
 <ul>
 <li>With the features described in this RFC, we would be one step closer towards a fully standalone pure Rust target for Windows that does not rely on any external libraries (aside from the obvious and unavoidable runtime dependence on system libraries), allowing for easy installation and easy cross compilation.
 <ul>
@@ -257,9 +264,6 @@ extern &quot;system&quot; {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

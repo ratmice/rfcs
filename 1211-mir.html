@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1211-mir - </title>
+        <title>1211-mir - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,11 +146,11 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1211">rust-lang/rfcs#1211</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27840">rust-lang/rust#27840</a></li>
 </ul>
-<a class="header" href="1211-mir.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Introduce a &quot;mid-level IR&quot; (MIR) into the compiler. The MIR desugars
 most of Rust's surface representation, leaving a simpler form that is
 well-suited to type-checking and translation.</p>
-<a class="header" href="1211-mir.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The current compiler uses a single AST from the initial parse all the
 way to the final generation of LLVM. While this has some advantages,
 there are also a number of distinct downsides.</p>
@@ -251,7 +258,7 @@ consolidates knowledge about control-flow into one piece of code,
 producing a data structure that can be easily interpreted. Similarly,
 the <code>ExprUseVisitor</code> consolidates knowledge of how to walk and
 interpret the current compiler representation.</p>
-<a class="header" href="1211-mir.html#goals" id="goals"><h3>Goals</h3></a>
+<a class="header" href="#goals" id="goals"><h3>Goals</h3></a>
 <p>It is useful to think about what &quot;knowledge&quot; the MIR should
 encapsulate. Here is a listing of the kinds of things that should be
 explicit in the MIR and thus that downstream code won't have to
@@ -276,7 +283,7 @@ in MIR.</li>
 could is when something is <em>moved</em>. For by-value uses of a value, the
 code must still consult the type of the value to decide if that is a
 move or not. This could be made more explicit in the IR.</p>
-<a class="header" href="1211-mir.html#which-analyses-are-well-suited-to-the-mir" id="which-analyses-are-well-suited-to-the-mir"><h3>Which analyses are well-suited to the MIR?</h3></a>
+<a class="header" href="#which-analyses-are-well-suited-to-the-mir" id="which-analyses-are-well-suited-to-the-mir"><h3>Which analyses are well-suited to the MIR?</h3></a>
 <p>Some analyses are better suited to the AST than to a MIR. The
 following is a list of work the compiler does that would benefit from
 using a MIR:</p>
@@ -310,8 +317,8 @@ lowering process. However, once the MIR is built, the match is
 completely desugared into more primitive switches and so forth, so we
 will need to leave some markers in order to know where to check for
 exhaustiveness and to reconstruct counter examples.</p>
-<a class="header" href="1211-mir.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1211-mir.html#what-is-really-being-proposed-here" id="what-is-really-being-proposed-here"><h3>What is <em>really</em> being proposed here?</h3></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#what-is-really-being-proposed-here" id="what-is-really-being-proposed-here"><h3>What is <em>really</em> being proposed here?</h3></a>
 <p>The rest of this section goes into detail on a particular MIR design.
 However, the true purpose of this RFC is not to nail down every detail
 of the MIR -- which are expected to evolve and change over time anyway
@@ -330,7 +337,7 @@ scope-dependent items explicitly.</li>
 should be possible to type-check it using a tweaked variant on the
 Rust type system.</li>
 </ol>
-<a class="header" href="1211-mir.html#prototype" id="prototype"><h3>Prototype</h3></a>
+<a class="header" href="#prototype" id="prototype"><h3>Prototype</h3></a>
 <p>The MIR design being described can be found <a href="https://github.com/rust-lang/rust/tree/2532ad7d0b2edac1909ef0ef346230331200790b/src/librustc/mir">here</a>. In
 particular, <a href="https://github.com/rust-lang/rust/blob/2532ad7d0b2edac1909ef0ef346230331200790b/src/librustc/mir/mod.rs">this module</a> defines the MIR representation,
 and <a href="https://github.com/rust-lang/rust/tree/fc04eaacc5bd5760e98cd3aa390dcc3ae795d12f/src/librustc_mir/build">this <code>build</code> module</a> contains the code to create a MIR
@@ -359,7 +366,7 @@ current AST to the HAIR is not yet complete, but it can be found
 <p>Note that the HAIR mirroring system is an experiment and not really
 part of the MIR itself. It does however present an interesting option
 for (eventually) stabilizing access to the compiler's internals.</p>
-<a class="header" href="1211-mir.html#overview-of-the-mir" id="overview-of-the-mir"><h3>Overview of the MIR</h3></a>
+<a class="header" href="#overview-of-the-mir" id="overview-of-the-mir"><h3>Overview of the MIR</h3></a>
 <p>The proposed MIR always describes the execution of a single fn.  At
 the highest level it consists of a series of declarations regarding
 the stack storage that will be required and then a set of basic
@@ -425,7 +432,7 @@ blocks are found to be worthwhile.)</p>
 compile-time and memory-use optimization; there is no semantic
 difference between a single block and two blocks joined by a GOTO
 terminator.</p>
-<a class="header" href="1211-mir.html#assignments-values-and-rvalues" id="assignments-values-and-rvalues"><h3>Assignments, values, and rvalues</h3></a>
+<a class="header" href="#assignments-values-and-rvalues" id="assignments-values-and-rvalues"><h3>Assignments, values, and rvalues</h3></a>
 <p>The primary kind of statement is an assignent:</p>
 <pre><code>LVALUE &quot;=&quot; RVALUE
 </code></pre>
@@ -472,7 +479,7 @@ UNOP = ! | -                        // note: no `*`, as that is part of LVALUE
 are only the <em>builtin</em> form, operating on scalar values. Overloaded
 operators will be desugared to trait calls. Moreover, all method calls
 are desugared into normal calls via UFCS form.</p>
-<a class="header" href="1211-mir.html#constants" id="constants"><h3>Constants</h3></a>
+<a class="header" href="#constants" id="constants"><h3>Constants</h3></a>
 <p>Constants are a subset of rvalues that can be evaluated at compilation
 time:</p>
 <pre><code>CONSTANT = INT
@@ -489,7 +496,7 @@ time:</p>
          | (CONSTANT...)                //
          | [CONSTANT...]                //
 </code></pre>
-<a class="header" href="1211-mir.html#aggregates-and-further-lowering" id="aggregates-and-further-lowering"><h3>Aggregates and further lowering</h3></a>
+<a class="header" href="#aggregates-and-further-lowering" id="aggregates-and-further-lowering"><h3>Aggregates and further lowering</h3></a>
 <p>The set of rvalues includes &quot;aggregate&quot; expressions like <code>(x, y)</code> or
 <code>Foo { f: x, g: y }</code>. This is a place where the MIR (somewhat) departs
 from what will be generated compilation time, since (often) an
@@ -560,7 +567,7 @@ further lowering within the MIR purely for optimization purposes. For
 example, we could introduce intermediate references to cache the
 results of common lvalue computations and so forth. This may well be
 better left to LLVM (or at least to the lowering pass).</p>
-<a class="header" href="1211-mir.html#bounds-checking" id="bounds-checking"><h3>Bounds checking</h3></a>
+<a class="header" href="#bounds-checking" id="bounds-checking"><h3>Bounds checking</h3></a>
 <p>Because bounds checks are fallible, it's important to encode them in
 the MIR whenever we do indexing. Otherwise the trans code would have
 to figure out on its own how to do unwinding at that point. Because
@@ -591,7 +598,7 @@ B2: {
 <p>The key point here is that we create a temporary (<code>idx</code>) capturing the
 value that we bounds checked and we ensure that there is a comparison
 against the length.</p>
-<a class="header" href="1211-mir.html#overflow-checking" id="overflow-checking"><h3>Overflow checking</h3></a>
+<a class="header" href="#overflow-checking" id="overflow-checking"><h3>Overflow checking</h3></a>
 <p>Similarly, since overflow checks can trigger a panic, they ought to be
 exposed in the MIR as well. This is handled by having distinct binary
 operators for &quot;add with overflow&quot; and so forth, analogous to the LLVM
@@ -613,7 +620,7 @@ B2: {
   &lt;panic&gt;
 }
 </code></pre>
-<a class="header" href="1211-mir.html#matches" id="matches"><h3>Matches</h3></a>
+<a class="header" href="#matches" id="matches"><h3>Matches</h3></a>
 <p>One of the goals of the MIR is to desugar matches into something much
 more primitive, so that we are freed from reasoning about their
 complexity. This is primarily achieved through a combination of SWITCH
@@ -670,7 +677,7 @@ constant indices. This is a fairly straightforward thing to do (and in
 fact the borrow checker already includes similar logic, since the
 <code>ExprUseVisitor</code> encounters a similar dilemna trying to resolve
 borrows).</p>
-<a class="header" href="1211-mir.html#drops" id="drops"><h3>Drops</h3></a>
+<a class="header" href="#drops" id="drops"><h3>Drops</h3></a>
 <p>The <code>Drop(DROP_KIND, LVALUE)</code> instruction is intended to represent
 &quot;automatic&quot; compiler-inserted drops. The semantics of a <code>Drop</code> is that
 it drops &quot;if needed&quot;. This means that the compiler can insert it
@@ -695,7 +702,7 @@ example. Imagine that we have a snippet of code like:</p>
 but the value <code>x</code> would also be moved as part of the call to <code>send</code>.
 A later analysis could easily strip out this <code>Drop</code> since it is evident
 that the value is always used on all paths that lead to <code>Drop</code>.</p>
-<a class="header" href="1211-mir.html#shallow-drops-and-box" id="shallow-drops-and-box"><h3>Shallow drops and Box</h3></a>
+<a class="header" href="#shallow-drops-and-box" id="shallow-drops-and-box"><h3>Shallow drops and Box</h3></a>
 <p>The MIR includes the distinction between &quot;shallow&quot; and &quot;deep&quot;
 drop. Deep drop is the normal thing, but shallow drop is used when
 partially initializing boxes. This is tied to the <code>box</code> keyword.
@@ -729,13 +736,13 @@ its contents (it is not yet initialized).</p>
 more generalized protocol that <a href="https://github.com/rust-lang/rfcs/blob/master/text/0809-box-and-in-for-stdlib.md">RFC 809</a> specifies works in
 more-or-less exactly the same way: when that is adopted uniformly, the
 need for shallow drop and the Box rvalue will go away.</p>
-<a class="header" href="1211-mir.html#phasing" id="phasing"><h3>Phasing</h3></a>
+<a class="header" href="#phasing" id="phasing"><h3>Phasing</h3></a>
 <p>Ideally, the translation to MIR would be done during type checking,
 but before &quot;region checking&quot;. This is because we would like to
 implement non-lexical lifetimes eventually, and doing that well would
 requires access to a control-flow graph. Given that we do very limited
 reasoning about regions at present, this should not be a problem.</p>
-<a class="header" href="1211-mir.html#representing-scopes" id="representing-scopes"><h3>Representing scopes</h3></a>
+<a class="header" href="#representing-scopes" id="representing-scopes"><h3>Representing scopes</h3></a>
 <p>Lexical scopes in Rust play a large role in terms of when destructors
 run and how the reasoning about lifetimes works. However, they are
 completely erased by the graph format. For the most part, this is not
@@ -748,12 +755,12 @@ extra information mapping every scope to a SEME region (single-entry,
 multiple-exit). If/when we move to non-lexical lifetimes, regions
 would be defined in terms of the graph itself, and the need to retain
 scoping information should go away.</p>
-<a class="header" href="1211-mir.html#monomorphization" id="monomorphization"><h3>Monomorphization</h3></a>
+<a class="header" href="#monomorphization" id="monomorphization"><h3>Monomorphization</h3></a>
 <p>Currently, we do monomorphization at LLVM translation time. If we ever
 chose to do it at a MIR level, that would be fine, but one thing to be
 careful of is that we may be able to elide <code>Drop</code> nodes based on the
 specific types.</p>
-<a class="header" href="1211-mir.html#unchecked-assertions" id="unchecked-assertions"><h3>Unchecked assertions</h3></a>
+<a class="header" href="#unchecked-assertions" id="unchecked-assertions"><h3>Unchecked assertions</h3></a>
 <p>There are various bits of the MIR that are not trivially type-checked.
 In general, these are properties which are assured in Rust by
 construction in the high-level syntax, and thus we must be careful not
@@ -778,7 +785,7 @@ downcasts are safe); and,</li>
 checking that bounds and downcasts only occur downstream of a relevant
 check.</li>
 </ol>
-<a class="header" href="1211-mir.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p><strong>Converting from AST to a MIR will take some compilation time.</strong>
 Expectations are that constructing the MIR will be quite fast, and
 that follow-on code (such as trans and borowck) will execute faster,
@@ -795,7 +802,7 @@ versus being explicit in the source code. The current prototype
 doesn't have much in this direction, but it should be relatively
 straightforward to add. Hints like those, in addition to spans, should
 be enough to bridge the error message gap.</p>
-<a class="header" href="1211-mir.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p><strong>Use SSA.</strong> In the proposed MIR, temporaries are single-assignment
 but can be borrowed, making them more analogous to allocas than SSA
 values. This is helpful to analyses like the borrow checker, because
@@ -852,7 +859,7 @@ that makes it easier to check that the properties hold. The former
 would make downstream code accommodate more complexity. The latter
 remains an option in the future but doesn't seem to offer much
 practical advantage.</p>
-<a class="header" href="1211-mir.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p><strong>What additional info is needed to provide for good error messages?</strong>
 Currently the implementation only has spans on statements, not lvalues
 or rvalues. We'll have to experiment here. I expect we will probably
@@ -913,9 +920,6 @@ in the MIR. My hunch is that we can improve our HIR instead.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

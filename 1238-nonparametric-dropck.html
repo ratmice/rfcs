@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1238-nonparametric-dropck - </title>
+        <title>1238-nonparametric-dropck - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1238">rust-lang/rfcs#1238</a>/</li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/28498">rust-lang/rust#28498</a></li>
 </ul>
-<a class="header" href="1238-nonparametric-dropck.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Revise the Drop Check (<code>dropck</code>) part of Rust's static analyses in two
 ways.  In the context of this RFC, these revisions are respectively
 named <code>cannot-assume-parametricity</code> and <code>unguarded-escape-hatch</code>.</p>
@@ -155,8 +162,8 @@ starting with &quot;unsafe&quot;) that a library designer can attach to a
 the <code>dropck</code>'s constraints (unsafely).</p>
 </li>
 </ol>
-<a class="header" href="1238-nonparametric-dropck.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="1238-nonparametric-dropck.html#background-parametricity-in-dropck" id="background-parametricity-in-dropck"><h2>Background: Parametricity in <code>dropck</code></h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#background-parametricity-in-dropck" id="background-parametricity-in-dropck"><h2>Background: Parametricity in <code>dropck</code></h2></a>
 <p>The Drop Check rule (<code>dropck</code>) for <a href="https://github.com/rust-lang/rfcs/blob/master/text/0769-sound-generic-drop.md">Sound Generic Drop</a> relies on a
 reasoning process that needs to infer that the behavior of a
 polymorphic function (e.g. <code>fn foo&lt;T&gt;</code>) does not depend on the
@@ -165,7 +172,7 @@ concrete type instantiations of any of its <em>unbounded</em> type parameters
 destructor (if any) for those type parameters.</p>
 <p>This property is a (weakened) form of a property known in academic
 circles as <em>Parametricity</em>.
-(See e.g. <a href="1238-nonparametric-dropck.html#reynolds">Reynolds, IFIP 1983</a>, <a href="1238-nonparametric-dropck.html#wadler">Wadler, FPCA 1989</a>.)</p>
+(See e.g. <a href="#reynolds">Reynolds, IFIP 1983</a>, <a href="#wadler">Wadler, FPCA 1989</a>.)</p>
 <ul>
 <li>
 <p>Parametricity, in this context, essentially says that the compiler
@@ -189,7 +196,7 @@ instantiated with a concrete type like <code>&amp;Vec&lt;u32&gt;</code>, the bod
 details about this are available on the <a href="https://github.com/rust-lang/rfcs/blob/master/text/0769-sound-generic-drop.md">Sound Generic Drop</a> RFC.</p>
 </li>
 </ul>
-<a class="header" href="1238-nonparametric-dropck.html#mistakes-were-made" id="mistakes-were-made"><h2>&quot;Mistakes were made&quot;</h2></a>
+<a class="header" href="#mistakes-were-made" id="mistakes-were-made"><h2>&quot;Mistakes were made&quot;</h2></a>
 <p>The parametricity-based reasoning in the
 <a href="https://github.com/rust-lang/rfcs/blob/master/text/0769-sound-generic-drop.md">Drop Check analysis</a> (<code>dropck</code>) was clever, but
 fragile and unproven.</p>
@@ -213,7 +220,7 @@ more-aggressive feature-gated rules in the development nightly release
 channel.</p>
 <p>However, there is also a specific reason why we want to ratchet back
 on the <code>dropck</code> analysis as soon as possible.</p>
-<a class="header" href="1238-nonparametric-dropck.html#impl-specialization-is-inherently-non-parametric" id="impl-specialization-is-inherently-non-parametric"><h2>Impl specialization is inherently non-parametric</h2></a>
+<a class="header" href="#impl-specialization-is-inherently-non-parametric" id="impl-specialization-is-inherently-non-parametric"><h2>Impl specialization is inherently non-parametric</h2></a>
 <p>The parametricity requirement in the Drop Check rule over-restricts
 the design space for future language changes.</p>
 <p>In particular, the <a href="https://github.com/rust-lang/rfcs/pull/1210">impl specialization</a> RFC describes a language
@@ -221,17 +228,17 @@ change that will allow the invocation of a polymorphic function <code>f</code> t
 end up in different sequences of code based solely on the concrete
 type of <code>T</code>, <em>even</em> when <code>T</code> has no trait bounds within its
 declaration in <code>f</code>.</p>
-<a class="header" href="1238-nonparametric-dropck.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Revise the Drop Check (<code>dropck</code>) part of Rust's static analyses in two
 ways.  In the context of this RFC, these revisions are respectively
 named <code>cannot-assume-parametricity</code> (CAP) and <code>unguarded-escape-hatch</code> (UGEH).</p>
 <p>Though the revisions are given distinct names, they both fall under
 the feature gate <code>dropck_parametricity</code>. (Note however that this
-might be irrelevant to CAP; see <a href="1238-nonparametric-dropck.html#cap-stabilization-details">CAP stabilization details</a>).</p>
-<a class="header" href="1238-nonparametric-dropck.html#cannot-assume-parametricity" id="cannot-assume-parametricity"><h2>cannot-assume-parametricity</h2></a>
+might be irrelevant to CAP; see <a href="#cap-stabilization-details">CAP stabilization details</a>).</p>
+<a class="header" href="#cannot-assume-parametricity" id="cannot-assume-parametricity"><h2>cannot-assume-parametricity</h2></a>
 <p>The heart of CAP is this: make <code>dropck</code> analysis stop relying on
 parametricity of type-parameters.</p>
-<a class="header" href="1238-nonparametric-dropck.html#changes-to-the-drop-check-rule" id="changes-to-the-drop-check-rule"><h3>Changes to the Drop-Check Rule</h3></a>
+<a class="header" href="#changes-to-the-drop-check-rule" id="changes-to-the-drop-check-rule"><h3>Changes to the Drop-Check Rule</h3></a>
 <p>The Drop-Check Rule (both in its original form and as revised here)
 dicates when a lifetime <code>'a</code> must strictly outlive some value <code>v</code>,
 where <code>v</code> owns data of type <code>D</code>; the rule gave two circumstances where
@@ -259,9 +266,9 @@ as <code>struct Parametri&lt;C&gt;</code> may read from data held in its <code>C
 even though the <code>fn drop</code> formerly appeared to be parametric with
 respect to <code>C</code>. This will cause <code>rustc</code> to reject code that it had
 previously accepted (below are some examples that
-<a href="1238-nonparametric-dropck.html#examples-of-code-that-must-continue-to-work">continue to work</a> and
-some that <a href="1238-nonparametric-dropck.html#examples-of-code-that-will-start-to-be-rejected">start being rejected</a>).</p>
-<a class="header" href="1238-nonparametric-dropck.html#cap-stabilization-details" id="cap-stabilization-details"><h3>CAP stabilization details</h3></a>
+<a href="#examples-of-code-that-must-continue-to-work">continue to work</a> and
+some that <a href="#examples-of-code-that-will-start-to-be-rejected">start being rejected</a>).</p>
+<a class="header" href="#cap-stabilization-details" id="cap-stabilization-details"><h3>CAP stabilization details</h3></a>
 <p><code>cannot-assume-parametricity</code> will be incorporated into the beta
 and stable Rust channels, to ensure that destructor code atop
 stable channels in the wild stop relying on parametricity as soon
@@ -284,11 +291,11 @@ There would be no way to opt back into the old <code>dropck</code> rules.</p>
 double-check whether a warning-cycle is in fact feasible.)</p>
 </li>
 </ul>
-<a class="header" href="1238-nonparametric-dropck.html#unguarded-escape-hatch" id="unguarded-escape-hatch"><h2>unguarded-escape-hatch</h2></a>
+<a class="header" href="#unguarded-escape-hatch" id="unguarded-escape-hatch"><h2>unguarded-escape-hatch</h2></a>
 <p>The heart of <code>unguarded-escape-hatch</code> (UGEH) is this: Provide a new,
 unsafe (and unstable) attribute-based escape hatch for use in the
 standard library for cases where Drop Check is too strict.</p>
-<a class="header" href="1238-nonparametric-dropck.html#why-we-need-an-escape-hatch" id="why-we-need-an-escape-hatch"><h3>Why we need an escape hatch</h3></a>
+<a class="header" href="#why-we-need-an-escape-hatch" id="why-we-need-an-escape-hatch"><h3>Why we need an escape hatch</h3></a>
 <p>The original motivation for the parametricity special-case in the
 original Drop-Check rule was due to an observation that collection
 types such as <code>TypedArena&lt;T&gt;</code> or <code>Vec&lt;T&gt;</code> were often used to
@@ -310,14 +317,14 @@ the instance value, thus ruling out cross-references in the same
 <p>Of course, the whole point of this RFC is that using parametricity as
 the escape hatch seems like it does not suffice. But we still need
 <em>some</em> escape hatch.</p>
-<a class="header" href="1238-nonparametric-dropck.html#the-new-escape-hatch-an-unsafe-attribute" id="the-new-escape-hatch-an-unsafe-attribute"><h3>The new escape hatch: an unsafe attribute</h3></a>
+<a class="header" href="#the-new-escape-hatch-an-unsafe-attribute" id="the-new-escape-hatch-an-unsafe-attribute"><h3>The new escape hatch: an unsafe attribute</h3></a>
 <p>This leads us to the second component of the RFC, <code>unguarded-escape-hatch</code> (UGEH):
 Add an attribute (with a name starting with &quot;unsafe&quot;) that a library
 designer can attach to a <code>drop</code> implementation that will allow a
 destructor to side-step the <code>dropck</code>'s constraints (unsafely).</p>
 <p>This RFC proposes the attribute name <code>unsafe_destructor_blind_to_params</code>.
 This name was specifically chosen to be long and ugly; see
-<a href="1238-nonparametric-dropck.html#ugeh-stabilization-details">UGEH stabilization details</a> for further discussion.</p>
+<a href="#ugeh-stabilization-details">UGEH stabilization details</a> for further discussion.</p>
 <p>Much like the <code>unsafe_destructor</code> attribute that we had in the past,
 this attribute relies on the programmer to ensure that the destructor
 cannot actually be used unsoundly. It states an (unproven) assumption
@@ -334,7 +341,7 @@ anything more than move or drop values.)</li>
 </ul>
 <p>The above assumption must hold regardless of what impact
 <a href="https://github.com/rust-lang/rfcs/pull/1210">impl specialization</a> has on the resolution of all function calls.</p>
-<a class="header" href="1238-nonparametric-dropck.html#ugeh-stabilization-details" id="ugeh-stabilization-details"><h3>UGEH stabilization details</h3></a>
+<a class="header" href="#ugeh-stabilization-details" id="ugeh-stabilization-details"><h3>UGEH stabilization details</h3></a>
 <p>The proposed attribute is only a <em>short-term</em> patch to work-around a
 bug exposed by the combination of two desirable features (namely
 <a href="https://github.com/rust-lang/rfcs/pull/1210">impl specialization</a> and <a href="https://github.com/rust-lang/rfcs/blob/master/text/0769-sound-generic-drop.md"><code>dropck</code></a>).</p>
@@ -360,7 +367,7 @@ particular, this RFC does <em>not</em> propose that we stabilize the
 proposed attribute</p>
 <p>It may be possible for future language changes to allow us to
 directly express the necessary parametricity properties.
-See further discussion in the <a href="1238-nonparametric-dropck.html#continue-supporting-parametricity">continue supporting parametricity</a> alternative.</p>
+See further discussion in the <a href="#continue-supporting-parametricity">continue supporting parametricity</a> alternative.</p>
 <p>The suggested attribute name (<code>unsafe_destructor_blind_to_params</code>
 above) was deliberately selected to be long and ugly, in order to
 discourage it from being stabilized in the future without at least
@@ -369,12 +376,12 @@ chosen for its likely pronounciation &quot;ugh&quot;, again a reminder that
 we do not <em>want</em> to adopt this approach for the long term.)</p>
 </li>
 </ul>
-<a class="header" href="1238-nonparametric-dropck.html#examples-of-code-changes-under-the-rfc" id="examples-of-code-changes-under-the-rfc"><h2>Examples of code changes under the RFC</h2></a>
+<a class="header" href="#examples-of-code-changes-under-the-rfc" id="examples-of-code-changes-under-the-rfc"><h2>Examples of code changes under the RFC</h2></a>
 <p>This section shows some code examples, starting with code that works
 today and must continue to work tomorrow, then showing an example of
 code that will start being rejected, and ending with an example of the
 UGEH attribute.</p>
-<a class="header" href="1238-nonparametric-dropck.html#examples-of-code-that-must-continue-to-work" id="examples-of-code-that-must-continue-to-work"><h3>Examples of code that must continue to work</h3></a>
+<a class="header" href="#examples-of-code-that-must-continue-to-work" id="examples-of-code-that-must-continue-to-work"><h3>Examples of code that must continue to work</h3></a>
 <p>Here is some code that works today and must continue to work in the future:</p>
 <pre><pre class="playpen"><code class="language-rust">use std::cell::Cell;
 
@@ -410,7 +417,7 @@ fn main() {
     foo.data[1].1.set(Some(&amp;foo.data[0]));
 }
 </code></pre></pre>
-<a class="header" href="1238-nonparametric-dropck.html#examples-of-code-that-will-start-to-be-rejected" id="examples-of-code-that-will-start-to-be-rejected"><h3>Examples of code that will start to be rejected</h3></a>
+<a class="header" href="#examples-of-code-that-will-start-to-be-rejected" id="examples-of-code-that-will-start-to-be-rejected"><h3>Examples of code that will start to be rejected</h3></a>
 <p>The main change injected by this RFC is this: due to <code>cannot-assume-parametricity</code>,
 an attempt to add a destructor to the <code>struct Foo</code> above will cause the
 code above to be rejected, because we will assume that the destructor for <code>Foo</code>
@@ -441,7 +448,7 @@ destructors with this sort of cyclic structure is sufficiently rare
 that <em>no</em> crates on <code>crates.io</code> actually regressed under the new rule:
 everything that compiled before the change continued to compile after
 it.</p>
-<a class="header" href="1238-nonparametric-dropck.html#example-of-the-unguarded-escape-hatch" id="example-of-the-unguarded-escape-hatch"><h3>Example of the unguarded-escape-hatch</h3></a>
+<a class="header" href="#example-of-the-unguarded-escape-hatch" id="example-of-the-unguarded-escape-hatch"><h3>Example of the unguarded-escape-hatch</h3></a>
 <p>If the developer of <code>Foo</code> has access to the feature-gated
 escape-hatch, and is willing to assert that the destructor for <code>Foo</code>
 does nothing with the links in the data, then the developer can work
@@ -468,7 +475,7 @@ fn main() {
     foo.data[1].1.set(Some(&amp;foo.data[0]));
 }
 </code></pre></pre>
-<a class="header" href="1238-nonparametric-dropck.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>As should be clear by the tone of this RFC, the
 <code>unguarded-escape-hatch</code> is clearly a hack. It is subtle and unsafe,
 just as <code>unsafe_destructor</code> was (and for the most part, the whole
@@ -487,24 +494,24 @@ types of <code>libstd</code>.</p>
 <p>Otherwise, if clients outside of <code>libstd</code> determine that they <em>do</em>
 need to be able to write destructors that need to bypass <code>dropck</code>
 safely, then we can (and <em>should</em>) investigate one of the
-<a href="1238-nonparametric-dropck.html#continue-supporting-parametricity">sound alternatives</a>, rather
+<a href="#continue-supporting-parametricity">sound alternatives</a>, rather
 than stabilize the unsafe hackish escape hatch..</p>
 </li>
 </ul>
-<a class="header" href="1238-nonparametric-dropck.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1238-nonparametric-dropck.html#cap-without-ugeh" id="cap-without-ugeh"><h2>CAP without UGEH</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#cap-without-ugeh" id="cap-without-ugeh"><h2>CAP without UGEH</h2></a>
 <p>One might consider adopting <code>cannot-assume-parametricity</code> without
 <code>unguarded-escape-hatch</code>.  However, unless some other sort of escape
 hatch were added, this path would break much more code.</p>
-<a class="header" href="1238-nonparametric-dropck.html#ugeh-for-lifetime-parameters" id="ugeh-for-lifetime-parameters"><h2>UGEH for lifetime parameters</h2></a>
+<a class="header" href="#ugeh-for-lifetime-parameters" id="ugeh-for-lifetime-parameters"><h2>UGEH for lifetime parameters</h2></a>
 <p>Since we're already being unsafe here, one might consider having
 the <code>unsafe_destructor_blind_to_params</code> apply to lifetime parameters
 as well as type parameters.</p>
 <p>However, given that the <code>unsafe_destructor_blind_to_params</code> attribute
 is only intended as a short-term band-aid (see
-<a href="1238-nonparametric-dropck.html#ugeh-stabilization-details">UGEH stabilization details</a>) it seems better to just make it only as
+<a href="#ugeh-stabilization-details">UGEH stabilization details</a>) it seems better to just make it only as
 broad as it needs to be (and no broader).</p>
-<a class="header" href="1238-nonparametric-dropck.html#sort-of-guarded-escape-hatch" id="sort-of-guarded-escape-hatch"><h2>&quot;Sort-of Guarded&quot; Escape Hatch</h2></a>
+<a class="header" href="#sort-of-guarded-escape-hatch" id="sort-of-guarded-escape-hatch"><h2>&quot;Sort-of Guarded&quot; Escape Hatch</h2></a>
 <p>We could add the escape hatch but continue employing the current
 dropck analysis to it. This would essentially mean that code would have
 to apply the unsafe attribute to be considered for parametricity, but
@@ -516,7 +523,7 @@ really think it has much of a benefit. It would potentially lead
 someone to think that their code has been proven sound (since the
 <code>dropck</code> would catch some mistakes in programmer reasoning) but the
 pitfalls with respect to specialization would remain.</p>
-<a class="header" href="1238-nonparametric-dropck.html#continue-supporting-parametricity" id="continue-supporting-parametricity"><h2>Continue Supporting Parametricity</h2></a>
+<a class="header" href="#continue-supporting-parametricity" id="continue-supporting-parametricity"><h2>Continue Supporting Parametricity</h2></a>
 <p>There may be ways to revise the language so that functions can declare
 that they must be parametric with respect to their type parameters.
 Here we sketch two potential ideas for how one might do this, mostly to
@@ -527,7 +534,7 @@ parametric destructors, as we will see.</p>
 <p>(Also, if we go down this path, we will need to fix other bugs in the
 Drop Check rule, where, as previously noted, parametricity is a
 <a href="https://github.com/rust-lang/rust/issues/26656">necessary but <em>insufficient</em> condition</a> for soundness.)</p>
-<a class="header" href="1238-nonparametric-dropck.html#parametricity-via-effect-system-attributes" id="parametricity-via-effect-system-attributes"><h3>Parametricity via effect-system attributes</h3></a>
+<a class="header" href="#parametricity-via-effect-system-attributes" id="parametricity-via-effect-system-attributes"><h3>Parametricity via effect-system attributes</h3></a>
 <p>One feature of the <a href="https://github.com/rust-lang/rfcs/pull/1210">impl specialization</a> RFC is that all functions that
 can be specialized must be declared as such, via the <code>default</code> keyword.</p>
 <p>This leads us to one way that a function could declare that its body
@@ -553,7 +560,7 @@ using any library routine unless that routine has been marked as
 <code>#[unspecialized]</code>. The attribute is unlikely to be included on any
 function unless the its developer is making a destructor that calls it
 in tandem.</p>
-<a class="header" href="1238-nonparametric-dropck.html#parametricity-via-some--bound" id="parametricity-via-some--bound"><h3>Parametricity via some <code>?</code>-bound</h3></a>
+<a class="header" href="#parametricity-via-some--bound" id="parametricity-via-some--bound"><h3>Parametricity via some <code>?</code>-bound</h3></a>
 <p>Another approach starts from another angle: As described earlier,
 parametricity in <code>dropck</code> is the requirement that <code>fn drop</code> cannot do
 anything with a <code>t: T</code> (where <code>T</code> is some relevant type parameter)
@@ -589,7 +596,7 @@ at least in theory.)</p>
 burden on the destructor implementor: Again, the <code>T: ?Special</code>
 attribute is unlikely to be included on any function unless the its
 developer is making a destructor that calls it in tandem.</p>
-<a class="header" href="1238-nonparametric-dropck.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>What name to use for the attribute?
@@ -603,11 +610,11 @@ Is <code>unsafe_destructor_blind_to_params</code> sufficiently long and ugly? ;)
 into the <a href="https://github.com/rust-lang/rfcs/pull/1210">impl specialization</a> RFC?</p>
 </li>
 </ul>
-<a class="header" href="1238-nonparametric-dropck.html#bibliography" id="bibliography"><h1>Bibliography</h1></a>
-<a class="header" href="1238-nonparametric-dropck.html#reynolds" id="reynolds"><h3>Reynolds</h3></a>
+<a class="header" href="#bibliography" id="bibliography"><h1>Bibliography</h1></a>
+<a class="header" href="#reynolds" id="reynolds"><h3>Reynolds</h3></a>
 <p>John C. Reynolds. &quot;Types, abstraction and parametric polymorphism&quot;. IFIP 1983
 http://www.cse.chalmers.se/edu/year/2010/course/DAT140_Types/Reynolds_typesabpara.pdf</p>
-<a class="header" href="1238-nonparametric-dropck.html#wadler" id="wadler"><h3>Wadler</h3></a>
+<a class="header" href="#wadler" id="wadler"><h3>Wadler</h3></a>
 <p>Philip Wadler. &quot;Theorems for free!&quot;. FPCA 1989
 http://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf</p>
 
@@ -654,9 +661,6 @@ http://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

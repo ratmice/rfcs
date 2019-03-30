@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0505-api-comment-conventions - </title>
+        <title>0505-api-comment-conventions - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,21 +145,21 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/505">rust-lang/rfcs#505</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="0505-api-comment-conventions.html#note" id="note"><h1>Note</h1></a>
+<a class="header" href="#note" id="note"><h1>Note</h1></a>
 <p>This RFC has been amended by <a href="https://github.com/rust-lang/rfcs/blob/master/text/1574-more-api-documentation-conventions.md">RFC 1574</a>, which contains <a href="https://github.com/rust-lang/rfcs/blob/master/text/1574-more-api-documentation-conventions.md#appendix-a-full-conventions-text">a combined version of the conventions</a>.</p>
-<a class="header" href="0505-api-comment-conventions.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This is a conventions RFC, providing guidance on providing API documentation
 for Rust projects, including the Rust language itself.</p>
-<a class="header" href="0505-api-comment-conventions.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Documentation is an extremely important part of any project. It's important
 that we have consistency in our documentation.</p>
 <p>For the most part, the RFC proposes guidelines that are already followed today,
 but it tries to motivate and clarify them.</p>
-<a class="header" href="0505-api-comment-conventions.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>There are a number of individual guidelines. Most of these guidelines are for
 any Rust project, but some are specific to documenting <code>rustc</code> itself and the
 standard library. These are called out specifically in the text itself.</p>
-<a class="header" href="0505-api-comment-conventions.html#use-line-comments" id="use-line-comments"><h2>Use line comments</h2></a>
+<a class="header" href="#use-line-comments" id="use-line-comments"><h2>Use line comments</h2></a>
 <p>Avoid block comments. Use line comments instead:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -189,7 +196,7 @@ mod test {
     // ...
 }
 #}</code></pre></pre>
-<a class="header" href="0505-api-comment-conventions.html#formatting" id="formatting"><h2>Formatting</h2></a>
+<a class="header" href="#formatting" id="formatting"><h2>Formatting</h2></a>
 <p>The first line in any doc comment should be a single-line short sentence
 providing a summary of the code. This line is used as a summary description
 throughout Rustdoc's output, so it's a good idea to keep it short.</p>
@@ -197,7 +204,7 @@ throughout Rustdoc's output, so it's a good idea to keep it short.</p>
 Prefer full sentences to fragments.</p>
 <p>The summary line should be written in third person singular present indicative
 form. Basically, this means write &quot;Returns&quot; instead of &quot;Return&quot;.</p>
-<a class="header" href="0505-api-comment-conventions.html#using-markdown" id="using-markdown"><h2>Using Markdown</h2></a>
+<a class="header" href="#using-markdown" id="using-markdown"><h2>Using Markdown</h2></a>
 <p>Within doc comments, use Markdown to format your documentation.</p>
 <p>Use top level headings # to indicate sections within your comment. Common headings:</p>
 <ul>
@@ -237,17 +244,17 @@ it's important to mark what is not Rust so your tests don't fail.</p>
 <p>to</p>
 <pre><code>[Rust website](http://www.rust-lang.org)
 </code></pre>
-<a class="header" href="0505-api-comment-conventions.html#english" id="english"><h2>English</h2></a>
+<a class="header" href="#english" id="english"><h2>English</h2></a>
 <p>This section applies to <code>rustc</code> and the standard library.</p>
 <p>All documentation is standardized on American English, with regards to
 spelling, grammar, and punctuation conventions. Language changes over time,
 so this doesn't mean that there is always a correct answer to every grammar
 question, but there is often some kind of formal consensus.</p>
-<a class="header" href="0505-api-comment-conventions.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>None.</p>
-<a class="header" href="0505-api-comment-conventions.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Not having documentation guidelines.</p>
-<a class="header" href="0505-api-comment-conventions.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -293,9 +300,6 @@ question, but there is often some kind of formal consensus.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

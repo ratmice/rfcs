@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1696-discriminant - </title>
+        <title>1696-discriminant - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,12 +146,12 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1696">rust-lang/rfcs#1696</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/pull/24263">#24263</a>, <a href="https://github.com/rust-lang/rust/pull/34785">#34785</a></li>
 </ul>
-<a class="header" href="1696-discriminant.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add a function that extracts the discriminant from an enum variant as a comparable, hashable, printable, but (for now) opaque and unorderable type.</p>
-<a class="header" href="1696-discriminant.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>When using an ADT enum that contains data in some of the variants, it is sometimes desirable to know the variant but ignore the data, in order to compare two values by variant or store variants in a hash map when the data is either unhashable or unimportant.</p>
 <p>The motivation for this is mostly identical to <a href="https://github.com/rust-lang/rfcs/blob/master/text/0639-discriminant-intrinsic.md#motivation">RFC 639</a>.</p>
-<a class="header" href="1696-discriminant.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The proposed design has been implemented at <a href="https://github.com/rust-lang/rust/pull/34785">#34785</a> (after some back-and-forth). That implementation is copied at the end of this section for reference.</p>
 <p>A struct <code>Discriminant&lt;T&gt;</code> and a free function <code>fn discriminant&lt;T&gt;(v: &amp;T) -&gt; Discriminant&lt;T&gt;</code> are added to <code>std::mem</code> (for lack of a better home, and noting that <code>std::mem</code> already contains similar parametricity escape hatches such as <code>size_of</code>). For now, the <code>Discriminant</code> struct is simply a newtype over <code>u64</code>, because that's what the <code>discriminant_value</code> intrinsic returns, and a <code>PhantomData</code> to allow it to be generic over <code>T</code>.</p>
 <p>Making <code>Discriminant</code> generic provides several benefits:</p>
@@ -223,17 +230,17 @@ impl&lt;T&gt; fmt::Debug for Discriminant&lt;T&gt; {
     }
 }
 #}</code></pre></pre>
-<a class="header" href="1696-discriminant.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ol>
 <li>Anytime we reveal more details about the memory representation of a <code>repr(rust)</code> type, we add back-compat guarantees. The author is of the opinion that the proposed <code>Discriminant</code> newtype still hides enough to mitigate this drawback. (But see open question #1.)</li>
 <li>Adding another function and type to core implies an additional maintenance burden, especially when more enum layout optimizations come around (however, there is hardly any burden on top of that associated with the extant <code>discriminant_value</code> intrinsic).</li>
 </ol>
-<a class="header" href="1696-discriminant.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ol>
 <li>Do nothing: there is no stable way to extract the discriminant from an enum variant. Users who need such a feature will need to write (or generate) big match statements and hope they optimize well (this has been servo's approach).</li>
 <li>Directly stabilize the <code>discriminant_value</code> intrinsic, or a wrapper that doesn't use an opaque newtype. This more drastically precludes future enum representation optimizations, and won't be able to take advantage of future type system improvements that would let <code>discriminant</code> return a type dependent on the enum.</li>
 </ol>
-<a class="header" href="1696-discriminant.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ol>
 <li>Can the return value of <code>discriminant(&amp;x)</code> be considered stable between subsequent compilations of the same code? How about if the enum in question is changed by modifying a variant's name? by adding a variant?</li>
 <li>Is the <code>T: Reflect</code> bound necessary?</li>
@@ -283,9 +290,6 @@ impl&lt;T&gt; fmt::Debug for Discriminant&lt;T&gt; {
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

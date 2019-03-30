@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1620-regex-1.0 - </title>
+        <title>1620-regex-1.0 - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,65 +146,65 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1620">rust-lang/rfcs#1620</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1620-regex-1.0.html#table-of-contents" id="table-of-contents"><h1>Table of contents</h1></a>
+<a class="header" href="#table-of-contents" id="table-of-contents"><h1>Table of contents</h1></a>
 <ul>
-<li><a href="1620-regex-1.0.html#summary">Summary</a></li>
-<li><a href="1620-regex-1.0.html#motivation">Motivation</a></li>
-<li><a href="1620-regex-1.0.html#detailed-design">Detailed design</a>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#motivation">Motivation</a></li>
+<li><a href="#detailed-design">Detailed design</a>
 <ul>
-<li><a href="1620-regex-1.0.html#syntax">Syntax</a>
+<li><a href="#syntax">Syntax</a>
 <ul>
-<li><a href="1620-regex-1.0.html#evolution">Evolution</a></li>
-<li><a href="1620-regex-1.0.html#concrete-syntax">Concrete syntax</a></li>
-<li><a href="1620-regex-1.0.html#expansion-concerns">Expansion concerns</a></li>
+<li><a href="#evolution">Evolution</a></li>
+<li><a href="#concrete-syntax">Concrete syntax</a></li>
+<li><a href="#expansion-concerns">Expansion concerns</a></li>
 </ul>
 </li>
-<li><a href="1620-regex-1.0.html#core-api">Core API</a></li>
-<li><a href="1620-regex-1.0.html#regexbuilder">RegexBuilder</a></li>
-<li><a href="1620-regex-1.0.html#replacer">Replacer</a></li>
-<li><a href="1620-regex-1.0.html#quote">quote</a></li>
-<li><a href="1620-regex-1.0.html#regexset">RegexSet</a></li>
-<li><a href="1620-regex-1.0.html#the-bytes-submodule">The <code>bytes</code> submodule</a></li>
+<li><a href="#core-api">Core API</a></li>
+<li><a href="#regexbuilder">RegexBuilder</a></li>
+<li><a href="#replacer">Replacer</a></li>
+<li><a href="#quote">quote</a></li>
+<li><a href="#regexset">RegexSet</a></li>
+<li><a href="#the-bytes-submodule">The <code>bytes</code> submodule</a></li>
 </ul>
 </li>
-<li><a href="1620-regex-1.0.html#drawbacks">Drawbacks</a>
+<li><a href="#drawbacks">Drawbacks</a>
 <ul>
-<li><a href="1620-regex-1.0.html#guaranteed-linear-time-matching">Guaranteed linear time matching</a></li>
-<li><a href="1620-regex-1.0.html#allocation">Allocation</a></li>
-<li><a href="1620-regex-1.0.html#synchronization-is-implicit">Synchronization is implicit</a></li>
-<li><a href="1620-regex-1.0.html#the-implementation-is-complex">The implementation is complex</a></li>
+<li><a href="#guaranteed-linear-time-matching">Guaranteed linear time matching</a></li>
+<li><a href="#allocation">Allocation</a></li>
+<li><a href="#synchronization-is-implicit">Synchronization is implicit</a></li>
+<li><a href="#the-implementation-is-complex">The implementation is complex</a></li>
 </ul>
 </li>
-<li><a href="1620-regex-1.0.html#alternatives">Alternatives</a>
+<li><a href="#alternatives">Alternatives</a>
 <ul>
-<li><a href="1620-regex-1.0.html#big-picture">Big picture</a></li>
-<li><a href="1620-regex-1.0.html#bytesregex"><code>bytes::Regex</code></a>
+<li><a href="#big-picture">Big picture</a></li>
+<li><a href="#bytesregex"><code>bytes::Regex</code></a>
 <ul>
-<li><a href="1620-regex-1.0.html#a-regex-trait">A regex trait</a></li>
-<li><a href="1620-regex-1.0.html#reuse-some-types">Reuse some types</a></li>
+<li><a href="#a-regex-trait">A regex trait</a></li>
+<li><a href="#reuse-some-types">Reuse some types</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="1620-regex-1.0.html#unresolved-questions">Unresolved questions</a>
+<li><a href="#unresolved-questions">Unresolved questions</a>
 <ul>
-<li><a href="1620-regex-1.0.html#regex-syntax"><code>regex-syntax</code></a></li>
-<li><a href="1620-regex-1.0.html#regex-capi"><code>regex-capi</code></a></li>
-<li><a href="1620-regex-1.0.html#regex_macros"><code>regex_macros</code></a></li>
-<li><a href="1620-regex-1.0.html#dependencies">Dependencies</a></li>
-<li><a href="1620-regex-1.0.html#exposing-more-internals">Exposing more internals</a></li>
+<li><a href="#regex-syntax"><code>regex-syntax</code></a></li>
+<li><a href="#regex-capi"><code>regex-capi</code></a></li>
+<li><a href="#regex_macros"><code>regex_macros</code></a></li>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#exposing-more-internals">Exposing more internals</a></li>
 </ul>
 </li>
-<li><a href="1620-regex-1.0.html#breaking-changes">Breaking changes</a></li>
+<li><a href="#breaking-changes">Breaking changes</a></li>
 </ul>
-<a class="header" href="1620-regex-1.0.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes a 1.0 API for the <code>regex</code> crate and therefore a move out of
 the <code>rust-lang-nursery</code> organization and into the <code>rust-lang</code> organization.
 Since the API of <code>regex</code> has largely remained unchanged since its inception
 <a href="https://github.com/rust-lang/rfcs/blob/master/text/0042-regexps.md">2 years ago</a>,
 significant emphasis is placed on retaining the existing API. Some minor
 breaking changes are proposed.</p>
-<a class="header" href="1620-regex-1.0.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Regular expressions are a widely used tool and most popular programming
 languages either have an implementation of regexes in their standard library,
 or there exists at least one widely used third party implementation. It
@@ -216,9 +223,9 @@ capturing groups---in some text.</li>
 <p>The expected outcome is that the <code>regex</code> crate should be the preferred default
 choice for matching regular expressions when writing Rust code. This is already
 true today; this RFC formalizes it.</p>
-<a class="header" href="1620-regex-1.0.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1620-regex-1.0.html#syntax" id="syntax"><h2>Syntax</h2></a>
-<a class="header" href="1620-regex-1.0.html#evolution" id="evolution"><h3>Evolution</h3></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#syntax" id="syntax"><h2>Syntax</h2></a>
+<a class="header" href="#evolution" id="evolution"><h3>Evolution</h3></a>
 <p>The public API of a <code>regex</code> library <em>includes</em> the syntax of a regular
 expression. A change in the semantics of the syntax can cause otherwise working
 programs to break, yet, we'd still like the option to expand the syntax if
@@ -242,13 +249,13 @@ to use more memory, or indeed, the representation of the compiled regex could
 change completely. This could cause a regex that fit under the size limit to
 no longer fit, and therefore fail to compile. These cases are expected to be
 extremely rare in practice. Notably, the default size limit is <code>10MB</code>.</p>
-<a class="header" href="1620-regex-1.0.html#concrete-syntax" id="concrete-syntax"><h3>Concrete syntax</h3></a>
+<a class="header" href="#concrete-syntax" id="concrete-syntax"><h3>Concrete syntax</h3></a>
 <p>The syntax is exhaustively documented in the current public API documentation:
 http://doc.rust-lang.org/regex/regex/index.html#syntax</p>
 <p>To my knowledge, the evolution as proposed in this RFC has been followed since
 <code>regex</code> was created. The syntax has largely remained unchanged with few
 additions.</p>
-<a class="header" href="1620-regex-1.0.html#expansion-concerns" id="expansion-concerns"><h3>Expansion concerns</h3></a>
+<a class="header" href="#expansion-concerns" id="expansion-concerns"><h3>Expansion concerns</h3></a>
 <p>There are a few possible avenues for expansion, and we take measures to make
 sure they are possible with respect to API evolution.</p>
 <ul>
@@ -274,7 +281,7 @@ considered invalid, which leaves room for expansion.</li>
 conflict with stable syntax. This is possible because using an unrecognized
 flag results in an invalid pattern.</li>
 </ul>
-<a class="header" href="1620-regex-1.0.html#core-api" id="core-api"><h2>Core API</h2></a>
+<a class="header" href="#core-api" id="core-api"><h2>Core API</h2></a>
 <p>The core API of the <code>regex</code> crate is the <code>Regex</code> type:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -395,7 +402,7 @@ impl Regex {
 #}</code></pre></pre>
 <p>Finally, <code>Regex</code> impls the <code>Send</code>, <code>Sync</code>, <code>Display</code>, <code>Debug</code>, <code>Clone</code> and
 <code>FromStr</code> traits from the standard library.</p>
-<a class="header" href="1620-regex-1.0.html#error" id="error"><h2>Error</h2></a>
+<a class="header" href="#error" id="error"><h2>Error</h2></a>
 <p>The <code>Error</code> enum is an <em>extensible</em> enum, similar to <code>std::io::Error</code>,
 corresponding to the different ways that regex compilation can fail. In
 particular, this means that adding a new variant to this enum is not a breaking
@@ -423,7 +430,7 @@ pub enum Error {
 of <code>regex</code>. We sidestep this hazard by defining a newtype in <code>regex</code> that
 internally wraps <code>regex_syntax::Error</code>. This also enables us to selectively
 expose more information in the future.</p>
-<a class="header" href="1620-regex-1.0.html#regexbuilder" id="regexbuilder"><h2>RegexBuilder</h2></a>
+<a class="header" href="#regexbuilder" id="regexbuilder"><h2>RegexBuilder</h2></a>
 <p>In most cases, the construction of a regex is done with <code>Regex::new</code>. There are
 however some options one might want to tweak. This can be done with a
 <code>RegexBuilder</code>:</p>
@@ -474,7 +481,7 @@ impl RegexBuilder {
   pub fn dfa_size_limit(&amp;mut self, limit: usize) -&gt; &amp;mut RegexBuilder;
 }
 #}</code></pre></pre>
-<a class="header" href="1620-regex-1.0.html#captures" id="captures"><h2>Captures</h2></a>
+<a class="header" href="#captures" id="captures"><h2>Captures</h2></a>
 <p>A <code>Captures</code> value stores the locations of all matching capturing groups for
 a single match. It provides convenient access to those locations indexed by
 either number, or, if available, name.</p>
@@ -525,7 +532,7 @@ that the return value is bounded to the lifetime of <code>Captures</code> instea
 lifetime of the actual text searched because of how the <code>Index</code> trait is
 defined. Callers can work around that limitation if necessary by using an
 explicit method such as <code>get</code> or <code>name</code>.</p>
-<a class="header" href="1620-regex-1.0.html#replacer" id="replacer"><h2>Replacer</h2></a>
+<a class="header" href="#replacer" id="replacer"><h2>Replacer</h2></a>
 <p>The <code>Replacer</code> trait is a helper trait to make the various <code>replace</code> methods on
 <code>Regex</code> more ergonomic. In particular, it makes it possible to use either a
 standard string as a replacement, or a closure with more explicit access to a
@@ -574,7 +581,7 @@ impl&lt;'t&gt; Replacer for NoExpand&lt;'t&gt; {
 that the replacement string is never searched for <code>$group</code> replacement syntax.</p>
 <p>We also provide two more implementations of the <code>Replacer</code> trait: <code>&amp;str</code> and
 <code>FnMut(&amp;Captures) -&gt; String</code>.</p>
-<a class="header" href="1620-regex-1.0.html#quote" id="quote"><h2>quote</h2></a>
+<a class="header" href="#quote" id="quote"><h2>quote</h2></a>
 <p>There is one free function in <code>regex</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -584,7 +591,7 @@ that the replacement string is never searched for <code>$group</code> replacemen
 /// The string returned may be safely used as a literal in a regex.
 pub fn quote(text: &amp;str) -&gt; String;
 #}</code></pre></pre>
-<a class="header" href="1620-regex-1.0.html#regexset" id="regexset"><h2>RegexSet</h2></a>
+<a class="header" href="#regexset" id="regexset"><h2>RegexSet</h2></a>
 <p>A <code>RegexSet</code> represents the union of zero or more regular expressions. It is a
 specialized machine that can match multiple regular expressions simultaneously.
 Conceptually, it is similar to joining multiple regexes as alternates, e.g.,
@@ -649,7 +656,7 @@ impl SetMatches {
 <p><code>SetMatches</code> impls the <code>Debug</code> and <code>Clone</code> traits.</p>
 <p>Note that a builder is not proposed for <code>RegexSet</code> in this RFC; however, it is
 likely one will be added at some point in a backwards compatible way.</p>
-<a class="header" href="1620-regex-1.0.html#the-bytes-submodule" id="the-bytes-submodule"><h2>The <code>bytes</code> submodule</h2></a>
+<a class="header" href="#the-bytes-submodule" id="the-bytes-submodule"><h2>The <code>bytes</code> submodule</h2></a>
 <p>All of the above APIs have thus far been explicitly for searching <code>text</code> where
 <code>text</code> has type <code>&amp;str</code>. While this author believes that suits most use cases,
 it should also be possible to search a regex on <em>arbitrary</em> bytes, i.e.,
@@ -694,8 +701,8 @@ a <code>bytes::Regex</code> is <em>guaranteed</em> to match only valid UTF-8 in 
 <code>Regex</code>, the Unicode flag is enabled by default.</p>
 <p>N.B. The Unicode flag can also be selectively disabled in a <code>Regex</code>, but not in
 a way that permits matching invalid UTF-8.</p>
-<a class="header" href="1620-regex-1.0.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
-<a class="header" href="1620-regex-1.0.html#guaranteed-linear-time-matching" id="guaranteed-linear-time-matching"><h2>Guaranteed linear time matching</h2></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#guaranteed-linear-time-matching" id="guaranteed-linear-time-matching"><h2>Guaranteed linear time matching</h2></a>
 <p>A significant contract in the API of the <code>regex</code> crate is that all searching
 has worst case <code>O(n)</code> complexity, where <code>n ~ length(text)</code>. (The size of the
 regular expression is taken as a constant.) This contract imposes significant
@@ -732,7 +739,7 @@ time matching (TRE, for example), but none of them are particularly popular.</p>
 <p>It is also worth noting that since Rust's FFI is zero cost, one can bind to
 existing regex implementations that provide more features (bindings for both
 PCRE1 and Oniguruma exist today).</p>
-<a class="header" href="1620-regex-1.0.html#allocation" id="allocation"><h2>Allocation</h2></a>
+<a class="header" href="#allocation" id="allocation"><h2>Allocation</h2></a>
 <p>The <code>regex</code> API assumes that the implementation can dynamically allocate
 memory. Indeed, the current implementation takes advantage of this. A <code>regex</code>
 library that has no requirement on dynamic memory allocation would look
@@ -746,7 +753,7 @@ environments that don't have dynamic memory allocation impossible.</p>
 memory allocation.</p>
 <p>With that said, <code>regex</code> may want to grow custom allocator support when the
 corresponding traits stabilize.</p>
-<a class="header" href="1620-regex-1.0.html#synchronization-is-implicit" id="synchronization-is-implicit"><h2>Synchronization is implicit</h2></a>
+<a class="header" href="#synchronization-is-implicit" id="synchronization-is-implicit"><h2>Synchronization is implicit</h2></a>
 <p>Every <code>Regex</code> value can be safely used from multiple threads simultaneously.
 Since a <code>Regex</code> has interior mutable state, this implies that it must do some
 kind of synchronization in order to be safe.</p>
@@ -782,7 +789,7 @@ My conclusion from this thread is that we either expand the surface of the API,
 or we break the current API or we keep implicit synchronization as-is. In this
 author's opinion, neither expanding the API or breaking the API is worth
 avoiding negligible synchronization overhead.</p>
-<a class="header" href="1620-regex-1.0.html#the-implementation-is-complex" id="the-implementation-is-complex"><h2>The implementation is complex</h2></a>
+<a class="header" href="#the-implementation-is-complex" id="the-implementation-is-complex"><h2>The implementation is complex</h2></a>
 <p>Regular expression engines have a lot of moving parts and it often requires
 quite a bit of context on how the whole library is organized in order to make
 significant contributions. Therefore, moving <code>regex</code> into <code>rust-lang</code> is a
@@ -801,8 +808,8 @@ heavily documented.</li>
 maintenance hazard. In this author's opinion, the interaction between the three
 parts of the implementation (parsing, compilation, searching) is not documented
 clearly enough.</p>
-<a class="header" href="1620-regex-1.0.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1620-regex-1.0.html#big-picture" id="big-picture"><h2>Big picture</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#big-picture" id="big-picture"><h2>Big picture</h2></a>
 <p>The most important alternative is to decide <em>not</em> to bless a particular
 implementation of regular expressions. We might want to go this route for any
 number of reasons (see: Drawbacks). However, the <code>regex</code> crate is already
@@ -813,13 +820,13 @@ have an &quot;officially blessed&quot; regex implementation. Many programmers ma
 appreciate the complexity of a regex implementation, and therefore might insist
 that one be officially maintained. However, to be honest, it isn't quite clear
 what would happen in practice. This author is speculating.</p>
-<a class="header" href="1620-regex-1.0.html#bytesregex" id="bytesregex"><h2><code>bytes::Regex</code></h2></a>
+<a class="header" href="#bytesregex" id="bytesregex"><h2><code>bytes::Regex</code></h2></a>
 <p>This RFC proposes stabilizing the <code>bytes</code> sub-module of the <code>regex</code> crate in
 its entirety. The <code>bytes</code> sub-module is a near clone of the API at the crate
 level with one important difference: it searches <code>&amp;[u8]</code> instead of <code>&amp;str</code>.
 This design was motivated by a similar split in <code>std</code>, but there are
 alternatives.</p>
-<a class="header" href="1620-regex-1.0.html#a-regex-trait" id="a-regex-trait"><h3>A regex trait</h3></a>
+<a class="header" href="#a-regex-trait" id="a-regex-trait"><h3>A regex trait</h3></a>
 <p>One alternative is designing a trait that looks something like this:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -846,7 +853,7 @@ a better trait needs to be more fundamental to regex searching.</p>
 <p>Perhaps the strongest reason to not adopt this design for regex <code>1.0</code> is that
 we don't have any experience with it and there hasn't been any demand for it.
 In particular, it could be prototyped in another crate.</p>
-<a class="header" href="1620-regex-1.0.html#reuse-some-types" id="reuse-some-types"><h3>Reuse some types</h3></a>
+<a class="header" href="#reuse-some-types" id="reuse-some-types"><h3>Reuse some types</h3></a>
 <p>In the current proposal, the <code>bytes</code> submodule completely duplicates the
 top-level API, including all iterator types, <code>Captures</code> and even the <code>Replacer</code>
 trait. We could parameterize many of those types over the type of the text
@@ -907,22 +914,22 @@ impl&lt;F&gt; Replacer for F where F: FnMut(&amp;Captures) -&gt; Vec&lt;u8&gt; {
 <p>Perhaps there is a path through this using yet more types or more traits, but
 without a really strong motivating reason to find it, I'm not convinced it's
 worth it. Duplicating all of the types is unfortunate, but it's <em>simple</em>.</p>
-<a class="header" href="1620-regex-1.0.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>The <code>regex</code> repository has more than just the <code>regex</code> crate.</p>
-<a class="header" href="1620-regex-1.0.html#regex-syntax" id="regex-syntax"><h2><code>regex-syntax</code></h2></a>
+<a class="header" href="#regex-syntax" id="regex-syntax"><h2><code>regex-syntax</code></h2></a>
 <p>This crate exposes a regular expression parser and abstract syntax that is
 completely divorced from compilation or searching. It is not part of <code>regex</code>
 proper since it may experience more frequent breaking changes and is far less
 frequently used. It is not clear whether this crate will ever see <code>1.0</code>, and if
 it does, what criteria would be used to judge it suitable for <code>1.0</code>.
 Nevertheless, it is a useful public API, but it is not part of this RFC.</p>
-<a class="header" href="1620-regex-1.0.html#regex-capi" id="regex-capi"><h2><code>regex-capi</code></h2></a>
+<a class="header" href="#regex-capi" id="regex-capi"><h2><code>regex-capi</code></h2></a>
 <p>Recently, <code>regex-capi</code> was built to provide a C API to this regex library. It
 has been used to build <a href="https://github.com/BurntSushi/rure-go">cgo bindings to this library for
 Go</a>. Given its young age, it is not part
 of this proposal but will be maintained as a pre-1.0 crate in the same
 repository.</p>
-<a class="header" href="1620-regex-1.0.html#regex_macros" id="regex_macros"><h2><code>regex_macros</code></h2></a>
+<a class="header" href="#regex_macros" id="regex_macros"><h2><code>regex_macros</code></h2></a>
 <p>The <code>regex!</code> compiler plugin is a macro that can compile regular expressions
 when your Rust program compiles. Stated differently, <code>regex!(&quot;...&quot;)</code> is
 transformed into Rust code that executes a search of the given pattern
@@ -942,7 +949,7 @@ its audience is necessarily limited. In another sense, it's not entirely clear
 what its implementation path is. It would take considerable work for it to beat
 the current <code>Regex</code> implementation (if it's even possible). More discussion on
 this is out of scope.</p>
-<a class="header" href="1620-regex-1.0.html#dependencies" id="dependencies"><h2>Dependencies</h2></a>
+<a class="header" href="#dependencies" id="dependencies"><h2>Dependencies</h2></a>
 <p>As of now, <code>regex</code> has several dependencies:</p>
 <ul>
 <li><code>aho-corasick</code></li>
@@ -958,13 +965,13 @@ they seem generally useful.</p>
 helpful to others outside the strict context of <code>regex</code>. Is it beneficial to
 split such things out and create a longer list of dependencies? Or should we
 keep <code>regex</code> as tight as possible?</p>
-<a class="header" href="1620-regex-1.0.html#exposing-more-internals" id="exposing-more-internals"><h2>Exposing more internals</h2></a>
+<a class="header" href="#exposing-more-internals" id="exposing-more-internals"><h2>Exposing more internals</h2></a>
 <p>It is conceivable that others might find interest in the regex compiler or more
 lower level access to the matching engines. We could do something similar to
 <code>regex-syntax</code> and expose some internals in a separate crate. However, there
 isn't a pressing desire to do this at the moment, and would probably require a
 good deal of work.</p>
-<a class="header" href="1620-regex-1.0.html#breaking-changes" id="breaking-changes"><h1>Breaking changes</h1></a>
+<a class="header" href="#breaking-changes" id="breaking-changes"><h1>Breaking changes</h1></a>
 <p>This section of the RFC lists all breaking changes between <code>regex 0.1</code> and the
 API proposed in this RFC.</p>
 <ul>
@@ -1053,9 +1060,6 @@ room for possibly adding class set notation in the future.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

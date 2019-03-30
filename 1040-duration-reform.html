@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1040-duration-reform - </title>
+        <title>1040-duration-reform - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1040">rust-lang/rfcs#1040</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/24874">rust-lang/rust#24874</a></li>
 </ul>
-<a class="header" href="1040-duration-reform.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC suggests stabilizing a reduced-scope <code>Duration</code> type that is appropriate for interoperating with various system calls that require timeouts. It does not stabilize a large number of conversion methods in <code>Duration</code> that have subtle caveats, with the intent of revisiting those conversions more holistically in the future.</p>
-<a class="header" href="1040-duration-reform.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>There are a number of different notions of &quot;time&quot;, each of which has a different set of caveats, and each of which can be designed for optimal ergonomics for its domain. This proposal focuses on one particular one: an amount of time in high-precision units.</p>
 <p>Eventually, there are a number of concepts of time that deserve fleshed out APIs. Using the terminology from the popular Java time library <a href="http://www.joda.org/joda-time/">JodaTime</a>:</p>
 <ul>
@@ -180,7 +187,7 @@ an API that does not accept timeouts that large</li>
 <p>A <code>u32</code> of milliseconds supports a timeout longer than 45 days.</p>
 </blockquote>
 <p>Future APIs to support a broader set of <a href="http://www.joda.org/joda-time/key_duration.html">Durations</a> APIs, a <a href="http://www.joda.org/joda-time/key_period.html">Period</a> and <a href="http://www.joda.org/joda-time/key_instant.html">Instant</a> type, as well as coercions between these types, would be useful, compatible follow-ups to this RFC.</p>
-<a class="header" href="1040-duration-reform.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>A <code>Duration</code> represents a period of time represented in terms of nanosecond granularity. It has <code>u64</code> seconds and an additional <code>u32</code> nanoseconds. There is no concept of a negative <code>Duration</code>.</p>
 <blockquote>
 <p>A negative <code>Duration</code> has no meaning for many APIs that may wish
@@ -244,9 +251,9 @@ and <code>Clone</code>, which are derived.</li>
 <p>In order to address this confusion, Joda-Time's Duration has methods like <code>standardDays</code>/<code>toStandardDays</code> and <code>standardHours</code>/<code>toStandardHours</code>, which are meant to indicate to the user that the number of milliseconds is based on the standard number of milliseconds in an hour, rather than the colloquial notion of an &quot;hour&quot;.</p>
 <p>An approach like this could work for Rust, but this RFC is intentionally limited in scope to areas without substantial tradeoffs in an attempt to allow a minimal solution to progress more quickly.</p>
 <p>This proposal does not include a method to get a number of milliseconds from a <code>Duration</code>, because the number of milliseconds could exceed <code>u64</code>, and we would have to decide whether to return an <code>Option</code>, panic, or wait for a standard bignum. In the interest of limiting this proposal to APIs with a straight-forward design, this proposal defers such a method.</p>
-<a class="header" href="1040-duration-reform.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The main drawback to this proposal is that it is significantly more minimal than the existing <code>Duration</code> API. However, this API is quite sufficient for timeouts, and without the caveats in the existing <code>Duration</code> API.</p>
-<a class="header" href="1040-duration-reform.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could stabilize the existing <code>Duration</code> API. However, it has a number of serious caveats:</p>
 <ul>
 <li>The caveats described above about some of the units it supports.</li>
@@ -264,7 +271,7 @@ to stabilize it.</li>
 <p>Finally, we could avoid any API for timeouts, and simply take milliseconds throughout the standard library. However, this has two drawbacks.</p>
 <p>First, it does not allow us to represent higher-precision timeouts on systems that could support them.</p>
 <p>Second, while this proposal does not yet include conveniences, it assumes that some conveniences should be added in the future once the design space is more fully explored. Starting with a simple type gives us space to grow into.</p>
-<a class="header" href="1040-duration-reform.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Should we implement all of the listed traits? Others?</li>
 </ul>
@@ -312,9 +319,6 @@ to stabilize it.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

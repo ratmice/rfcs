@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2397-do-not-recommend - </title>
+        <title>2397-do-not-recommend - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +146,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2397">rust-lang/rfcs#2397</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/51992">rust-lang/rust#51992</a></li>
 </ul>
-<a class="header" href="2397-do-not-recommend.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>A new attribute can be placed on trait implementations: <code>#[do_not_recommend]</code>.
 This attribute will cause the compiler to never recommend this impl transitively
 as a way to implement another trait. For example, this would be placed on
 <code>impl&lt;T: Iterator&gt; IntoIterator for T</code>. The result of this is that when <code>T: IntoIterator</code> fails, the error message will only mention <code>IntoIterator</code>. It will
 not say &quot;perhaps <code>Iterator</code> should be implemented?&quot;.</p>
-<a class="header" href="2397-do-not-recommend.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>When a type fails to implement a trait, Rust has the wonderful behavior of
 looking at possible <em>other</em> trait impls which might cause the trait in question
 to be implemented. This is usually a good thing. For example, when using Diesel,
@@ -155,7 +162,7 @@ more confusing. There are specific trait impls which almost always cause these
 error messages to be more confusing. These are usually (but not always) very
 broad blanket impls on traits with names like <code>IntoFoo</code> or <code>AsBar</code>. One such
 problem impl is <code>impl&lt;T: Iterator&gt; IntoIterator for T</code>.</p>
-<a class="header" href="2397-do-not-recommend.html#intoiterator-confusion" id="intoiterator-confusion"><h2><code>IntoIterator</code> confusion</h2></a>
+<a class="header" href="#intoiterator-confusion" id="intoiterator-confusion"><h2><code>IntoIterator</code> confusion</h2></a>
 <p>Let's look at the struggles of a hypothetical Python programmer who is getting
 into Rust for the first time. In Python, tuples are iterable. So our python
 programmer writes this code expecting it to work:</p>
@@ -206,7 +213,7 @@ that page.</p>
 &quot;required by <code>std::iter::IntoIterator::into_iter</code>&quot;. However, the tiny footnote
 at the bottom is not where most people look, and as we'll see later, is also not
 always there or helpful.</p>
-<a class="header" href="2397-do-not-recommend.html#ecosystem-examples" id="ecosystem-examples"><h2>Ecosystem Examples</h2></a>
+<a class="header" href="#ecosystem-examples" id="ecosystem-examples"><h2>Ecosystem Examples</h2></a>
 <p>Let's look at another example from outside the standard library. This is a
 problem Diesel has run into numerous times. The most common is with our
 <code>AsExpression</code> trait. Diesel has a trait called <code>Expression</code>, which represents a
@@ -277,7 +284,7 @@ satisfied. Perhaps you need to implement it?&quot; which is just complete nonsen
 <p>With this annotation, Rust would know that it should <em>never</em> recommend the impl
 related to <code>Iterators</code>, and will always give diagnostics as if the &quot;normal way
 to insert a thing&quot; impl were the only one that existed.</p>
-<a class="header" href="2397-do-not-recommend.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>Since the diagnostics around this RFC aren't ever mentioned in a guide, I'm not
 sure there would be a guide level explanation, but here goes:</p>
 <p>Let's imagine you have the following traits:</p>
@@ -299,7 +306,7 @@ confusing error messages. Perhaps when a function expects <code>Bar</code> and i
 implemented, it would never make sense to implement <code>Foo</code> for that type. In this
 case, we can put <code>#[do_not_recommend]</code> above our impl, and Rust will <em>never</em>
 recommend implementing <code>Foo</code> as a way to get to <code>Bar</code>.</p>
-<a class="header" href="2397-do-not-recommend.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>During trait resolution, Rust will attempt to lower a query like
 <code>IntoIterator(?T)</code> into a series of subqueries such as <code>IntoIterator(?T) :- Iterator(?T)</code>. If only one such subquery exists, it will be used for error
 diagnostics instead.</p>
@@ -307,19 +314,19 @@ diagnostics instead.</p>
 <code>#[do_not_recommend]</code> will be treated as if they did not exist. This means that
 cases where there would have been one subquery will be treated as if there were
 0, and cases where there were 2 will be treated as if there were 1.</p>
-<a class="header" href="2397-do-not-recommend.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>While this attribute only affects diagnostics, it is inherently tied to how
 trait resolution works. This could potentially complicate work happening on the
 trait system today (particularly with regards to chalk).</p>
-<a class="header" href="2397-do-not-recommend.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and alternatives</h1></a>
 <ul>
 <li>The vast majority of cases where this would be used are for traits and impls
 that look very similar to <code>Iterator</code> and <code>impl&lt;T: Iterator&gt; IntoIterator for T</code>. We could potentially instead try to improve the compiler's diagnostics
 without this attribute, to detect those cases.</li>
 </ul>
-<a class="header" href="2397-do-not-recommend.html#prior-art" id="prior-art"><h1>Prior art</h1></a>
+<a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>The author is not aware of any prior art regarding this feature.</p>
-<a class="header" href="2397-do-not-recommend.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>What other names could we go with besides <code>#[do_not_recommend]</code>?</li>
 </ul>
@@ -367,9 +374,6 @@ without this attribute, to detect those cases.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

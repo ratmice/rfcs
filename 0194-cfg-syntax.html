@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0194-cfg-syntax - </title>
+        <title>0194-cfg-syntax - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,12 +145,12 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/194">rust-lang/rfcs#194</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/17490">rust-lang/rust#17490</a></li>
 </ul>
-<a class="header" href="0194-cfg-syntax.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>The <code>#[cfg(...)]</code> attribute provides a mechanism for conditional compilation of
 items in a Rust crate. This RFC proposes to change the syntax of <code>#[cfg]</code> to
 make more sense as well as enable expansion of the conditional compilation
 system to attributes while maintaining a single syntax.</p>
-<a class="header" href="0194-cfg-syntax.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>In the current implementation, <code>#[cfg(...)]</code> takes a comma separated list of
 <code>key</code>, <code>key = &quot;value&quot;</code>, <code>not(key)</code>, or <code>not(key = &quot;value&quot;)</code>. An individual
 <code>#[cfg(...)]</code> attribute &quot;matches&quot; if <em>all</em> of the contained cfg patterns match
@@ -160,7 +167,7 @@ an item must be processed together instead of in isolation. This change
 will move <code>#[cfg(...)]</code> closer to implementation as a normal syntax
 extension.</li>
 </ul>
-<a class="header" href="0194-cfg-syntax.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The <code>&lt;p&gt;</code> inside of <code>#[cfg(&lt;p&gt;)]</code> will be called a <em>cfg pattern</em> and have a
 simple recursive syntax:</p>
 <ul>
@@ -201,11 +208,11 @@ A <code>#[cfg_attr(&lt;p&gt;, &lt;attr&gt;)]</code> syntax extension will be add
 <code>#[&lt;attr&gt;]</code> if the cfg pattern <code>&lt;p&gt;</code> matches.  The test harness's
 <code>#[ignore]</code> attribute will have its built-in cfg filtering
 functionality stripped in favor of <code>#[cfg_attr(&lt;p&gt;, ignore)]</code>.</p>
-<a class="header" href="0194-cfg-syntax.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>While the implementation of this change in the compiler will be
 straightforward, the effects on downstream code will be significant, especially
 in the standard library.</p>
-<a class="header" href="0194-cfg-syntax.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p><code>all</code> and <code>any</code> could be renamed to <code>and</code> and <code>or</code>, though I feel that the
 proposed names read better with the function-like syntax and are consistent
 with <code>Iterator::all</code> and <code>Iterator::any</code>.</p>
@@ -214,7 +221,7 @@ addition of <code>||</code> and <code>&amp;&amp;</code> operators and paranthese
 to result in something like <code>#[cfg(a || (b &amp;&amp; c)]</code>. I don't favor this proposal
 since it would result in a major change to the attribute syntax for relatively
 little readability gain.</p>
-<a class="header" href="0194-cfg-syntax.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>How long should multiple <code>#[cfg(...)]</code> attributes on a single item be
 forbidden? It should probably be at least until after 0.12 releases.</p>
 <p>Should we permanently keep the behavior of treating <code>#[cfg(a, b)]</code> as
@@ -266,9 +273,6 @@ to read as it's not immediately clear if it will be processed as <code>and(..)</
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

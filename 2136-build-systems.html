@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2136-build-systems - </title>
+        <title>2136-build-systems - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2136">rust-lang/rfcs#2136</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="2136-build-systems.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This <strong>experimental RFC</strong> lays out a high-level plan for improving Cargo's
 ability to integrate with other build systems and environments. As an
 experimental RFC, it opens the door to landing <a href="https://github.com/rust-lang/cargo/pull/4433/">unstable features</a> in Cargo to
@@ -147,7 +154,7 @@ try out ideas, but <em>not</em> to stabilizing those features, which will requir
 follow-up RFCs. It proposes a variety of features which, in total, permit a wide
 spectrum of integration cases -- from customizing a single aspect of Cargo to
 letting an external build system run almost the entire show.</p>
-<a class="header" href="2136-build-systems.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>One of the first hurdles for using Rust in production is integrating it into
 your organization's build system. The level of challenge depends on the level of
 integration required: it's relatively painless to invoke Cargo from a makefile
@@ -197,9 +204,9 @@ the external build system (e.g. Cargo features, profiles, etc)</li>
 extensibility points in Cargo, but rather to outline a general plan for how to
 get there over time. Individual components that add significant features to
 Cargo will need follow-up RFCs before stabilization.</p>
-<a class="header" href="2136-build-systems.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <p>The plan proposed in this RFC is to address the two use-cases from the
-<a href="2136-build-systems.html#motivation">motivation</a> section in parallel:</p>
+<a href="#motivation">motivation</a> section in parallel:</p>
 <ul>
 <li>
 <p><strong>For the mixed build system case</strong>, we will triage feature requests and work on
@@ -220,7 +227,7 @@ systems.</p>
 offer a complete spectrum of options (in terms of what Cargo controls versus an
 external system). But they start at critically different points, and working on
 those in parallel is the key to delivering value quickly and incrementally.</p>
-<a class="header" href="2136-build-systems.html#a-high-level-model-of-what-cargo-does" id="a-high-level-model-of-what-cargo-does"><h2>A high-level model of what Cargo does</h2></a>
+<a class="header" href="#a-high-level-model-of-what-cargo-does" id="a-high-level-model-of-what-cargo-does"><h2>A high-level model of what Cargo does</h2></a>
 <p>Before delving into the details of the plan, it's helpful to lay out a mental
 model of the work that Cargo does today, broken into several stages:</p>
 <table><thead><tr><th> <strong>Step</strong>              </th><th> <strong>Conceptual output</strong>                                                                                                                                    </th><th> <strong>Related concerns</strong>             </th></tr></thead><tbody>
@@ -261,7 +268,7 @@ part of the process.</p>
 <p>The first two steps -- dependency resolution and build configuration -- need to
 operate on an entire dependency graph at once. Build lowering, by contrast, can
 be performed for any crate in isolation.</p>
-<a class="header" href="2136-build-systems.html#customizing-cargo" id="customizing-cargo"><h3>Customizing Cargo</h3></a>
+<a class="header" href="#customizing-cargo" id="customizing-cargo"><h3>Customizing Cargo</h3></a>
 <p><strong>A key point is that, in principle, each of these steps is separable from the
 others</strong>. That is, we should be able to rearchitect Cargo so that each of these
 steps is managed by a distinct component, and the components have a stable --
@@ -272,7 +279,7 @@ nuanced and layered picture of Cargo's activities).</p>
 <p>This RFC proposes to provide <em>some</em> means of customizing Cargo's activities at
 various layers and stages. The details here are <em>very much</em> up for grabs, and
 are part of the experimentation we need to do.</p>
-<a class="header" href="2136-build-systems.html#likely-design-constraints" id="likely-design-constraints"><h4>Likely design constraints</h4></a>
+<a class="header" href="#likely-design-constraints" id="likely-design-constraints"><h4>Likely design constraints</h4></a>
 <p>Some likely constraints for a Cargo customization/plugin system are:</p>
 <ul>
 <li>
@@ -300,7 +307,7 @@ identified and factored out.</p>
 </ul>
 <p>We will iterate on the constraints to form core design principles as we
 experiment.</p>
-<a class="header" href="2136-build-systems.html#a-concrete-example" id="a-concrete-example"><h4>A concrete example</h4></a>
+<a class="header" href="#a-concrete-example" id="a-concrete-example"><h4>A concrete example</h4></a>
 <p>Since the above is quite hand-wavy, it's helpful to see a very simple, concrete
 example of what a customization might look like. You could imagine something
 like the following for supplying manifest information from an external build
@@ -325,13 +332,13 @@ instead:</p>
 <li>look for the associated plugin in <code>.cargo/meta.toml</code>, and ask it to generate the manifest</li>
 <li>return that instead</li>
 </ul>
-<a class="header" href="2136-build-systems.html#specifics-for-the-homogeneous-build-system-case" id="specifics-for-the-homogeneous-build-system-case"><h2>Specifics for the homogeneous build system case</h2></a>
+<a class="header" href="#specifics-for-the-homogeneous-build-system-case" id="specifics-for-the-homogeneous-build-system-case"><h2>Specifics for the homogeneous build system case</h2></a>
 <p>For homogeneous build systems, there are two kinds of code that must be dealt
 with: code originally written using vanilla Cargo and a crate registry, and code
 written &quot;natively&quot; in the context of the external build system. Any integration
 has to handle the first case to have access to crates.io or a vendored mirror
 thereof.</p>
-<a class="header" href="2136-build-systems.html#using-crates-vendored-from-or-managed-by-a-crate-registry" id="using-crates-vendored-from-or-managed-by-a-crate-registry"><h3>Using crates vendored from or managed by a crate registry</h3></a>
+<a class="header" href="#using-crates-vendored-from-or-managed-by-a-crate-registry" id="using-crates-vendored-from-or-managed-by-a-crate-registry"><h3>Using crates vendored from or managed by a crate registry</h3></a>
 <p>Whether using a registry server or a vendored copy, if you're building Rust code
 that is written using vanilla Cargo, you will at some level need to use Cargo's
 dependency resolution and <code>Cargo.toml</code> files. In this case, the external build
@@ -351,14 +358,14 @@ build plan for consumption by the external build system.</p>
 is being managed by the external build system? That's a narrow version of a more
 general question around <em>native dependencies</em>, which will be addressed
 separately in a later section.</p>
-<a class="header" href="2136-build-systems.html#workflow-and-interop-story" id="workflow-and-interop-story"><h4>Workflow and interop story</h4></a>
+<a class="header" href="#workflow-and-interop-story" id="workflow-and-interop-story"><h4>Workflow and interop story</h4></a>
 <p>On the external build system side, a rule or plugin will need to be written that
 knows how to invoke Cargo to produce a build plan corresponding to a whitelisted
 (and potentially vendored) registry, then translate that build plan back into
 appropriate rules for the build system. Thus, when doing normal builds, the
 external build system drives the entire process, but invokes Cargo for guidance
 during the planning stage.</p>
-<a class="header" href="2136-build-systems.html#using-crates-managed-by-the-build-system" id="using-crates-managed-by-the-build-system"><h3>Using crates managed by the build system</h3></a>
+<a class="header" href="#using-crates-managed-by-the-build-system" id="using-crates-managed-by-the-build-system"><h3>Using crates managed by the build system</h3></a>
 <p>Many organization want to employ their own strategy for maintaining and
 versioning code and for resolving dependencies, <em>in addition</em> to build
 execution.</p>
@@ -375,7 +382,7 @@ plugin above). The description of dependencies is then written in the external
 build system's rule format. Thus, Cargo acts primarily as a <em>workflow and tool
 orchestrator</em>, since it is not involved in either planning or executing the
 build. Let's dig into it.</p>
-<a class="header" href="2136-build-systems.html#workflow-and-interop-story-1" id="workflow-and-interop-story-1"><h4>Workflow and interop story</h4></a>
+<a class="header" href="#workflow-and-interop-story-1" id="workflow-and-interop-story-1"><h4>Workflow and interop story</h4></a>
 <p>Even though the external build system is entirely handling both dependency
 resolution and build execution for the crates under its management, it may still
 use Cargo for <em>lowering</em>, i.e. to produce the actual <code>rustc</code> invocations from a
@@ -392,7 +399,7 @@ transparently -- but the underlying information will be coming from the external
 build system, via the plugin. Thus the plugin for the external build system must
 be able to translate its dependencies back into something equivalent to a
 lockfile, at least.</p>
-<a class="header" href="2136-build-systems.html#the-complete-picture" id="the-complete-picture"><h3>The complete picture</h3></a>
+<a class="header" href="#the-complete-picture" id="the-complete-picture"><h3>The complete picture</h3></a>
 <p>In general, any integration with a homogeneous build system needs to be able to
 handle (vendored) crate registries, because access to crates.io is a hard constraint.</p>
 <p>Usually, you'll want to combine the handling of these external registries with
@@ -400,7 +407,7 @@ crates managed purely by the external build system, meaning that there are
 effectively <em>two</em> modes of building crates at play overall. All that's needed to
 do this is a distinction within the external build system between these two
 kinds of dependencies, which then drives the plugin interactions accordingly.</p>
-<a class="header" href="2136-build-systems.html#cross-cutting-concern-native-dependencies" id="cross-cutting-concern-native-dependencies"><h2>Cross-cutting concern: native dependencies</h2></a>
+<a class="header" href="#cross-cutting-concern-native-dependencies" id="cross-cutting-concern-native-dependencies"><h2>Cross-cutting concern: native dependencies</h2></a>
 <p>One important point left out of the above explanation is the story for
 dependencies on non-Rust code. These dependencies should be built and managed by
 the external build system. But there's a catch: existing &quot;sys&quot; crates on
@@ -408,7 +415,7 @@ crates.io that provide core native dependencies use custom build scripts to
 build or discover those dependencies. We want to <em>reroute</em> those crates to
 instead use the dependencies provided by the build system.</p>
 <p>Here, there's a short-term story and a long-term story.</p>
-<a class="header" href="2136-build-systems.html#short-term-white-lists-with-build-script-overrides" id="short-term-white-lists-with-build-script-overrides"><h3>Short term: white lists with build script overrides</h3></a>
+<a class="header" href="#short-term-white-lists-with-build-script-overrides" id="short-term-white-lists-with-build-script-overrides"><h3>Short term: white lists with build script overrides</h3></a>
 <p>Cargo today offers the ability to <a href="http://doc.crates.io/build-script.html#overriding-build-scripts">override the build script</a> for any crate
 using the <code>links</code> key (which is generally how you signal <em>what</em> native
 dependency you're providing), and instead provide the library location
@@ -424,7 +431,7 @@ version-specific whitelisting to side-step this issue.</p>
 <p>Even so, whitelisting itself is a laborious process, and in the long run there
 are advantages to offering a higher-level way of specifying native dependencies
 in the first place.</p>
-<a class="header" href="2136-build-systems.html#long-term-declarative-native-dependencies" id="long-term-declarative-native-dependencies"><h3>Long term: declarative native dependencies</h3></a>
+<a class="header" href="#long-term-declarative-native-dependencies" id="long-term-declarative-native-dependencies"><h3>Long term: declarative native dependencies</h3></a>
 <p>Reliably building native dependencies in a cross-platform way
 is... challenging. Today, Rust offers some help with this through crates like
 <a href="https://docs.rs/gcc"><code>gcc</code></a> and <a href="https://docs.rs/pkg-config"><code>pkgconfig</code></a>, which provide building blocks for writing build
@@ -444,14 +451,14 @@ translate that into the appropriate build script.</p>
 <p>Needless to say, this approach will need significant experimentation. But if
 successful, it would have benefits not just for build system integration, but
 for using external dependencies <em>anywhere</em>.</p>
-<a class="header" href="2136-build-systems.html#the-story-for-externally-managed-native-dependencies" id="the-story-for-externally-managed-native-dependencies"><h3>The story for externally-managed native dependencies</h3></a>
+<a class="header" href="#the-story-for-externally-managed-native-dependencies" id="the-story-for-externally-managed-native-dependencies"><h3>The story for externally-managed native dependencies</h3></a>
 <p>Finally, in the case where the external build system is the one specifying and
 providing a native dependency, all we need is for that to result in the
 appropriate flags to the lowered <code>rustc</code> invocations. If the external build
 system is producing those lowered calls itself, it can completely manage this
 concern. Otherwise, we will need for the plugin interface to provide a way to
 plumb this information through to Cargo.</p>
-<a class="header" href="2136-build-systems.html#specifics-for-the-mixed-build-system-case" id="specifics-for-the-mixed-build-system-case"><h2>Specifics for the mixed build system case</h2></a>
+<a class="header" href="#specifics-for-the-mixed-build-system-case" id="specifics-for-the-mixed-build-system-case"><h2>Specifics for the mixed build system case</h2></a>
 <p>Switching gears, let's look at mixed build systems. Here, we may address the
 need for customization with a mixture of plugins and new core Cargo
 features. The primary ones on the radar right now are as follows.</p>
@@ -485,7 +492,7 @@ projects. Here we'd likely need some kind of plugin.</p>
 here, the precise problem -- let alone the solution -- it not yet clear. The
 point, though, is that these are the most important problems we want to get our
 head around in the foreseeable future.</p>
-<a class="header" href="2136-build-systems.html#additional-areas-where-revisions-are-expected" id="additional-areas-where-revisions-are-expected"><h2>Additional areas where revisions are expected</h2></a>
+<a class="header" href="#additional-areas-where-revisions-are-expected" id="additional-areas-where-revisions-are-expected"><h2>Additional areas where revisions are expected</h2></a>
 <p>Beyond all of the above, it seems very likely that some existing features of
 Cargo will need to be revisited to fit with the build system integration
 work. For example:</p>
@@ -520,10 +527,10 @@ achieve better build system integration; the plan as a whole is predicated on
 making Cargo much more modular, which is bound to reveal concerns that should be
 separated. As with everything else in this RFC, user-facing changes will require
 a full RFC prior to stabilization.</p>
-<a class="header" href="2136-build-systems.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
 <p>This is an experimental RFC. Reference-level details will be presented in
 follow-up RFCs after experimentation has concluded.</p>
-<a class="header" href="2136-build-systems.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>It's somewhat difficult to state drawbacks for such a high-level plan; they're
 more likely to arise through the particulars.</p>
 <p>That said, it's plausible that following the plan in this RFC will result
@@ -532,7 +539,7 @@ will be ensuring that it's surfaced only on an as-needed basis. That is, uses of
 Cargo in the pure crates.io ecosystem should not become more complex -- if
 anything, they should become more streamlined, through improvements to features
 like profiles, build scripts, and the handling of native dependencies.</p>
-<a class="header" href="2136-build-systems.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
 <p>Numerous organizations we've talked to who are considering, or already are,
 running Rust in production complain about difficulties with build system
 integration. There's often a sense that Cargo &quot;does too much&quot; or is &quot;too
@@ -576,7 +583,7 @@ minimum of fuss. It may be that the needs are simple enough that we can get away
 with a separate interchange format, which both Cargo and other build tools can
 create. As part of the &quot;experimental&quot; part of this RFC, the Cargo team will work
 with the Dev Tools team to fully enumerate their needs.</p>
-<a class="header" href="2136-build-systems.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Since this is an experimental RFC, there are more questions here than
 answers. However, one question that would be good to tackle prior to acceptance
 is: how should we prioritize various aspects of this work? Should we have any
@@ -626,9 +633,6 @@ working directly with us and plan to test and use the results)?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

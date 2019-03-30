@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1044-io-fs-2.1 - </title>
+        <title>1044-io-fs-2.1 - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1044">rust-lang/rfcs#1044</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/24796">rust-lang/rust#24796</a></li>
 </ul>
-<a class="header" href="1044-io-fs-2.1.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Expand the scope of the <code>std::fs</code> module by enhancing existing functionality,
 exposing lower-level representations, and adding a few new functions.</p>
-<a class="header" href="1044-io-fs-2.1.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The current <code>std::fs</code> module serves many of the basic needs of interacting with
 a filesystem, but is missing a lot of useful functionality. For example, none of
 these operations are possible in stable Rust today:</p>
@@ -159,7 +166,7 @@ these operations are possible in stable Rust today:</p>
 will not attempt to solve the entirety of that issue at this time. This RFC
 strives to expose APIs for much of the functionality listed above that is on the
 track to becoming <code>#[stable]</code> soon.</p>
-<a class="header" href="1044-io-fs-2.1.html#non-goals-of-this-rfc" id="non-goals-of-this-rfc"><h2>Non-goals of this RFC</h2></a>
+<a class="header" href="#non-goals-of-this-rfc" id="non-goals-of-this-rfc"><h2>Non-goals of this RFC</h2></a>
 <p>There are a few areas of the <code>std::fs</code> API surface which are <strong>not</strong> considered
 goals for this RFC. It will be left for future RFCs to add new APIs for these
 areas:</p>
@@ -169,14 +176,14 @@ happens.</li>
 <li>Enhancing or stabilizing <code>walk</code> and its functionality.</li>
 <li>Temporary files or directories</li>
 </ul>
-<a class="header" href="1044-io-fs-2.1.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>First, a vision for how lowering APIs in general will be presented, and then a
 number of specific APIs will each be proposed. Many of the proposed APIs are
 independent from one another and this RFC may not be implemented all-in-one-go
 but instead piecemeal over time, allowing the designs to evolve slightly in the
 meantime.</p>
-<a class="header" href="1044-io-fs-2.1.html#lowering-apis" id="lowering-apis"><h2>Lowering APIs</h2></a>
-<a class="header" href="1044-io-fs-2.1.html#the-vision-for-the-os-module" id="the-vision-for-the-os-module"><h3>The vision for the <code>os</code> module</h3></a>
+<a class="header" href="#lowering-apis" id="lowering-apis"><h2>Lowering APIs</h2></a>
+<a class="header" href="#the-vision-for-the-os-module" id="the-vision-for-the-os-module"><h3>The vision for the <code>os</code> module</h3></a>
 <p>One of the principles of <a href="https://github.com/rust-lang/rfcs/blob/master/text/0517-io-os-reform.md#vision-for-io">IO reform</a> was to:</p>
 <blockquote>
 <p>Provide hooks for integrating with low-level and/or platform-specific APIs.</p>
@@ -246,7 +253,7 @@ without closing the file).</p>
 system, it <em>is</em> a goal to provide lowering operations for every high-level type
 to a system-level data type, whenever applicable. This RFC proposes several such
 lowerings that are currently missing from <code>std::fs</code>.</p>
-<a class="header" href="1044-io-fs-2.1.html#stdosplatformraw" id="stdosplatformraw"><h4><code>std::os::platform::raw</code></h4></a>
+<a class="header" href="#stdosplatformraw" id="stdosplatformraw"><h4><code>std::os::platform::raw</code></h4></a>
 <p>Each of the primitives in the standard library will expose the ability to be
 lowered into its component abstraction, facilitating the need to define these
 abstractions and organize them in the platform-specific modules. This RFC
@@ -272,7 +279,7 @@ or immediately cast it to a known type.</p>
 <p>To reiterate, it is not planned for each <code>raw</code> module to provide <em>exhaustive</em>
 bindings to each platform. Only those abstractions which the standard library is
 lowering into will be defined in each <code>raw</code> module.</p>
-<a class="header" href="1044-io-fs-2.1.html#lowering-metadata-all-platforms" id="lowering-metadata-all-platforms"><h3>Lowering <code>Metadata</code> (all platforms)</h3></a>
+<a class="header" href="#lowering-metadata-all-platforms" id="lowering-metadata-all-platforms"><h3>Lowering <code>Metadata</code> (all platforms)</h3></a>
 <p>Currently the <code>Metadata</code> structure exposes very few pieces of information about
 a file. Some of this is because the information is not available across all
 platforms, but some of it is also because the standard library does not have the
@@ -354,7 +361,7 @@ opt-in to when you're using platform-specific information.</p>
 <p>One of the major goals of the <code>os::unix::fs</code> design is to enable as much
 functionality as possible when programming against &quot;unix in general&quot; while still
 allowing applications to choose to only program against macos, for example.</p>
-<a class="header" href="1044-io-fs-2.1.html#fate-of-metadataaccesed-modified" id="fate-of-metadataaccesed-modified"><h4>Fate of <code>Metadata::{accesed, modified}</code></h4></a>
+<a class="header" href="#fate-of-metadataaccesed-modified" id="fate-of-metadataaccesed-modified"><h4>Fate of <code>Metadata::{accesed, modified}</code></h4></a>
 <p>At this time there is no suitable type in the standard library to represent the
 return type of these two functions. The type would either have to be some form
 of time stamp or moment in time, both of which are difficult abstractions to add
@@ -365,7 +372,7 @@ files. This information is all available via the <code>MetadataExt</code> traits
 above.</p>
 <p>Eventually, once a <code>std</code> type for cross-platform timestamps is available, these
 methods will be re-instated as returning that type.</p>
-<a class="header" href="1044-io-fs-2.1.html#lowering-and-setting-permissions-unix" id="lowering-and-setting-permissions-unix"><h3>Lowering and setting <code>Permissions</code> (Unix)</h3></a>
+<a class="header" href="#lowering-and-setting-permissions-unix" id="lowering-and-setting-permissions-unix"><h3>Lowering and setting <code>Permissions</code> (Unix)</h3></a>
 <blockquote>
 <p><strong>Note</strong>: this section only describes behavior on unix.</p>
 </blockquote>
@@ -406,7 +413,7 @@ mod os::unix::fs {
 <p>Finally, the <code>set_permissions</code> function of the <code>std::fs</code> module is also proposed
 to be marked <code>#[stable]</code> soon as a method of blanket setting permissions for a
 file.</p>
-<a class="header" href="1044-io-fs-2.1.html#constructing-permissions" id="constructing-permissions"><h2>Constructing <code>Permissions</code></h2></a>
+<a class="header" href="#constructing-permissions" id="constructing-permissions"><h2>Constructing <code>Permissions</code></h2></a>
 <p>Currently there is no method to construct an instance of <code>Permissions</code> on any
 platform. This RFC proposes adding the following APIs:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -422,7 +429,7 @@ mod os::unix::fs {
 <p>This RFC does not propose yet adding a cross-platform way to construct a
 <code>Permissions</code> structure due to the radical differences between how unix and
 windows handle permissions.</p>
-<a class="header" href="1044-io-fs-2.1.html#creating-directories-with-permissions" id="creating-directories-with-permissions"><h2>Creating directories with permissions</h2></a>
+<a class="header" href="#creating-directories-with-permissions" id="creating-directories-with-permissions"><h2>Creating directories with permissions</h2></a>
 <p>Currently the standard library does not expose an API which allows setting the
 permission bits on unix or security attributes on Windows. This RFC proposes
 adding the following API to <code>std::fs</code>:</p>
@@ -476,7 +483,7 @@ pub fn template&lt;P: AsRef&lt;Path&gt;&gt;(&amp;mut self, path: P) -&gt; &amp;m
 #}</code></pre></pre>
 <p>At this time, however, it it not proposed to add this method to
 <code>DirBuilder</code>.</p>
-<a class="header" href="1044-io-fs-2.1.html#adding-filetype" id="adding-filetype"><h2>Adding <code>FileType</code></h2></a>
+<a class="header" href="#adding-filetype" id="adding-filetype"><h2>Adding <code>FileType</code></h2></a>
 <p>Currently there is no enumeration or newtype representing a list of &quot;file types&quot;
 on the local filesystem. This is partly done because the need is not so high
 right now. Some situations, however, imply that it is more efficient to learn
@@ -501,13 +508,13 @@ impl FileType {
 #}</code></pre></pre>
 <p>Extension traits can be added in the future for testing for other more flavorful
 kinds of files on various platforms (such as unix sockets on unix platforms).</p>
-<a class="header" href="1044-io-fs-2.1.html#dealing-with-is_filedir-and-file_type-methods" id="dealing-with-is_filedir-and-file_type-methods"><h4>Dealing with <code>is_{file,dir}</code> and <code>file_type</code> methods</h4></a>
+<a class="header" href="#dealing-with-is_filedir-and-file_type-methods" id="dealing-with-is_filedir-and-file_type-methods"><h4>Dealing with <code>is_{file,dir}</code> and <code>file_type</code> methods</h4></a>
 <p>Currently the <code>fs::Metadata</code> structure exposes stable <code>is_file</code> and <code>is_dir</code>
 accessors. The struct will also grow a <code>file_type</code> accessor for this newtype
 struct being added. It is proposed that <code>Metadata</code> will retain the
 <code>is_{file,dir}</code> convenience methods, but no other &quot;file type testers&quot; will be
 added.</p>
-<a class="header" href="1044-io-fs-2.1.html#enhancing-symlink-support" id="enhancing-symlink-support"><h2>Enhancing symlink support</h2></a>
+<a class="header" href="#enhancing-symlink-support" id="enhancing-symlink-support"><h2>Enhancing symlink support</h2></a>
 <p>Currently the <code>std::fs</code> module provides a <code>soft_link</code> and <code>read_link</code> function,
 but there is no method of doing other symlink related tasks such as:</p>
 <ul>
@@ -522,7 +529,7 @@ but there is no method of doing other symlink related tasks such as:</p>
 /// unlike `metadata` will **not** follow symlinks.
 pub fn symlink_metadata&lt;P: AsRef&lt;Path&gt;&gt;(p: P) -&gt; io::Result&lt;Metadata&gt;;
 #}</code></pre></pre>
-<a class="header" href="1044-io-fs-2.1.html#binding-realpath" id="binding-realpath"><h2>Binding <code>realpath</code></h2></a>
+<a class="header" href="#binding-realpath" id="binding-realpath"><h2>Binding <code>realpath</code></h2></a>
 <p>There's a <a href="https://github.com/rust-lang/rust/issues/11857">long-standing issue</a> that the unix function <code>realpath</code> is
 not bound, and this RFC proposes adding the following API to the <code>fs</code> module:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -540,7 +547,7 @@ not bound, and this RFC proposes adding the following API to the <code>fs</code>
 /// other calls to `env::change_dir`.
 pub fn canonicalize&lt;P: AsRef&lt;Path&gt;&gt;(p: P) -&gt; io::Result&lt;PathBuf&gt;;
 #}</code></pre></pre>
-<a class="header" href="1044-io-fs-2.1.html#tweaking-pathext" id="tweaking-pathext"><h2>Tweaking <code>PathExt</code></h2></a>
+<a class="header" href="#tweaking-pathext" id="tweaking-pathext"><h2>Tweaking <code>PathExt</code></h2></a>
 <p>Currently the <code>PathExt</code> trait is unstable, yet it is quite convenient! The main
 motivation for its <code>#[unstable]</code> tag is that it is unclear how much
 functionality should be on <code>PathExt</code> versus the <code>std::fs</code> module itself.
@@ -577,7 +584,7 @@ pub trait PathExt {
 
 impl PathExt for Path { ... }
 #}</code></pre></pre>
-<a class="header" href="1044-io-fs-2.1.html#expanding-direntry" id="expanding-direntry"><h2>Expanding <code>DirEntry</code></h2></a>
+<a class="header" href="#expanding-direntry" id="expanding-direntry"><h2>Expanding <code>DirEntry</code></h2></a>
 <p>Currently the <code>DirEntry</code> API is quite minimalistic, exposing very few of the
 underlying attributes. Platforms like Windows actually contain an entire
 <code>Metadata</code> inside of a <code>DirEntry</code>, enabling much more efficient walking of
@@ -614,7 +621,7 @@ mod os::unix::fs {
     impl DirEntryExt for fs::DirEntry { ... }
 }
 #}</code></pre></pre>
-<a class="header" href="1044-io-fs-2.1.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>This is quite a bit of surface area being added to the <code>std::fs</code> API, and it
@@ -629,7 +636,7 @@ point, however, it seems unlikely that the exposed pieces of information will
 be changing much.</p>
 </li>
 </ul>
-<a class="header" href="1044-io-fs-2.1.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>Instead of exposing accessor methods in <code>MetadataExt</code> on Windows, the raw
@@ -649,7 +656,7 @@ necessarily seem appropriate for all the methods and using inherent methods
 also seems more logical.</p>
 </li>
 </ul>
-<a class="header" href="1044-io-fs-2.1.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>What is the ultimate role of crates like <code>liblibc</code>, and how do we draw the
 line between them and <code>std::os</code> definitions?</li>
@@ -698,9 +705,6 @@ line between them and <code>std::os</code> definitions?</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0873-type-macros - </title>
+        <title>0873-type-macros - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/873">rust-lang/rfcs#873</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27245">rust-lang/rust#27245</a></li>
 </ul>
-<a class="header" href="0873-type-macros.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Allow macros in type positions</p>
-<a class="header" href="0873-type-macros.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Macros are currently allowed in syntax fragments for expressions,
 items, and patterns, but not for types. This RFC proposes to lift that
 restriction.</p>
@@ -162,8 +169,8 @@ to do the same thing purely through programming with associated
 types but the resulting code can be cumbersome to read and write.</p>
 </li>
 </ol>
-<a class="header" href="0873-type-macros.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="0873-type-macros.html#implementation" id="implementation"><h2>Implementation</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#implementation" id="implementation"><h2>Implementation</h2></a>
 <p>The proposed feature has been prototyped at
 <a href="https://github.com/freebroccolo/rust/commits/feature/type_macros">this branch</a>. The
 implementation is straightforward and the impact of the changes are
@@ -174,7 +181,7 @@ of compilation should be unaffected.</p>
 case for the <code>Ty_</code> enum so that the parser can indicate a macro
 invocation in a type position. In other words, <code>TyMac</code> is added to the
 ast and handled analogously to <code>ExprMac</code>, <code>ItemMac</code>, and <code>PatMac</code>.</p>
-<a class="header" href="0873-type-macros.html#example-heterogeneous-lists" id="example-heterogeneous-lists"><h2>Example: Heterogeneous Lists</h2></a>
+<a class="header" href="#example-heterogeneous-lists" id="example-heterogeneous-lists"><h2>Example: Heterogeneous Lists</h2></a>
 <p>Heterogeneous lists are one example where the ability to express
 recursion via type macros is very useful. They can be used as an
 alternative to or in combination with tuples. Their recursive
@@ -317,7 +324,7 @@ fn test_append() {
     assert_eq!(zs, hlist![&quot;foo&quot;, false, vec![], 0, [0, 1, 2], ()])
 }
 #}</code></pre></pre>
-<a class="header" href="0873-type-macros.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There seem to be few drawbacks to implementing this feature as an
 extension of the existing macro machinery. The change adds a small
 amount of additional complexity to the
@@ -329,7 +336,7 @@ but the changes are minimal.</p>
 extensions to the macro system or type system might interfere with
 this functionality but it seems unlikely unless they are significant,
 breaking changes.</p>
-<a class="header" href="0873-type-macros.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>There are no <em>direct</em> alternatives. Extensions to the type system like
 data kinds, singletons, and other forms of staged programming
 (so-called CTFE) might alleviate the need for type macros in some
@@ -340,14 +347,14 @@ low-effort steps toward making certain programming patterns
 easier. One potential consequence of this might be more pressure to
 significantly extend the type system and other aspects of the language
 to compensate.</p>
-<a class="header" href="0873-type-macros.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="0873-type-macros.html#alternative-syntax-for-macro-invocations-in-types" id="alternative-syntax-for-macro-invocations-in-types"><h2>Alternative syntax for macro invocations in types</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#alternative-syntax-for-macro-invocations-in-types" id="alternative-syntax-for-macro-invocations-in-types"><h2>Alternative syntax for macro invocations in types</h2></a>
 <p>There is a question as to whether type macros should allow <code>&lt;</code> and <code>&gt;</code>
 as delimiters for invocations, e.g. <code>Foo!&lt;A&gt;</code>. This would raise a
 number of additional complications and is probably not necessary to
 consider for this RFC. If deemed desirable by the community, this
 functionality should be proposed separately.</p>
-<a class="header" href="0873-type-macros.html#hygiene-and-type-macros" id="hygiene-and-type-macros"><h2>Hygiene and type macros</h2></a>
+<a class="header" href="#hygiene-and-type-macros" id="hygiene-and-type-macros"><h2>Hygiene and type macros</h2></a>
 <p>This RFC also does not address the topic of hygiene regarding macros
 in types. It is not clear whether there are issues here or not but it
 may be worth considering in further detail.</p>
@@ -395,9 +402,6 @@ may be worth considering in further detail.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

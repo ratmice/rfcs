@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1559-attributes-with-literals - </title>
+        <title>1559-attributes-with-literals - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1559">rust-lang/rfcs#1559</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/34981">rust-lang/rust#34981</a></li>
 </ul>
-<a class="header" href="1559-attributes-with-literals.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes accepting literals in attributes by defining the grammar of attributes as:</p>
 <pre><code class="language-ebnf">attr : '#' '!'? '[' meta_item ']' ;
 
@@ -163,7 +170,7 @@ attributes, among others, would be accepted by this grammar:</p>
 #[repr(C, align = 4)]
 #[repr(C, align(4))]
 #}</code></pre></pre>
-<a class="header" href="1559-attributes-with-literals.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>At present, literals are only accepted as the value of a key-value pair in attributes. What's more,
 only <em>string</em> literals are accepted. This means that literals can only appear in forms of
 <code>#[attr(name = &quot;value&quot;)]</code> or <code>#[attr = &quot;value&quot;]</code>.</p>
@@ -174,7 +181,7 @@ that something like alignment should be an integer value, the following are disa
 used instead: <code>#[align(size = &quot;4&quot;)]</code> or <code>#[name(name)]</code>.</p>
 <p>In short, the current design forces users to use values of a single type, and thus occasionally the
 <em>wrong</em> type, in attributes.</p>
-<a class="header" href="1559-attributes-with-literals.html#cleaner-attributes" id="cleaner-attributes"><h3>Cleaner Attributes</h3></a>
+<a class="header" href="#cleaner-attributes" id="cleaner-attributes"><h3>Cleaner Attributes</h3></a>
 <p>Implementation of this RFC can clean up the following attributes in the standard library:</p>
 <ul>
 <li><code>#![recursion_limit = &quot;64&quot;]</code> <strong>=&gt;</strong> <code>#![recursion_limit = 64]</code> or <code>#![recursion_limit(64)]</code></li>
@@ -187,10 +194,10 @@ used instead: <code>#[align(size = &quot;4&quot;)]</code> or <code>#[name(name)]
 <li><code>#[align = 4]</code></li>
 <li><code>#[align(4)]</code></li>
 </ul>
-<a class="header" href="1559-attributes-with-literals.html#syntax-extensions" id="syntax-extensions"><h3>Syntax Extensions</h3></a>
+<a class="header" href="#syntax-extensions" id="syntax-extensions"><h3>Syntax Extensions</h3></a>
 <p>As syntax extensions mature and become more widely used, being able to use literals in a variety of
 positions becomes more important.</p>
-<a class="header" href="1559-attributes-with-literals.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>To clarify, <em>literals</em> are:</p>
 <ul>
 <li><strong>Strings:</strong> <code>&quot;foo&quot;</code>, <code>r##&quot;foo&quot;##</code></li>
@@ -225,11 +232,11 @@ k/v pairs and as top-level entities of a list.</p>
 <p>Crate metadata encoding/decoding would need to encode and decode literals in attributes.</p>
 </li>
 </ol>
-<a class="header" href="1559-attributes-with-literals.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This RFC requires a change to the AST and is likely to break syntax extensions using attributes in
 the wild.</p>
-<a class="header" href="1559-attributes-with-literals.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1559-attributes-with-literals.html#token-trees" id="token-trees"><h3>Token trees</h3></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#token-trees" id="token-trees"><h3>Token trees</h3></a>
 <p>An alternative is to allow any tokens inside of an attribute. That is, the grammar could be:</p>
 <pre><code class="language-ebnf">attr : '#' '!'? '[' TOKEN+ ']' ;
 </code></pre>
@@ -239,7 +246,7 @@ could be ameliorated through libraries. Further, this would require almost all o
 attribute parsing code to change.</p>
 <p>The advantage, of course, is that it allows any syntax and is rather future proof. It is also more
 inline with <code>macro!</code>s.</p>
-<a class="header" href="1559-attributes-with-literals.html#allow-only-unsuffixed-literals" id="allow-only-unsuffixed-literals"><h3>Allow only unsuffixed literals</h3></a>
+<a class="header" href="#allow-only-unsuffixed-literals" id="allow-only-unsuffixed-literals"><h3>Allow only unsuffixed literals</h3></a>
 <p>This RFC proposes allowing <em>any</em> valid Rust literals in attributes. Instead, the use of literals
 could be restricted to only those that are unsuffixed. That is, only the following literals could be
 allowed:</p>
@@ -251,16 +258,16 @@ allowed:</p>
 <li><strong>Booleans:</strong> <code>true</code>, <code>false</code></li>
 </ul>
 <p>This cleans up the appearance of attributes will still increasing flexibility.</p>
-<a class="header" href="1559-attributes-with-literals.html#allow-literals-only-as-values-in-kv-pairs" id="allow-literals-only-as-values-in-kv-pairs"><h3>Allow literals only as values in k/v pairs</h3></a>
+<a class="header" href="#allow-literals-only-as-values-in-kv-pairs" id="allow-literals-only-as-values-in-kv-pairs"><h3>Allow literals only as values in k/v pairs</h3></a>
 <p>Instead of allowing literals in top-level positions, i.e. <code>#[attr(4)]</code>, only allow them as values in
 key value pairs: <code>#[attr = 4]</code> or <code>#[attr(ident = 4)]</code>. This has the nice advantage that it was the
 initial idea for attributes, and so the AST types already reflect this. As such, no changes would
 have to be made to existing code. The drawback, of course, is the lack of flexibility. <code>#[repr(C, align(4))]</code> would no longer be valid.</p>
-<a class="header" href="1559-attributes-with-literals.html#do-nothing" id="do-nothing"><h3>Do nothing</h3></a>
+<a class="header" href="#do-nothing" id="do-nothing"><h3>Do nothing</h3></a>
 <p>Of course, the current design could be kept. Although it seems that the initial intention was for a
 form of literals to be allowed. Unfortunately, this idea was <a href="https://github.com/rust-lang/rust/issues/623">scrapped due to release pressure</a> and
 never revisited. Even <a href="https://doc.rust-lang.org/reference.html#attributes">the reference</a> alludes to allowing all literals as values in k/v pairs.</p>
-<a class="header" href="1559-attributes-with-literals.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None that I can think of.</p>
 
                     </main>
@@ -306,9 +313,6 @@ never revisited. Even <a href="https://doc.rust-lang.org/reference.html#attribut
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

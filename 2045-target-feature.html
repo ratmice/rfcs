@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2045-target-feature - </title>
+        <title>2045-target-feature - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2045">rust-lang/rfcs#2045</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44839">rust-lang/rust#44839</a></li>
 </ul>
-<a class="header" href="2045-target-feature.html#motivation-and-summary" id="motivation-and-summary"><h1>Motivation and Summary</h1></a>
+<a class="header" href="#motivation-and-summary" id="motivation-and-summary"><h1>Motivation and Summary</h1></a>
 <p>While architectures like <code>x86_64</code> or <code>ARMv8</code> define the lowest-common denominator of instructions that all CPUs must support, many CPUs extend these with vector (<a href="https://en.wikipedia.org/wiki/Advanced_Vector_Extensions">AVX</a>), bitwise manipulation (<a href="https://en.wikipedia.org/wiki/Bit_Manipulation_Instruction_Sets">BMI</a>) and/or cryptographic (<a href="https://en.wikipedia.org/wiki/AES_instruction_set">AES</a>) instruction sets. By default, the Rust compiler produces portable binaries that are able to run on all CPUs of a particular architecture. Users that know in which CPUs their binaries are going to run on are able to allow the compiler to use these extra instructions by using the compiler flags <code>--target-feature</code> and <code>--target-cpu</code>. Running these binaries on mismatching CPUs is undefined behavior. Currently, these users have no way in stable Rust to:</p>
 <ul>
 <li>determine which features are available at compile-time, and</li>
@@ -153,8 +160,8 @@
 <li><strong>run-time feature detection</strong>: using the <code>cfg_feature_enabled!(&quot;avx2&quot;)</code> API to detect whether the current host supports the feature, and</li>
 <li><strong>unconditional code generation</strong>: using the function attribute <code>#[target_feature(enable = &quot;avx2&quot;)]</code> to allow the compiler to generate code under the assumption that this code will only be reached in hosts that support the feature.</li>
 </ul>
-<a class="header" href="2045-target-feature.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="2045-target-feature.html#target-features" id="target-features"><h2>Target features</h2></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#target-features" id="target-features"><h2>Target features</h2></a>
 <p>Each rustc target has a default set of target features that can be controled via
 the backend compilation options. The target features for each target should
 be documented by the compiler and the backends (e.g. LLVM).</p>
@@ -172,7 +179,7 @@ feature.</li>
 writing, for example, <code>#![allow(target_feature_avx2)]</code>. Since this is currently
 not required, a grace period of one full release cycle will be given in which
 this will raise a soft error before turning this requirement into a hard error.</p>
-<a class="header" href="2045-target-feature.html#backend-compilation-options" id="backend-compilation-options"><h2>Backend compilation options</h2></a>
+<a class="header" href="#backend-compilation-options" id="backend-compilation-options"><h2>Backend compilation options</h2></a>
 <p>There are currently two ways of passing target feature information to rustc's code
 generation backend on stable Rust.</p>
 <ul>
@@ -200,7 +207,7 @@ for all functions of a crate. That is, anywhere within the crate the values of t
 <p>Whether the backend compilation options <code>-C --target-feature/--target-cpu</code> also enable
 some stabilized features or not should be resolved by the RFCs suggesting the stabilization
 of particular target features.</p>
-<a class="header" href="2045-target-feature.html#unconditional-code-generation-target_feature" id="unconditional-code-generation-target_feature"><h2>Unconditional code generation: <code>#[target_feature]</code></h2></a>
+<a class="header" href="#unconditional-code-generation-target_feature" id="unconditional-code-generation-target_feature"><h2>Unconditional code generation: <code>#[target_feature]</code></h2></a>
 <p>(note: the function attribute <code>#[target_feature]</code> is similar to clang's and
 gcc's
 <a href="https://clang.llvm.org/docs/AttributeReference.html#target-gnu-target"><code>__attribute__ ((__target__ (&quot;feature&quot;)))</code></a>.)</p>
@@ -281,7 +288,7 @@ unsafe fn moo() {
   }
 }
 #}</code></pre></pre>
-<a class="header" href="2045-target-feature.html#conditional-compilation-cfgtarget_feature" id="conditional-compilation-cfgtarget_feature"><h2>Conditional compilation: <code>cfg!(target_feature)</code></h2></a>
+<a class="header" href="#conditional-compilation-cfgtarget_feature" id="conditional-compilation-cfgtarget_feature"><h2>Conditional compilation: <code>cfg!(target_feature)</code></h2></a>
 <p>The
 <a href="https://github.com/rust-lang/rust/issues/29717"><code>cfg!(target_feature = &quot;feature_name&quot;)</code></a> macro
 allows querying at compile-time whether a target feature is enabled in the
@@ -335,7 +342,7 @@ unsafe fn foo() {
   }
 }
 #}</code></pre></pre>
-<a class="header" href="2045-target-feature.html#run-time-feature-detection" id="run-time-feature-detection"><h2>Run-time feature detection</h2></a>
+<a class="header" href="#run-time-feature-detection" id="run-time-feature-detection"><h2>Run-time feature detection</h2></a>
 <p>Writing safe wrappers around <code>unsafe</code> functions annotated with
 <code>#[target_feature]</code> requires run-time feature detection. This RFC adds the following
 macro to the standard library:</p>
@@ -354,7 +361,7 @@ isn't really more to it.</p>
 <p>If the API of run-time feature detection turns out to be controversial before
 stabilization, a follow-up RFC that focus on run-time feature detection will need
 to be merged, blocking the stabilization of this RFC.</p>
-<a class="header" href="2045-target-feature.html#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
+<a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>There are two parts to this story, the low-level part, and the high-level part.</p>
 <p><strong>Example 5 (high-level usage of target features):</strong></p>
 <p><strong>note</strong>: <code>ifunc</code> is not part of this RFC, but just an example of what can be built on top of it.</p>
@@ -446,7 +453,7 @@ kinds of documentation. For the low level part:</p>
 </ul>
 <p>For the high-level part we should aim to bring third-party crates implementing
 <code>ifunc!</code> or similar close to 1.0 releases before stabilization.</p>
-<a class="header" href="2045-target-feature.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>Obvious increase in language complexity.</li>
 </ul>
@@ -454,11 +461,11 @@ kinds of documentation. For the low level part:</p>
 conditional feature-dependent compilation or run-time selection of code for
 different features (SIMD, BMI, AES, ...) cannot be written efficiently in stable
 Rust.</p>
-<a class="header" href="2045-target-feature.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="2045-target-feature.html#backend-options" id="backend-options"><h1>Backend options</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#backend-options" id="backend-options"><h1>Backend options</h1></a>
 <p>An alternative would be to mix stable, unstable, unknown,
 and backend-specific features into <code>--target-feature</code>.</p>
-<a class="header" href="2045-target-feature.html#make-target_feature-safe" id="make-target_feature-safe"><h2>Make <code>#[target_feature]</code> safe</h2></a>
+<a class="header" href="#make-target_feature-safe" id="make-target_feature-safe"><h2>Make <code>#[target_feature]</code> safe</h2></a>
 <p>Calling a function annotated with <code>#[target_feature]</code> on a host that does not
 support the feature invokes undefined behavior in LLVM, the assembler, and
 possibly the hardware <a href="https://github.com/rust-lang/rfcs/pull/2045#issuecomment-311325202">See this comment</a>.</p>
@@ -477,7 +484,7 @@ possibly the hardware <a href="https://github.com/rust-lang/rfcs/pull/2045#issue
 </ul>
 <p>This RFC chooses that the <code>#[target_feature]</code> attribute only applies to <code>unsafe fn</code>s, so that if one compiles safe Rust source code for a particular target, and then runs the binary on that particular target, no unsafety can result.</p>
 <p>Note that we can always make <code>#[target_feature]</code> safe in the future without breaking backwards compatibility, but the opposite is not true. That is, if somebody figures out a way of making <code>#[target_feature]</code> safe such that the above holds, we can always make that change.</p>
-<a class="header" href="2045-target-feature.html#guarantee-no-segfaults-from-unsafe-code" id="guarantee-no-segfaults-from-unsafe-code"><h2>Guarantee no segfaults from <code>unsafe</code> code</h2></a>
+<a class="header" href="#guarantee-no-segfaults-from-unsafe-code" id="guarantee-no-segfaults-from-unsafe-code"><h2>Guarantee no segfaults from <code>unsafe</code> code</h2></a>
 <p>Calling a <code>#[target_feature]</code>-annotated function on a platform that does not
 support it invokes undefined behavior. We could guarantee that this does not
 happen by always doing run-time feature detection, introducing a run-time cost
@@ -488,10 +495,10 @@ for a combination of language features whose main domain of use is a performance
 sensitive one.</p>
 <p>The &quot;Future Extension&quot;s section discusses how to implement this in an opt-in way,
 e.g., as a sort of binary instrumentation.</p>
-<a class="header" href="2045-target-feature.html#make-target_feature--inlinealways-incompatible" id="make-target_feature--inlinealways-incompatible"><h2>Make <code>#[target_feature] + #[inline(always)]</code> incompatible</h2></a>
+<a class="header" href="#make-target_feature--inlinealways-incompatible" id="make-target_feature--inlinealways-incompatible"><h2>Make <code>#[target_feature] + #[inline(always)]</code> incompatible</h2></a>
 <p>This RFC requires the compiler to error when a function marked with both <code>#[target_feature]</code> and the <code>#[inline(always)]</code> attribute cannot be inlined in a particular call site due to incompatible features. So we might consider to simplify this RFC by just making these attributes incompatible.</p>
 <p>While this is technically correct, the compiler must detect when any function (<code>#[inline(always)]</code>, <code>#[inline]</code>, generics, ...) is inlined into an incompatible context, and prevent this from happening. Erroring if the function is <code>#[inline(always)]</code> does not significantly simplify the RFC nor the compiler implementation.</p>
-<a class="header" href="2045-target-feature.html#removing-run-time-feature-detection-from-this-rfc" id="removing-run-time-feature-detection-from-this-rfc"><h2>Removing run-time feature detection from this RFC</h2></a>
+<a class="header" href="#removing-run-time-feature-detection-from-this-rfc" id="removing-run-time-feature-detection-from-this-rfc"><h2>Removing run-time feature detection from this RFC</h2></a>
 <p>This RFC adds an API for run-time feature detection to the
 standard library.</p>
 <p>The alternative would be to implement similar functionality as a third-party crate that
@@ -511,7 +518,7 @@ is worth it.</p>
 <p>It might turn out that the people from the future are able to come up with a better
 API. But in that case we can always deprecate the current API and include the new
 one in the standard library.</p>
-<a class="header" href="2045-target-feature.html#adding-full-cpuid-support-to-the-standard-library" id="adding-full-cpuid-support-to-the-standard-library"><h2>Adding full cpuid support to the standard library</h2></a>
+<a class="header" href="#adding-full-cpuid-support-to-the-standard-library" id="adding-full-cpuid-support-to-the-standard-library"><h2>Adding full cpuid support to the standard library</h2></a>
 <p>The <code>cfg_feature_enable!</code> macro is designed to work specifically with the features
 that can be used via <code>cfg_target_feature</code> and <code>#[target_feature]</code>. However, in the
 grand scheme of things, run-time detection of these features is only a small part
@@ -522,12 +529,12 @@ Rust for x86: <a href="https://github.com/shepmaster/cupid">cupid</a> and
 does not prevent us from adding more comprehensive functionality in the future, and
 it does not prevent us from reusing any of these libraries in the internal
 implementation of the macro.</p>
-<a class="header" href="2045-target-feature.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="2045-target-feature.html#how-accurate-should-cfgfeature-be" id="how-accurate-should-cfgfeature-be"><h2>How accurate should cfg!(feature) be?</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#how-accurate-should-cfgfeature-be" id="how-accurate-should-cfgfeature-be"><h2>How accurate should cfg!(feature) be?</h2></a>
 <p>What happens if the macro <code>cfg!(target_feature = &quot;feature_name&quot;)</code> is used inside a function for which <code>feature_name</code> is not enabled, but that function gets inlined into a context in which the feature is enabled? We want the macro to accurately return <code>true</code> in this case, that is, to be as accurate as possible so that users always get the most efficient algorithms, but whether this is even possible is an unresolved question.</p>
 <p>This might result in monomorphization errors if <code>#![cfg(target_feature)]</code> is used, but not if <code>if cfg!(target_feature)</code> is used since in this case all branches need to type-check properly.</p>
 <p>We might want to ammend this RFC with more concrete semantics about this as we improve the compiler.</p>
-<a class="header" href="2045-target-feature.html#how-do-we-handle-abi-issues-with-portable-vector-types" id="how-do-we-handle-abi-issues-with-portable-vector-types"><h2>How do we handle ABI issues with portable vector types?</h2></a>
+<a class="header" href="#how-do-we-handle-abi-issues-with-portable-vector-types" id="how-do-we-handle-abi-issues-with-portable-vector-types"><h2>How do we handle ABI issues with portable vector types?</h2></a>
 <p>The ABI of <code>#[target_feature]</code> functions does not change for all types currently available in stable Rust. However, there are types that we might want to add to the language at some point, like portable vector types, for which this is not the case.</p>
 <p>The behavior of <code>#[target_feature]</code> for those types should be specified in the RFC that proposes to stabilize those types, and this RFC should be ammended as necessary.</p>
 <p>The following examples showcase some potential problems when calling functions with mismatching ABIs, or when using function pointers.</p>
@@ -554,10 +561,10 @@ unsafe fn bar() {
   p0 = p2; // ERROR: mismatching ABI
 }
 #}</code></pre></pre>
-<a class="header" href="2045-target-feature.html#future-extensions" id="future-extensions"><h1>Future Extensions</h1></a>
-<a class="header" href="2045-target-feature.html#mutually-exclusive-features" id="mutually-exclusive-features"><h2>Mutually exclusive features</h2></a>
+<a class="header" href="#future-extensions" id="future-extensions"><h1>Future Extensions</h1></a>
+<a class="header" href="#mutually-exclusive-features" id="mutually-exclusive-features"><h2>Mutually exclusive features</h2></a>
 <p>In some cases, e.g., when enabling AVX but disabling SSE4 the compiler should probably produce an error, but for other features like <code>thumb_mode</code> the behavior is less clear. These issues should be addressed by the RFC proposing the stabilizaiton of the target features that need them, as future extensions to this RFC.</p>
-<a class="header" href="2045-target-feature.html#safely-inlining-target_feature-functions-on-more-contexts" id="safely-inlining-target_feature-functions-on-more-contexts"><h2>Safely inlining <code>#[target_feature]</code> functions on more contexts</h2></a>
+<a class="header" href="#safely-inlining-target_feature-functions-on-more-contexts" id="safely-inlining-target_feature-functions-on-more-contexts"><h2>Safely inlining <code>#[target_feature]</code> functions on more contexts</h2></a>
 <p>The problem is the following:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -592,7 +599,7 @@ unsafe fn baz() {
 }
 #}</code></pre></pre>
 <p>Whether this is worth it or can be done at all is an unresolved question. This RFC does not propose any of this, but leaves the door open for such an extension to be explored and proposed independently in a follow-up RFC.</p>
-<a class="header" href="2045-target-feature.html#run-time-diagnostics" id="run-time-diagnostics"><h2>Run-time diagnostics</h2></a>
+<a class="header" href="#run-time-diagnostics" id="run-time-diagnostics"><h2>Run-time diagnostics</h2></a>
 <p>Calling a <code>#[target_feature]</code>-annotated function on a platform that does not
 support it invokes undefined behavior. A friendly compiler could use run-time
 feature detection to check whether calling the function is safe and emit a nice
@@ -626,9 +633,9 @@ unsafe fn foo() { foo_ptr() }
 #}</code></pre></pre>
 <p>This is not required for safety and can be implemented into the compiler as an opt-in instrumentation pass without
 going through the RFC process. However, a proposal to enable this by default should go through the RFC process.</p>
-<a class="header" href="2045-target-feature.html#disabling-features" id="disabling-features"><h2>Disabling features</h2></a>
+<a class="header" href="#disabling-features" id="disabling-features"><h2>Disabling features</h2></a>
 <p>This RFC does not allow disabling target features, but suggest an analogous syntax to do so (<code>#[target_feature(disable = &quot;feature-list&quot;)]</code>, <code>--disable-feature=feature-list</code>). Disabling features can result in some <a href="https://internals.rust-lang.org/t/pre-rfc-stabilization-of-target-feature/5176/26">non-sensical situations</a> and should be pursued as a future extension of this RFC once we want to stabilize a target feature for which it makes sense.</p>
-<a class="header" href="2045-target-feature.html#acknowledgements" id="acknowledgements"><h1>Acknowledgements</h1></a>
+<a class="header" href="#acknowledgements" id="acknowledgements"><h1>Acknowledgements</h1></a>
 <p>@parched @burntsushi @alexcrichton @est31 @pedrocr @chandlerc @RalfJung @matthieu-m</p>
 <ul>
 <li><code>#[target_feature]</code> Pull-Request: https://github.com/rust-lang/rust/pull/38079</li>
@@ -678,9 +685,6 @@ going through the RFC process. However, a proposal to enable this by default sho
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

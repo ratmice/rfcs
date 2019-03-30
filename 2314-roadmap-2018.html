@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2314-roadmap-2018 - </title>
+        <title>2314-roadmap-2018 - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2314">rust-lang/rfcs#2314</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="2314-roadmap-2018.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC sets the <em>Rust 2018 Roadmap</em>, in accordance with <a href="https://github.com/rust-lang/rfcs/pull/1728">RFC 1728</a>. This year's goals are:</p>
 <ul>
 <li>Ship an epoch release: Rust 2018.</li>
@@ -154,7 +161,7 @@
 <li>CLI apps.</li>
 <li>Embedded devices.</li>
 </ul>
-<a class="header" href="2314-roadmap-2018.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>This proposal is a synthesis drawing from several sources:</p>
 <ul>
 <li>The <a href="https://blog.rust-lang.org/2017/09/05/Rust-2017-Survey-Results.html">2017 survey</a>.</li>
@@ -162,7 +169,7 @@
 <li>The core team’s overall sense of the zeitgeist and project management.</li>
 </ul>
 <p>The motivation and detailed rationale of each piece of the roadmap proposal is explained in-line throughout the RFC; the closing section covers the high-level rationale.</p>
-<a class="header" href="2314-roadmap-2018.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
 <blockquote>
 <p><a href="https://boats.gitlab.io/blog/post/2018-01-08-goals-for-rust/">I believe that Rust has the potential to be an exceptionally empowering technology for people writing programs. I am trying to focus on providing the ‘last mile’ of user experience to take the core technological achievements of Rust and make them generally ergonomic and usable by working programmers.</a> (@withoutboats)</p>
 </blockquote>
@@ -190,9 +197,9 @@
 <blockquote>
 <p><a href="https://www.ncameron.org/blog/rust-2018/">At the end of the year I want Rust to feel like a really solid, reliable choice for people choosing a programming language.</a> (@nrc)</p>
 </blockquote>
-<a class="header" href="2314-roadmap-2018.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2314-roadmap-2018.html#goals" id="goals"><h2>Goals</h2></a>
-<a class="header" href="2314-roadmap-2018.html#ship-rust-epoch-2018" id="ship-rust-epoch-2018"><h3>Ship Rust epoch 2018</h3></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#goals" id="goals"><h2>Goals</h2></a>
+<a class="header" href="#ship-rust-epoch-2018" id="ship-rust-epoch-2018"><h3>Ship Rust epoch 2018</h3></a>
 <blockquote>
 <p><a href="http://aturon.github.io/blog/2018/01/09/rust-2018/">Aiming for a major product release gives us an opportunity, as a community, to come together and do something big that goes well beyond the usual six week cycle.</a></p>
 <p><a href="http://aturon.github.io/blog/2018/01/09/rust-2018/">Releasing “Rust 2018” gives us a chance to say to the world that “Rust has taken a major step since 1.0; it’s time to take another look”.</a> (@aturon)</p>
@@ -207,7 +214,7 @@
 </ul>
 <p><strong>These two factors together suggest that Rust 2018 will ship largely with</strong> <strong><em>language</em></strong> <strong>features that are already in nightly in some form today.</strong> Other, faster-moving areas of the product will be developing new material throughout the year.</p>
 <p>As always, we will continue to push out new Rust releases on a six week cadence, so a given feature missing the epoch release is by no means fatal. On the other hand, we need to carefully coordinate the work so that the features we <em>do</em> ship sit together coherently across the compiler, tools, documentation, libraries and marketing materials.</p>
-<a class="header" href="2314-roadmap-2018.html#language" id="language"><h4>Language</h4></a>
+<a class="header" href="#language" id="language"><h4>Language</h4></a>
 <blockquote>
 <p><a href="https://deterministic.space/rust-2018.html">Rust 2018: Consolidation</a> (@killercup)</p>
 </blockquote>
@@ -235,7 +242,7 @@
 <li><strong>Specialization</strong>. Stabilization is blocked on a number of <em>extremely</em> subtle issues, including a revamp of the trait system and <a href="http://aturon.github.io/blog/2017/07/08/lifetime-dispatch/">finding a route to soundness</a>. We cannot afford to spend time on these issues until after the epoch release ships.</li>
 <li><strong>const generics</strong>. This feature is likely to land in <em>nightly</em> in 2018, but will not be ready to stabilize this year given the substantial work that remains.</li>
 </ul>
-<a class="header" href="2314-roadmap-2018.html#compiler" id="compiler"><h4>Compiler</h4></a>
+<a class="header" href="#compiler" id="compiler"><h4>Compiler</h4></a>
 <blockquote>
 <p><a href="https://matthewkmayer.github.io/blag/public/post/rust-2018/">Give me non-embarassing compilation speed!</a> (@matthewkmayer)</p>
 </blockquote>
@@ -246,7 +253,7 @@
 <li>Another push on improving error messages.</li>
 <li>Epoch tooling: adding an epoch flag and building <code>rustfix</code>, likely by leveraging lints.</li>
 </ul>
-<a class="header" href="2314-roadmap-2018.html#libraries" id="libraries"><h4>Libraries</h4></a>
+<a class="header" href="#libraries" id="libraries"><h4>Libraries</h4></a>
 <blockquote>
 <p><a href="http://vitiral.github.io/2018/01/17/rust2018-and-the-great-cli-awakening.html">It is often stated that rust’s ecosystem is immature. While this is somewhat true, the real issue is in finding and using the pieces you need.</a> (@vitiral)</p>
 </blockquote>
@@ -265,7 +272,7 @@
 <li><strong>Discoverability</strong>. We will continue to work with the crates.io team on discoverability improvements, as well as push the Cookbook (or something like it) to 1.0 status as a means of discovering libraries.</li>
 <li><strong>Domain-specific content</strong>. We will work with library authors in the four domains of focus this year to sharpen our offerings in each domain (elaborated more below).</li>
 </ul>
-<a class="header" href="2314-roadmap-2018.html#documentation" id="documentation"><h4>Documentation</h4></a>
+<a class="header" href="#documentation" id="documentation"><h4>Documentation</h4></a>
 <p>Documentation plays a <em>critical</em> role in the epoch release, as it’s often an entry point for people who are taking a look at Rust thanks to our marketing push. With regards to the epoch specifically, this mostly means updating the online version of “The Rust Programming Language” to include all of the new things that are being stabilized in the first part of the year.</p>
 <p>We’ll also be doing a lot of work on Rust By Example. This resource is both critical for our users and also slightly neglected; we’re starting to put together a small team to give it some love, and so we hope to improve it significantly from there.</p>
 <p>There are two additional areas of vital documentation work for 2018, which are not <em>necessarily</em> tied to the epoch release:</p>
@@ -273,7 +280,7 @@
 <li><strong>Resources for intermediate Rustaceans</strong>. This topic is covered in detail below. It’s possible that some of these resources will be ready to go by the epoch release.</li>
 <li><strong>Overhauled rustdoc</strong>. There’s ongoing work on an RLS-based edition of rustdoc with internationalization support, and the ability to seamlessly integrate “guide” and “reference”-style documentation. As a stretch goal for the epoch, we could aim to have this shipped and major libraries using it to provide a better documentation experience.</li>
 </ul>
-<a class="header" href="2314-roadmap-2018.html#tools" id="tools"><h4>Tools</h4></a>
+<a class="header" href="#tools" id="tools"><h4>Tools</h4></a>
 <p>As part of the Rust 2018 epoch release, we will:</p>
 <ul>
 <li>Ship 1.0 editions of the RLS and <code>rustfmt</code>, distributed via <code>rustup</code>.</li>
@@ -292,7 +299,7 @@
 <li><strong>Custom test frameworks</strong>. There’s been <a href="https://internals.rust-lang.org/t/past-present-and-future-for-rust-testing/6354/1">a lot of interest in this area</a>, and it may be possible that with a dedicated working group we can implement and stabilize test frameworks in 2018.</li>
 <li><strong>Compiler-driven code completion for the RLS</strong>. Today the RLS still uses a purely heuristic approach for auto-completion. If the compiler’s new “query-based” architecture can be pushed far enough during the year, it maybe become feasible to start using it to deliver precise auto-complete information.</li>
 </ul>
-<a class="header" href="2314-roadmap-2018.html#web-site" id="web-site"><h4>Web site</h4></a>
+<a class="header" href="#web-site" id="web-site"><h4>Web site</h4></a>
 <p>Many, many of the #Rust2018 posts talked about improving our web presence and the marketing therein:</p>
 <blockquote>
 <p><a href="http://www.wezm.net/technical/2018/01/goals-directions-rust-2018/">Having a consistent, approachable, discoverable, and well designed web presence makes it easier for visitors to find what they’re looking for and adds signals of credibility, attention to detail, and production readiness to the project.</a> (@wezm)</p>
@@ -318,7 +325,7 @@
 <li><strong>Vastly improved marketing materials</strong>, including dedicated pages for all four of this year’s “user stories”.</li>
 <li><strong>Much more extensive resources</strong> useful for being productive with Rust, e.g. dedicated pages for Rust’s tooling story that make it easy to discover the state of the art and choose the best tools for you. Also links to various media resources (videos etc.)</li>
 </ul>
-<a class="header" href="2314-roadmap-2018.html#build-resources-for-intermediate-rustaceans" id="build-resources-for-intermediate-rustaceans"><h3>Build resources for intermediate Rustaceans</h3></a>
+<a class="header" href="#build-resources-for-intermediate-rustaceans" id="build-resources-for-intermediate-rustaceans"><h3>Build resources for intermediate Rustaceans</h3></a>
 <blockquote>
 <p><a href="http://integer32.com/2018/01/05/more-rust-in-2018.html">We, as a community, should work on creating the next level of learning resources to help folks deploy Rust to production with confidence.</a> (@integer32)</p>
 </blockquote>
@@ -330,7 +337,7 @@
 </blockquote>
 <p>One of the strongest messages we’ve heard from production users, and <a href="https://blog.rust-lang.org/2017/09/05/Rust-2017-Survey-Results.html">the 2017 survey</a>, is that people need more resources to take them from understanding Rust’s concepts to knowing how to use them <em>effectively</em>. This roadmap will not stipulate exactly what these resources should look like — <a href="https://quietmisdreavus.net/code/2018/01/10/not-a-layer-cake-analogy/">probably there should be several kinds</a> — but commits us as a community to putting significant work into this space, and ending the year with some solid new material.</p>
 <p>The <a href="https://quietmisdreavus.net/code/2018/01/10/not-a-layer-cake-analogy/">post by QuietMisdreavus</a> offers a wealth of ideas.</p>
-<a class="header" href="2314-roadmap-2018.html#connect-and-empower-rusts-global-community" id="connect-and-empower-rusts-global-community"><h3>Connect and empower Rust’s global community</h3></a>
+<a class="header" href="#connect-and-empower-rusts-global-community" id="connect-and-empower-rusts-global-community"><h3>Connect and empower Rust’s global community</h3></a>
 <blockquote>
 <p><a href="http://integer32.com/2018/01/05/more-rust-in-2018.html">“Additionally, more venues should be created to work with production users to gather regular feedback in a convenient, scalable way.”</a> (Integer 32)</p>
 </blockquote>
@@ -356,7 +363,7 @@
 <li><strong>Organized data</strong> for assessing and analysing progress on the above goals</li>
 </ul>
 <p>You can read more about these goals in the [2018 Community Team Goals RFC](link needed).</p>
-<a class="header" href="2314-roadmap-2018.html#grow-rusts-teams-and-new-leaders-within-them" id="grow-rusts-teams-and-new-leaders-within-them"><h3>Grow Rust’s teams and new leaders within them</h3></a>
+<a class="header" href="#grow-rusts-teams-and-new-leaders-within-them" id="grow-rusts-teams-and-new-leaders-within-them"><h3>Grow Rust’s teams and new leaders within them</h3></a>
 <blockquote>
 <p><a href="https://matthias-endler.de/2018/rust-2018/">I'm convinced, that by improving documentation and mentorship, we can grow the number of contributors significantly and stabilize many highly-anticipated features this year.</a> (@mre)</p>
 </blockquote>
@@ -378,10 +385,10 @@
 <p><strong>Systematize mentoring</strong>, by improving tools like <a href="https://rustaceans.org/findwork">findwork</a> and developing best practices for mentoring across teams.</p>
 </li>
 </ul>
-<a class="header" href="2314-roadmap-2018.html#domains" id="domains"><h2>Domains</h2></a>
+<a class="header" href="#domains" id="domains"><h2>Domains</h2></a>
 <p>With many of the goals listed above, we have some choice about what use-cases to focus on. To help ensure that our Rust 2018 product has a coherent story, we will focus on four target markets that have either already seen Rust uptake, or where we believe that Rust has significant potential.</p>
 <p>We will spin up a separate working group for each of these domains, reporting to the core team, and tasked with looking after the end-to-end experience in that domain and making recommendations to other Rust teams with decision-making power.</p>
-<a class="header" href="2314-roadmap-2018.html#network-services" id="network-services"><h3>Network services</h3></a>
+<a class="header" href="#network-services" id="network-services"><h3>Network services</h3></a>
 <blockquote>
 <p><a href="https://boats.gitlab.io/blog/post/2018-01-08-goals-for-rust/">I think network services are a great opportunity for Rust</a>. (@withoutboats)</p>
 </blockquote>
@@ -392,7 +399,7 @@
 <p><a href="https://www.reddit.com/r/rust/comments/7syxw4/rust_2018_core_embeddedsimd_intermesiate/">Tokio needs a lot of work.</a> (@nicoburns)</p>
 </blockquote>
 <p>Rust sees heavy production use in the network services domain, both in implementing services directly and in providing <a href="https://buoyant.io/products/#products-Conduit">related infrastructure</a>. The domain was also a major focus in 2017. This year, we will push hard on making the end-to-end user experience in this domain solid and stable.</p>
-<a class="header" href="2314-roadmap-2018.html#webassembly" id="webassembly"><h3>WebAssembly</h3></a>
+<a class="header" href="#webassembly" id="webassembly"><h3>WebAssembly</h3></a>
 <blockquote>
 <p><a href="https://dirkjan.ochtman.nl/writing/2018/01/14/rust-in-2018.html">I believe that WebAssembly is about to take off in a big way.</a> (@djc)</p>
 </blockquote>
@@ -400,12 +407,12 @@
 <p><a href="https://mgattozzi.com/rust-wasm">We're poised to be THE language of choice for wasm.</a> (@mgattozzi)</p>
 </blockquote>
 <p>Late in 2017 <a href="https://github.com/rust-lang/rust/pull/45905">we added</a> the “wasm32-unknown-unknown” target, making it possible to emit pure WebAssembly binaries from Rust, without any extra toolchain hassle. The interest has been explosive, with <a href="https://medium.com/@devongovett/parcel-v1-5-0-released-source-maps-webassembly-rust-and-more-3a6385e43b95">some JS bundlers now offering Rust support out of the box</a>. This is a brand new market with no incumbent and for which Rust is <em>extremely</em> well-positioned (read <a href="https://mgattozzi.com/rust-wasm">@mgattozzi’s excellent post</a> for a comprehensive argument). We will work this year to make integration, tooling, and the library ecosystem as polished as we can manage. An informal working group is already coordinating <a href="https://github.com/aturon/rust-wasm/">on GitHub</a>.</p>
-<a class="header" href="2314-roadmap-2018.html#cli-apps" id="cli-apps"><h3>CLI apps</h3></a>
+<a class="header" href="#cli-apps" id="cli-apps"><h3>CLI apps</h3></a>
 <blockquote>
 <p><a href="http://vitiral.github.io/2018/01/17/rust2018-and-the-great-cli-awakening.html">Rust is a fantastic language for writing a Command Line Application (CLI). For the ergonomics of hacking, it has one of the best argument parsers ever, has seriously the best serialization library ever and it compiles to almost any target and goes fast when it runs.</a> (@vitiral)</p>
 </blockquote>
 <p>Rust has also seen some production update in the CLI space, for which it is very well-suited. This is a space where Rust’s portability, reliability, and ability to produce static binaries make it extremely attractive. We also have a number of excellent libraries already. This year, we will improve this ecosystem and pull it together into a polished, coherent package for people checking out Rust. Read <a href="http://vitiral.github.io/2018/01/17/rust2018-and-the-great-cli-awakening.html">@vitiral’s post</a> and <a href="https://github.com/killercup/quicli">@killercup’s crate</a> for some inspiration!</p>
-<a class="header" href="2314-roadmap-2018.html#embedded-bare-metal-devices" id="embedded-bare-metal-devices"><h3>Embedded “bare metal” devices</h3></a>
+<a class="header" href="#embedded-bare-metal-devices" id="embedded-bare-metal-devices"><h3>Embedded “bare metal” devices</h3></a>
 <blockquote>
 <p><a href="https://medium.com/pollenrobotics/rust-for-robotics-and-embedded-systems-in-2018-96e9be8464">In 2018, I simply wish [the embedded community] could switch to beta or even stable!</a> (Pierre Rouanet)</p>
 </blockquote>
@@ -415,7 +422,7 @@
 </blockquote>
 <p>There’s always been simmering excitement around using Rust in the “bare metal” space, but among the domains we want to target, it’s needed the most work in terms of language features to fully support. While we cannot hope to stabilize <em>everything</em> needed for embedded development in 2018, we can step up our game and begin to treat the market as more mainstream. This intersects nicely with the WebAssembly work, since WebAssembly presents a very barebones machine model and will thus interact deeply with the <code>no_std</code> ecosystem.</p>
 <p>Check out <a href="http://blog.japaric.io/embedded-rust-in-2018/">@japaric’s roadmap</a> for a plausible way forward.</p>
-<a class="header" href="2314-roadmap-2018.html#schedule-and-structure" id="schedule-and-structure"><h2>Schedule and structure</h2></a>
+<a class="header" href="#schedule-and-structure" id="schedule-and-structure"><h2>Schedule and structure</h2></a>
 <blockquote>
 <p><a href="https://manishearth.github.io/blog/2018/01/10/rust-in-2018/">I want to see [2018] as an extended impl period.</a> (@Manishearth)</p>
 </blockquote>
@@ -437,9 +444,9 @@
 <p>This period culminates with cutting the beta epoch release at the beginning of August, with RustConf following shortly after.</p>
 <p><strong>Fun</strong>! Having pushed hard up to this point, for the remainder of the year we will relax our tight focus and allow for more exploration, as well as work on fun features like const generics, GATs, and specialization. Rust Belt Rust will happen during this period.</p>
 <p><strong>Reflection</strong>. We’ll leave the month at the end of the year for retrospectives and 2019 planning, with the hope that we can start 2019 with a roadmap already in place.</p>
-<a class="header" href="2314-roadmap-2018.html#rationale-drawbacks-and-alternatives" id="rationale-drawbacks-and-alternatives"><h1>Rationale, drawbacks and alternatives</h1></a>
+<a class="header" href="#rationale-drawbacks-and-alternatives" id="rationale-drawbacks-and-alternatives"><h1>Rationale, drawbacks and alternatives</h1></a>
 <p>Here’s a high level rationale for the two major themes this year: shipping and community.</p>
-<a class="header" href="2314-roadmap-2018.html#shipping" id="shipping"><h2>Shipping</h2></a>
+<a class="header" href="#shipping" id="shipping"><h2>Shipping</h2></a>
 <p>The data and discussion quickly coalesced around one of the basic contours for this year: a sense that a lot of important improvements are in the pipeline, and <strong>what’s needed this year is a strong focus on</strong> <strong><em>shipping</em></strong>. As @nikomatsakis put it:</p>
 <blockquote>
 <p><a href="http://smallcultfollowing.com/babysteps/blog/2018/01/09/rust2018/">We did good work in 2017: now we have to make sure the world knows it and can use it.</a> (@nikomatsakis)</p>
@@ -453,7 +460,7 @@
 <p><a href="http://yakshav.es/rust-2018/">I’d like us to stabilise imperfect things.</a> (@skade)</p>
 </blockquote>
 <p>Shipping requires the discipline to say “no” to exciting new ideas, and to say “yes” to delivering on ones we fear are flawed. We have to iterate toward perfection, providing useful snapshots along the way.</p>
-<a class="header" href="2314-roadmap-2018.html#the-domains" id="the-domains"><h3>The domains</h3></a>
+<a class="header" href="#the-domains" id="the-domains"><h3>The domains</h3></a>
 <p>One particular aspect of focusing on shipping a polished product this year was saying &quot;no&quot; to some usage domains. In particular, we are <em>not</em> aiming for a polished story in any of the following domains in 2018:</p>
 <ul>
 <li>Scientific/numeric computing</li>
@@ -469,7 +476,7 @@
 <li>They already have significant momentum, making it viable to achieve that impact with our 2018 work.</li>
 </ul>
 <p>Of course, some of the foundational work like const generics that we plan to do in 2018 will be important for some of the domains listed above. But the point is that the roadmap pinpoints four domains for a solid <em>end-to-end</em> experience.</p>
-<a class="header" href="2314-roadmap-2018.html#community" id="community"><h2>Community</h2></a>
+<a class="header" href="#community" id="community"><h2>Community</h2></a>
 <p>Our work in 2017, especially during <a href="https://blog.rust-lang.org/2017/09/18/impl-future-for-rust.html">the impl period</a>, was the clear result of a community-wide effort. To do the hard work of “<a href="https://www.ncameron.org/blog/rust-2018/">polishing new things into great things</a>,“ and to keep up with Rust’s continuing growth, we need to double down on our investment in our community. That’s a theme with several facets, including project leadership:</p>
 <blockquote>
 <p><a href="http://aturon.github.io/blog/2018/01/09/rust-2018/">Rust is a staggeringly large project with a huge and talented community, and we need its leadership structure to reflect that if we are to reach our full potential.</a> (@aturon)</p>
@@ -493,7 +500,7 @@
 <p><a href="https://manishearth.github.io/blog/2018/01/10/rust-in-2018/">I’m also hoping for more companies to invest back into Rust.</a> (@manishearth)</p>
 </blockquote>
 <p>That’s a lot! But it’s work that immediately pays dividends back into the project, both in terms of adoption and development.</p>
-<a class="header" href="2314-roadmap-2018.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>TBD</p>
 
                     </main>
@@ -539,9 +546,6 @@
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

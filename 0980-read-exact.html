@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0980-read-exact - </title>
+        <title>0980-read-exact - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,14 +146,14 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/980">rust-lang/rfcs#980</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/27585">rust-lang/rust#27585</a></li>
 </ul>
-<a class="header" href="0980-read-exact.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Rust's <code>Write</code> trait has the <code>write_all</code> method, which is a convenience
 method that writes a whole buffer, failing with <code>ErrorKind::WriteZero</code>
 if the buffer cannot be written in full.</p>
 <p>This RFC proposes adding its <code>Read</code> counterpart: a method (here called
 <code>read_exact</code>) that reads a whole buffer, failing with an error (here
 called <code>ErrorKind::UnexpectedEOF</code>) if the buffer cannot be read in full.</p>
-<a class="header" href="0980-read-exact.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>When dealing with serialization formats with fixed-length fields,
 reading or writing less than the field's size is an error. For the
 <code>Write</code> side, the <code>write_all</code> method does the job; for the <code>Read</code> side,
@@ -174,7 +181,7 @@ could potentially turn a read from the buffer followed by an endianness
 conversion into the native endianness (as can happen when using the
 <code>byteorder</code> crate) into a single-instruction direct load from the buffer
 into a register.</p>
-<a class="header" href="0980-read-exact.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>First, a new variant <code>UnexpectedEOF</code> is added to the <code>io::ErrorKind</code> enum.</p>
 <p>The following method is added to the <code>Read</code> trait:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -239,7 +246,7 @@ contents of <code>buf</code> when this function is called; implementations canno
 rely on any property of the contents of <code>buf</code> being true. It is
 recommended that implementations only write data to <code>buf</code> instead of
 reading its contents.</p>
-<a class="header" href="0980-read-exact.html#about-errorkindinterrupted" id="about-errorkindinterrupted"><h1>About ErrorKind::Interrupted</h1></a>
+<a class="header" href="#about-errorkindinterrupted" id="about-errorkindinterrupted"><h1>About ErrorKind::Interrupted</h1></a>
 <p>Whether or not <code>read_exact</code> can return an <code>ErrorKind::Interrupted</code> error
 is orthogonal to its semantics. One could imagine an alternative design
 where <code>read_exact</code> could return an <code>ErrorKind::Interrupted</code> error.</p>
@@ -254,7 +261,7 @@ return or retry depending on whether it was interrupted at the beginning
 or in the middle. Therefore, the cleanest semantics is to always retry.</p>
 <p>There's precedent for this choice in the <code>read_to_end</code> method. Users who
 need finer control should use the <code>read</code> method directly.</p>
-<a class="header" href="0980-read-exact.html#about-the-read-pointer" id="about-the-read-pointer"><h1>About the read pointer</h1></a>
+<a class="header" href="#about-the-read-pointer" id="about-the-read-pointer"><h1>About the read pointer</h1></a>
 <p>This RFC proposes a <code>read_exact</code> function where the read pointer
 (conceptually, what would be returned by <code>Seek::seek</code> if the stream was
 seekable) is unspecified on failure: it might not have advanced at all,
@@ -282,7 +289,7 @@ would treat an <code>ErrorKind::UnexpectedEOF</code> as a &quot;corrupted file&q
 discard the stream anyways.</p>
 <p>Users who need finer control should use the <code>read</code> method directly, or
 when available use the <code>Seek</code> trait.</p>
-<a class="header" href="0980-read-exact.html#about-the-buffer-contents" id="about-the-buffer-contents"><h1>About the buffer contents</h1></a>
+<a class="header" href="#about-the-buffer-contents" id="about-the-buffer-contents"><h1>About the buffer contents</h1></a>
 <p>This RFC proposes that the contents of the output buffer be undefined on
 an error return. It might be untouched, partially overwritten, or
 completely overwritten (even if less bytes could be read; for instance,
@@ -300,7 +307,7 @@ for optimized implementations this extra work is useless; since the
 caller can't know how much is valid data and how much is garbage, it
 can't make use of the valid data.</p>
 <p>Users who need finer control should use the <code>read</code> method directly.</p>
-<a class="header" href="0980-read-exact.html#naming" id="naming"><h1>Naming</h1></a>
+<a class="header" href="#naming" id="naming"><h1>Naming</h1></a>
 <p>It's unfortunate that <code>write_all</code> used <code>WriteZero</code> for its <code>ErrorKind</code>;
 were it named <code>UnexpectedEOF</code> (which is a much more intuitive name), the
 same <code>ErrorKind</code> could be used for both functions.</p>
@@ -311,7 +318,7 @@ and return what you could read&quot; instead of &quot;read enough bytes to fill
 this buffer, and fail if you couldn't read them all&quot;. The previous
 discussion led to <code>read_exact</code> for the later meaning, and <code>read_full</code>
 for the former meaning.</p>
-<a class="header" href="0980-read-exact.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>If this method fails, the buffer contents are undefined; the
 `read_exact' method might have partially overwritten it. If the caller
 requires &quot;all-or-nothing&quot; semantics, it must clone the buffer. In most
@@ -322,7 +329,7 @@ many bytes were read before it determined it couldn't completely fill
 the buffer.</p>
 <p>Situations that require lower level control can still use <code>read</code>
 directly.</p>
-<a class="header" href="0980-read-exact.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The first alternative is to do nothing. Every Rust user needing this
 functionality continues to write their own read_full or read_exact
 function, or have to track down an external crate just for one
@@ -419,9 +426,6 @@ much to gain over a generic looping implementation calling <code>read</code>.</l
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

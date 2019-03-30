@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0201-error-chaining - </title>
+        <title>0201-error-chaining - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR #: <a href="https://github.com/rust-lang/rfcs/pull/201">rust-lang/rfcs#201</a></li>
 <li>Rust Issue #: <a href="https://github.com/rust-lang/rust/issues/17747">rust-lang/rust#17747</a></li>
 </ul>
-<a class="header" href="0201-error-chaining.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC improves interoperation between APIs with different error
 types. It proposes to:</p>
 <ul>
@@ -157,7 +164,7 @@ by introducing an <code>Error</code> trait.</p>
 <p>The proposed changes are all library changes; no language changes are
 needed -- except that this proposal depends on
 <a href="https://github.com/rust-lang/rfcs/pull/195">multidispatch</a> happening.</p>
-<a class="header" href="0201-error-chaining.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Typically, a module (or crate) will define a custom error type encompassing the
 possible error outcomes for the operations it provides, along with a custom
 <code>Result</code> instance baking in this type. For example, we have <code>io::IoError</code> and
@@ -166,7 +173,7 @@ Together with the <code>try!</code> macro, the story for interacting with errors
 single library is reasonably good.</p>
 <p>However, we lack infrastructure when consuming or building on errors from
 multiple APIs, or abstracting over errors.</p>
-<a class="header" href="0201-error-chaining.html#consuming-multiple-error-types" id="consuming-multiple-error-types"><h2>Consuming multiple error types</h2></a>
+<a class="header" href="#consuming-multiple-error-types" id="consuming-multiple-error-types"><h2>Consuming multiple error types</h2></a>
 <p>Our current infrastructure for error handling does not cope well with
 mixed notions of error.</p>
 <p>Abstractly, as described by
@@ -192,7 +199,7 @@ the <code>try!</code> macro only works for a single error type at a time.</p>
 <p>There are roughly two scenarios where multiple library error types
 need to be coalesced into a common type, each with different needs:
 application error reporting, and library error reporting</p>
-<a class="header" href="0201-error-chaining.html#application-error-reporting-presenting-errors-to-a-user" id="application-error-reporting-presenting-errors-to-a-user"><h3>Application error reporting: presenting errors to a user</h3></a>
+<a class="header" href="#application-error-reporting-presenting-errors-to-a-user" id="application-error-reporting-presenting-errors-to-a-user"><h3>Application error reporting: presenting errors to a user</h3></a>
 <p>An application is generally the &quot;last stop&quot; for error handling: it's
 the point at which remaining errors are presented to the user in some
 form, when they cannot be handled programmatically.</p>
@@ -215,7 +222,7 @@ struct CLIError&lt;'a&gt; {
 <p>Ideally, one could use the <code>try!</code> macro as in the <code>download</code> example
 to coalesce a variety of error types into this single, simple
 <code>struct</code>.</p>
-<a class="header" href="0201-error-chaining.html#library-error-reporting-abstraction-boundaries" id="library-error-reporting-abstraction-boundaries"><h3>Library error reporting: abstraction boundaries</h3></a>
+<a class="header" href="#library-error-reporting-abstraction-boundaries" id="library-error-reporting-abstraction-boundaries"><h3>Library error reporting: abstraction boundaries</h3></a>
 <p>When one library builds on others, it needs to translate from their
 error types to its own. For example, a web server framework may build
 on a library for accessing a SQL database, and needs some way to
@@ -230,7 +237,7 @@ operation and context. In other cases, though, there will be a general
 way to embed one kind of error in another (usually via a
 <a href="http://docs.oracle.com/javase/tutorial/essential/exceptions/chained.html">&quot;cause chain&quot;</a>). Both
 scenarios should be supported by Rust's error handling infrastructure.</p>
-<a class="header" href="0201-error-chaining.html#abstracting-over-errors" id="abstracting-over-errors"><h2>Abstracting over errors</h2></a>
+<a class="header" href="#abstracting-over-errors" id="abstracting-over-errors"><h2>Abstracting over errors</h2></a>
 <p>Finally, libraries sometimes need to work with errors in a generic
 way. For example, the <code>serialize::Encoder</code> type takes is generic over
 an arbitrary error type <code>E</code>. At the moment, such types are completely
@@ -246,7 +253,7 @@ classes or interfaces that guarantee some basic functionality,
 including short and detailed descriptions and &quot;causes&quot;. We should
 begin developing similar functionality in <code>libstd</code> to ensure that we
 have an agreed-upon baseline error API.</p>
-<a class="header" href="0201-error-chaining.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>We can address all of the problems laid out in the Motivation section
 by adding some simple library code to <code>libstd</code>, so this RFC will
 actually give a full implementation.</p>
@@ -255,7 +262,7 @@ actually give a full implementation.</p>
 currently under consideration.</p>
 <p>The proposal consists of two pieces: a standardized <code>Error</code> trait and
 extensions to the <code>try!</code> macro.</p>
-<a class="header" href="0201-error-chaining.html#the-error-trait" id="the-error-trait"><h2>The <code>Error</code> trait</h2></a>
+<a class="header" href="#the-error-trait" id="the-error-trait"><h2>The <code>Error</code> trait</h2></a>
 <p>The standard <code>Error</code> trait follows very the widespread pattern found
 in <code>Exception</code> base classes in many languages:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -301,7 +308,7 @@ application code) sees only the human-consumable parts of the error.
 In particular, application code will often employ <code>Box&lt;Error&gt;</code> as the
 error type when reporting errors to the user. The <code>try!</code> macro
 support, explained below, makes doing so ergonomic.</p>
-<a class="header" href="0201-error-chaining.html#an-extended-try-macro" id="an-extended-try-macro"><h2>An extended <code>try!</code> macro</h2></a>
+<a class="header" href="#an-extended-try-macro" id="an-extended-try-macro"><h2>An extended <code>try!</code> macro</h2></a>
 <p>The other piece to the proposal is a way for <code>try!</code> to automatically
 convert between different types of errors.</p>
 <p>The idea is to introduce a trait <code>FromError&lt;E&gt;</code> that says how to
@@ -369,18 +376,18 @@ fn my_lib_func() -&gt; Result&lt;T, MyError&gt; {
     try!(may_return_error_type_B());
 }
 </code></pre>
-<a class="header" href="0201-error-chaining.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The main drawback is that the <code>try!</code> macro is a bit more complicated.</p>
-<a class="header" href="0201-error-chaining.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
-<a class="header" href="0201-error-chaining.html#conventions" id="conventions"><h2>Conventions</h2></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#conventions" id="conventions"><h2>Conventions</h2></a>
 <p>This RFC does not define any particular conventions around cause
 chaining or concrete error types. It will likely take some time and
 experience using the proposed infrastructure before we can settle
 these conventions.</p>
-<a class="header" href="0201-error-chaining.html#extensions" id="extensions"><h2>Extensions</h2></a>
+<a class="header" href="#extensions" id="extensions"><h2>Extensions</h2></a>
 <p>The functionality in the <code>Error</code> trait is quite minimal, and should
 probably grow over time. Some additional functionality might include:</p>
-<a class="header" href="0201-error-chaining.html#features-on-the-error-trait" id="features-on-the-error-trait"><h3>Features on the <code>Error</code> trait</h3></a>
+<a class="header" href="#features-on-the-error-trait" id="features-on-the-error-trait"><h3>Features on the <code>Error</code> trait</h3></a>
 <ul>
 <li>
 <p><strong>Generic creation of <code>Error</code>s.</strong> It might be useful for the <code>Error</code>
@@ -401,7 +408,7 @@ properties. Allowing generic creation of any <code>Error</code>-bounded type
 would also require these <code>enum</code>s to include something like a
 <code>GenericError</code> variant, which is unfortunate. So for now, the design
 sticks to the least common denominator.</p>
-<a class="header" href="0201-error-chaining.html#concrete-error-types" id="concrete-error-types"><h3>Concrete error types</h3></a>
+<a class="header" href="#concrete-error-types" id="concrete-error-types"><h3>Concrete error types</h3></a>
 <p>On the other hand, for code that doesn't care about the footprint of
 its error types, it may be useful to provide something like the
 following generic error type:</p>
@@ -484,9 +491,6 @@ minimal functionality for now.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

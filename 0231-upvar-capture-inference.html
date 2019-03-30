@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0231-upvar-capture-inference - </title>
+        <title>0231-upvar-capture-inference - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,13 +145,13 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/231">rust-lang/rfcs#231</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/16640">rust-lang/rust#16640</a></li>
 </ul>
-<a class="header" href="0231-upvar-capture-inference.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>The <code>||</code> unboxed closure form should be split into two forms—<code>||</code> for nonescaping closures and <code>move ||</code> for escaping closures—and the capture clauses and self type specifiers should be removed.</p>
-<a class="header" href="0231-upvar-capture-inference.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Having to specify <code>ref</code> and the capture mode for each unboxed closure is inconvenient (see Rust PR rust-lang/rust#16610). It would be more convenient for the programmer if the type of the closure and the modes of the upvars could be inferred. This also eliminates the &quot;line-noise&quot; syntaxes like <code>|&amp;:|</code>, which are arguably unsightly.</p>
 <p>Not all knobs can be removed, however—the programmer must manually specify whether each closure is escaping or nonescaping. To see this, observe that no sensible default for the closure <code>|| (*x).clone()</code> exists: if the function is nonescaping, it's a closure that returns a copy of <code>x</code> every time but does not move <code>x</code> into it; if the function is escaping, it's a closure that returns a copy of <code>x</code> and takes ownership of <code>x</code>.</p>
 <p>Therefore, we need two forms: one for <em>nonescaping</em> closures and one for <em>escaping</em> closures. Nonescaping closures are the commonest, so they get the <code>||</code> syntax that we have today, and a new <code>move ||</code> syntax will be introduced for escaping closures.</p>
-<a class="header" href="0231-upvar-capture-inference.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>For unboxed closures specified with <code>||</code>, the capture modes of the free variables are determined as follows:</p>
 <ol>
 <li>
@@ -162,7 +169,7 @@
 <p>We introduce a new grammar production, <code>move ||</code>. The value returned by a <code>move ||</code> implements <code>FnOnce</code>, <code>FnMut</code>, or <code>Fn</code>, as determined above; thus, for example, <code>move |x: int, y| x + y</code> produces an unboxed closure that implements the <code>Fn(int, int) -&gt; int</code> trait (and thus the <code>FnOnce(int, int) -&gt; int</code> trait by inheritance). Free variables referenced by a <code>move ||</code> closure are always captured by value.</p>
 <p>In the trait reference grammar, we will change the <code>|&amp;:|</code> sugar to <code>Fn()</code>, the <code>|&amp;mut:|</code> sugar to <code>FnMut()</code>, and the <code>|:|</code> sugar to <code>FnOnce()</code>. Thus what was before written <code>fn foo&lt;F:|&amp;mut: int, int| -&gt; int&gt;()</code> will be <code>fn foo&lt;F:FnMut(int, int) -&gt; int&gt;()</code>.</p>
 <p>It is important to note that the trait reference syntax and closure construction syntax are purposefully distinct. This is because either the <code>||</code> form or the <code>move ||</code> form can construct any of <code>FnOnce</code>, <code>FnMut</code>, or <code>Fn</code> closures.</p>
-<a class="header" href="0231-upvar-capture-inference.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ol>
 <li>
 <p>Having two syntaxes for closures could be seen as unfortunate.</p>
@@ -171,7 +178,7 @@
 <p><code>move</code> becomes a keyword.</p>
 </li>
 </ol>
-<a class="header" href="0231-upvar-capture-inference.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ol>
 <li>
 <p>Keep the status quo: <code>|:|</code>/<code>|&amp;mut:</code>/<code>|&amp;:|</code> are the only ways to create unboxed closures, and <code>ref</code> must be used to get by-reference upvars.</p>
@@ -186,7 +193,7 @@
 <p>Use <code>fn()</code> syntax for trait reference sugar.</p>
 </li>
 </ol>
-<a class="header" href="0231-upvar-capture-inference.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>There may be unforeseen complications in doing the inference.</p>
 
                     </main>
@@ -232,9 +239,6 @@
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

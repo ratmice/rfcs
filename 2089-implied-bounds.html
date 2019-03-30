@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2089-implied-bounds - </title>
+        <title>2089-implied-bounds - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2089">rust-lang/rfcs#2089</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44491">rust-lang/rust#44491</a></li>
 </ul>
-<a class="header" href="2089-implied-bounds.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Eliminate the need for “redundant” bounds on functions and impls where those bounds can be inferred from the input types and other trait bounds. For example, in this simple program, the impl would no longer require a bound, because it can be inferred from the <code>Foo&lt;T&gt;</code> type:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -151,8 +158,8 @@ impl&lt;T: Debug&gt; Foo&lt;T&gt; {
 }
 #}</code></pre></pre>
 <p>Hence, simply writing <code>impl&lt;T&gt; Foo&lt;T&gt; { ... }</code> would suffice. We currently support implied bounds for lifetime bounds, super traits and projections. We propose to extend this to all where clauses on traits and types, as was already discussed <a href="https://internals.rust-lang.org/t/lang-team-minutes-implied-bounds/4905">here</a>.</p>
-<a class="header" href="2089-implied-bounds.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="2089-implied-bounds.html#types" id="types"><h2>Types</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#types" id="types"><h2>Types</h2></a>
 <p>Let's take an example from the standard library where trait bounds are actually expressed on a type¹.</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -232,7 +239,7 @@ pub fn debug_struct_new&lt;'a, 'b&gt;(fmt: &amp;'a mut fmt::Formatter&lt;'b&gt;,
 #}</code></pre></pre>
 <p>This RFC proposes to extend this sort of logic beyond these special cases and use it uniformly for both trait bounds and lifetime bounds.</p>
 <p>¹Actually only a few types in the standard library have bounds, for example <code>HashSet&lt;T&gt;</code> does not have a <code>T: Hash + Eq</code> on the type declaration, but on the impl declaration rather. Whether we should prefer bounds on types or on impls is related, but beyond the scope of this RFC.</p>
-<a class="header" href="2089-implied-bounds.html#traits" id="traits"><h2>Traits</h2></a>
+<a class="header" href="#traits" id="traits"><h2>Traits</h2></a>
 <p>Traits also currently support some form of implied bounds, namely super traits bounds:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -275,7 +282,7 @@ fn foo&lt;T: Foo&gt;() {
 //  ^ the trait `std::cmp::Eq` is not implemented for `U`
 #}</code></pre></pre>
 <p>Again we propose to uniformly support implied bounds for all where clauses on trait definitions.</p>
-<a class="header" href="2089-implied-bounds.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-Level Explanation</h1></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-Level Explanation</h1></a>
 <p>When you declare bounds on a type, you don't have to repeat them when writing impls and functions as soon as the type appear in the signature or the impl header:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -373,7 +380,7 @@ fn debug_foo&lt;U, T: Foo&lt;Item = U&gt;&gt;(arg: U) {
     /* do something else with `T` and `U`... */
 }
 #}</code></pre></pre>
-<a class="header" href="2089-implied-bounds.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-Level Explanation</h1></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-Level Explanation</h1></a>
 <p>This is the fully-detailed design and you probably don't need to read everything. This design has already been experimented on <a href="https://github.com/nikomatsakis/chalk">Chalk</a>, to some extent. The current design has been driven by issue <a href="https://github.com/nikomatsakis/chalk/issues/12">#12</a>, it is a good read to understand why we <em>need</em> to expand where clauses as described below.</p>
 <p>We'll use the grammar from <a href="https://github.com/rust-lang/rfcs/blob/master/text/1214-projections-lifetimes-and-wf.md">RFC 1214</a> to detail the rules:</p>
 <pre><code>T = scalar (i32, u32, ...)              // Boring stuff
@@ -390,14 +397,14 @@ O = for&lt;r...&gt; TraitId&lt;P1, ..., Pn&gt;      // Object type fragment
 r = 'x                                  // Region name
 </code></pre>
 <p>We'll use the same notations as <a href="https://github.com/rust-lang/rfcs/blob/master/text/1214-projections-lifetimes-and-wf.md">RFC 1214</a> for the set <code>R = &lt;r0, ..., rn&gt;</code> denoting the set of lifetimes currently bound.</p>
-<a class="header" href="2089-implied-bounds.html#well-formedness-rules" id="well-formedness-rules"><h2>Well-formedness rules</h2></a>
+<a class="header" href="#well-formedness-rules" id="well-formedness-rules"><h2>Well-formedness rules</h2></a>
 <p>Basically, we say that something (type or trait reference) is well-formed if the bounds declared on it are met, <em>regardless of the well-formedness of its parameters</em>: this is the main difference with <a href="https://github.com/rust-lang/rfcs/blob/master/text/1214-projections-lifetimes-and-wf.md">RFC 1214</a>.</p>
 <p>We will write:</p>
 <ul>
 <li><code>WF(T: Trait)</code> for a trait reference <code>T: Trait</code> being well-formed</li>
 <li><code>WF(T)</code> for a reference to the type <code>T</code> being well-formed</li>
 </ul>
-<a class="header" href="2089-implied-bounds.html#trait-refs" id="trait-refs"><h3><strong>Trait refs</strong></h3></a>
+<a class="header" href="#trait-refs" id="trait-refs"><h3><strong>Trait refs</strong></h3></a>
 <p>We'll start with well-formedness for trait references. The important thing is that we distinguish between <code>T: Trait</code> and <code>WF(T: Trait)</code>. The former means that an impl for <code>T</code> has been found while the latter means that <code>T</code> meets the bounds on trait <code>Trait</code>.</p>
 <p>We'll also consider a function <code>Expanded</code> applying on where clauses like this:</p>
 <pre><code>Expanded((T: Trait)) = { (T: Trait), WF(T: Trait) }
@@ -443,7 +450,7 @@ impl Trait for i32 { }
 impl SuperTrait for f32 { }
 impl Trait for f32 { }
 #}</code></pre></pre>
-<a class="header" href="2089-implied-bounds.html#types-1" id="types-1"><h3><strong>Types</strong></h3></a>
+<a class="header" href="#types-1" id="types-1"><h3><strong>Types</strong></h3></a>
 <p>The well-formedness rules for types are given by:</p>
 <pre><code>WfScalar:
   --------------------------------------------------
@@ -503,7 +510,7 @@ struct Struct&lt;T&gt; where T: Trait {
 // `WF(Struct&lt;i32&gt;)` would not hold since `WF(i32: Trait)` doesn't.
 // But `WF(Struct&lt;f32&gt;)` does hold.
 #}</code></pre></pre>
-<a class="header" href="2089-implied-bounds.html#reverse-rules" id="reverse-rules"><h2>Reverse rules</h2></a>
+<a class="header" href="#reverse-rules" id="reverse-rules"><h2>Reverse rules</h2></a>
 <p>This is a core element of this RFC. Morally, the well-formedness rules are &quot;if and only if&quot; rules. We thus add reverse rules for each relevant WF rule:</p>
 <pre><code>ReverseWfTraitReferenceᵢ
   // Substitute parameters
@@ -551,7 +558,7 @@ WF(T: Bar)
 WF(T: Foo)
 </code></pre>
 <p><strong>Remark</strong>: Reverse rules include implicit <code>Sized</code> bounds on type declarations. However, they do not include (explicit) <code>?Sized</code> bounds since those are not <em>real</em> trait bounds, but only a way to disable the implicit <code>Sized</code> bound.</p>
-<a class="header" href="2089-implied-bounds.html#input-types" id="input-types"><h2>Input types</h2></a>
+<a class="header" href="#input-types" id="input-types"><h2>Input types</h2></a>
 <p>We define the notion of input types of a type. Basically, input types refer to all types that are accessible from referencing to a specific type. For example, a function will assume that the input types of its arguments are well-formed, hence in the body of that function we'll be able to derive implied bounds thanks to the reverse rules described earlier.</p>
 <p>We'll denote by <code>InputTypes</code> the function which maps a type to its input types, defined by:</p>
 <pre><code>// Scalar
@@ -591,9 +598,9 @@ InputTypes(&lt;P0 as Trait&lt;P1, ..., Pn&gt;&gt;::Id) = Union(
 )
 </code></pre>
 <p>Note that higher-ranked types (functions, object type fragments) do not carry input types other than themselves. This is because they are unusable <em>as such</em>, one will have to use them in a lower-ranked way at some point (e.g. calling a function) and will thus rely on <code>InputTypes</code> for normal types.</p>
-<a class="header" href="2089-implied-bounds.html#assumptions-and-checking-well-formedness" id="assumptions-and-checking-well-formedness"><h2>Assumptions and checking well-formedness</h2></a>
+<a class="header" href="#assumptions-and-checking-well-formedness" id="assumptions-and-checking-well-formedness"><h2>Assumptions and checking well-formedness</h2></a>
 <p>This is the other core element: how to use reverse rules. Basically, functions and impls will assume that their input types are well-formed, and that (expanded) where clauses hold.</p>
-<a class="header" href="2089-implied-bounds.html#functions" id="functions"><h3><strong>Functions</strong></h3></a>
+<a class="header" href="#functions" id="functions"><h3><strong>Functions</strong></h3></a>
 <p>Given a function declaration:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -666,7 +673,7 @@ fn dummy&lt;T&gt;(arg: Option&lt;Struct&lt;T&gt;&gt;) {
     only_eq::&lt;Box&lt;T&gt;&gt;()
 }
 #}</code></pre></pre>
-<a class="header" href="2089-implied-bounds.html#trait-impls" id="trait-impls"><h3><strong>Trait impls</strong></h3></a>
+<a class="header" href="#trait-impls" id="trait-impls"><h3><strong>Trait impls</strong></h3></a>
 <p>Given a trait impl:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -744,7 +751,7 @@ fn bar&lt;T: Clone&gt;(arg: T) {
     let a = &lt;T as Foo&gt;::Item;
 }
 #}</code></pre></pre>
-<a class="header" href="2089-implied-bounds.html#inherent-impls" id="inherent-impls"><h3><strong>Inherent impls</strong></h3></a>
+<a class="header" href="#inherent-impls" id="inherent-impls"><h3><strong>Inherent impls</strong></h3></a>
 <p>Given an inherent impl:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -761,7 +768,7 @@ impl&lt;r..., X1, ..., Xn&gt; SelfTy where WhereClause1, ..., WhereClausek {
 </ul>
 <p>Methods make their normal assumptions + the set of assumptions made by the impl. Things to prove inside methods do not differ from normal fns.</p>
 <p>A caller of a method has to prove that the where clauses defined on the impl hold, in addition to the requirements for calling general fns.</p>
-<a class="header" href="2089-implied-bounds.html#proving-well-formedness-for-input-types" id="proving-well-formedness-for-input-types"><h2>Proving well-formedness for input types</h2></a>
+<a class="header" href="#proving-well-formedness-for-input-types" id="proving-well-formedness-for-input-types"><h2>Proving well-formedness for input types</h2></a>
 <p>One would have noticed that we only prove well-formedness for input types in a lazy way (e.g., inside function bodies). This means that if we have a function:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -792,7 +799,7 @@ struct NotHash&lt;T&gt; { ... }
 // Warning: `foo` cannot be called whatever the value of `T`
 fn foo&lt;T&gt;(arg: Set&lt;NotHash&lt;T&gt;&gt;) { ... }
 #}</code></pre></pre>
-<a class="header" href="2089-implied-bounds.html#cycle-detection" id="cycle-detection"><h2>Cycle detection</h2></a>
+<a class="header" href="#cycle-detection" id="cycle-detection"><h2>Cycle detection</h2></a>
 <p>In Chalk this design often leads to cycles in the proof tree. Example:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -816,21 +823,21 @@ trait Bar where Self: Foo { }
 <code>u8: Foo</code> holds if <code>WF(u8: Bar)</code> holds if <code>u8: Foo</code> holds.</p>
 <p>I <em>think</em> rustc would have the right behavior currently: just dismiss this branch since it only leads to the tautological rule <code>(u8: Foo) if (u8: Foo)</code>.</p>
 <p>In Chalk we have a more sophisticated cycle detection strategy based on tabling, which basically enables us to correctly answer &quot;multiple solutions&quot;, instead of &quot;unique solution&quot; if a simple <em>error-on-cycle</em> strategy were used. Would rustc need such a thing?</p>
-<a class="header" href="2089-implied-bounds.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>Implied bounds on types can feel like &quot;implicit bounds&quot; (although they are not: the types appear in the signature of a function / impl header, so it's self-documenting).</li>
 <li>Removing a bound from a struct becomes a breaking change (note: this can already be the case for functions and traits).</li>
 </ul>
-<a class="header" href="2089-implied-bounds.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
-<a class="header" href="2089-implied-bounds.html#including-parameters-in-well-formedness-rules" id="including-parameters-in-well-formedness-rules"><h2>Including parameters in well-formedness rules</h2></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#including-parameters-in-well-formedness-rules" id="including-parameters-in-well-formedness-rules"><h2>Including parameters in well-formedness rules</h2></a>
 <p>Specific to this design: instead of disregarding parameters in well-formedness checks, we could have included them, and added reverse rules of the form: &quot;<code>WF(T)</code> holds if <code>WF(Struct&lt;T&gt;)</code> holds&quot;. From a theoretical point of view, this would have had the same effects as the current design, and would have avoided the whole <code>InputTypes</code> thing. However, implementation in Chalk revelead some tricky issues. Writing in Chalk-style, suppose we have rules like:</p>
 <pre><code>WF(Struct&lt;T&gt;) :- WF(T)
 WF(T) :- WF(Struct&lt;T&gt;)
 </code></pre>
 <p>then trying to prove <code>WF(i32)</code> gives birth to an infinite branch <code>WF(i32) :- WF(Struct&lt;i32&gt;) :- WF(Struct&lt;Struct&lt;i32&gt;&gt;) :- ...</code> in the proof tree, which is hard (at least that's what we believe) to dismiss.</p>
-<a class="header" href="2089-implied-bounds.html#trait-aliases" id="trait-aliases"><h2>Trait aliases</h2></a>
+<a class="header" href="#trait-aliases" id="trait-aliases"><h2>Trait aliases</h2></a>
 <p>Trait aliases offer a way to factorize repeated constraints (<a href="https://github.com/rust-lang/rfcs/blob/master/text/1733-trait-alias.md">RFC 1733</a>), it's useful especially for bounds on types, but it does not overcome the limitations for implied bounds on traits (the <code>where Bar: Into&lt;Self&gt;</code> example is a good one).</p>
-<a class="header" href="2089-implied-bounds.html#limiting-the-scope-of-implied-bounds" id="limiting-the-scope-of-implied-bounds"><h2>Limiting the scope of implied bounds</h2></a>
+<a class="header" href="#limiting-the-scope-of-implied-bounds" id="limiting-the-scope-of-implied-bounds"><h2>Limiting the scope of implied bounds</h2></a>
 <p>These essentially try to address the breaking change when removing a bound on a type:</p>
 <ul>
 <li>do not derive implied bounds for types</li>
@@ -838,7 +845,7 @@ WF(T) :- WF(Struct&lt;T&gt;)
 <li>derive implied bounds in impl bodys only</li>
 <li>two distinct feature-gates, one for implied bounds on traits and another one for types</li>
 </ul>
-<a class="header" href="2089-implied-bounds.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Should we try to limit the range of implied bounds to be crate-local (or module-local, etc)?</li>
 <li>@nikomatsakis pointed <a href="https://internals.rust-lang.org/t/lang-team-minutes-implied-bounds/4905">here</a> that implied bounds can interact badly with current inference rules.</li>
@@ -887,9 +894,6 @@ WF(T) :- WF(Struct&lt;T&gt;)
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

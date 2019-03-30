@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1241-no-wildcard-deps - </title>
+        <title>1241-no-wildcard-deps - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1241">rust-lang/rfcs#1241</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/28628">rust-lang/rust#28628</a></li>
 </ul>
-<a class="header" href="1241-no-wildcard-deps.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>A Cargo crate's dependencies are associated with constraints that specify the
 set of versions of the dependency with which the crate is compatible. These
 constraints range from accepting exactly one version (<code>=1.2.3</code>), to
@@ -147,7 +154,7 @@ accepting a range of versions (<code>^1.2.3</code>, <code>~1.2.3</code>, <code>&
 accepting any version at all (<code>*</code>). This RFC proposes to update crates.io to
 reject publishes of crates that have compile or build dependencies with
 a wildcard version constraint.</p>
-<a class="header" href="1241-no-wildcard-deps.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Version constraints are a delicate balancing act between stability and
 flexibility. On one extreme, one can lock dependencies to an exact version.
 From one perspective, this is great, since the dependencies a user will consume
@@ -226,7 +233,7 @@ path of least resistance when writing a crate. Without wildcard constraints,
 crate authors will be forced to figure out what kind of constraints make the
 most sense in their use cases, which may very well be good enough.</li>
 </ul>
-<a class="header" href="1241-no-wildcard-deps.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The prohibition on wildcard constraints will be rolled out in stages to make
 sure that crate authors have lead time to figure out their versioning stories.</p>
 <p>In the next stable Rust release (1.4), Cargo will issue warnings for all
@@ -237,11 +244,11 @@ publishes of crates with those kinds of dependency constraints. Note that the
 check will happen on the crates.io side rather than on the Cargo side since
 Cargo can publish to locations other than crates.io which may not worry about
 these restrictions.</p>
-<a class="header" href="1241-no-wildcard-deps.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The barrier to entry when publishing a crate will be mildly higher.</p>
 <p>Tightening constraints has the potential to cause resolution breakage when no
 breakage would occur otherwise.</p>
-<a class="header" href="1241-no-wildcard-deps.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>We could continue allowing these kinds of constraints, but complain in a
 &quot;sufficiently annoying&quot; manner during publishes to discourage their use.</p>
 <p>This RFC originally proposed forbidding all constraints that had no upper
@@ -290,9 +297,6 @@ version bound but has since been pulled back to just <code>*</code> constraints.
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1558-closure-to-fn-coercion - </title>
+        <title>1558-closure-to-fn-coercion - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1558">rust-lang/rfcs#1558</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/39817">rust-lang/rust#39817</a></li>
 </ul>
-<a class="header" href="1558-closure-to-fn-coercion.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>A closure that does not move, borrow, or otherwise access (capture) local
 variables should be coercable to a function pointer (<code>fn</code>).</p>
-<a class="header" href="1558-closure-to-fn-coercion.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Currently in Rust, it is impossible to bind anything but a pre-defined function
 as a function pointer. When dealing with closures, one must either rely upon
 Rust's type-inference capabilities, or use the <code>Fn</code> trait to abstract for any
@@ -200,7 +207,7 @@ more complicated behavior might not be so easily representable.</p>
 <p>Finally, this sort of automatic coercion is simply intuitive to the programmer.
 In the <code>&amp;Fn</code> example, no variables are captured by the closures, so the theory is
 that nothing stops the compiler from treating them as anonymous functions.</p>
-<a class="header" href="1558-closure-to-fn-coercion.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>In C++, non-capturing lambdas (the C++ equivalent of closures) &quot;decay&quot; into function pointers
 when they do not need to capture any variables. This is used, for example, to pass a lambda
 into a C function:</p>
@@ -222,7 +229,7 @@ fn bar() {
     foo(|| { /* do something */ });
 }
 #}</code></pre></pre>
-<p>Using the examples within <a href="1558-closure-to-fn-coercion.html#motivation">&quot;Motivation&quot;</a>, the code array would
+<p>Using the examples within <a href="#motivation">&quot;Motivation&quot;</a>, the code array would
 be simplified to no performance detriment:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -247,7 +254,7 @@ coerced into <code>fn</code>, even if it has no captures.</p>
 let a: &amp;Fn(u32) -&gt; u32 = |foo: u32| { foo + 1 };
 let b: fn(u32) -&gt; u32 = *a; // Can't re-coerce
 #}</code></pre></pre>
-<a class="header" href="1558-closure-to-fn-coercion.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This proposal could potentially allow Rust users to accidentally constrain their APIs.
 In the case of a crate, a user returning <code>fn</code> instead of <code>Fn</code> may find
 that their code compiles at first, but breaks when the user later needs to capture variables:</p>
@@ -281,8 +288,8 @@ fn func_general&lt;'a&gt;(&amp;'a mut self) -&gt; impl FnMut() -&gt; u32 {
 #}</code></pre></pre>
 <p>This aspect is probably outweighed by convenience, simplicity, and the potential for optimization
 that comes with the proposed changes.</p>
-<a class="header" href="1558-closure-to-fn-coercion.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="1558-closure-to-fn-coercion.html#function-literal-syntax" id="function-literal-syntax"><h2>Function literal syntax</h2></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#function-literal-syntax" id="function-literal-syntax"><h2>Function literal syntax</h2></a>
 <p>With this alternative, Rust users would be able to directly bind a function
 to a variable, without needing to give the function a name.</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -314,14 +321,14 @@ potentially misleading, especially in situations where the literal is bound to a
 variable with <code>let</code>.</p>
 <p>As with all new syntax, this alternative would carry with it a discovery barrier.
 Closure coercion may be preferred due to its intuitiveness.</p>
-<a class="header" href="1558-closure-to-fn-coercion.html#aggressive-optimization" id="aggressive-optimization"><h2>Aggressive optimization</h2></a>
+<a class="header" href="#aggressive-optimization" id="aggressive-optimization"><h2>Aggressive optimization</h2></a>
 <p>This is possibly unrealistic, but an alternative would be to continue encouraging
 the use of closures with the <code>Fn</code> trait, but use static analysis to determine
 when the used closure is &quot;trivial&quot; and does not need indirection.</p>
 <p>Of course, this would probably significantly complicate the optimization process, and
 would have the detriment of not being easily verifiable by the programmer without
 checking the disassembly of their program.</p>
-<a class="header" href="1558-closure-to-fn-coercion.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>Should we generalize this behavior in the future, so that any zero-sized type that
 implements <code>Fn</code> can be converted into a <code>fn</code> pointer?</p>
 
@@ -368,9 +375,6 @@ implements <code>Fn</code> can be converted into a <code>fn</code> pointer?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

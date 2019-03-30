@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1252-open-options - </title>
+        <title>1252-open-options - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,9 +146,9 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1252">rust-lang/rfcs#1252</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/30014">rust-lang/rust#30014</a></li>
 </ul>
-<a class="header" href="1252-open-options.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Document and expand the open options.</p>
-<a class="header" href="1252-open-options.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The options that can be passed to the os when opening a file vary between
 systems. And even if the options seem the same or similar, there may be
 unexpected corner cases.</p>
@@ -153,11 +160,11 @@ systems.</li>
 <li>remedy cross-platform inconsistencies.</li>
 <li>suggest extra options to expose more platform-specific options.</li>
 </ul>
-<a class="header" href="1252-open-options.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
-<a class="header" href="1252-open-options.html#access-modes" id="access-modes"><h2>Access modes</h2></a>
-<a class="header" href="1252-open-options.html#read-only" id="read-only"><h3>Read-only</h3></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#access-modes" id="access-modes"><h2>Access modes</h2></a>
+<a class="header" href="#read-only" id="read-only"><h3>Read-only</h3></a>
 <p>Open a file for read-only.</p>
-<a class="header" href="1252-open-options.html#write-only" id="write-only"><h3>Write-only</h3></a>
+<a class="header" href="#write-only" id="write-only"><h3>Write-only</h3></a>
 <p>Open a file for write-only.</p>
 <p>If a file already exist, the contents of that file get overwritten, but it is
 not truncated. Example:</p>
@@ -165,9 +172,9 @@ not truncated. Example:</p>
 file.write(b&quot;bbbb&quot;)
 // contents of file after: &quot;bbbbaaaa&quot;
 </code></pre>
-<a class="header" href="1252-open-options.html#read-write" id="read-write"><h3>Read-write</h3></a>
+<a class="header" href="#read-write" id="read-write"><h3>Read-write</h3></a>
 <p>This is the simple combinations of read-only and write-only.</p>
-<a class="header" href="1252-open-options.html#append-mode" id="append-mode"><h3>Append-mode</h3></a>
+<a class="header" href="#append-mode" id="append-mode"><h3>Append-mode</h3></a>
 <p>Append-mode is similar to write-only, but all writes always happen at the end of
 the file. This mode is especially useful if multiple processes or threads write
 to a single file, like a log file. The operating system guarantees all writes
@@ -186,7 +193,7 @@ append-mode. You could say that on Windows write is a superset of append, while
 on Unix append is a superset of write.</p>
 <p>Because of this append is treated as a separate access mode in Rust, and if
 <code>.append(true)</code> is specified than <code>.write()</code> is ignored.</p>
-<a class="header" href="1252-open-options.html#read-append" id="read-append"><h3>Read-append</h3></a>
+<a class="header" href="#read-append" id="read-append"><h3>Read-append</h3></a>
 <p>Writing to the file works exactly the same as in append-mode.</p>
 <p>Reading is more difficult, and may involve a lot of seeking. When the file is
 opened, the position for reading may be set at the end of the file, so you
@@ -200,7 +207,7 @@ try!(file.write(b&quot;foo&quot;));
 try!(file.seek(SeekFrom::Start(pos)));
 try!(file.read(&amp;mut buffer));
 </code></pre>
-<a class="header" href="1252-open-options.html#no-access-mode-set" id="no-access-mode-set"><h3>No access mode set</h3></a>
+<a class="header" href="#no-access-mode-set" id="no-access-mode-set"><h3>No access mode set</h3></a>
 <p>Even if you don't have read or write permission to a file, it is possible to
 open it on some systems by opening it with no access mode set (or the equivalent
 there of). This is true for Windows, Linux (with the flag <code>O_PATH</code>) and
@@ -219,7 +226,7 @@ RFC proposes to always fail. This is the conservative choice, and can be changed
 to open in a system-specific mode if a clear use case arises. Implementing a
 fallback is not worth it: it is no great effort to set the access mode
 explicitly.</p>
-<a class="header" href="1252-open-options.html#windows-specific" id="windows-specific"><h3>Windows-specific</h3></a>
+<a class="header" href="#windows-specific" id="windows-specific"><h3>Windows-specific</h3></a>
 <p><code>.access_mode(FILE_READ_DATA)</code></p>
 <p>On Windows you can detail whether you want to have read and/or write access to
 the files data, attributes and/or extended attributes. Managing permissions in
@@ -260,7 +267,7 @@ instead of only having to wrap the Windows-specific option.</li>
 </tbody></table>
 <p>The implied flags can be specified explicitly with the constants
 <code>FILE_GENERIC_READ</code> and <code>FILE_GENERIC_WRITE</code>.</p>
-<a class="header" href="1252-open-options.html#creation-modes" id="creation-modes"><h2>Creation modes</h2></a>
+<a class="header" href="#creation-modes" id="creation-modes"><h2>Creation modes</h2></a>
 <table><thead><tr><th>creation mode                </th><th> file exists </th><th> file does not exist </th><th> Unix              </th><th> Windows                                   </th></tr></thead><tbody>
 <tr><td align="left">not set (open existing)      </td><td> open        </td><td> fail                </td><td align="left">                   </td><td align="left"> OPEN_EXISTING                             </td></tr>
 <tr><td align="left">.create(true)                </td><td> open        </td><td> create              </td><td align="left"> O_CREAT           </td><td align="left"> OPEN_ALWAYS                               </td></tr>
@@ -268,19 +275,19 @@ instead of only having to wrap the Windows-specific option.</li>
 <tr><td align="left">.create(true).truncate(true) </td><td> truncate    </td><td> create              </td><td align="left"> O_CREAT + O_TRUNC </td><td align="left"> CREATE_ALWAYS                             </td></tr>
 <tr><td align="left">.create_new(true)            </td><td> fail        </td><td> create              </td><td align="left"> O_CREAT + O_EXCL  </td><td align="left"> CREATE_NEW + FILE_FLAG_OPEN_REPARSE_POINT </td></tr>
 </tbody></table>
-<a class="header" href="1252-open-options.html#not-set-open-existing" id="not-set-open-existing"><h3>Not set (open existing)</h3></a>
+<a class="header" href="#not-set-open-existing" id="not-set-open-existing"><h3>Not set (open existing)</h3></a>
 <p>Open an existing file. Fails if the file does not exist.</p>
-<a class="header" href="1252-open-options.html#create" id="create"><h3>Create</h3></a>
+<a class="header" href="#create" id="create"><h3>Create</h3></a>
 <p><code>.create(true)</code></p>
 <p>Open an existing file, or create a new file if it does not already exists.</p>
-<a class="header" href="1252-open-options.html#truncate" id="truncate"><h3>Truncate</h3></a>
+<a class="header" href="#truncate" id="truncate"><h3>Truncate</h3></a>
 <p><code>.truncate(true)</code></p>
 <p>Open an existing file, and truncate it to zero length. Fails if the file does
 not exist. Attributes and permissions of the truncated file are preserved.</p>
 <p>Note when using the Windows-specific <code>.access_mode()</code>: truncating will only work
 if the <code>GENERIC_WRITE</code> flag is set. Setting the equivalent individual flags is
 not enough.</p>
-<a class="header" href="1252-open-options.html#create-and-truncate" id="create-and-truncate"><h3>Create and truncate</h3></a>
+<a class="header" href="#create-and-truncate" id="create-and-truncate"><h3>Create and truncate</h3></a>
 <p><code>.create(true).truncate(true)</code></p>
 <p>Open an existing file and truncate it to zero length, or create a new file if it
 does not already exists.</p>
@@ -292,7 +299,7 @@ the existing file has the attribute <em>hidden</em> set, it is necessary to open
 <code>FILE_ATTRIBUTE_HIDDEN</code>. Similarly if the existing file has the attribute
 <em>system</em> set, it is necessary to open with <code>FILE_ATTRIBUTE_SYSTEM</code>. See
 the Windows-specific <code>.attributes()</code> below on how to set these.</p>
-<a class="header" href="1252-open-options.html#create_new" id="create_new"><h3>Create_new</h3></a>
+<a class="header" href="#create_new" id="create_new"><h3>Create_new</h3></a>
 <p><code>.create_new(true)</code></p>
 <p>Create a new file, and fail if it already exist.</p>
 <p>On Unix this options started its life as a security measure. If you first check
@@ -310,7 +317,7 @@ also <code>FILE_FLAG_OPEN_REPARSE_POINT</code>.</p>
 <p>Simply put: nothing is allowed to exist on the target location, also no
 (dangling) symlink.</p>
 <p>if <code>.create_new(true)</code> is set, <code>.create()</code> and <code>.truncate()</code> are ignored.</p>
-<a class="header" href="1252-open-options.html#unix-specific-mode" id="unix-specific-mode"><h3>Unix-specific: Mode</h3></a>
+<a class="header" href="#unix-specific-mode" id="unix-specific-mode"><h3>Unix-specific: Mode</h3></a>
 <p><code>.mode(0o666)</code></p>
 <p>On Unix the new file is created by default with permissions <code>0o666</code> minus the
 systems <code>umask</code> (see <a href="https://en.wikipedia.org/wiki/Umask">Wikipedia</a>). It is
@@ -318,7 +325,7 @@ possible to set on other mode with this option.</p>
 <p>If a file already exist or <code>.create(true)</code> or <code>.create_new(true)</code> are not
 specified, <code>.mode()</code> is ignored.</p>
 <p>Rust currently does not expose a way to modify the umask.</p>
-<a class="header" href="1252-open-options.html#windows-specific-attributes" id="windows-specific-attributes"><h3>Windows-specific: Attributes</h3></a>
+<a class="header" href="#windows-specific-attributes" id="windows-specific-attributes"><h3>Windows-specific: Attributes</h3></a>
 <p><code>.attributes(FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM)</code></p>
 <p>Files on Windows can have several attributes, most commonly one or more of the
 following four: readonly, hidden, system and archive. Most
@@ -337,7 +344,7 @@ with <code>.attributes()</code>.</p>
 existing attributes are preserved and combined with the ones declared with
 <code>.attributes()</code>.</p>
 <p>In all other cases the attributes get ignored.</p>
-<a class="header" href="1252-open-options.html#combination-of-access-modes-and-creation-modes" id="combination-of-access-modes-and-creation-modes"><h3>Combination of access modes and creation modes</h3></a>
+<a class="header" href="#combination-of-access-modes-and-creation-modes" id="combination-of-access-modes-and-creation-modes"><h3>Combination of access modes and creation modes</h3></a>
 <p>Some combinations of creation modes and access modes do not make sense.</p>
 <p>For example: <code>.create(true)</code> when opening read-only. If the file does not
 already exist, it is created and you start reading from an empty file. And it is
@@ -365,10 +372,10 @@ in this case you already have to take care of cross-platform support yourself).
 On Unix this is done by setting the creation mode using <code>.custom_flags()</code> with
 <code>O_CREAT</code>, <code>O_TRUNC</code> and/or <code>O_EXCL</code>. On Windows this can be done by manually
 specifying <code>.access_mode()</code> (see above).</p>
-<a class="header" href="1252-open-options.html#asynchronous-io" id="asynchronous-io"><h2>Asynchronous IO</h2></a>
+<a class="header" href="#asynchronous-io" id="asynchronous-io"><h2>Asynchronous IO</h2></a>
 <p>Out op scope.</p>
-<a class="header" href="1252-open-options.html#other-options" id="other-options"><h2>Other options</h2></a>
-<a class="header" href="1252-open-options.html#inheritance-of-file-descriptors" id="inheritance-of-file-descriptors"><h3>Inheritance of file descriptors</h3></a>
+<a class="header" href="#other-options" id="other-options"><h2>Other options</h2></a>
+<a class="header" href="#inheritance-of-file-descriptors" id="inheritance-of-file-descriptors"><h3>Inheritance of file descriptors</h3></a>
 <p>Leaking file descriptors to child processes can cause problems and can be a
 security vulnerability. See this report by
 <a href="https://www.python.org/dev/peps/pep-0446/">Python</a>.</p>
@@ -390,7 +397,7 @@ operating systems we can rely on the flag to be supported.</p>
 </tbody></table>
 <p>This means we can always set the flag <code>O_CLOEXEC</code>, and do an additional <code>fcntl</code>
 if the os is NetBSD or Solaris.</p>
-<a class="header" href="1252-open-options.html#custom-flags" id="custom-flags"><h3>Custom flags</h3></a>
+<a class="header" href="#custom-flags" id="custom-flags"><h3>Custom flags</h3></a>
 <p><code>.custom_flags()</code></p>
 <p>Windows and the various flavours of Unix support flags that are not
 cross-platform, but that can be useful in some circumstances. On Unix they will
@@ -449,15 +456,15 @@ by Rusts options.</p>
 <tr><td align="left">             </td><td align="left">             </td><td align="left">             </td><td align="left">             </td><td align="left">             </td><td align="left">             </td><td align="left">             </td><td align="left"> O_XATTR     </td></tr>
 <tr><td align="left"> <a href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/open.html">POSIX</a> </td><td align="left"> <a href="http://man7.org/linux/man-pages/man2/open.2.html">Linux</a> </td><td align="left"> <a href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man2/open.2.html">OS X</a> </td><td align="left"> <a href="https://www.freebsd.org/cgi/man.cgi?query=open&amp;sektion=2">FreeBSD</a> </td><td align="left"> <a href="http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man2/open.2?query=open&amp;sec=2">OpenBSD</a> </td><td align="left"> <a href="http://netbsd.gw.com/cgi-bin/man-cgi?open+2+NetBSD-current">NetBSD</a> </td><td align="left"> <a href="http://leaf.dragonflybsd.org/cgi/web-man?command=open&amp;section=2">Dragonfly BSD</a> </td><td align="left"> <a href="http://docs.oracle.com/cd/E23824_01/html/821-1463/open-2.html">Solaris</a> </td></tr>
 </tbody></table>
-<a class="header" href="1252-open-options.html#windows-specific-flags-and-attributes" id="windows-specific-flags-and-attributes"><h3>Windows-specific flags and attributes</h3></a>
+<a class="header" href="#windows-specific-flags-and-attributes" id="windows-specific-flags-and-attributes"><h3>Windows-specific flags and attributes</h3></a>
 <p>The following variables for CreateFile2 currently have no equivalent functions
 in Rust to set them:</p>
 <pre><code>DWORD                 dwSecurityQosFlags;
 LPSECURITY_ATTRIBUTES lpSecurityAttributes;
 HANDLE                hTemplateFile;
 </code></pre>
-<a class="header" href="1252-open-options.html#changes-from-current" id="changes-from-current"><h2>Changes from current</h2></a>
-<a class="header" href="1252-open-options.html#access-mode" id="access-mode"><h3>Access mode</h3></a>
+<a class="header" href="#changes-from-current" id="changes-from-current"><h2>Changes from current</h2></a>
+<a class="header" href="#access-mode" id="access-mode"><h3>Access mode</h3></a>
 <ul>
 <li>Current: <code>.append(true)</code> requires <code>.write(true)</code> on Unix, but not on Windows.
 New: ignore <code>.write()</code> if <code>.append(true)</code> is specified.</li>
@@ -473,7 +480,7 @@ read-only on Unix, and opening with no access permissions on Windows.
 New: always fail to open if no access mode is set.</li>
 <li>Rename the Windows-specific <code>.desired_access()</code> to <code>.access_mode()</code></li>
 </ul>
-<a class="header" href="1252-open-options.html#creation-mode" id="creation-mode"><h3>Creation mode</h3></a>
+<a class="header" href="#creation-mode" id="creation-mode"><h3>Creation mode</h3></a>
 <ul>
 <li>Implement <code>.create_new()</code>.</li>
 <li>Do not allow <code>.truncate(true)</code> if the access mode is read-only and/or append.</li>
@@ -488,13 +495,13 @@ separation between file attributes, that are somewhat similar to Unix mode
 bits, and the custom flags that modify the behaviour of the current file
 handle.</li>
 </ul>
-<a class="header" href="1252-open-options.html#other-options-1" id="other-options-1"><h3>Other options</h3></a>
+<a class="header" href="#other-options-1" id="other-options-1"><h3>Other options</h3></a>
 <ul>
 <li>Set the close-on-exec flag atomically on Unix if supported.</li>
 <li>Implement <code>.custom_flags()</code> on Windows and Unix to pass custom flags to the
 system.</li>
 </ul>
-<a class="header" href="1252-open-options.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This adds a thin layer on top of the raw operating system calls. In this
 <a href="https://github.com/rust-lang/rust/pull/26772#issuecomment-126753342">pull request</a>
 the conclusion was: this seems like a good idea for a &quot;high level&quot; abstraction
@@ -512,11 +519,11 @@ legacy, and they should enable truly portable code.</li>
 <li>Coverage. The std APIs should over time strive for full coverage of non-niche,
 cross-platform capabilities.</li>
 </ul>
-<a class="header" href="1252-open-options.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>The first version of this RFC contained a proposal for options that control
 caching anf file locking. They are out of scope for now, but included here for
 reference.</p>
-<a class="header" href="1252-open-options.html#sharing--locking" id="sharing--locking"><h2>Sharing / locking</h2></a>
+<a class="header" href="#sharing--locking" id="sharing--locking"><h2>Sharing / locking</h2></a>
 <p>On Unix it is possible for multiple processes to read and write to the same file
 at the same time.</p>
 <p>When you open a file on Windows, the system by default denies other processes to
@@ -530,14 +537,14 @@ As if that is not bad enough, they both have
 <a href="http://0pointer.de/blog/projects/locking.html">problems</a> that make them close
 to unusable for modern multi-threaded programs. Linux may in some very rare
 cases support mandatory file locking, but it is just as broken as advisory.</p>
-<a class="header" href="1252-open-options.html#windows-specific-share-mode" id="windows-specific-share-mode"><h3>Windows-specific: Share mode</h3></a>
+<a class="header" href="#windows-specific-share-mode" id="windows-specific-share-mode"><h3>Windows-specific: Share mode</h3></a>
 <p><code>.share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)</code></p>
 <p>It is possible to set the individual share permissions with <code>.share_mode()</code>.</p>
 <p>The current philosophy of this function is that others should have no rights,
 unless explicitly granted. I think a better fit for Rust would be to give all
 others all rights, unless explicitly denied, e.g.:
 <code>.share_mode(DENY_READ | DENY_WRITE | DENY_DELETE)</code>.</p>
-<a class="header" href="1252-open-options.html#controlling-caching" id="controlling-caching"><h2>Controlling caching</h2></a>
+<a class="header" href="#controlling-caching" id="controlling-caching"><h2>Controlling caching</h2></a>
 <p>When dealing file file systems and hard disks, there are several kinds of
 caches. Giving hints or controlling them may improve performance or data
 consistency.</p>
@@ -564,7 +571,7 @@ Most hard disk / storage devices have a small RAM cache. It can speed up
 reads, and writes can return as soon as the data is written to the devices
 cache.</li>
 </ol>
-<a class="header" href="1252-open-options.html#read-ahead-hint" id="read-ahead-hint"><h3>Read-ahead hint</h3></a>
+<a class="header" href="#read-ahead-hint" id="read-ahead-hint"><h3>Read-ahead hint</h3></a>
 <pre><code>.read_ahead_hint(enum CacheHint)
 
 enum ReadAheadHint {
@@ -592,7 +599,7 @@ or if the behaviour of the application proves it is set wrong.</p>
 <li>OS X: <code>fcntl()</code> with with <code>F_RDAHEAD 0</code> for random (there is no special mode
 for sequential).</li>
 </ul>
-<a class="header" href="1252-open-options.html#os-cache" id="os-cache"><h3>OS cache</h3></a>
+<a class="header" href="#os-cache" id="os-cache"><h3>OS cache</h3></a>
 <p><code>used_once(true)</code></p>
 <p>When reading many gigabytes of data a process may push useful data from other
 processes out of the os cache. To keep the performance of the whole system up, a
@@ -606,7 +613,7 @@ to provide an option for this.</p>
 sector size, as cached data may not be available to the os staging area.</p>
 <p>This control over the os cache is the main reason some applications use direct
 io, despite it being less convenient and disabling other useful caches.</p>
-<a class="header" href="1252-open-options.html#delayed-writing-and-on-disk-write-cache" id="delayed-writing-and-on-disk-write-cache"><h3>Delayed writing and on-disk write cache</h3></a>
+<a class="header" href="#delayed-writing-and-on-disk-write-cache" id="delayed-writing-and-on-disk-write-cache"><h3>Delayed writing and on-disk write cache</h3></a>
 <p><code>.sync_data(true)</code> and <code>.sync_all(true)</code></p>
 <p>There can be two delays (by the os and by the disk cache) between when an
 application performs a write, and when the data is written to persistent
@@ -636,7 +643,7 @@ modified timestamp (although it will be written eventually).</p>
 <p>If a system does not support syncing only data, this option will fall back to
 syncing both data and metadata. If <code>.sync_all(true)</code> is specified,
 <code>.sync_data()</code> is ignored.</p>
-<a class="header" href="1252-open-options.html#direct-access--no-caching" id="direct-access--no-caching"><h3>Direct access / no caching</h3></a>
+<a class="header" href="#direct-access--no-caching" id="direct-access--no-caching"><h3>Direct access / no caching</h3></a>
 <p>Most operating systems offer a mode that reads data straight from disk to an
 application buffer, or that writes straight from a buffer to disk. This avoid
 the small cost of a memory copy. It has the side effect that the data is not
@@ -662,7 +669,7 @@ used by applications as a crude way to control (disable) the <em>os cache</em>.<
 <p>Rust should not currently expose this as an open option, because it should be
 used with an abstraction / external crate that handles the data size and
 alignment requirements. If it should be used at all.</p>
-<a class="header" href="1252-open-options.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None.</p>
 
                     </main>
@@ -708,9 +715,6 @@ alignment requirements. If it should be used at all.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

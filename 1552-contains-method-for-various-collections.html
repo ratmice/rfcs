@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1552-contains-method-for-various-collections - </title>
+        <title>1552-contains-method-for-various-collections - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,10 +146,10 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1552">rust-lang/rfcs#1552</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/32630">rust-lang/rust#32630</a></li>
 </ul>
-<a class="header" href="1552-contains-method-for-various-collections.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add a <code>contains</code> method to <code>VecDeque</code> and <code>LinkedList</code> that checks if the
 collection contains a given item.</p>
-<a class="header" href="1552-contains-method-for-various-collections.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>A <code>contains</code> method exists for the slice type <code>[T]</code> and for <code>Vec</code> through
 <code>Deref</code>, but there is no easy way to check if a <code>VecDeque</code> or <code>LinkedList</code>
 contains a specific item. Currently, the shortest way to do it is something
@@ -161,7 +168,7 @@ advantages:</p>
 <li>programmers that are used to call <code>contains</code> on a <code>Vec</code> are confused by the
 non-existence of the method for <code>VecDeque</code> or <code>LinkedList</code></li>
 </ul>
-<a class="header" href="1552-contains-method-for-various-collections.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>Add the following method to <code>std::collections::VecDeque</code>:</p>
 <pre><pre class="playpen"><code class="language-rust">
 # #![allow(unused_variables)]
@@ -194,7 +201,7 @@ impl&lt;T&gt; LinkedList&lt;T&gt; {
 #}</code></pre></pre>
 <p>The new methods should probably be marked as unstable initially and be
 stabilized later.</p>
-<a class="header" href="1552-contains-method-for-various-collections.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Obviously more methods increase the complexity of the standard library, but in
 case of this RFC the increase is rather tiny.</p>
 <p>While <code>VecDeque::contains</code> should be (nearly) as fast as <code>[T]::contains</code>,
@@ -202,7 +209,7 @@ case of this RFC the increase is rather tiny.</p>
 inefficient nature of a linked list. Offering a method that is short to
 write and convenient to use could lead to excessive use of said method
 without knowing about the problems mentioned above.</p>
-<a class="header" href="1552-contains-method-for-various-collections.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>There are a few alternatives:</p>
 <ul>
 <li>add <code>VecDeque::contains</code> only and do not add <code>LinkedList::contains</code></li>
@@ -211,7 +218,7 @@ through iterators</li>
 <li>also add <code>BinaryHeap::contains</code>, since it could be convenient for some use
 cases, too</li>
 </ul>
-<a class="header" href="1552-contains-method-for-various-collections.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>None so far.</p>
 
                     </main>
@@ -257,9 +264,6 @@ cases, too</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

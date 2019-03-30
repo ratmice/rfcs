@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>0230-remove-runtime - </title>
+        <title>0230-remove-runtime - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -138,7 +145,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/230">rust-lang/rfcs#230</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/17325">rust-lang/rust#17325</a></li>
 </ul>
-<a class="header" href="0230-remove-runtime.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes to remove the <em>runtime system</em> that is currently part of the
 standard library, which currently allows the standard library to support both
 native and green threading. In particular:</p>
@@ -159,8 +166,8 @@ system calls.</p>
 platform-specific modules may be added at a later time.</p>
 </li>
 </ul>
-<a class="header" href="0230-remove-runtime.html#motivation" id="motivation"><h1>Motivation</h1></a>
-<a class="header" href="0230-remove-runtime.html#background-threadtask-models-and-io" id="background-threadtask-models-and-io"><h2>Background: thread/task models and I/O</h2></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#background-threadtask-models-and-io" id="background-threadtask-models-and-io"><h2>Background: thread/task models and I/O</h2></a>
 <p>Many languages/libraries offer some notion of &quot;task&quot; as a unit of concurrent
 execution, possibly distinct from native OS threads. The characteristics of
 tasks vary along several important dimensions:</p>
@@ -217,7 +224,7 @@ continue. Unfortunately, this latter approach helps only with explicit
 blocking; it does nothing for loops, page faults and the like.</p>
 </li>
 </ul>
-<a class="header" href="0230-remove-runtime.html#where-rust-is-now" id="where-rust-is-now"><h3>Where Rust is now</h3></a>
+<a class="header" href="#where-rust-is-now" id="where-rust-is-now"><h3>Where Rust is now</h3></a>
 <p>Rust has gradually migrated from a &quot;green&quot; threading model toward a native
 threading model:</p>
 <ul>
@@ -263,7 +270,7 @@ operations are routed through the green scheduler and/or underlying event loop
 and nonblocking I/O.</p>
 <p>The actual scheduler and I/O implementations -- <code>libgreen</code> and <code>libnative</code> --
 then live as crates &quot;above&quot; <code>libstd</code>.</p>
-<a class="header" href="0230-remove-runtime.html#the-problems" id="the-problems"><h2>The problems</h2></a>
+<a class="header" href="#the-problems" id="the-problems"><h2>The problems</h2></a>
 <p>While the situation described above may sound good in principle, there are
 several problems in practice.</p>
 <p><strong>Forced co-evolution.</strong> With today's design, the green and native
@@ -335,12 +342,12 @@ system, the embedding setup would be much simpler.</p>
 providing such a flexible threading model. As this RFC will explain, moving to
 a strictly native threading model will allow substantial simplification and
 reorganization of the structure of Rust's libraries.</p>
-<a class="header" href="0230-remove-runtime.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>To mitigate the above problems, this RFC proposes to tie <code>std::io</code> directly to
 the native threading model, while moving <code>libgreen</code> and its supporting
 infrastructure into an external Cargo package with its own I/O API.</p>
-<a class="header" href="0230-remove-runtime.html#the-near-term-plan" id="the-near-term-plan"><h2>The near-term plan</h2></a>
-<a class="header" href="0230-remove-runtime.html#stdio-and-native-threading" id="stdio-and-native-threading"><h3><code>std::io</code> and native threading</h3></a>
+<a class="header" href="#the-near-term-plan" id="the-near-term-plan"><h2>The near-term plan</h2></a>
+<a class="header" href="#stdio-and-native-threading" id="stdio-and-native-threading"><h3><code>std::io</code> and native threading</h3></a>
 <p>The plan is to entirely remove <code>librustrt</code>, including all of the traits.
 The abstraction layers will then become:</p>
 <ul>
@@ -364,7 +371,7 @@ its implementation will invoke functions in <code>libnative</code> directly, rat
 going through a trait object.</p>
 <p>A goal of this work is to minimize the complexity of embedding Rust code in
 other contexts. It is not yet clear what the final embedding API will look like.</p>
-<a class="header" href="0230-remove-runtime.html#green-threading" id="green-threading"><h3>Green threading</h3></a>
+<a class="header" href="#green-threading" id="green-threading"><h3>Green threading</h3></a>
 <p>Despite tying <code>libstd</code> to native threading, however, <code>libgreen</code> will still be
 supported -- at least initially. The infrastructure in <code>libgreen</code> and friends will
 move into its own Cargo package.</p>
@@ -373,7 +380,7 @@ interface it does today; there are no immediate plans to change its API, since
 the focus will be on first improving the native threading API. Note, however,
 that the I/O API will be exposed separately within <code>libgreen</code>, as opposed to the
 current exposure through <code>std::io</code>.</p>
-<a class="header" href="0230-remove-runtime.html#the-long-term-plan" id="the-long-term-plan"><h2>The long-term plan</h2></a>
+<a class="header" href="#the-long-term-plan" id="the-long-term-plan"><h2>The long-term plan</h2></a>
 <p>Ultimately, a large motivation for the proposed refactoring is to allow the APIs
 for native I/O to grow.</p>
 <p>In particular, over time we should expose more of the underlying system
@@ -404,7 +411,7 @@ it must be possible to use thread-local storage without significant overhead,
 which is very much not the case today. Any abstractions to support M:N threading
 models -- including the now-external <code>libgreen</code> package -- must respect this
 constraint.</p>
-<a class="header" href="0230-remove-runtime.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>The main drawback of this proposal is that green I/O will be provided by a
 forked interface of <code>std::io</code>. This change makes green threading
 &quot;second class&quot;, and means there's more to learn when using both models
@@ -414,7 +421,7 @@ green thread -- though of course that risk is very much present today. One way
 of mitigating this risk in general is the Java executor approach, where the
 native &quot;worker&quot; threads that are executing the green thread scheduler are
 monitored for blocking, and new worker threads are spun up as needed.</p>
-<a class="header" href="0230-remove-runtime.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <p>There are may unresolved questions about the exact details of the refactoring,
 but these are considered implementation details since the <code>libstd</code> interface
 itself will not substantially change as part of this RFC.</p>
@@ -462,9 +469,6 @@ itself will not substantially change as part of this RFC.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

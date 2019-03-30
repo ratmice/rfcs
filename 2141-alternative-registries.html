@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>2141-alternative-registries - </title>
+        <title>2141-alternative-registries - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,19 +146,19 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/2141">rust-lang/rfcs#2141</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44931">rust-lang/rust#44931</a></li>
 </ul>
-<a class="header" href="2141-alternative-registries.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>This RFC proposes the addition of the support for alternative crates.io servers to be used
 alongside the public crates.io server. This would allow users to publish crates to their own
 private instance of crates.io, while still able to use the public instance of crates.io.</p>
-<a class="header" href="2141-alternative-registries.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Cargo currently has support for getting crates from a public server, which works well for open
 source projects using Rust, however is problematic for closed source code. A workaround for this is
 to use Git repositories to specify the packages, but that means that the helpful versioning and
 discoverability that Cargo and crates.io provides is lost. We would like to change this such that
 it is possible to have a local crates.io server which crates can be pushed to, while still making
 use of the public crates.io server.</p>
-<a class="header" href="2141-alternative-registries.html#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
-<a class="header" href="2141-alternative-registries.html#registry-definition-specification" id="registry-definition-specification"><h2>Registry definition specification</h2></a>
+<a class="header" href="#guide-level-explanation" id="guide-level-explanation"><h1>Guide-level explanation</h1></a>
+<a class="header" href="#registry-definition-specification" id="registry-definition-specification"><h2>Registry definition specification</h2></a>
 <p>We need a way to define what registries are valid for Cargo to pull from and publish to. For this
 purpose, we propose that users would be able to define multiple registries in a <a href="http://doc.crates.io/config.html"><code>.cargo/config</code>
 file</a>. This allows the user to specify the locations of
@@ -169,7 +176,7 @@ choose-a-name = &quot;https://my-intranet:8080/index&quot;
 </code></pre>
 <p>Instead of <code>choose-a-name</code>, place the name you'd like to use to refer to this registry in your
 <code>Cargo.toml</code> files. The URL specified should contain the location of the registry index for this
-registry; the registry format is specified in the <a href="2141-alternative-registries.html#registry-index-format-specification">Registry Index Format Specification
+registry; the registry format is specified in the <a href="#registry-index-format-specification">Registry Index Format Specification
 section</a>.</p>
 <p>Alternatively, you can specify each registry as follows:</p>
 <pre><code class="language-toml">[registries.choose-a-name]
@@ -183,7 +190,7 @@ restrictive file permissions than <code>.cargo/config</code>. Adding a username 
 username = &quot;myusername&quot;
 password = &quot;mypassword&quot;
 </code></pre>
-<a class="header" href="2141-alternative-registries.html#ci" id="ci"><h3>CI</h3></a>
+<a class="header" href="#ci" id="ci"><h3>CI</h3></a>
 <p>Because this system discourages checking in the registry configuration, the registry configuration
 won't be immediately available to continuous integration systems like TravisCI. However, Cargo
 currently supports configuring any key in <code>.cargo/config</code> using environment variables instead:</p>
@@ -196,7 +203,7 @@ can also be used to define the value. For example the build.jobs key can also be
 <p>To configure TravisCI to use an alternate registry named <code>my-registry</code> for example, you can use
 <a href="https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml">Travis' encrypted environment variables feature</a> to set:</p>
 <p><code>CARGO_REGISTRY_MY_REGISTRY_INDEX=https://my-intranet:8080/index</code></p>
-<a class="header" href="2141-alternative-registries.html#using-a-dependency-from-another-registry" id="using-a-dependency-from-another-registry"><h2>Using a dependency from another registry</h2></a>
+<a class="header" href="#using-a-dependency-from-another-registry" id="using-a-dependency-from-another-registry"><h2>Using a dependency from another registry</h2></a>
 <p><em>Note: this syntax will initially be implemented as an <a href="https://github.com/rust-lang/cargo/pull/4433">unstable cargo
 feature</a> available in nightly cargo only and
 stabilized as it becomes ready.</em></p>
@@ -205,7 +212,7 @@ can specify that a dependency comes from an alternate registry by using the <cod
 <pre><code class="language-toml">[dependencies]
 secret-crate = { version = &quot;1.0&quot;, registry = &quot;my-registry&quot; }
 </code></pre>
-<a class="header" href="2141-alternative-registries.html#publishing-to-another-registry-preventing-unwanted-publishes" id="publishing-to-another-registry-preventing-unwanted-publishes"><h2>Publishing to another registry; preventing unwanted publishes</h2></a>
+<a class="header" href="#publishing-to-another-registry-preventing-unwanted-publishes" id="publishing-to-another-registry-preventing-unwanted-publishes"><h2>Publishing to another registry; preventing unwanted publishes</h2></a>
 <p>Today, Cargo allows you to add a key <code>publish = false</code> to your Cargo.toml to indicate that you do
 not want to publish a crate anywhere. In order to specify that a crate should only be published to
 a particular set of registries, this key will be extended to accept a list of registries that are
@@ -218,18 +225,18 @@ for example.</p>
 <p>Not having a <code>publish</code> key is equivalent to specifying <code>publish = true</code>, which means publishing to
 crates.io is allowed. <code>publish = []</code> is equivalent to <code>publish = false</code>, meaning that publishing to
 anywhere is disallowed.</p>
-<a class="header" href="2141-alternative-registries.html#running-a-minimal-registry" id="running-a-minimal-registry"><h2>Running a minimal registry</h2></a>
+<a class="header" href="#running-a-minimal-registry" id="running-a-minimal-registry"><h2>Running a minimal registry</h2></a>
 <p>The most minimal form of a registry that Cargo can use will consist of:</p>
 <ul>
-<li>A registry in the format specified in the <a href="2141-alternative-registries.html#registry-index-format-specification">Registry index format specification
+<li>A registry in the format specified in the <a href="#registry-index-format-specification">Registry index format specification
 section</a>, which contains a pointer to:</li>
 <li>A location containing the <code>.crate</code> files for the crates in the registry.</li>
 </ul>
-<a class="header" href="2141-alternative-registries.html#running-a-fully-featured-registry" id="running-a-fully-featured-registry"><h2>Running a fully-featured registry</h2></a>
+<a class="header" href="#running-a-fully-featured-registry" id="running-a-fully-featured-registry"><h2>Running a fully-featured registry</h2></a>
 <p>This RFC does not attempt to standardize or specify any of crates.io's APIs, but it should be
 possible to take crates.io's codebase and run it along with a registry index in order to provide
 crates.io's functionality as an alternate registry.</p>
-<a class="header" href="2141-alternative-registries.html#cratesio" id="cratesio"><h2>Crates.io</h2></a>
+<a class="header" href="#cratesio" id="cratesio"><h2>Crates.io</h2></a>
 <p>Because crates.io's purpose is to be a reliable host for open source crates, crates that have
 dependencies from registries other than crates.io will be rejected at publish time. Crates.io
 cannot make availability guarantees about alternate registries, so much like git dependencies
@@ -239,15 +246,15 @@ alternate registry locations that dependencies may use. For private registries r
 crates.io's code, this will likely include the private registry itself plus crates.io, so that
 private crates are allowed to depend on open source crates. Any crates with dependencies from
 registries not specified in this configuration option will be rejected at publish time.</p>
-<a class="header" href="2141-alternative-registries.html#interaction-with-existing-features" id="interaction-with-existing-features"><h2>Interaction with existing features</h2></a>
+<a class="header" href="#interaction-with-existing-features" id="interaction-with-existing-features"><h2>Interaction with existing features</h2></a>
 <p>This RFC is not proposing any changes to the way <a href="http://doc.crates.io/source-replacement.html">source
 replacement</a> and
 <a href="https://crates.io/crates/cargo-vendor">cargo-vendor</a> work; everything proposed here should be
 compatible with those.</p>
 <p>Mirrors will still be required to serve exactly the same files (matched checksums) as the source
 they're mirroring.</p>
-<a class="header" href="2141-alternative-registries.html#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
-<a class="header" href="2141-alternative-registries.html#registry-index-format-specification" id="registry-index-format-specification"><h2>Registry index format specification</h2></a>
+<a class="header" href="#reference-level-explanation" id="reference-level-explanation"><h1>Reference-level explanation</h1></a>
+<a class="header" href="#registry-index-format-specification" id="registry-index-format-specification"><h2>Registry index format specification</h2></a>
 <p>Cargo needs to be able to get a registry index containing metadata for all crates and their
 dependencies available from an alternate registry in order to perform offline version resolution.
 The registry index for crates.io is available at
@@ -367,12 +374,12 @@ implementation bugs.</li>
 current registry. By specifying the registry of a dependency in the index, cargo will have the
 information it needs to fetch crate files from the registry indices involved without needing to
 involve an API server.</p>
-<a class="header" href="2141-alternative-registries.html#new-command-cargo-generate-index-metadata" id="new-command-cargo-generate-index-metadata"><h2>New command: <code>cargo generate-index-metadata</code></h2></a>
+<a class="header" href="#new-command-cargo-generate-index-metadata" id="new-command-cargo-generate-index-metadata"><h2>New command: <code>cargo generate-index-metadata</code></h2></a>
 <p>Currently, the knowledge of how to create a file in the registry index format is spread between
 Cargo and crates.io. This RFC proposes the addition of a Cargo command that would generate this
 file locally for the current crate so that it can be added to the git repository using a mechanism
 other than a server running crates.io's codebase.</p>
-<a class="header" href="2141-alternative-registries.html#related-issues" id="related-issues"><h2>Related issues</h2></a>
+<a class="header" href="#related-issues" id="related-issues"><h2>Related issues</h2></a>
 <p>In order to make working with multiple registries more convenient, we would also like to support:</p>
 <ul>
 <li>
@@ -429,11 +436,11 @@ the error message will mention that usernames and passwords in URLs in <code>Car
 allowed.</p>
 </li>
 </ul>
-<a class="header" href="2141-alternative-registries.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>Supporting alternative registries, and having multiple public registries, could fracture the
 ecosystem. However, we feel that supporting private registries, and the Rust adoption that could
 enable, outweighs the potential downsides of having multiple public registries.</p>
-<a class="header" href="2141-alternative-registries.html#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
 <p>A <a href="https://github.com/rust-lang/rfcs/pull/2006">previous RFC</a> proposed having the registry
 information completely defined within <code>Cargo.toml</code> rather than using <code>.cargo/config</code>. This requires
 repeating the same information multiple times for multiple projects, and encourages checking in
@@ -444,7 +451,7 @@ for the registry index, which needs to be shared among all registries.</p>
 encouraging poor practices such as checking credentials into a project's source control. The
 implementation of this feature would also be more complex. The upside would be supporting
 configuration in ways that would be more convenient in various situations.</p>
-<a class="header" href="2141-alternative-registries.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>Are the names of everything what we want?</p>
@@ -502,9 +509,6 @@ configuration in ways that would be more convenient in various situations.</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

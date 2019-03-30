@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1721-crt-static - </title>
+        <title>1721-crt-static - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1721">rust-lang/rfcs#1721</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/37406">rust-lang/rust#37406</a></li>
 </ul>
-<a class="header" href="1721-crt-static.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Enable the compiler to select whether a target dynamically or statically links
 to a platform's standard C runtime through the introduction of three orthogonal
 and otherwise general purpose features, one of which will likely never become
@@ -152,7 +159,7 @@ statically or dynamically to libc.</p>
 <p>The design herein additionally paves the way for improved support for
 dllimport/dllexport, and cpu-specific features, particularly when
 combined with a <a href="https://github.com/rust-lang/rfcs/pull/1133">std-aware cargo</a>.</p>
-<a class="header" href="1721-crt-static.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Today all targets of rustc hard-code how they link to the native C runtime. For
 example the <code>x86_64-unknown-linux-gnu</code> target links to glibc dynamically,
 <code>x86_64-unknown-linux-musl</code> links statically to musl, and
@@ -165,7 +172,7 @@ new target specification and distributing a build of the standard library for
 it. Because target specifications must be described by a target triple, and
 target triples have preexisting conventions into which such a scheme does not
 fit, we have resisted doing so.</p>
-<a class="header" href="1721-crt-static.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>This RFC introduces three separate features to the compiler and Cargo. When
 combined they will enable the compiler to change whether the C standard library
 is linked dynamically or statically. In isolation each feature is a natural
@@ -209,7 +216,7 @@ enable build scripts to understand all enabled features of a target (like
 libc crate, and only because std is distributed in binary form and it may yet
 be a long time before Cargo itself can rebuild std.</li>
 </ul>
-<a class="header" href="1721-crt-static.html#specifying-dynamicstatic-c-runtime-linkage" id="specifying-dynamicstatic-c-runtime-linkage"><h3>Specifying dynamic/static C runtime linkage</h3></a>
+<a class="header" href="#specifying-dynamicstatic-c-runtime-linkage" id="specifying-dynamicstatic-c-runtime-linkage"><h3>Specifying dynamic/static C runtime linkage</h3></a>
 <p>A new <code>target-feature</code> flag will now be supported by the compiler for relevant
 targets: <code>crt-static</code>. This can be enabled and disabled in the compiler via:</p>
 <pre><code>rustc -C target-feature=+crt-static ...
@@ -223,7 +230,7 @@ target-features can be defined, and most existing targets will define a new
 <p>The default of <code>crt-static</code> will be different depending on the target. For
 example <code>x86_64-unknown-linux-musl</code> will have it on by default, whereas
 <code>arm-unknown-linux-musleabi</code> will have it turned off by default.</p>
-<a class="header" href="1721-crt-static.html#lowering-cfg-values-to-cargo-build-script-environment-variables" id="lowering-cfg-values-to-cargo-build-script-environment-variables"><h3>Lowering <code>cfg</code> values to Cargo build script environment variables</h3></a>
+<a class="header" href="#lowering-cfg-values-to-cargo-build-script-environment-variables" id="lowering-cfg-values-to-cargo-build-script-environment-variables"><h3>Lowering <code>cfg</code> values to Cargo build script environment variables</h3></a>
 <p>Cargo will begin to forward <code>cfg</code> values from the compiler into build
 scripts. Currently the compiler supports <code>--print cfg</code> as a flag to print out
 internal cfg directives, which Cargo uses to implement platform-specific
@@ -283,7 +290,7 @@ today the MSVC targets use dynamic linkage and gcc-rs compiles C code with <code
 gcc-rs will remain forward and backwards compatible with existing and future
 Rust MSVC toolchains until such time as the the decision is made to change the
 MSVC toolchain to <code>+crt-static</code> by default.</p>
-<a class="header" href="1721-crt-static.html#lazy-link-attributes" id="lazy-link-attributes"><h3>Lazy link attributes</h3></a>
+<a class="header" href="#lazy-link-attributes" id="lazy-link-attributes"><h3>Lazy link attributes</h3></a>
 <p>The final feature that will be added to the compiler is the ability to &quot;lazily&quot;
 interpret the linkage requirements of a native library depending on values of
 <code>cfg</code> at compile time of downstream crates, not of the crate with the <code>#[link]</code>
@@ -314,7 +321,7 @@ evaluate whether they should be linked or not depending on the final
 compilation's <code>#[cfg]</code> directives and the upstream <code>#[link]</code> directives.</p>
 </li>
 </ul>
-<a class="header" href="1721-crt-static.html#customizing-linkage-to-the-c-runtime" id="customizing-linkage-to-the-c-runtime"><h3>Customizing linkage to the C runtime</h3></a>
+<a class="header" href="#customizing-linkage-to-the-c-runtime" id="customizing-linkage-to-the-c-runtime"><h3>Customizing linkage to the C runtime</h3></a>
 <p>With the above features, the following changes will be made to select the
 linkage of the C runtime at compile time for downstream crates.</p>
 <p>First, the <code>libc</code> crate will be modified to contain blocks along the lines of:</p>
@@ -348,7 +355,7 @@ runtime would look like:</p>
 look like:</p>
 <pre><code>RUSTFLAGS='-C target-feature=-crt-static' cargo build --target x86_64-unknown-linux-musl
 </code></pre>
-<a class="header" href="1721-crt-static.html#future-work" id="future-work"><h3>Future work</h3></a>
+<a class="header" href="#future-work" id="future-work"><h3>Future work</h3></a>
 <p>The features proposed here are intended to be the absolute bare bones of support
 needed to configure how the C runtime is linked. A primary drawback, however, is
 that it's somewhat cumbersome to select the non-default linkage of the CRT.
@@ -371,7 +378,7 @@ custom-compiling the standard library</a>. The <code>crt-static</code>
 feature would simply be another input to this logic, so Cargo would
 custom-compile the standard library if it differed from the upstream artifacts,
 solving this problem.</p>
-<a class="header" href="1721-crt-static.html#references" id="references"><h3>References</h3></a>
+<a class="header" href="#references" id="references"><h3>References</h3></a>
 <ul>
 <li>[Issue about MSVCRT static linking]
 (https://github.com/rust-lang/libc/issues/290)</li>
@@ -386,7 +393,7 @@ likely in the future be influenced by <code>-C target-feature</code>.</li>
 <li>[Cargo's documentation on build-script environment variables]
 (https://github.com/rust-lang/libc/issues/290)</li>
 </ul>
-<a class="header" href="1721-crt-static.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
 <p>Working with <code>RUSTFLAGS</code> can be cumbersome, but as explained above it's
@@ -408,7 +415,7 @@ the feature serves one implementation-specif purpose and isn't intended for
 stabilization.</p>
 </li>
 </ul>
-<a class="header" href="1721-crt-static.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>One alternative is to add entirely new targets, for example
@@ -439,7 +446,7 @@ rustc define an environment variable to specify the C runtime kind.</p>
 <li>Instead of extending the semantics of <code>-C target-feature</code> beyond &quot;CPU
 features&quot;, we could instead add a new flag for the purpose, e.g. <code>-C custom-feature</code>.</li>
 </ul>
-<a class="header" href="1721-crt-static.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>What happens during the <code>cfg</code> to environment variable conversion for values
@@ -495,9 +502,6 @@ in a world where we distribute more precompiled binaries than just std?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

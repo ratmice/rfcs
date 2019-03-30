@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1359-process-ext-unix - </title>
+        <title>1359-process-ext-unix - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1359">rust-lang/rfcs#1359</a></li>
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/31398">rust-lang/rust#31398</a></li>
 </ul>
-<a class="header" href="1359-process-ext-unix.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Add two methods to the <code>std::os::unix::process::CommandExt</code> trait to provide
 more control over how processes are spawned on Unix, specifically:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -149,7 +156,7 @@ fn exec(&amp;mut self) -&gt; io::Error;
 fn before_exec&lt;F&gt;(&amp;mut self, f: F) -&gt; &amp;mut Self
     where F: FnOnce() -&gt; io::Result&lt;()&gt; + Send + Sync + 'static;
 #}</code></pre></pre>
-<a class="header" href="1359-process-ext-unix.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>Although the standard library's implementation of spawning processes on Unix is
 relatively complex, it unfortunately doesn't provide the same flexibility as
 calling <code>fork</code> and <code>exec</code> manually. For example, these sorts of use cases are
@@ -168,7 +175,7 @@ abstraction.</li>
 <p>Note that neither of these pieces of functionality are possible on Windows as
 there is no equivalent of the <code>fork</code> or <code>exec</code> syscalls in the standard APIs, so
 these are specifically proposed as methods on the Unix extension trait.</p>
-<a class="header" href="1359-process-ext-unix.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>The following two methods will be added to the
 <code>std::os::unix::process::CommandExt</code> trait:</p>
 <pre><pre class="playpen"><code class="language-rust">
@@ -217,7 +224,7 @@ qualities that the <code>Command</code> type has (notably <code>Send</code>, <co
 This also happens after all other configuration has happened to ensure that
 libraries can take advantage of the other operations on <code>Command</code> without having
 to reimplement them manually in some circumstances.</p>
-<a class="header" href="1359-process-ext-unix.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>This change is possible to be a breaking change to <code>Command</code> as it will no
 longer implement all marker traits by default (due to it containing closure
 trait objects). While the common marker traits are handled here, it's possible
@@ -226,13 +233,13 @@ that there are some traits in the wild in use which this could break.</p>
 may actually be best implemented as functions in the standard library itself.
 It's likely that many operations are well known across unixes and aren't niche
 enough to stay outside the standard library.</p>
-<a class="header" href="1359-process-ext-unix.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <p>Instead of souping up <code>Command</code> the type could instead provide accessors to all
 of the configuration that it contains. This would enable this sort of
 functionality to be built on crates.io first instead of requiring it to be built
 into the standard library to start out with. Note that this may want to end up
 in the standard library regardless, however.</p>
-<a class="header" href="1359-process-ext-unix.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>Is it appropriate to run callbacks just before the <code>exec</code>? Should they instead
 be run before any standard configuration like stdio has run?</li>
@@ -285,9 +292,6 @@ long as all stdio is inherited&quot;.</li>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>

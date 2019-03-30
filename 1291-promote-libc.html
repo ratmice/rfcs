@@ -3,23 +3,24 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>1291-promote-libc - </title>
+        <title>1291-promote-libc - The Rust RFC Book</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <base href="">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-        <link rel="stylesheet" href="book.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
-        <link rel="shortcut icon" href="favicon.png">
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-
+        <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="highlight.css">
         <link rel="stylesheet" href="tomorrow-night.css">
         <link rel="stylesheet" href="ayu-highlight.css">
@@ -28,9 +29,14 @@
         
 
         
-
     </head>
     <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script type="text/javascript">
             try {
@@ -51,7 +57,7 @@
         <script type="text/javascript">
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
-            if (theme === null || theme === undefined) { theme = 'light'; }
+            if (theme === null || theme === undefined) { theme = default_theme; }
             document.body.className = theme;
             document.querySelector('html').className = theme + ' js';
         </script>
@@ -86,7 +92,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </button>
                             <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                                <li role="none"><button role="menuitem" class="theme" id="light">Light <span class="default">(default)</span></button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                                 <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
@@ -99,12 +105,13 @@
                             
                         </div>
 
-                        <h1 class="menu-title"></h1> 
+                        <h1 class="menu-title">The Rust RFC Book</h1> 
 
                         <div class="right-buttons">
                             <a href="print.html" title="Print this book" aria-label="Print this book">
                                 <i id="print-button" class="fa fa-print"></i>
                             </a>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,7 +146,7 @@
 <li>RFC PR: <a href="https://github.com/rust-lang/rfcs/pull/1291">rust-lang/rfcs#1291</a></li>
 <li>Rust Issue: N/A</li>
 </ul>
-<a class="header" href="1291-promote-libc.html#summary" id="summary"><h1>Summary</h1></a>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
 <p>Promote the <code>libc</code> crate from the nursery into the <code>rust-lang</code> organization
 after applying changes such as:</p>
 <ul>
@@ -150,7 +157,7 @@ platforms in an automatic fashion.</li>
 <li>Define the scope of libc in terms of bindings it will provide for each
 platform.</li>
 </ul>
-<a class="header" href="1291-promote-libc.html#motivation" id="motivation"><h1>Motivation</h1></a>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>The current <code>libc</code> crate is a bit of a mess unfortunately, having long since
 departed from its original organization and scope of definition. As more
 platforms have been added over time as well as more APIs in general, the
@@ -185,12 +192,12 @@ crate, along with tweaks to some of the mundane details such as internal
 organization, CI automation, how new additions are accepted, etc. These changes
 should all help push <code>libc</code> to a more more robust position where it can be well
 trusted across all platforms both now and into the future!</p>
-<a class="header" href="1291-promote-libc.html#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
+<a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <p>All design can be previewed as part of an <a href="https://github.com/alexcrichton/libc">in progress fork</a> available on
 GitHub. Additionally, all mentions of the <code>libc</code> crate in this RFC refer to the
 external copy on crates.io, not the in-tree one in the <code>rust-lang/rust</code>
 repository. No changes are being proposed (e.g. to stabilize) the in-tree copy.</p>
-<a class="header" href="1291-promote-libc.html#what-is-this-crate" id="what-is-this-crate"><h3>What is this crate?</h3></a>
+<a class="header" href="#what-is-this-crate" id="what-is-this-crate"><h3>What is this crate?</h3></a>
 <p>The primary purpose of this crate is to provide all of the definitions
 necessary to easily interoperate with C code (or &quot;C-like&quot; code) on each of the
 platforms that Rust supports. This includes type definitions (e.g. <code>c_int</code>),
@@ -202,7 +209,7 @@ platform</strong> but rather the opposite, an exact binding to the platform in
 question. In essence, the <code>libc</code> crate is targeted as &quot;replacement for
 <code>#include</code> in Rust&quot; for traditional system header files, but it makes no
 effort to be help being portable by tweaking type definitions and signatures.</p>
-<a class="header" href="1291-promote-libc.html#the-home-of-libc" id="the-home-of-libc"><h3>The Home of <code>libc</code></h3></a>
+<a class="header" href="#the-home-of-libc" id="the-home-of-libc"><h3>The Home of <code>libc</code></h3></a>
 <p>Currently this crate resides inside of the main <code>rust</code> repo of the <code>rust-lang</code>
 organization, but this unfortunately somewhat hinders its development as it
 takes awhile to land PRs and isn't quite as quick to release as external
@@ -211,7 +218,7 @@ in the <code>rust-lang</code> organization so additions can be made through PRs 
 much more quickly).</p>
 <p>The main repository will have a submodule pointing at the external repository to
 continue building libstd.</p>
-<a class="header" href="1291-promote-libc.html#public-api" id="public-api"><h3>Public API</h3></a>
+<a class="header" href="#public-api" id="public-api"><h3>Public API</h3></a>
 <p>The <code>libc</code> crate will hide all internal organization of the crate from users of
 the crate. All items will be reexported at the top level as part of a flat
 namespace. This brings with it a number of benefits:</p>
@@ -241,7 +248,7 @@ header files such as:</p>
 to implement the <code>Copy</code> and <code>Clone</code> traits. There will be an optional feature of
 the library to implement <code>Debug</code> for all structs, but it will be turned off by
 default.</p>
-<a class="header" href="1291-promote-libc.html#changes-from-today" id="changes-from-today"><h3>Changes from today</h3></a>
+<a class="header" href="#changes-from-today" id="changes-from-today"><h3>Changes from today</h3></a>
 <p>The <a href="https://github.com/alexcrichton/libc">in progress</a> implementation of this RFC has a number of API changes
 and breakages from today's <code>libc</code> crate. Almost all of them are minor and
 targeted at making bindings more correct in terms of faithfully representing the
@@ -261,7 +268,7 @@ was easy to confuse them with C's <code>int</code> and <code>unsigned int</code>
 <p>The final change to the <code>libc</code> crate will be to bump its version to 1.0.0,
 signifying that breakage has happened (a bump from 0.1.x) as well as having a
 future-stable interface until 2.0.0.</p>
-<a class="header" href="1291-promote-libc.html#scope-of-libc" id="scope-of-libc"><h3>Scope of <code>libc</code></h3></a>
+<a class="header" href="#scope-of-libc" id="scope-of-libc"><h3>Scope of <code>libc</code></h3></a>
 <p>The name &quot;libc&quot; is a little nebulous as to what it means across platforms. It
 is clear, however, that this library must have a well defined scope up to which
 it can expand to ensure that it doesn't start pulling in dozens of runtime
@@ -291,7 +298,7 @@ contents will be removed on Windows.</li>
 </ul>
 <p>New platforms added to <code>libc</code> can decide the set of libraries <code>libc</code> will link
 to and bind at that time.</p>
-<a class="header" href="1291-promote-libc.html#internal-structure" id="internal-structure"><h3>Internal structure</h3></a>
+<a class="header" href="#internal-structure" id="internal-structure"><h3>Internal structure</h3></a>
 <p>The primary change being made is that the crate will no longer be one large file
 sprinkled with <code>#[cfg]</code> annotations. Instead, the crate will be split into a
 tree of modules, and all modules will reexport the entire contents of their
@@ -317,7 +324,7 @@ pushed to lower levels if APIs need to be changed or aren't present on the new
 platform. It should be easy to audit, however, that a new platform doesn't
 tamper with older ones.</li>
 </ul>
-<a class="header" href="1291-promote-libc.html#testing" id="testing"><h3>Testing</h3></a>
+<a class="header" href="#testing" id="testing"><h3>Testing</h3></a>
 <p>The current set of bindings in the <code>libc</code> crate suffer a drawback in that they
 are not verified. This is often a pain point for new platforms where when
 copying from an existing platform it's easy to forget to update a constant here
@@ -346,8 +353,8 @@ following targets, however, through Travis and AppVeyor:</p>
 <li><code>arm-linux-androideabi</code></li>
 <li><code>{i686,x86_64}-apple-{darwin,ios}</code></li>
 </ul>
-<a class="header" href="1291-promote-libc.html#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
-<a class="header" href="1291-promote-libc.html#loss-of-module-organization" id="loss-of-module-organization"><h3>Loss of module organization</h3></a>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<a class="header" href="#loss-of-module-organization" id="loss-of-module-organization"><h3>Loss of module organization</h3></a>
 <p>The loss of an internal organization structure can be seen as a drawback of this
 design. While perhaps not precisely true today, the principle of the structure
 was that it is easy to constrain yourself to a particular C standard or subset
@@ -363,14 +370,14 @@ degree</em>, but the filp side is that it's easy to build this sort of layer on 
 of <code>libc</code> as designed here externally on crates.io. For example <code>extern crate posix</code> could just depend on <code>libc</code> and reexport all the contents for the
 POSIX standard, perhaps with tweaked signatures here and there to work better
 across platforms.</p>
-<a class="header" href="1291-promote-libc.html#loss-of-windows-bindings" id="loss-of-windows-bindings"><h3>Loss of Windows bindings</h3></a>
+<a class="header" href="#loss-of-windows-bindings" id="loss-of-windows-bindings"><h3>Loss of Windows bindings</h3></a>
 <p>By only exposing the CRT functions on Windows, the contents of <code>libc</code> will be
 quite trimmed down which means when accessing similar functions like <code>send</code> or
 <code>connect</code> crates will be required to link to two libraries at least.</p>
 <p>This is also a bit of a maintenance burden on the standard library itself as it
 means that all the bindings it uses must move to <code>src/libstd/sys/windows/c.rs</code>
 in the immedidate future.</p>
-<a class="header" href="1291-promote-libc.html#alternatives" id="alternatives"><h1>Alternatives</h1></a>
+<a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
 <ul>
 <li>
 <p>Instead of <em>only</em> exporting a flat namespace the <code>libc</code> crate could optionally
@@ -384,7 +391,7 @@ correspondance to system libraries, but this has the downside of using common
 functions available on both OSX and Linux would require at least two <code>extern crate</code> directives and dependencies.</p>
 </li>
 </ul>
-<a class="header" href="1291-promote-libc.html#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
 <p>The only platforms without automation currently are the BSD-like platforms
@@ -447,9 +454,6 @@ and <code>winapi</code> have a closer relationship?</p>
 
         
 
-        
-        <script src="searchindex.js" type="text/javascript" charset="utf-8"></script>
-        
         
         <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
