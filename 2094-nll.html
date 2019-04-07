@@ -623,7 +623,7 @@ problem cases, as well as a number of other interesting examples.</p>
 #fn main() {
 let mut foo: T = ...;
 let mut bar: T = ...;
-let p: &amp;T;
+let mut p: &amp;T;
 
 p = &amp;foo;
 // (0)
@@ -647,7 +647,7 @@ Recall that a control-flow graph in MIR consists of basic blocks
 containing a list of discrete statements and a trailing terminator:</p>
 <pre><code>// let mut foo: i32;
 // let mut bar: i32;
-// let p: &amp;i32;
+// let mut p: &amp;i32;
 
 A
 [ p = &amp;foo     ]
@@ -689,7 +689,7 @@ are three lifetimes that result. We will call them <code>'p</code>, <code>'foo</
 #fn main() {
 let mut foo: T = ...;
 let mut bar: T = ...;
-let p: &amp;'p T;
+let mut p: &amp;'p T;
 //      --
 p = &amp;'foo foo;
 //   ----
@@ -756,7 +756,7 @@ important to Example 4:</p>
 #fn main() {
 let mut foo: T = ...;
 let mut bar: T = ...;
-let p: &amp;'p T = &amp;foo;
+let mut p: &amp;'p T = &amp;foo;
 // `p` is live here: its value may be used on the next line.
 if condition {
     // `p` is live here: its value will be used on the next line.
