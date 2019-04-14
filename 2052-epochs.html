@@ -147,9 +147,9 @@
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44581">rust-lang/rust#44581</a></li>
 </ul>
 <a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
-<p>Rust's ecosystem, tooling, documentation, and compiler are constantly improving. To make it easier to follow development, and to provide a clear, coherent &quot;rallying point&quot; for this work, this RFC proposes that we declare a <em>epoch</em> every two or three years. Epochs are designated by the year in which they occur, and represent a release in which several elements come together:</p>
+<p>Rust's ecosystem, tooling, documentation, and compiler are constantly improving. To make it easier to follow development, and to provide a clear, coherent &quot;rallying point&quot; for this work, this RFC proposes that we declare a <em>edition</em> every two or three years. Editions are designated by the year in which they occur, and represent a release in which several elements come together:</p>
 <ul>
-<li>A significant, coherent set of new features and APIs have been stabilized since the previous epoch.</li>
+<li>A significant, coherent set of new features and APIs have been stabilized since the previous edition.</li>
 <li>Error messages and other important aspects of the user experience around these features are fully polished.</li>
 <li>Tooling (IDEs, rustfmt, Clippy, etc) has been updated to work properly with these new features.</li>
 <li>There is a guide to the new features, explaining why they're important and how they should influence the way you write Rust code.</li>
@@ -161,7 +161,7 @@
 <li>The standard library and other core ecosystem crates have been updated to use the new features as appropriate.</li>
 <li>A new edition of the Rust Cookbook has been prepared, providing an updated set of guidance for which crates to use for various tasks.</li>
 </ul>
-<p>Sometimes a feature we want to make available in a new epoch would require backwards-incompatible changes, like introducing a new keyword. In that case, the feature is only available by explicitly opting in to the new epoch. Existing code continues to compile, and crates can freely mix dependencies using different epochs.</p>
+<p>Sometimes a feature we want to make available in a new edition would require backwards-incompatible changes, like introducing a new keyword. In that case, the feature is only available by explicitly opting in to the new edition. Existing code continues to compile, and crates can freely mix dependencies using different editions.</p>
 <a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <a class="header" href="#the-status-quo" id="the-status-quo"><h2>The status quo</h2></a>
 <p>Today, Rust evolution happens steadily through a combination of several mechanisms:</p>
@@ -227,16 +227,16 @@ current evolution mechanisms.</p>
 <p>At the same time, the commitment to stability and rapid releases has been an
 incredible boon for Rust, and we don't want to give up those existing mechanisms
 or their benefits.</p>
-<p>This RFC proposes <em>epochs</em> as a mechanism we can layer on top of our existing
+<p>This RFC proposes <em>editions</em> as a mechanism we can layer on top of our existing
 release process, keeping its guarantees while addressing its gaps.</p>
 <a class="header" href="#detailed-design" id="detailed-design"><h1>Detailed design</h1></a>
 <a class="header" href="#the-basic-idea" id="the-basic-idea"><h2>The basic idea</h2></a>
 <p>To make it easier to follow Rust's evolution, and to provide a clear, coherent
-&quot;rallying point&quot; for the community, the project declares a <em>epoch</em> every
-two or three years. Epochs are designated by the year in which they occur,
+&quot;rallying point&quot; for the community, the project declares a <em>edition</em> every
+two or three years. Editions are designated by the year in which they occur,
 and represent a release in which several elements come together:</p>
 <ul>
-<li>A significant, coherent set of new features and APIs have been stabilized since the previous epoch.</li>
+<li>A significant, coherent set of new features and APIs have been stabilized since the previous edition.</li>
 <li>Error messages and other important aspects of the user experience around these features are fully polished.</li>
 <li>Tooling (IDEs, rustfmt, Clippy, etc) has been updated to work properly with these new features.</li>
 <li>There is a guide to the new features, explaining why they're important and how they should influence the way you write Rust code.</li>
@@ -248,46 +248,46 @@ and represent a release in which several elements come together:</p>
 <li>The standard library and other core ecosystem crates have been updated to use the new features as appropriate.</li>
 <li>A new edition of the Rust Cookbook has been prepared, providing an updated set of guidance for which crates to use for various tasks.</li>
 </ul>
-<p>The precise list of elements going into an epoch is expected to evolve over
+<p>The precise list of elements going into an edition is expected to evolve over
 time, as the Rust project and ecosystem grow.</p>
-<p>Sometimes a feature we want to make available in a new epoch would require
+<p>Sometimes a feature we want to make available in a new edition would require
 backwards-incompatible changes, like introducing a new keyword. In that case,
 the feature is only available by explicitly opting in to the new
-epoch. Each <strong>crate</strong> can declare an epoch in its <code>Cargo.toml</code> like
-<code>epoch = &quot;2019&quot;</code>; otherwise it is assumed to have epoch 2015,
-coinciding with Rust 1.0. Thus, new epochs are <em>opt in</em>, and the
-dependencies of a crate may use older or newer epochs than the crate
+edition. Each <strong>crate</strong> can declare an edition in its <code>Cargo.toml</code> like
+<code>edition = &quot;2019&quot;</code>; otherwise it is assumed to have edition 2015,
+coinciding with Rust 1.0. Thus, new editions are <em>opt in</em>, and the
+dependencies of a crate may use older or newer editions than the crate
 itself.</p>
-<p>To be crystal clear: Rust compilers must support <em>all</em> extant epochs, and
-a crate dependency graph may involve several different epochs
-simultaneously. Thus, <strong>epochs do not split the ecosystem nor do they break
+<p>To be crystal clear: Rust compilers must support <em>all</em> extant editions, and
+a crate dependency graph may involve several different editions
+simultaneously. Thus, <strong>editions do not split the ecosystem nor do they break
 existing code</strong>.</p>
 <p>Furthermore:</p>
 <ul>
 <li>As with today, each new version of the compiler may gain stabilizations and deprecations.</li>
-<li>When opting in to a new epoch, existing deprecations <em>may</em> turn into hard
+<li>When opting in to a new edition, existing deprecations <em>may</em> turn into hard
 errors, and the compiler may take advantage of that fact to repurpose existing
-usage, e.g. by introducing a new keyword. <strong>This is the only kind of <em>breaking</em> change a
-epoch opt-in can make.</strong></li>
+usage, e.g. by introducing a new keyword. <strong>This is the only kind of
+<em>breaking</em> change a edition opt-in can make.</strong></li>
 </ul>
-<p>Thus, code that compiles without warnings on the previous epoch (under the latest
-compiler release) will compile without errors on the next epoch (modulo the
-<a href="https://github.com/rust-lang/rfcs/blob/master/text/1122-language-semver.md">usual caveats</a> about type inference changes and so on).</p>
-<p>Alternatively, you can continue working with the previous epoch on new
+<p>Thus, code that compiles without warnings on the previous edition (under the
+latest compiler release) will compile without errors on the next edition
+(modulo the <a href="https://github.com/rust-lang/rfcs/blob/master/text/1122-language-semver.md">usual caveats</a> about type inference changes and so on).</p>
+<p>Alternatively, you can continue working with the previous edition on new
 compiler releases indefinitely, but your code may not have access to new
 features that require new keywords and the like. New features that <em>are</em>
-backwards compatible, however, will be available on older epochs.</p>
-<a class="header" href="#epoch-timing-stabilizations-and-the-roadmap-process" id="epoch-timing-stabilizations-and-the-roadmap-process"><h2>Epoch timing, stabilizations, and the roadmap process</h2></a>
+backwards compatible, however, will be available on older editions.</p>
+<a class="header" href="#edition-timing-stabilizations-and-the-roadmap-process" id="edition-timing-stabilizations-and-the-roadmap-process"><h2>Edition timing, stabilizations, and the roadmap process</h2></a>
 <p>As mentioned above, we want to retain our rapid release model, in which new
 features and other improvements are shipped on the stable release channel as
 soon as they are ready. So, to be clear, <strong>we do not hold features back until
-the next epoch</strong>.</p>
-<p>Rather, epochs, as their name suggests, represent a point of <em>global
+the next edition</strong>.</p>
+<p>Rather, editions, as their name suggests, represent a point of <em>global
 coherence</em>, where documentation, tooling, the compiler, and core libraries are
 all fully aligned on a new set of (already stabilized!) features and other
-changes. This alignment can happen incrementally, but an epoch signals that
+changes. This alignment can happen incrementally, but an edition signals that
 it <em>has</em> happened.</p>
-<p>At the same time, epochs serve as a rallying point for making sure this
+<p>At the same time, editions serve as a rallying point for making sure this
 alignment work gets done in a timely fashion--and helping set scope as
 needed. To make this work, we use the roadmap process:</p>
 <ul>
@@ -295,10 +295,10 @@ needed. To make this work, we use the roadmap process:</p>
 <p>As today, each year has a [roadmap setting out that year's vision]. Some
 years---like 2017---the roadmap is mostly about laying down major new
 groundwork. Some years, however, they roadmap explicitly proposes to produce a
-new epoch during the year.</p>
+new edition during the year.</p>
 </li>
 <li>
-<p>Epoch years are focused primarily on <em>stabilization</em>, <em>polish</em>, and
+<p>Edition years are focused primarily on <em>stabilization</em>, <em>polish</em>, and
 <em>coherence</em>, rather than brand new ideas. We are trying to put together and
 ship a coherent product, complete with documentation and a well-aligned
 ecosystem. These goals will provide a rallying point for the whole community,
@@ -306,17 +306,17 @@ to put our best foot forward as we publish a significant new version of the
 project.</p>
 </li>
 </ul>
-<p>In short, epochs are striking a delicate balance: they're not a cutoff for
+<p>In short, editions are striking a delicate balance: they're not a cutoff for
 stabilization, which continues every six weeks, but they still provide a strong
 impetus for coming together as a community and putting together a polished product.</p>
 <a class="header" href="#the-preview-period" id="the-preview-period"><h3>The preview period</h3></a>
-<p>There's an important tension around stabilization and epochs:</p>
+<p>There's an important tension around stabilization and editions:</p>
 <ul>
 <li>
-<p>We want to enable new features, including those that require an epoch
+<p>We want to enable new features, including those that require an edition
 opt-in, to be available on the stable channel as they become ready.</p>
 <ul>
-<li>That means that we must enable some form of the opt in before the epoch
+<li>That means that we must enable some form of the opt in before the edition
 is fully ready to ship.</li>
 </ul>
 </li>
@@ -328,31 +328,31 @@ do so with new versions of the compiler, with minimum hassle.</p>
 </ul>
 </li>
 </ul>
-<p>Thus, at some point within an epoch year, we will enable the opt-in on the
+<p>Thus, at some point within an edition year, we will enable the opt-in on the
 stable release channel, which must include <em>all</em> of the hard errors that will be
-introduced in the next epoch, but not yet all of the stabilizations (or
-other artifacts that go into the full epoch release). This is the <em>preview
-period</em> for the epoch, which ends when a release is produced that
-synchronizes all of the elements that go into an epoch and the epoch is
+introduced in the next edition, but not yet all of the stabilizations (or
+other artifacts that go into the full edition release). This is the <em>preview
+period</em> for the edition, which ends when a release is produced that
+synchronizes all of the elements that go into an edition and the edition is
 formally announced.</p>
-<a class="header" href="#a-broad-policy-on-epoch-changes" id="a-broad-policy-on-epoch-changes"><h2>A broad policy on epoch changes</h2></a>
-<p>There are numerous reasons to limit the scope of changes for new epochs, among them:</p>
+<a class="header" href="#a-broad-policy-on-edition-changes" id="a-broad-policy-on-edition-changes"><h2>A broad policy on edition changes</h2></a>
+<p>There are numerous reasons to limit the scope of changes for new editions, among them:</p>
 <ul>
 <li>
-<p><strong>Limiting churn</strong>. Even if you aren't <em>forced</em> to update your code, even if there are automated tools to do so, churn is still a pain for existing users. It also invalidates, or at least makes harder to use, existing content on the internet, like StackOverflow answers and blog posts. And finally, it plays against the important and hard work we've done to make Rust stable in both reality and perception. In short, while epochs avoid <em>ecosystem</em> splits and make churn opt-in, they do not eliminate <em>all</em> drawbacks.</p>
+<p><strong>Limiting churn</strong>. Even if you aren't <em>forced</em> to update your code, even if there are automated tools to do so, churn is still a pain for existing users. It also invalidates, or at least makes harder to use, existing content on the internet, like StackOverflow answers and blog posts. And finally, it plays against the important and hard work we've done to make Rust stable in both reality and perception. In short, while editions avoid <em>ecosystem</em> splits and make churn opt-in, they do not eliminate <em>all</em> drawbacks.</p>
 </li>
 <li>
-<p><strong>Limiting technical debt</strong>. The compiler retains compatibility for old epochs, and thus must have distinct &quot;modes&quot; for dealing with them. We need to strongly limit the amount and complexity of code needed for these modes, or the compiler will become very difficult to maintain.</p>
+<p><strong>Limiting technical debt</strong>. The compiler retains compatibility for old editions, and thus must have distinct &quot;modes&quot; for dealing with them. We need to strongly limit the amount and complexity of code needed for these modes, or the compiler will become very difficult to maintain.</p>
 </li>
 <li>
-<p><strong>Limiting deep conceptual changes</strong>. Just as we want to keep the compiler maintainable, so too do we want to keep the conceptual model sustainable. That is, if we make truly radical changes in a new epoch, it will be very difficult for people to reason about code involving different epochs, or to remember the precise differences.</p>
+<p><strong>Limiting deep conceptual changes</strong>. Just as we want to keep the compiler maintainable, so too do we want to keep the conceptual model sustainable. That is, if we make truly radical changes in a new edition, it will be very difficult for people to reason about code involving different editions, or to remember the precise differences.</p>
 </li>
 </ul>
 <p>These lead to some hard and soft constraints.</p>
 <a class="header" href="#hard-constraints" id="hard-constraints"><h3>Hard constraints</h3></a>
-<p><strong>TL;DR: Warning-free code on epoch N must compile on epoch N+1 and have the
+<p><strong>TL;DR: Warning-free code on edition N must compile on edition N+1 and have the
 same behavior.</strong></p>
-<p>There are only two things a new epoch can do that a normal release cannot:</p>
+<p>There are only two things a new edition can do that a normal release cannot:</p>
 <ul>
 <li>Change an existing deprecation into a hard error.
 <ul>
@@ -361,40 +361,40 @@ same behavior.</strong></p>
 </li>
 <li>Change an existing deprecation to <em>deny</em> by default, and leverage the corresponding lint setting to produce error messages <em>as if</em> the feature were removed entirely.</li>
 </ul>
-<p>The second option is to be preferred whenever possible. Note that warning-free code in one epoch might produce warnings in the next epoch, but it should still compile successfully.</p>
-<p>The Rust compiler supports multiple epochs, but <strong>must only support a single version of &quot;core Rust&quot;</strong>. We identify &quot;core Rust&quot; as being, roughly, MIR and the core trait system; this specification will be made more precise over time.  The implication is that the &quot;epoch modes&quot; boil down to keeping around multiple desugarings into this core Rust, which greatly limits the complexity and technical debt involved. Similar, core Rust encompasses the core <em>conceptual</em> model of the language, and this constraint guarantees that, even when working with multiple epochs, those core concepts remain fixed.</p>
+<p>The second option is to be preferred whenever possible. Note that warning-free code in one edition might produce warnings in the next edition, but it should still compile successfully.</p>
+<p>The Rust compiler supports multiple editions, but <strong>must only support a single version of &quot;core Rust&quot;</strong>. We identify &quot;core Rust&quot; as being, roughly, MIR and the core trait system; this specification will be made more precise over time.  The implication is that the &quot;edition modes&quot; boil down to keeping around multiple desugarings into this core Rust, which greatly limits the complexity and technical debt involved. Similar, core Rust encompasses the core <em>conceptual</em> model of the language, and this constraint guarantees that, even when working with multiple editions, those core concepts remain fixed.</p>
 <a class="header" href="#soft-constraints" id="soft-constraints"><h3>Soft constraints</h3></a>
-<p><strong>TL;DR: <em>Most</em> code <em>with</em> warnings on epoch N should, after running <code>rustfix</code>, compile on epoch N+1 and have the same behavior.</strong></p>
-<p>The core epoch design avoids an ecosystem split, which is very important. But it's <em>also</em> important that upgrading your own code to a new epoch is minimally disruptive. The basic principle is that <strong>changes that cannot be automated must be required only in a small minority of crates, and even there not require extensive work</strong>. This principle applies not just to epochs, but also to cases where we'd like to make a widespread deprecation.</p>
+<p><strong>TL;DR: <em>Most</em> code <em>with</em> warnings on edition N should, after running <code>rustfix</code>, compile on edition N+1 and have the same behavior.</strong></p>
+<p>The core edition design avoids an ecosystem split, which is very important. But it's <em>also</em> important that upgrading your own code to a new edition is minimally disruptive. The basic principle is that <strong>changes that cannot be automated must be required only in a small minority of crates, and even there not require extensive work</strong>. This principle applies not just to editions, but also to cases where we'd like to make a widespread deprecation.</p>
 <p>Note that a <code>rustfix</code> tool will never be perfect, because of conditional compilation and code generation. So it's important that, in the cases it inevitably fails, the manual fixes are not too onerous.</p>
 <p>In addition, migrations that affect a large percentage of code must be &quot;small tweaks&quot; (e.g. clarifying syntax), and as above, must keep the old form intact (though they can enact a deny-by-default lint on it).</p>
 <p>These are &quot;soft constraints&quot; because they use terms like &quot;small minority&quot; and &quot;small tweaks&quot;, which are open for interpretation. More broadly, the more disruption involved, the higher the bar for the change.</p>
-<a class="header" href="#positive-examples-what-epoch-opt-ins-can-do" id="positive-examples-what-epoch-opt-ins-can-do"><h3>Positive examples: What epoch opt-ins can do</h3></a>
-<p>Given those principles, let's look in more detail at a few examples of the kinds of
-changes epoch opt-ins enable. <strong>These are just examples---this RFC doesn't
-entail any commitment to these language changes</strong>.</p>
+<a class="header" href="#positive-examples-what-edition-opt-ins-can-do" id="positive-examples-what-edition-opt-ins-can-do"><h3>Positive examples: What edition opt-ins can do</h3></a>
+<p>Given those principles, let's look in more detail at a few examples of the
+kinds of changes edition opt-ins enable. <strong>These are just examples---this RFC
+doesn't entail any commitment to these language changes</strong>.</p>
 <a class="header" href="#example-new-keywords" id="example-new-keywords"><h4>Example: new keywords</h4></a>
 <p>We've taken as a running example introducing new keywords, which sometimes
 cannot be done backwards compatibly (because a contextual keyword isn't
 possible). Let's see how this works out for the case of <code>catch</code>, assuming that
-we're currently in epoch 2015.</p>
+we're currently in edition 2015.</p>
 <ul>
 <li>First, we deprecate uses of <code>catch</code> as identifiers, preparing it to become a new keyword.</li>
 <li>We may, as today, implement the new <code>catch</code> feature using a temporary syntax
 for nightly (like <code>do catch</code>).</li>
-<li>When the epoch opt-in for <code>2019</code> is released, opting into it makes <code>catch</code> into a
+<li>When the edition opt-in for <code>2019</code> is released, opting into it makes <code>catch</code> into a
 keyword, regardless of whether the <code>catch</code> feature has been implemented. This
 means that opting in may require some adjustment to your code.</li>
-<li>The <code>catch</code> syntax can be hooked into an implementation usable on nightly within the <code>2019</code> epoch.</li>
+<li>The <code>catch</code> syntax can be hooked into an implementation usable on nightly within the <code>2019</code> edition.</li>
 <li>When we're confident in the <code>catch</code> feature on nightly, we can stabilize it
-<em>onto the stable channel for users opting into <code>2019</code></em>. It cannot be stabilized onto the <code>2015</code> epoch,
+<em>onto the stable channel for users opting into <code>2019</code></em>. It cannot be stabilized onto the <code>2015</code> edition,
 since it requires a new keyword.</li>
 <li><code>catch</code> is now a part of Rust, but may not be <em>fully</em> integrated into e.g. the book, IDEs, etc.</li>
-<li>At some point, epoch <code>2019</code> is fully shipped, and <code>catch</code> is now fully
+<li>At some point, edition <code>2019</code> is fully shipped, and <code>catch</code> is now fully
 incorporated into tooling, documentation, and core libraries.</li>
 </ul>
 <p>To make this even more concrete, let's imagine the following (aligned with the diagram above):</p>
-<table><thead><tr><th> Rust version </th><th> Latest available epoch </th><th> Status of <code>catch</code> in <code>2015</code> </th><th> Status of <code>catch</code> in latest epoch</th></tr></thead><tbody>
+<table><thead><tr><th> Rust version </th><th> Latest available edition </th><th> Status of <code>catch</code> in <code>2015</code> </th><th> Status of <code>catch</code> in latest edition</th></tr></thead><tbody>
 <tr><td> 1.15 </td><td> 2015 </td><td> Valid identifier </td><td> Valid identifier</td></tr>
 <tr><td> 1.21 </td><td> 2015 </td><td> Valid identifier; deprecated </td><td> Valid identifier; deprecated</td></tr>
 <tr><td> 1.23 </td><td> 2019 (preview period) </td><td> Valid identifier; deprecated </td><td> Keyword, unimplemented</td></tr>
@@ -404,7 +404,7 @@ incorporated into tooling, documentation, and core libraries.</li>
 <p>Now, suppose you have the following code:</p>
 <pre><code>Cargo.toml:
 
-epoch = &quot;2015&quot;
+edition = &quot;2015&quot;
 </code></pre>
 <pre><pre class="playpen"><code class="language-rust">// main.rs:
 
@@ -425,7 +425,7 @@ code will fail to compile due to <code>catch</code> being a keyword.</p>
 </li>
 <li>
 <p>However, if you leave it at <code>2015</code>, you can upgrade to Rust 1.27 <strong>and
-use libraries that opt in to the <code>2019</code> epoch</strong> with no problem.</p>
+use libraries that opt in to the <code>2019</code> edition</strong> with no problem.</p>
 </li>
 </ul>
 <a class="header" href="#example-repurposing-corner-cases" id="example-repurposing-corner-cases"><h4>Example: repurposing corner cases</h4></a>
@@ -434,10 +434,10 @@ usages. For example, some suggested module system improvements deduce the module
 hierarchy from the filesystem. But there is a corner case today of providing
 both a <code>lib.rs</code> and a <code>bin.rs</code> directly at the top level, which doesn't play
 well with the new feature.</p>
-<p>Using epochs, we can deprecate such usage (in favor of the <code>bin</code> directory),
-then make it an error during the preview period. The module system change could then
-be made available (and ultimately stabilized) within the preview period, before
-fully shipping on the next epoch.</p>
+<p>Using editions, we can deprecate such usage (in favor of the <code>bin</code> directory),
+then make it an error during the preview period. The module system change could
+then be made available (and ultimately stabilized) within the preview period,
+before fully shipping on the next edition.</p>
 <a class="header" href="#example-repurposing-syntax" id="example-repurposing-syntax"><h4>Example: repurposing syntax</h4></a>
 <p>A more radical example: changing the syntax for trait objects and <code>impl Trait</code>. In particular, we have
 sometimes <a href="https://github.com/rust-lang/rfcs/pull/1603">discussed</a>:</p>
@@ -449,8 +449,8 @@ sometimes <a href="https://github.com/rust-lang/rfcs/pull/1603">discussed</a>:</
 <ul>
 <li>First, introduce and stabilize <code>dyn Trait</code>.</li>
 <li>Deprecate bare <code>Trait</code> syntax in favor of <code>dyn Trait</code>.</li>
-<li>In an epoch preview period, make it an error to use bare <code>Trait</code> syntax.</li>
-<li>Ship the new epoch, and wait until bare <code>Trait</code> syntax is obscure.</li>
+<li>In an edition preview period, make it an error to use bare <code>Trait</code> syntax.</li>
+<li>Ship the new edition, and wait until bare <code>Trait</code> syntax is obscure.</li>
 <li>Re-introduce bare <code>Trait</code> syntax, stabilize it, and deprecate <code>impl Trait</code> in
 favor of it.</li>
 </ul>
@@ -467,12 +467,12 @@ employing it for <code>AsRef</code> is backwards-incompatible.</li>
 may cause other programs to stop compiling.</li>
 <li>In trait selection, where-clauses take precedence over impls; changing this is backwards-incompatible.</li>
 </ul>
-<p>We may or may not be able to change these details on the existing epoch. With
+<p>We may or may not be able to change these details on the existing edition. With
 enough effort, we could probably deprecate cases where type inference rules
 might change and request explicit type annotations, and then—in the new
-epoch—tweak those rules.</p>
-<a class="header" href="#negative-examples-what-epoch-opt-ins-cant-do" id="negative-examples-what-epoch-opt-ins-cant-do"><h3>Negative examples: What epoch opt-ins can't do</h3></a>
-<p>There are also changes that epochs don't help with, due to the constraints
+edition—tweak those rules.</p>
+<a class="header" href="#negative-examples-what-edition-opt-ins-cant-do" id="negative-examples-what-edition-opt-ins-cant-do"><h3>Negative examples: What edition opt-ins can't do</h3></a>
+<p>There are also changes that editions don't help with, due to the constraints
 we impose. These limitations are extremely important for keeping the compiler
 maintainable, the language understandable, and the ecosystem compatible.</p>
 <a class="header" href="#example-changes-to-coherence-rules" id="example-changes-to-coherence-rules"><h4>Example: changes to coherence rules</h4></a>
@@ -480,7 +480,7 @@ maintainable, the language understandable, and the ecosystem compatible.</p>
 which crates can provide which <code>impl</code>s. It's not possible to change protocol
 incompatibly, because existing code will assume the current protocol and provide
 impls accordingly, and there's no way to work around that fact via deprecation.</p>
-<p>More generally, this means that epochs can only be used to make changes to the
+<p>More generally, this means that editions can only be used to make changes to the
 language that are applicable <em>crate-locally</em>; they cannot impose new
 requirements or semantics on external crates, since we want to retain
 compatibility with the existing ecosystem.</p>
@@ -488,7 +488,7 @@ compatibility with the existing ecosystem.</p>
 <p>See <a href="https://github.com/mozilla/rust/issues/35943">rust-lang/rust#35943</a>. Due to
 a silly oversight, you can’t currently downcast the “cause” of an error to
 introspect what it is. We can’t make the trait have stricter requirements; it
-would break existing impls. And there's no way to do so only in a newer epoch,
+would break existing impls. And there's no way to do so only in a newer edition,
 because we must be compatible with the older one, meaning that we cannot rely on
 downcasting.</p>
 <p>This is essentially another example of a non-crate-local change.</p>
@@ -496,25 +496,25 @@ downcasting.</p>
 <a class="header" href="#the-full-mechanics" id="the-full-mechanics"><h2>The full mechanics</h2></a>
 <p>We'll wrap up with the full details of the mechanisms at play.</p>
 <ul>
-<li><code>rustc</code> will take a new flag, <code>--epoch</code>, which can specify the epoch to
-use. This flag will default to epoch 2015.
+<li><code>rustc</code> will take a new flag, <code>--edition</code>, which can specify the edition to
+use. This flag will default to edition 2015.
 <ul>
 <li>This flag should not affect the behavior of the core trait system or passes at the MIR level.</li>
 </ul>
 </li>
-<li><code>Cargo.toml</code> can include an <code>epoch</code> value, which is used to pass to <code>rustc</code>.
+<li><code>Cargo.toml</code> can include an <code>edition</code> value, which is used to pass to <code>rustc</code>.
 <ul>
-<li>If left off, it will assume epoch 2015.</li>
+<li>If left off, it will assume edition 2015.</li>
 </ul>
 </li>
-<li><code>cargo new</code> will produce a <code>Cargo.toml</code> with the latest <code>epoch</code> value
-(including an epoch currently in its preview period).</li>
+<li><code>cargo new</code> will produce a <code>Cargo.toml</code> with the latest <code>edition</code> value
+(including an edition currently in its preview period).</li>
 </ul>
 <a class="header" href="#how-we-teach-this" id="how-we-teach-this"><h1>How We Teach This</h1></a>
 <p>First and foremost, if we accept this RFC, we should publicize the plan widely,
 including on the main Rust blog, in a style simlar to <a href="https://blog.rust-lang.org/2014/10/30/Stability.html">previous posts</a> about our
 release policy. This will require extremely careful messaging, to make clear
-that epochs are <em>not</em> about breaking Rust code, but instead <em>primarily</em>
+that editions are <em>not</em> about breaking Rust code, but instead <em>primarily</em>
 about putting together a globally coherent, polished product on a regular basis,
 while providing some opt-in ways to allow for evolution not possible today.</p>
 <p>In addition, the book should talk about the basics from a user perspective,
@@ -522,9 +522,9 @@ including:</p>
 <ul>
 <li>The fact that, if you do nothing, your code should continue to compile (with
 minimum hassle) when upgrading the compiler.</li>
-<li>If you resolve deprecations as they occur, moving to a new epoch should also
+<li>If you resolve deprecations as they occur, moving to a new edition should also
 require minimum hassle.</li>
-<li>Best practices about upgrading epochs (TBD).</li>
+<li>Best practices about upgrading editions (TBD).</li>
 </ul>
 <a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <p>There are several drawbacks to this proposal:</p>
@@ -535,21 +535,21 @@ worked very hard to message clearly.</p>
 <ul>
 <li>To mitigate this, we need to put front and center that, <strong>if you do nothing,
 updating to a new <code>rustc</code> should not be a hassle</strong>, and <strong>staying on an old
-epoch doesn't cut you off from the ecosystem</strong>.</li>
+edition doesn't cut you off from the ecosystem</strong>.</li>
 </ul>
 </li>
 <li>
 <p>It adds a degree of complication to an evolution story that is already
 somewhat complex (with release channels and rapid releases).</p>
 <ul>
-<li>On the other hand, epoch releases provide greater clarity about major
+<li>On the other hand, edition releases provide greater clarity about major
 steps in Rust evolution, for those who are not following development
 closely.</li>
 </ul>
 </li>
 <li>
-<p>New epochs can invalidate existing blog posts and documentation, a problem we
-suffered a lot around the 1.0 release</p>
+<p>New editions can invalidate existing blog posts and documentation, a problem
+we suffered a lot around the 1.0 release</p>
 <ul>
 <li>
 <p>However, this situation already obtains in the sense of changing idioms; a
@@ -557,19 +557,19 @@ blog post using <code>try!</code> these days already feels like it's using &quot
 Rust&quot;. Notably, though, the code still compiles on current Rust.</p>
 </li>
 <li>
-<p>A saving grace is that, with epochs, it's more likely that a post will
-mention what epoch is being used, for context. Moreover, with sufficient
+<p>A saving grace is that, with editions, it's more likely that a post will
+mention what edition is being used, for context. Moreover, with sufficient
 work on error messages, it seems plausible to detect that code was intended
-for an earlier epochs and explain the situation.</p>
+for an earlier editions and explain the situation.</p>
 </li>
 </ul>
 </li>
 </ul>
 <p>These downsides are most problematic in cases that involve &quot;breakage&quot; if they
-were done without opt in. They indicate that, even if we do adopt epochs, we
+were done without opt in. They indicate that, even if we do adopt editions, we
 should use them judiciously.</p>
 <a class="header" href="#alternatives" id="alternatives"><h1>Alternatives</h1></a>
-<a class="header" href="#within-the-basic-epoch-structure" id="within-the-basic-epoch-structure"><h2>Within the basic epoch structure</h2></a>
+<a class="header" href="#within-the-basic-edition-structure" id="within-the-basic-edition-structure"><h2>Within the basic edition structure</h2></a>
 <p>There was a significant amount of discussion on the RFC thread about using &quot;2.0&quot;
 rather than &quot;2019&quot;. It's difficult to concisely summarize this discussion, but
 in a nutshell, some feel that 2.0 (with a guarantee of backwards compatibility)
@@ -577,19 +577,19 @@ is more honest and easier to understand, while others worry that it will be
 misconstrued no matter how much we caveat it, and that we cannot risk Rust being
 perceived as unstable or risky.</p>
 <ul>
-<li>The &quot;epoch&quot; terminology and current framing arose from this discussion,
+<li>The &quot;edition&quot; terminology and current framing arose from this discussion,
 as a way of clarifying what we intend -- i.e., that the concept is
 <em>primarily</em> about putting together a coherent package -- and as a heads up
 that the model is different from that of other languages.</li>
 </ul>
-<p>Sticking with the basic idea of epochs, there are a couple alternative setups
-that avoid &quot;preview&quot; epochs:</p>
+<p>Sticking with the basic idea of editions, there are a couple alternative setups
+that avoid &quot;preview&quot; editions:</p>
 <ul>
 <li>
 <p>Rather than locking in a set of deprecations up front, we could provide
 &quot;stable channel feature gates&quot;, allowing users to opt in to features of the
-next epoch in a fine-grained way, which may introduce new errors.  When
-the new epoch is released, one would then upgrade to it and remove all of
+next edition in a fine-grained way, which may introduce new errors.  When
+the new edition is released, one would then upgrade to it and remove all of
 the gates.</p>
 <ul>
 <li>
@@ -610,14 +610,14 @@ coarse-grained flag at the outset.</p>
 </li>
 <li>
 <p>We could stabilize features using undesirable syntax at first, making way for
-better syntax only when the new epoch is released, then deprecate the &quot;bad&quot;
+better syntax only when the new edition is released, then deprecate the &quot;bad&quot;
 syntax in favor of the &quot;good&quot; syntax.</p>
 <ul>
 <li>For <code>catch</code>, this would look like:
 <ul>
 <li>Stabilize <code>do catch</code>.</li>
 <li>Deprecate <code>catch</code> as an identifier.</li>
-<li>Ship new epoch, which makes <code>catch</code> a keyword.</li>
+<li>Ship new edition, which makes <code>catch</code> a keyword.</li>
 <li>Stabilize <code>catch</code> as a syntax for the <code>catch</code> feature, and deprecate <code>do catch</code> in favor of it.</li>
 </ul>
 </li>
@@ -626,16 +626,16 @@ syntax in favor of the &quot;good&quot; syntax.</p>
 </li>
 <li>
 <p>Finally, we could just wait to stabilize features like <code>catch</code> until the
-moment the epoch is released.</p>
+moment the edition is released.</p>
 <ul>
 <li>This approach seems likely to introduce all the downsides of &quot;feature-based&quot;
-releases, making the epoch release extremely high stakes, and preventing
-usage of &quot;ready to go&quot; feature on the stable channel until the epoch is
+releases, making the edition release extremely high stakes, and preventing
+usage of &quot;ready to go&quot; feature on the stable channel until the edition is
 shipped.</li>
 </ul>
 </li>
 </ul>
-<a class="header" href="#alternatives-to-epochs" id="alternatives-to-epochs"><h2>Alternatives to epochs</h2></a>
+<a class="header" href="#alternatives-to-editions" id="alternatives-to-editions"><h2>Alternatives to editions</h2></a>
 <p>The larger alternatives include, of course, not trying to solve the problems
 laid out in the motivation, and instead finding creative alternatives.</p>
 <ul>
@@ -668,18 +668,18 @@ soundness holes? In many cases these are more disruptive than introducing a
 new keyword.</p>
 </li>
 <li>
-<p>Is &quot;epoch&quot; the right key in Cargo.toml? Would it be more clear to just say <code>rust = &quot;2019&quot;</code>?</p>
+<p>Is &quot;edition&quot; the right key in Cargo.toml? Would it be more clear to just say <code>rust = &quot;2019&quot;</code>?</p>
 </li>
 <li>
-<p>Will we ever consider dropping support for very old epochs? Given the
+<p>Will we ever consider dropping support for very old editions? Given the
 constraints in this RFC, it seems unlikely to ever be worth it.</p>
 </li>
 <li>
-<p>Should <code>rustc</code> default to the latest epoch instead?</p>
+<p>Should <code>rustc</code> default to the latest edition instead?</p>
 </li>
 <li>
 <p>How do we handle macros, particularly procedural macros, that may mix source
-from multiple epochs?</p>
+from multiple editions?</p>
 </li>
 </ul>
 

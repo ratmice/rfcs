@@ -154,7 +154,7 @@
 <li>The <code>crate</code> keyword also acts as a visibility modifier, equivalent to today's <code>pub(crate)</code>. Consequently, uses of bare <code>pub</code> on items that are not actually publicly exported are linted, suggesting <code>crate</code> visibility instead.</li>
 <li>A <code>foo.rs</code> and <code>foo/</code> subdirectory may coexist; <code>mod.rs</code> is no longer needed when placing submodules in a subdirectory.</li>
 </ul>
-<p><strong>These changes do not require a new epoch</strong>. The new features are purely additive. They can ship with <strong>allow-by-default</strong> lints, which can gradually be moved to warn-by-default and deny-by-default over time, as better tooling is developed and more code has actively made the switch.</p>
+<p><strong>These changes do not require a new edition</strong>. The new features are purely additive. They can ship with <strong>allow-by-default</strong> lints, which can gradually be moved to warn-by-default and deny-by-default over time, as better tooling is developed and more code has actively made the switch.</p>
 <p><em>This RFC incorporates some text written by @withoutboats and @cramertj, who have both been involved in the long-running discussions on this topic.</em></p>
 <a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <p>A major theme of this year's <a href="https://github.com/rust-lang/rfcs/pull/1774">roadmap</a> is improving the learning curve and
@@ -550,7 +550,7 @@ strongly reinforces the idea that:</p>
 <p>The actual changes in this RFC are fairly small tweaks to the current module
 system; most of the complexity comes from the migration plans.</p>
 <p>The proposed migration plan is minimally disruptive; <strong>it does not require an
-epoch</strong>.</p>
+edition</strong>.</p>
 <a class="header" href="#basic-changes" id="basic-changes"><h2>Basic changes</h2></a>
 <ul>
 <li>
@@ -623,7 +623,7 @@ and Cargo/the ambient build system is needed.</p>
 <p>This approach is designed for backwards compatibility, but it means that you
 cannot have a top-level module and an external crate with the same
 name. Allowing that would require all fully-qualified paths into the current
-crate to start with <code>crate</code>, which can only be done on a future epoch. We can
+crate to start with <code>crate</code>, which can only be done on a future edition. We can
 and should consider making such a change eventually, but it is not required for
 this RFC.</p>
 <a class="header" href="#migration-experience" id="migration-experience"><h2>Migration experience</h2></a>
@@ -671,13 +671,13 @@ them.</p>
 motivation. The crucial insight of the design is that, by making absolute paths
 unambiguous about which crate they draw from, we can solve a number of
 confusions and papercuts with the module system.</p>
-<a class="header" href="#epoch-based-migration-story" id="epoch-based-migration-story"><h2>Epoch-based migration story</h2></a>
-<p>We can avoid the need for fallback in resolution by leveraging epochs instead.
-On the current epoch, we would make <code>crate::</code> paths available and start warning
-about <em>not</em> using them for crate-internal paths, but we would not issue warnings
-about <code>extern crate</code>. In the next epoch, we would change absolute path
-interpretations, such that warning-free code on the previous epoch would
-continue to compile and have the same meaning.</p>
+<a class="header" href="#edition-based-migration-story" id="edition-based-migration-story"><h2>Edition-based migration story</h2></a>
+<p>We can avoid the need for fallback in resolution by leveraging editions
+instead. On the current edition, we would make <code>crate::</code> paths available and
+start warning about <em>not</em> using them for crate-internal paths, but we would not
+issue warnings about <code>extern crate</code>. In the next edition, we would change
+absolute path interpretations, such that warning-free code on the previous
+edition would continue to compile and have the same meaning.</p>
 <a class="header" href="#bike-sheddy-choices" id="bike-sheddy-choices"><h2>Bike-sheddy choices</h2></a>
 <p>There are a few aspects of this proposal that could be colored a bit differently
 without fundamental change.</p>
@@ -745,8 +745,8 @@ ideas off into a separate <em>experimental</em> RFC:</p>
 </blockquote>
 <a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
-<li>How should we approach migration? Via a fallback, as proposed, or via epochs?
-It is probably best to make this determination with more experience,
+<li>How should we approach migration? Via a fallback, as proposed, or via
+editions? It is probably best to make this determination with more experience,
 e.g. after we have a <code>rustfix</code> tool in hand.</li>
 </ul>
 

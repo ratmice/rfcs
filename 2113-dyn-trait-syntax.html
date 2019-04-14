@@ -147,10 +147,10 @@
 <li>Rust Issue: <a href="https://github.com/rust-lang/rust/issues/44662">rust-lang/rust#44662</a></li>
 </ul>
 <a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
-<p>Introduce a new <code>dyn Trait</code> syntax for trait objects using a contextual <code>dyn</code> keyword, and deprecate &quot;bare trait&quot; syntax for trait objects. In a future epoch, <code>dyn</code> will become a proper keyword and a lint against bare trait syntax will become deny-by-default.</p>
+<p>Introduce a new <code>dyn Trait</code> syntax for trait objects using a contextual <code>dyn</code> keyword, and deprecate &quot;bare trait&quot; syntax for trait objects. In a future edition, <code>dyn</code> will become a proper keyword and a lint against bare trait syntax will become deny-by-default.</p>
 <a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
 <a class="header" href="#in-a-nutshell" id="in-a-nutshell"><h3>In a nutshell</h3></a>
-<p>The current syntax is often ambiguous and confusing, even to veterans, and favors a feature that is not more frequently used than its alternatives, is sometimes slower, and often cannot be used at all when its alternatives can. By itself, that's not enough to make a breaking change to syntax that's already been stabilized. Now that we have epochs, it won't have to be a breaking change, but it will still cause significant churn. However, impl Trait is going to require a significant shift in idioms and teaching materials all on its own, and &quot;dyn Trait vs impl Trait&quot; is much nicer for teaching and ergonomics than &quot;bare trait vs impl Trait&quot;, so this author believes it is worthwhile to change trait object syntax too.</p>
+<p>The current syntax is often ambiguous and confusing, even to veterans, and favors a feature that is not more frequently used than its alternatives, is sometimes slower, and often cannot be used at all when its alternatives can. By itself, that's not enough to make a breaking change to syntax that's already been stabilized. Now that we have editions, it won't have to be a breaking change, but it will still cause significant churn. However, impl Trait is going to require a significant shift in idioms and teaching materials all on its own, and &quot;dyn Trait vs impl Trait&quot; is much nicer for teaching and ergonomics than &quot;bare trait vs impl Trait&quot;, so this author believes it is worthwhile to change trait object syntax too.</p>
 <p>Motivation is the key issue for this RFC, so let's expand on some of those claims:</p>
 <a class="header" href="#the-current-syntax-is-often-ambiguous-and-confusing" id="the-current-syntax-is-often-ambiguous-and-confusing"><h3>The current syntax is often ambiguous and confusing</h3></a>
 <p>Because it makes traits and trait objects appear indistinguishable. Some specific examples of this:</p>
@@ -183,17 +183,17 @@
 <p><code>Box&lt;Trait&gt;</code> becomes <code>Box&lt;dyn Trait&gt;</code>.</p>
 <p><code>&amp;Trait</code> and <code>&amp;mut Trait</code> become <code>&amp;dyn Trait</code> and <code>&amp;mut dyn Trait</code>.</p>
 <a class="header" href="#migration" id="migration"><h3>Migration</h3></a>
-<p>On the current epoch:</p>
+<p>On the current edition:</p>
 <ul>
 <li>The <code>dyn</code> keyword will be added, and will be a contextual keyword</li>
 <li>A lint against bare trait syntax will be added</li>
 </ul>
-<p>In the next epoch:</p>
+<p>In the next edition:</p>
 <ul>
 <li><code>dyn</code> becomes a real keyword, uses of it as an identifier become hard errors</li>
 <li>The bare trait syntax lint is raised to deny-by-default</li>
 </ul>
-<p>This follows the policy laid out in the epochs RFC, where a hard error is &quot;only available when the deprecation is expected to hit a relatively small percentage of code.&quot; Adding the <code>dyn</code> keyword is unlikely to affect much code, but removing bare trait syntax will clearly affect a lot of code, so only the latter change is implemented as a deny-by-default lint.</p>
+<p>This follows the policy laid out in the editions RFC, where a hard error is &quot;only available when the deprecation is expected to hit a relatively small percentage of code.&quot; Adding the <code>dyn</code> keyword is unlikely to affect much code, but removing bare trait syntax will clearly affect a lot of code, so only the latter change is implemented as a deny-by-default lint.</p>
 <a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
 <ul>
 <li>
@@ -213,7 +213,7 @@
 <p>We could use a different keyword such as <code>obj</code> or <code>virtual</code>. There wasn't very much discussion of these options on the original RFC thread, since the motivation was a far bigger concern than the proposed syntax, so it wouldn't be fair to say there's a consensus for or against any particular keyword.</p>
 <p>This author believes that <code>dyn</code> is a better choice because the notion of &quot;dynamic&quot; typing is familiar to a wide variety of programmers and unlikely to mislead them. <code>obj</code> is likely to incorrectly imply an &quot;object&quot; in the OOP sense, which is very different from a trait object. <code>virtual</code> is a term that may be unfamiliar to programmers whose preferred languages don't have a <code>virtual</code> keyword or don't even expose the notion of virtual/dynamic dispatch to the programmer, and the languages that do have a <code>virtual</code> keyword usually use it to mean &quot;this method can be overridden&quot;, not &quot;this value uses dynamic dispatch&quot;.</p>
 <p>We could also use a more radical syntax for trait objects. <code>Object&lt;Trait&gt;</code> was suggested on the original RFC thread but didn't gain much traction, presumably because it adds more &quot;noise&quot; than a keyword and is arguably misleading.</p>
-<p>Finally, we could repurpose bare trait syntax for something other than trait objects. It's been frequently suggested in the past that impl Trait would be a far better candidate for bare trait syntax than trait objects. Even this RFC's motivation section indirectly argues for this, e.g. impl Trait does work with all traits and does not carry a runtime cost, unlike trait objects. However, this RFC does not propose repurposing bare trait syntax yet, only deprecating and removing it. This author believes dyn Trait is worth adding even if we never repurpose bare trait, and repurposing it has some significant downsides that dyn Trait does not (such as creating the possibility of code that compiles in two different epochs with radically different semantics). This author believes the repurposing debate should come later, probably after impl Trait and dyn Trait have been stabilized.</p>
+<p>Finally, we could repurpose bare trait syntax for something other than trait objects. It's been frequently suggested in the past that impl Trait would be a far better candidate for bare trait syntax than trait objects. Even this RFC's motivation section indirectly argues for this, e.g. impl Trait does work with all traits and does not carry a runtime cost, unlike trait objects. However, this RFC does not propose repurposing bare trait syntax yet, only deprecating and removing it. This author believes dyn Trait is worth adding even if we never repurpose bare trait, and repurposing it has some significant downsides that dyn Trait does not (such as creating the possibility of code that compiles in two different editions with radically different semantics). This author believes the repurposing debate should come later, probably after impl Trait and dyn Trait have been stabilized.</p>
 <a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved questions</h1></a>
 <ul>
 <li>
