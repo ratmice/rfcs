@@ -159,7 +159,7 @@ syntax</a>. In particular, it would stabilize:</p>
 <a class="header" href="#why-futures-in-std" id="why-futures-in-std"><h2>Why <code>Future</code>s in <code>std</code>?</h2></a>
 <p>The core motivation for this RFC is to stabilize the supporting mechanisms for
 <code>async</code>/<code>await</code> syntax.  The syntax itself is motivated in the (already merged)
-<a href="https://github.com/rust-lang/rfcs/pull/2394">companion RFC</a>, and there is a <a href="http://aturon.github.io/2018/04/24/async-borrowing/">blog post</a>
+<a href="https://github.com/rust-lang/rfcs/pull/2394">companion RFC</a>, and there is a <a href="https://aturon.github.io/tech/2018/04/24/async-borrowing/">blog post</a>
 that goes through its importance in greater detail.</p>
 <p>As with closures, <code>async</code> syntax involves producing an anonymous type that implements
 a key trait: <code>Future</code>. Because <code>async</code>/<code>await</code> requires language-level support,
