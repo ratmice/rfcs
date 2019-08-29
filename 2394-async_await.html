@@ -409,7 +409,7 @@ in the function signature. This RFC proposes instead to display the &quot;inner&
 return type in the function signature. This has both advantages and
 disadvantages.</p>
 <a class="header" href="#the-lifetime-elision-problem" id="the-lifetime-elision-problem"><h3>The lifetime elision problem</h3></a>
-<p>As eluded to previously, the returned future captures all input lifetimes. By
+<p>As alluded to previously, the returned future captures all input lifetimes. By
 default, <code>impl Trait</code> does not capture any lifetimes. To accurately reflect the
 outer return type, it would become necessary to eliminate lifetime elision:</p>
 <pre><pre class="playpen"><code class="language-rust">
