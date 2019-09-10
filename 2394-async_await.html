@@ -227,7 +227,7 @@ than <code>T</code>. When you call that closure, it returns a future immediately
 evaluating any of the body (just like an async function).</p>
 <pre><pre class="playpen"><code class="language-rust">fn main() {
     let closure = async || {
-         println(&quot;Hello from async closure.&quot;);
+         println!(&quot;Hello from async closure.&quot;);
     };
     println!(&quot;Hello from main&quot;);
     let future = closure();
