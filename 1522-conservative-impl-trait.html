@@ -463,7 +463,7 @@ by adding explicit trait bounds either to the API or to the crate's test suite.<
 across abstraction barriers and provide information about a type without the
 type's author having to explicitly opt in.</p>
 <p>This means, however, that it has to be considered a silent breaking change to
-change a function with a abstract return type in a way that removes OIBIT impls,
+change a function with an abstract return type in a way that removes OIBIT impls,
 which might be a problem. (As noted above, this is already the case for <code>struct</code>
 definitions.)</p>
 <p>But since the number of used OIBITs is relatively small, deducing the return type
@@ -480,7 +480,7 @@ primary mechanism for hiding
 practice, that means that if you want opacity against specialization, you should
 use something like a newtype.</p>
 <a class="header" href="#anonymity" id="anonymity"><h3>Anonymity</h3></a>
-<p>A abstract return type cannot be named in this proposal, which means that it
+<p>An abstract return type cannot be named in this proposal, which means that it
 cannot be placed into <code>structs</code> and so on. This is not a fundamental limitation
 in any sense; the limitation is there both to keep this RFC simple, and because
 the precise way we might want to allow naming of such types is still a bit
@@ -602,7 +602,7 @@ trait Foo {
 and the compatibility of the current compiler with it is unknown,
 it is not yet possible to reach a concrete solution here.</p>
 <p>In addition to that, there are also different proposals as to whether
-a abstract return type is its own thing or sugar for a associated type,
+an abstract return type is its own thing or sugar for a associated type,
 how it interacts with other associated items and so on,
 so forbidding them in traits seems like the best initial course of action.</p>
 <a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
