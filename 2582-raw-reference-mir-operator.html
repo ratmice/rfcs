@@ -237,6 +237,9 @@ The lint should, at the very least, fire for the cases covered by the <a href="#
 (Basically, a &quot;dynamic&quot; version of the static analysis performed by the lint.)
 However, I believe that the semantics of a MIR program, including whether it as undefined behavior, should be deducible by executing it one step at a time.
 Given that, it is unclear how a semantics that &quot;lazily&quot; checks references should work, and how it could be compatible with the annotations we emit for LLVM.</p>
+<p>As an alternative to <code>&amp;raw const &lt;place&gt;</code>, one might want to use <code>&amp;raw &lt;place&gt;</code> for better symmetry with shared references.
+However, this introduces ambiguities into the parser because <code>raw</code> is not a keyword.
+For further details, see discussion <a href="https://github.com/rust-lang/rfcs/pull/2582#issuecomment-465519395">here</a> and <a href="https://github.com/rust-lang/rfcs/pull/2582#issuecomment-483439054">here</a> and <a href="https://github.com/rust-lang/rfcs/pull/2582#issuecomment-489468105">here</a>.</p>
 <a class="header" href="#prior-art" id="prior-art"><h1>Prior art</h1></a>
 <p>I am not aware of another language with both comparatively strong invariants for its reference types, and raw pointers.
 The need for taking a raw reference only arise because of Rust having both of these features.</p>
